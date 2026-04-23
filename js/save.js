@@ -34,7 +34,8 @@ export async function saveAll(message) {
     return;
   }
 
-  const { githubPat, githubRepo, branch } = state.settings;
+  const creds = state.pending.settings || state.settings;
+  const { githubPat, githubRepo, branch } = creds;
   const changes = [];
   const nowIso = new Date().toISOString();
   const manifest = { ...(state.data.manifest || {}) };
