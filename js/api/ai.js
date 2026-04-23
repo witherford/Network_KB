@@ -88,8 +88,15 @@ async function callProvider(p, { messages, maxTokens, temperature, json }) {
     e.retriable = isRetriable(res.status);
     throw e;
   }
-  const j = await res.json();
-  return j.choices?.[0]?.message?.content || '';
+const j = await res.json();
+  const content = j.choices?.[0]?.message?.content;
+  if (!content) {
+    const upstreamModel = j.model || p.model;
+    const e = new Error(`${p.provider} returned empty content (upstream=${upstreamModel}); pin a specific model instead of the auto-router`);
+    e.retriable = false;
+    throw e;
+  }
+  return content;
 }
 
 export function extractJson(text) {
