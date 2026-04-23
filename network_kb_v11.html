@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Network CLI Knowledge Base v4</title>
+<title>Network CLI Knowledge Base v11</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f8f9fa;--card:#fff;--border:#e5e7eb;--border2:#d1d5db;--text:#1a1a1a;--text2:#555;--text3:#888;--header:#1e2a3a;--tab-active:#1e2a3a;--code:#1e3a6e;--hover:#fafbfc;--sel:#f0f4ff;--hl:#fff176;--sec-bg:#f9fafb}
@@ -261,7 +261,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="header">
   <div class="header-left">
-    <h1>Network CLI Knowledge Base</h1>
+    <h1>Network CLI Knowledge Base <span style="font-size:12px;font-weight:500;color:var(--text3);letter-spacing:.02em">v11</span></h1>
     <p>Citrix NetScaler · Palo Alto · OpenSSL · Cisco IOS · Cisco IOS-XE WLC</p>
   </div>
   <div class="header-right">
@@ -474,8 +474,8 @@ netscaler:{label:"Citrix NetScaler",badge:"badge-ns",short:"NetScaler",sections:
 ["show ns connectiontable -detail full","Full connection table with per-connection details"],
 ["nsconmsg -d current -g all","Reads nsconmsg counters live from the NetScaler — powerful diagnostic tool"],
 ["shell netstat -an | grep ESTABLISHED | wc -l","Counts established TCP connections from the BSD shell"]
-]}},
-
+]
+}},
 paloalto:{label:"Palo Alto Firewall",badge:"badge-pa",short:"Palo Alto",sections:{
 "System & Status":[
 ["show system info","General system info: model, serial, software version, uptime"],
@@ -648,8 +648,8 @@ paloalto:{label:"Palo Alto Firewall",badge:"badge-pa",short:"Palo Alto",sections
 ["show templates","Lists all Panorama templates assigned to this device"],
 ["show device-group","Displays device group membership and config hierarchy"],
 ["request license fetch","Fetches updated licences from the Panorama licence server"]
-]}},
-
+]
+}},
 openssl:{label:"OpenSSL",badge:"badge-ssl",short:"OpenSSL",sections:{
 "Key Generation":[
 ["openssl genrsa -out private.key 2048","Generate a 2048-bit RSA private key"],
@@ -737,8 +737,55 @@ openssl:{label:"OpenSSL",badge:"badge-ssl",short:"OpenSSL",sections:{
 ["openssl enc -d -aes-256-cbc -pbkdf2 -in file.enc -out file.txt","Decrypt an AES-256-CBC encrypted file using a password"],
 ["openssl dgst -sha512 file.txt","Compute the SHA-512 digest of a file"],
 ["openssl dgst -md5 file.txt","Compute the MD5 digest of a file (legacy use only — not for security)"]
-]}},
-
+],
+"Certificates":[
+["openssl x509 -in <cert> -text -noout","Displays certificate details"],
+["openssl x509 -in <cert> -issuer -noout","Shows certificate issuer"],
+["openssl x509 -in <cert> -subject -noout","Shows certificate subject"],
+["openssl x509 -in <cert> -dates -noout","Shows certificate validity dates"],
+["openssl x509 -in <cert> -fingerprint -noout","Shows certificate fingerprint"],
+["openssl verify -CAfile <ca.pem> <cert>","Verifies certificate chain"],
+["openssl pkcs12 -in <pfx> -nodes","Extracts keys and certs from PFX"],
+["openssl pkcs12 -export -out <pfx> -inkey <key> -in <cert>","Creates PFX file"],
+["openssl req -new -key <key> -out <csr>","Generates CSR"],
+["openssl req -newkey rsa:2048 -nodes -keyout <key> -out <csr>","Generates key + CSR"]
+],
+"Keys":[
+["openssl genrsa -out <key> 2048","Generates RSA key"],
+["openssl genpkey -algorithm RSA -out <key>","Generates RSA key (modern)"],
+["openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out <key>","Generates EC key"],
+["openssl rsa -in <key> -check","Checks RSA key integrity"],
+["openssl rsa -in <key> -pubout -out <pubkey>","Extracts public key"],
+["openssl pkey -in <key> -pubout","Extracts public key (generic)"],
+["openssl pkey -in <key> -text -noout","Shows key details"]
+],
+"SSL/TLS":[
+["openssl s_client -connect <host:443>","Tests SSL/TLS connection"],
+["openssl s_client -connect <host:443> -servername <sni>","Tests SSL/TLS with SNI"],
+["openssl s_client -connect <host:443> -tls1_2","Forces TLS 1.2"],
+["openssl s_client -connect <host:443> -tls1_3","Forces TLS 1.3"],
+["openssl s_client -connect <host:443> -showcerts","Shows full certificate chain"],
+["openssl s_client -connect <host:443> -status","Requests OCSP stapling"],
+["openssl s_client -connect <host:443> -cipher <cipher>","Tests specific cipher"],
+["openssl s_client -connect <host:443> -curves <curve>","Tests specific EC curve"],
+["openssl s_time -connect <host:443>","Measures handshake performance"],
+["openssl ciphers -v","Lists supported ciphers"]
+],
+"Hashing":[
+["openssl dgst -sha256 <file>","Computes SHA?256 hash"],
+["openssl dgst -sha1 <file>","Computes SHA?1 hash"],
+["openssl dgst -md5 <file>","Computes MD5 hash"],
+["openssl dgst -sha512 <file>","Computes SHA?512 hash"],
+["openssl dgst -r -sha256 <file>","Outputs hash in reversed format"]
+],
+"Encoding":[
+["openssl base64 -in <file> -out <out>","Encodes file in Base64"],
+["openssl base64 -d -in <file> -out <out>","Decodes Base64"],
+["openssl enc -aes-256-cbc -salt -in <file> -out <enc>","Encrypts file with AES?256"],
+["openssl enc -aes-256-cbc -d -in <enc> -out <file>","Decrypts AES?256 file"],
+["openssl rand -hex 32","Generates 32?byte hex string"]
+]
+}},
 cisco:{label:"Cisco IOS Switch",badge:"badge-sw",short:"Cisco IOS",sections:{
 "Show & Status":[
 ["show version","IOS version, uptime, hardware model, memory, flash storage"],
@@ -895,8 +942,8 @@ cisco:{label:"Cisco IOS Switch",badge:"badge-sw",short:"Cisco IOS",sections:{
 ["clear mac address-table dynamic","Clears all dynamically learned MAC address entries"],
 ["show interface <name> counters errors","Shows error counters for an interface: CRC, runts, giants, input/output errors"],
 ["test cable-diagnostics tdr interface <name>","Runs TDR cable diagnostics to detect cable faults and measure length"]
-]}},
-
+]
+}},
 wlc:{label:"Cisco IOS-XE WLC",badge:"badge-wlc",short:"WLC",sections:{
 "Show & Status":[
 ["show version","IOS-XE version, uptime, hardware model, and installed packages"],
@@ -952,7 +999,80 @@ wlc:{label:"Cisco IOS-XE WLC",badge:"badge-wlc",short:"WLC",sections:{
 ["wlan <name> <id> <ssid> security wpa3 sae","Configures WPA3 SAE (Simultaneous Authentication of Equals) on the WLAN"],
 ["wlan <name> <id> <ssid> band-select","Enables 802.11 band steering to prefer 5GHz for dual-band clients"],
 ["wlan <name> <id> <ssid> ccx aironet-iesupport","Enables Cisco Compatible Extensions for Aironet IE support"],
-["wlan <name> <id> <ssid> dtim dot11 24ghz <value>","Sets the DTIM interval for 2.4GHz — affects power save client wake behaviour"]
+["wlan <name> <id> <ssid> dtim dot11 24ghz <value>","Sets the DTIM interval for 2.4GHz — affects power save client wake behaviour"],
+["wlan <WLAN-NAME> <WLAN-ID> <SSID> - create WLAN","","config"],
+["no shutdown - enable WLAN","","config"],
+["shutdown - disable WLAN","","config"],
+["ssid <SSID> - set SSID name","","config"],
+["description <TEXT> - set WLAN description","","config"],
+["policy <POLICY-PROFILE> - bind WLAN to policy profile","","config"],
+["no policy <POLICY-PROFILE> - unbind WLAN from policy profile","","config"],
+["security wpa psk set-key ascii <PASSWORD> - configure WPA2 PSK","","config"],
+["security wpa akm psk - enable PSK AKM","","config"],
+["security wpa akm dot1x - enable 802.1X AKM","","config"],
+["security dot1x authentication-list <AAA-LIST> - bind AAA list for 802.1X","","config"],
+["security wpa akm sae - enable WPA3 SAE","","config"],
+["security wpa sae password <PASSWORD> - configure SAE password","","config"],
+["security wpa wpa3 - enable WPA3 mode","","config"],
+["security wpa akm suite-b-192 - enable Suite‑B 192‑bit mode","","config"],
+["no security wpa - disable WPA","","config"],
+["no security wpa akm - disable all AKMs","","config"],
+["no security dot1x - disable 802.1X","","config"],
+["security mac-filtering list <ACL> - enable MAC filtering","","config"],
+["wireless profile policy <PROFILE> - create policy profile","","config"],
+["vlan <VLAN-ID> - assign VLAN","","config"],
+["no vlan <VLAN-ID> - remove VLAN","","config"],
+["no shutdown - enable policy profile","","config"],
+["shutdown - disable policy profile","","config"],
+["session-timeout <SECONDS> - set session timeout","","config"],
+["idle-timeout <SECONDS> - set idle timeout","","config"],
+["input-policy <POLICY-MAP> - apply input QoS policy","","config"],
+["output-policy <POLICY-MAP> - apply output QoS policy","","config"],
+["wlan <WLAN-NAME> - bind WLAN to policy profile","","config"],
+["aaa-override - allow AAA override","","config"],
+["accounting-list <AAA-LIST> - set accounting list","","config"],
+["authentication-list <AAA-LIST> - set authentication list","","config"],
+["authorization-list <AAA-LIST> - set authorization list","","config"],
+["local-switching - enable FlexConnect local switching","","config"],
+["central-switching - enable central switching","","config"],
+["local-auth - enable FlexConnect local authentication","","config"],
+["central-auth - enable central authentication","","config"],
+["flexconnect vlan <VLAN-ID> - set Flex VLAN override","","config"],
+["flexconnect ap <AP-NAME> vlan <VLAN-ID> - AP‑specific VLAN override","","config"],
+["mobility anchor <IP> - configure mobility anchor","","config"],
+["no mobility anchor <IP> - remove mobility anchor","","config"],
+["mobility tunnel mode <L2/L3> - set mobility tunnel mode","","config"],
+["timers session-timeout <SECONDS> - set session timeout","","config"],
+["timers idle-timeout <SECONDS> - set idle timeout","","config"],
+["timers exclusion <SECONDS> - set exclusion timeout","","config"],
+["timers roaming <SECONDS> - set roaming timer","","config"],
+["qos <QOS-PROFILE> - apply QoS profile","","config"],
+["no qos <QOS-PROFILE> - remove QoS profile","","config"],
+["avc-profile <PROFILE> - apply AVC profile","","config"],
+["no avc-profile <PROFILE> - remove AVC profile","","config"],
+["netflow monitor <MONITOR> - apply NetFlow monitor","","config"],
+["multicast vlan <VLAN-ID> - enable multicast VLAN","","config"],
+["multicast mcast-to-unicast - convert multicast to unicast","","config"],
+["no multicast mcast-to-unicast - disable multicast conversion","","config"],
+["broadcast-ssid - broadcast SSID","","config"],
+["no broadcast-ssid - hide SSID","","config"],
+["security pmf required - enable mandatory PMF","","config"],
+["security pmf optional - enable optional PMF","","config"],
+["security pmf disable - disable PMF","","config"],
+["dot11 6ghz - enable 6GHz mode","","config"],
+["no dot11 6ghz - disable 6GHz mode","","config"],
+["regulatory-domain <CODE> - set 6GHz regulatory domain","","config"],
+["rf-profile dot11 24ghz <PROFILE> - bind 2.4GHz RF profile","","config"],
+["rf-profile dot11 5ghz <PROFILE> - bind 5GHz RF profile","","config"],
+["rf-profile dot11 6ghz <PROFILE> - bind 6GHz RF profile","","config"],
+["mdns-sd gateway - enable mDNS gateway","","config"],
+["mdns-sd profile <PROFILE> - bind mDNS profile","","config"],
+["band-select - enable band steering","","config"],
+["no band-select - disable band steering","","config"],
+["load-balance - enable client load balancing","","config"],
+["no load-balance - disable load balancing","","config"],
+["client-steering - enable client steering","","config"],
+["no client-steering - disable client steering","","config"]
 ],
 "Tags & Profiles":[
 ["wireless tag site <name>","Creates or enters a site tag configuration"],
@@ -1034,7 +1154,8 @@ wlc:{label:"Cisco IOS-XE WLC",badge:"badge-wlc",short:"WLC",sections:{
 ["reload cancel","Cancels a previously scheduled reload"],
 ["copy running-config tftp:","Backs up the running config to a TFTP server"],
 ["copy tftp: running-config","Restores a running config from a TFTP server"]
-]}},
+]
+}},
 linux:{label:"Linux",badge:"badge-sw",short:"Linux",sections:{
 "1. FILE & DIRECTORY NAVIGATION":[
 ["------------------------------------------------------------",""],
@@ -1271,7 +1392,8 @@ linux:{label:"Linux",badge:"badge-sw",short:"Linux",sections:{
 "uniq file  # remove duplicates":[
 ["uniq -c file","# count duplicates"],
 ["tr 'a-z' 'A-Z' < file","# uppercase conversion"],
-["tr -d '\r' < file","# remove carriage returns"]
+["tr -d '\r' < file","# remove carriage returns"],
+["tr -d '\\r' < file","# remove carriage returns"]
 ],
 "git init  # initialize repo":[
 ["git clone URL","# clone repository"],
@@ -1547,6 +1669,1765 @@ linux:{label:"Linux",badge:"badge-sw",short:"Linux",sections:{
 ["timeout 10 command","# run with timeout"],
 ["nice command","# run with priority"],
 ["renice pid","# change process priority"]
+],
+"System":[
+["uname -a","Displays kernel version and architecture"],
+["hostnamectl","Shows system hostname and OS metadata"],
+["lsb_release -a","Shows Linux distribution info"],
+["uptime","Shows system uptime and load averages"],
+["top","Displays real?time process usage"],
+["htop","Enhanced interactive process viewer"],
+["vmstat 1","Shows CPU/memory stats per second"],
+["iostat -x 1","Shows disk I/O stats"],
+["free -h","Shows memory usage"],
+["df -h","Shows disk usage"]
+],
+"Networking":[
+["ip a","Shows all IP addresses"],
+["ip r","Shows routing table"],
+["ip -6 r","Shows IPv6 routing table"],
+["ip neigh","Shows ARP/ND cache"],
+["ss -tulpn","Shows listening sockets"],
+["ss -s","Shows socket summary"],
+["ss -tan","Shows TCP connections"],
+["ss -uan","Shows UDP sockets"],
+["ethtool <iface>","Shows NIC settings"],
+["ethtool -S <iface>","Shows NIC statistics"],
+["ip link show","Shows all network interfaces"],
+["ip link set <iface> up","Brings an interface up"],
+["ip link set <iface> down","Brings an interface down"],
+["ip addr add <ip>/<mask> dev <iface>","Adds an IP address to an interface"],
+["ip addr del <ip>/<mask> dev <iface>","Deletes an IP address from an interface"],
+["ip route add <network> via <gateway>","Adds a static route"],
+["ip route del <network> via <gateway>","Deletes a static route"],
+["ip -s link","Shows interface statistics"],
+["ip -s neigh","Shows ARP/ND statistics"],
+["bridge link","Shows bridge interface links"],
+["bridge vlan","Shows VLAN filtering configuration"],
+["bridge fdb show","Shows MAC forwarding table"],
+["tc qdisc show","Shows traffic control queue disciplines"],
+["tc class show","Shows traffic control classes"],
+["tc filter show","Shows traffic control filters"],
+["iptables -L -n -v","Lists IPv4 firewall rules"],
+["ip6tables -L -n -v","Lists IPv6 firewall rules"],
+["nft list ruleset","Displays full nftables ruleset"],
+["systemctl restart network","Restarts network services"],
+["systemctl restart NetworkManager","Restarts NetworkManager"],
+["nmcli device status","Shows NetworkManager device status"],
+["nmcli connection show","Shows configured network connections"],
+["nmcli connection up <name>","Activates a connection"],
+["nmcli connection down <name>","Deactivates a connection"],
+["dhclient <iface>","Requests DHCP lease"],
+["dhclient -r <iface>","Releases DHCP lease"],
+["ss -tp","Shows TCP processes"],
+["ss -uap","Shows UDP processes"],
+["ss -o state established","Shows established connections"],
+["ss -o state time-wait","Shows TIME_WAIT sockets"],
+["ss -o state syn-recv","Shows SYN?RECV sockets"],
+["ss -o state syn-sent","Shows SYN?SENT sockets"],
+["ss -o state fin-wait-1","Shows FIN_WAIT_1 sockets"],
+["ss -o state fin-wait-2","Shows FIN_WAIT_2 sockets"],
+["ss -o state close-wait","Shows CLOSE_WAIT sockets"],
+["ss -o state last-ack","Shows LAST_ACK sockets"],
+["ss -o state closing","Shows CLOSING sockets"],
+["ss -o state closed","Shows CLOSED sockets"]
+],
+"Diagnostics":[
+["journalctl -xe","Shows system errors and warnings"],
+["journalctl -u <service>","Shows logs for a specific service"],
+["journalctl -b","Shows logs since last boot"],
+["journalctl -k","Shows kernel logs"],
+["dmesg -T","Shows kernel ring buffer with timestamps"],
+["systemctl status <service>","Shows service status"],
+["systemctl list-units --failed","Shows failed systemd units"],
+["systemctl list-timers","Shows active timers"],
+["ps aux","Shows all running processes"],
+["ps -eo pid","cmd","%cpu"],
+["lsof","Lists open files"],
+["lsof -i","Lists network sockets"],
+["lsof -i :<port>","Lists processes using a port"],
+["lsof +L1","Shows deleted-but-open files"],
+["netstat -tulpn","Shows listening ports (legacy)"],
+["perf top","Shows kernel performance hotspots"],
+["perf record -a","Records system-wide performance profile"],
+["perf report","Displays perf profiling results"],
+["strace -p <pid>","Traces system calls for a process"],
+["ltrace -p <pid>","Traces library calls for a process"],
+["systemd-analyze blame","Shows slow boot services"],
+["systemd-analyze critical-chain","Shows boot dependency chain"],
+["systemd-analyze plot > boot.svg","Generates boot performance graph"],
+["smartctl -a /dev/<disk>","Shows disk SMART data"],
+["smartctl -t short /dev/<disk>","Runs short SMART test"],
+["smartctl -t long /dev/<disk>","Runs long SMART test"],
+["mdadm --detail /dev/md0","Shows RAID array details"],
+["mdadm --examine /dev/<disk>","Shows RAID metadata"],
+["fsck -n /dev/<disk>","Checks filesystem (read?only)"],
+["blkid","Shows filesystem UUIDs"],
+["lsblk -f","Shows block devices with filesystem info"],
+["lsmod","Shows loaded kernel modules"],
+["modinfo <module>","Shows module information"],
+["systemctl is-enabled <service>","Checks if service is enabled"],
+["systemctl is-active <service>","Checks if service is active"]
+]
+}},
+wireshark:{label:"Wireshark",badge:"badge-custom2",short:"Wireshark",sections:{
+"Capture Filters":[
+["host <ip>","Captures packets to or from a specific IP","capture"],
+["src host <ip>","Captures packets from a specific source IP","capture"],
+["dst host <ip>","Captures packets to a specific destination IP","capture"],
+["net <subnet>","Captures packets within a subnet","capture"],
+["port <port>","Captures packets on a specific port","capture"],
+["tcp port <port>","Captures TCP packets on a port","capture"],
+["udp port <port>","Captures UDP packets on a port","capture"],
+["icmp","Captures ICMP packets","capture"],
+["icmp6","Captures ICMPv6 packets","capture"],
+["arp","Captures ARP packets","capture"],
+["ether host <mac>","Captures packets to/from a MAC address","capture"],
+["ether src <mac>","Captures packets from a MAC address","capture"],
+["ether dst <mac>","Captures packets to a MAC address","capture"],
+["tcp[tcpflags] & tcp-syn != 0","Captures SYN packets","capture"],
+["tcp[tcpflags] & tcp-fin != 0","Captures FIN packets","capture"],
+["tcp[tcpflags] & tcp-rst != 0","Captures RST packets","capture"],
+["ip6","Captures IPv6 traffic","capture"],
+["ip proto 6","Captures TCP only","capture"],
+["ip proto 17","Captures UDP only","capture"],
+["ip proto 1","Captures ICMP only","capture"],
+["greater <bytes>","Captures packets larger than a size","capture"],
+["less <bytes>","Captures packets smaller than a size","capture"],
+["not port <port>","Excludes traffic on a port","capture"],
+["not host <ip>","Excludes traffic to/from an IP","capture"],
+["port 80 or port 443","Captures HTTP+HTTPS","capture"],
+["ip multicast","Captures multicast traffic","capture"],
+["ip broadcast","Captures broadcast traffic","capture"],
+["vlan","Captures VLAN?tagged frames","capture"],
+["pppoes","Captures PPPoE session packets","capture"],
+["portrange 1-1024","Captures privileged ports","capture"],
+["tcp port 22","Captures SSH traffic","capture"],
+["tcp port 3389","Captures RDP traffic","capture"],
+["udp port 53","Captures DNS queries","capture"],
+["udp port 123","Captures NTP traffic","capture"],
+["udp port 500","Captures IPsec IKE","capture"],
+["udp port 4500","Captures NAT?T IPsec","capture"],
+["ip proto 50","Captures ESP packets","capture"],
+["ip proto 51","Captures AH packets","capture"],
+["ip6 proto 58","Captures ICMPv6","capture"],
+["ip6 multicast","Captures IPv6 multicast","capture"],
+["ip6 dst ff02::1","Captures IPv6 all?nodes multicast","capture"],
+["ip6 dst ff02::2","Captures IPv6 all?routers multicast","capture"],
+["ip6 dst ff02::fb","Captures mDNS IPv6","capture"],
+["ip6 dst ff02::1:3","Captures LLMNR IPv6","capture"]
+],
+"TShark":[
+["tshark -D","Lists all capture interfaces"],
+["tshark -i <iface>","Captures on a specific interface"],
+["tshark -i <iface> -f \"<filter>\"","Applies a capture filter"],
+["tshark -Y \"<display-filter>\"","Applies a display filter"],
+["tshark -w <file.pcap>","Writes capture to file"],
+["tshark -r <file.pcap>","Reads a capture file"],
+["tshark -z io","stat","Shows IO statistics"],
+["tshark -z conv","tcp","Shows TCP conversations"],
+["tshark -z endpoints","tcp","Shows TCP endpoints"],
+["tshark -z expert","Shows expert info warnings/errors"],
+["tshark -z http","stat","Shows HTTP statistics"],
+["tshark -z dns","stat","Shows DNS statistics"],
+["tshark -z tls","stat","Shows TLS statistics"],
+["tshark -o tls.keylog_file:<file>","Loads TLS key log for decryption"],
+["tshark -o http.ssl.port:443","Forces TLS decode on port 443"],
+["tshark -o tcp.relative_sequence_numbers:FALSE","Shows absolute TCP sequence numbers"],
+["tshark -o gui.column.format:\"...\"","Customises output columns"],
+["tshark -q -z io","phs","Shows protocol hierarchy statistics"]
+]
+}},
+ciscoios:{label:"Cisco IOS",badge:"badge-sw",short:"Cisco IOS",sections:{
+"Interfaces":[
+["show interfaces","Displays interface status and counters"],
+["show interfaces status","Shows interface link/duplex/speed summary"],
+["show interfaces description","Shows interface descriptions"],
+["show interfaces trunk","Shows trunking interfaces"],
+["show interfaces switchport","Shows switchport configuration"],
+["show interfaces counters errors","Shows interface error counters"],
+["show interfaces transceiver detail","Shows SFP/optics details"],
+["show interfaces vlan","Shows VLAN interface status"],
+["show interfaces summary","Shows interface summary"],
+["show interfaces accounting","Shows per?interface traffic accounting"]
+],
+"Routing":[
+["show ip route","Displays IPv4 routing table"],
+["show ip route <prefix>","Displays route for a specific prefix"],
+["show ip ospf neighbor","Shows OSPF neighbours"],
+["show ip ospf interface","Shows OSPF interface details"],
+["show ip ospf database","Shows OSPF LSDB"],
+["show ip bgp summary","Shows BGP peer summary"],
+["show ip bgp neighbors","Shows BGP neighbour details"],
+["show ip bgp","Shows BGP table"],
+["show ip eigrp neighbors","Shows EIGRP neighbours"],
+["show ip eigrp topology","Shows EIGRP topology table"]
+],
+"Security":[
+["show access-lists","Displays all ACLs"],
+["show ip access-lists","Displays IPv4 ACLs"],
+["show ipv6 access-lists","Displays IPv6 ACLs"],
+["show control-plane host open-ports","Shows open management ports"],
+["show login failures","Shows failed login attempts"],
+["show login on-success","Shows successful logins"],
+["show crypto isakmp sa","Shows IPsec IKE SAs"],
+["show crypto ipsec sa","Shows IPsec tunnel SAs"],
+["show crypto pki certificates","Shows installed certificates"],
+["show ssh","Shows SSH server status"]
+]
+}},
+esxi:{label:"VMware ESXi",badge:"badge-ssl",short:"ESXi",sections:{
+"System":[
+["esxcli system version get","Shows ESXi version"],
+["esxcli system hostname get","Shows hostname"],
+["esxcli system maintenanceMode get","Shows maintenance mode status"],
+["esxcli system maintenanceMode set --enable true","Enables maintenance mode"],
+["esxcli system maintenanceMode set --enable false","Disables maintenance mode"],
+["esxcli system shutdown reboot -r \"<reason>\"","Reboots host"],
+["esxcli system shutdown poweroff -r \"<reason>\"","Powers off host"],
+["esxcli system syslog config get","Shows syslog configuration"],
+["esxcli system syslog reload","Reloads syslog configuration"],
+["esxcli system time get","Shows system time"]
+],
+"Networking":[
+["esxcli network nic list","Lists physical NICs"],
+["esxcli network nic get -n <nic>","Shows NIC details"],
+["esxcli network ip interface list","Lists VMkernel interfaces"],
+["esxcli network ip interface ipv4 get","Shows IPv4 configuration"],
+["esxcli network ip interface ipv6 get","Shows IPv6 configuration"],
+["esxcli network ip route ipv4 list","Shows IPv4 routes"],
+["esxcli network ip route ipv6 list","Shows IPv6 routes"],
+["esxcli network vswitch standard list","Lists standard vSwitches"],
+["esxcli network vswitch standard portgroup list","Lists port groups"],
+["esxcli network firewall get","Shows firewall status"]
+],
+"Storage":[
+["esxcli storage filesystem list","Lists mounted filesystems"],
+["esxcli storage core device list","Lists storage devices"],
+["esxcli storage core device stats get -d <device>","Shows device statistics"],
+["esxcli storage core path list","Lists storage paths"],
+["esxcli storage core path stats get -p <path>","Shows path statistics"],
+["esxcli storage nfs list","Lists NFS datastores"],
+["esxcli storage nfs add -H <host> -s <share> -v <name>","Adds NFS datastore"],
+["esxcli storage nfs remove -v <name>","Removes NFS datastore"],
+["esxcli storage vmfs extent list","Lists VMFS extents"],
+["esxcli storage vmfs snapshot list","Lists VMFS snapshots"]
+],
+"VM Management":[
+["esxcli vm process list","Lists running VMs"],
+["esxcli vm process kill --type=soft --world-id=<id>","Soft?kills VM"],
+["esxcli vm process kill --type=hard --world-id=<id>","Hard?kills VM"],
+["esxcli vm process kill --type=force --world-id=<id>","Force?kills VM"],
+["esxcli hardware cpu global get","Shows CPU info"],
+["esxcli hardware memory get","Shows memory info"],
+["esxcli hardware pci list","Lists PCI devices"],
+["esxcli hardware clock get","Shows hardware clock"],
+["esxcli hardware clock set -d <day> -H <hour>","Sets hardware clock"],
+["esxcli hardware ipmi sel get","Shows IPMI SEL logs"]
+],
+"Diagnostics":[
+["esxcli system syslog mark","Adds syslog marker"],
+["esxcli system stats installtime get","Shows install time"],
+["esxcli system stats uptime get","Shows uptime"],
+["esxcli system stats load get","Shows CPU load"],
+["esxcli network diag ping -I <vmk> -H <host>","Ping from VMkernel NIC"],
+["esxcli network diag traceroute -H <host>","Traceroute from ESXi"],
+["esxcli network diag netstack list","Lists network stacks"],
+["esxcli network diag netstack get -N <stack>","Shows stack details"],
+["esxcli software vib list","Lists installed VIBs"],
+["esxcli software sources vib list -d <url>","Lists VIBs from depot"]
+]
+}},
+ciscoasa:{label:"Cisco ASA",badge:"badge-pa",short:"ASA",sections:{
+"System":[
+["show version","Shows ASA version and license"],
+["show inventory","Shows hardware inventory"],
+["show cpu usage","Shows CPU usage"],
+["show memory","Shows memory usage"],
+["show processes cpu-usage","Shows CPU per process"],
+["show processes memory","Shows memory per process"],
+["show failover","Shows failover status"],
+["show failover history","Shows failover events"],
+["show failover state","Shows detailed failover state"],
+["show activation-key","Shows license activation key"]
+],
+"Interfaces":[
+["show interface ip brief","Shows interface summary"],
+["show interface <name>","Shows interface details"],
+["show interface counters","Shows interface counters"],
+["show interface phy","Shows physical interface info"],
+["show interface redundant","Shows redundant interfaces"],
+["show interface port-channel","Shows port?channel info"],
+["show switch vlan","Shows VLANs on ASA?X"],
+["show switch trunk","Shows trunk ports"],
+["show switch mac-address-table","Shows MAC table"],
+["show switch spanning-tree","Shows STP info"]
+],
+"Routing":[
+["show route","Shows routing table"],
+["show route <ip>","Shows route lookup"],
+["show ospf neighbor","Shows OSPF neighbors"],
+["show ospf database","Shows OSPF LSDB"],
+["show ospf interface","Shows OSPF interface info"],
+["show bgp summary","Shows BGP summary"],
+["show bgp neighbors","Shows BGP neighbors"],
+["show bgp","Shows BGP table"],
+["show eigrp neighbors","Shows EIGRP neighbors"],
+["show eigrp topology","Shows EIGRP topology"]
+],
+"Security":[
+["show access-list","Shows ACLs"],
+["show run access-group","Shows ACL bindings"],
+["show run object","Shows object definitions"],
+["show run object-group","Shows object groups"],
+["show service-policy","Shows service policies"],
+["show conn","Shows active connections"],
+["show conn detail","Shows detailed connections"],
+["show xlate","Shows NAT translations"],
+["show xlate detail","Shows detailed NAT translations"],
+["show nat detail","Shows NAT rules"]
+],
+"VPN":[
+["show vpn-sessiondb","Shows VPN sessions"],
+["show vpn-sessiondb anyconnect","Shows AnyConnect sessions"],
+["show vpn-sessiondb l2l","Shows site?to?site VPN sessions"],
+["show crypto ikev1 sa","Shows IKEv1 SAs"],
+["show crypto ikev2 sa","Shows IKEv2 SAs"],
+["show crypto ipsec sa","Shows IPsec SAs"],
+["show crypto ca certificates","Shows installed certificates"],
+["show crypto ca trustpoints","Shows trustpoints"],
+["show webvpn","Shows WebVPN configuration"],
+["show webvpn session","Shows WebVPN sessions"]
+],
+"Diagnostics":[
+["show logging","Shows logging configuration"],
+["show logging buffer","Shows buffered logs"],
+["show crashinfo","Shows crash logs"],
+["show tech-support","Generates tech support output"],
+["show cpu detailed","Shows detailed CPU usage"],
+["show memory detail","Shows detailed memory usage"],
+["show processes","Shows running processes"],
+["show processes cpu-hog","Shows CPU hog processes"],
+["show processes memory-hog","Shows memory hog processes"],
+["show asp drop","Shows accelerated security path drops"],
+["packet-tracer input <iface> <proto> <src-ip> <src-port> <dst-ip> <dst-port>","Simulates packet flow"],
+["packet-tracer output <iface> <proto> <src-ip> <src-port> <dst-ip> <dst-port>","Simulates egress flow"],
+["show traffic","Shows interface traffic"],
+["show cpu usage history","Shows CPU history"],
+["show blocks","Shows memory block usage"],
+["show blocks detail","Shows detailed memory block usage"],
+["show failover statistics","Shows failover statistics"],
+["show interface ip brief","Shows IP brief summary"],
+["show interface redundancy","Shows redundancy info"],
+["show interface lacp","Shows LACP info"]
+]
+}},
+windows:{label:"Windows",badge:"badge-custom4",short:"Windows",sections:{
+"System":[
+["systeminfo","Shows system information"],
+["wmic os get caption","Shows Windows edition"],
+["wmic cpu get name","Shows CPU model"],
+["wmic memorychip get capacity","Shows RAM modules"],
+["wmic logicaldisk get size","freespace","Shows disk sizes"],
+["Get-WindowsFeature","Lists installed Windows features"],
+["Get-ComputerInfo","Shows detailed system info"],
+["Get-EventLog -LogName System -Newest 50","Shows recent system events"],
+["Get-EventLog -LogName Application -Newest 50","Shows recent application events"],
+["Get-EventLog -LogName Security -Newest 50","Shows recent security events"]
+],
+"Networking":[
+["ipconfig /all","Shows full IP configuration"],
+["ipconfig /flushdns","Flushes DNS cache"],
+["ipconfig /registerdns","Registers DNS"],
+["netstat -ano","Shows all connections with PIDs"],
+["netstat -s","Shows protocol statistics"],
+["netsh interface ipv4 show interfaces","Shows IPv4 interfaces"],
+["netsh interface ipv6 show interfaces","Shows IPv6 interfaces"],
+["netsh advfirewall firewall show rule name=all","Shows all firewall rules"],
+["Get-NetAdapter","Shows network adapters"],
+["Get-NetIPAddress","Shows IP addresses"],
+["Get-NetRoute","Shows routing table"],
+["Get-DnsClientCache","Shows DNS cache"],
+["Test-NetConnection -Port <port> -ComputerName <host>","Tests TCP port connectivity"],
+["Resolve-DnsName <host>","Performs DNS lookup"],
+["Get-NetTCPConnection","Shows TCP connections"]
+],
+"Processes":[
+["tasklist","Lists running processes"],
+["taskkill /PID <pid> /F","Kills a process"],
+["Get-Process","Shows processes"],
+["Get-Process | Sort CPU -Descending","Shows top CPU processes"],
+["Get-Process | Sort WS -Descending","Shows top memory processes"],
+["Get-Service","Lists services"],
+["Get-Service | Where {$_.Status -eq \"Running\"}","Shows running services"],
+["Restart-Service <name>","Restarts a service"],
+["Stop-Service <name>","Stops a service"],
+["Start-Service <name>","Starts a service"]
+],
+"Storage":[
+["Get-Volume","Shows volumes"],
+["Get-PhysicalDisk","Shows physical disks"],
+["Get-Disk","Shows disk layout"],
+["Get-Partition","Shows partitions"],
+["chkdsk <drive>:","Checks disk"],
+["defrag <drive>: /A","Analyzes fragmentation"],
+["fsutil fsinfo drives","Lists drives"],
+["fsutil volume diskfree <drive>:","Shows free disk space"],
+["Get-SmbShare","Shows SMB shares"],
+["Get-SmbSession","Shows SMB sessions"]
+]
+}},
+aws:{label:"AWS CLI",badge:"badge-custom3",short:"AWS CLI",sections:{
+"EC2":[
+["aws ec2 describe-instances","Lists EC2 instances"],
+["aws ec2 describe-volumes","Lists EBS volumes"],
+["aws ec2 describe-security-groups","Lists security groups"],
+["aws ec2 describe-vpcs","Lists VPCs"],
+["aws ec2 describe-subnets","Lists subnets"],
+["aws ec2 describe-route-tables","Lists route tables"],
+["aws ec2 describe-network-interfaces","Lists ENIs"],
+["aws ec2 describe-addresses","Lists Elastic IPs"],
+["aws ec2 describe-images --owners self","Lists AMIs"],
+["aws ec2 describe-instance-status","Shows instance health"]
+],
+"S3":[
+["aws s3 ls","Lists buckets"],
+["aws s3 ls s3://<bucket>","Lists bucket contents"],
+["aws s3 cp <src> <dst>","Copies files"],
+["aws s3 sync <src> <dst>","Syncs directories"],
+["aws s3 rm s3://<bucket>/<file>","Deletes file"],
+["aws s3 mb s3://<bucket>","Creates bucket"],
+["aws s3 rb s3://<bucket>","Removes bucket"],
+["aws s3api get-bucket-acl --bucket <bucket>","Shows ACL"],
+["aws s3api get-bucket-policy --bucket <bucket>","Shows bucket policy"],
+["aws s3api list-object-versions --bucket <bucket>","Lists object versions"]
+],
+"CloudWatch":[
+["aws cloudwatch describe-alarms","Lists alarms"],
+["aws cloudwatch get-metric-statistics","Shows metric stats"],
+["aws cloudwatch list-metrics","Lists metrics"],
+["aws logs describe-log-groups","Lists log groups"],
+["aws logs describe-log-streams --log-group-name <group>","Lists log streams"],
+["aws logs get-log-events --log-group-name <group> --log-stream-name <stream>","Shows log events"],
+["aws logs tail <group>","Tails CloudWatch logs"],
+["aws logs filter-log-events --log-group-name <group> --filter-pattern <pattern>","Filters logs"],
+["aws logs put-retention-policy --log-group-name <group> --retention-in-days <days>","Sets retention"],
+["aws logs delete-log-group --log-group-name <group>","Deletes log group"]
+]
+}},
+netscalersdx:{label:"NetScaler SDX",badge:"badge-ns",short:"SDX",sections:{
+"System":[
+["show system","Displays SDX system summary"],
+["show system version","Shows SDX firmware version"],
+["show system backup","Lists system backups"],
+["show system backup <name>","Shows details of a specific backup"],
+["show system user","Lists SDX users"],
+["show system user <username>","Shows details for a user"],
+["show system config","Displays full SDX configuration"],
+["show system storage","Shows SDX storage usage"],
+["show system uptime","Displays uptime"],
+["show system alarms","Lists active alarms"],
+["show system alarms -detail","Shows detailed alarm information"],
+["show system health","Displays system health summary"],
+["show system processes","Lists running system processes"],
+["show system processes -detail","Shows detailed process information"],
+["show system services","Lists system services"],
+["show system services -detail","Shows detailed service information"],
+["show system date","Displays system date/time"],
+["show system ntp","Shows NTP configuration"],
+["show system ntp servers","Lists configured NTP servers"],
+["show system dns","Shows DNS configuration"],
+["show system dns servers","Lists DNS servers"],
+["show system hostname","Displays hostname"],
+["show system hardware","Shows hardware summary"],
+["show system hardware -detail","Shows detailed hardware info"],
+["show system hardware fans","Shows fan status"],
+["show system hardware psu","Shows power supply status"],
+["show system hardware temperature","Shows temperature sensors"],
+["show system hardware voltage","Shows voltage sensors"],
+["show system hardware cpu","Shows CPU hardware info"],
+["show system hardware memory","Shows memory hardware info"],
+["show system hardware disks","Shows disk hardware info"],
+["show system hardware raid","Shows RAID controller status"],
+["show system hardware raid -detail","Shows detailed RAID info"],
+["show system hardware bios","Shows BIOS information"],
+["show system hardware pci","Shows PCI devices"],
+["show system hardware sensors","Lists all hardware sensors"],
+["show system hardware sensors -detail","Shows detailed sensor readings"],
+["show system hardware backplane","Shows SDX backplane hardware"],
+["show system hardware backplane -detail","Shows detailed backplane info"],
+["show system hardware sslchips","Shows SSL chip allocation"],
+["show system hardware sslchips -detail","Shows detailed SSL chip info"],
+["show system hardware power","Shows power consumption"],
+["show system hardware thermal","Shows thermal readings"],
+["show system hardware utilization","Shows hardware utilization summary"],
+["show system hardware utilization -detail","Shows detailed hardware utilization"],
+["show system hardware inventory","Shows hardware inventory"],
+["show system hardware inventory -detail","Shows detailed hardware inventory"]
+],
+"Chassis":[
+["show chassis","Shows chassis summary"],
+["show chassis status","Shows chassis status"],
+["show chassis fans","Shows chassis fan status"],
+["show chassis psu","Shows chassis power supplies"],
+["show chassis temperature","Shows chassis temperature sensors"],
+["show chassis voltage","Shows chassis voltage sensors"],
+["show chassis backplane","Shows chassis backplane status"],
+["show chassis backplane -detail","Shows detailed backplane info"],
+["show chassis network","Shows chassis network interfaces"],
+["show chassis network -detail","Shows detailed chassis network info"],
+["show chassis power","Shows chassis power usage"],
+["show chassis thermal","Shows chassis thermal readings"],
+["show chassis sensors","Lists all chassis sensors"],
+["show chassis sensors -detail","Shows detailed sensor readings"],
+["show chassis inventory","Shows chassis inventory"],
+["show chassis inventory -detail","Shows detailed chassis inventory"]
+],
+"Backplane":[
+["show backplane","Shows backplane configuration"],
+["show backplane interfaces","Lists backplane interfaces"],
+["show backplane interfaces -detail","Shows detailed backplane interface info"],
+["show backplane stats","Shows backplane statistics"],
+["show backplane stats -detail","Shows detailed backplane statistics"],
+["show backplane mapping","Shows VPX-to-backplane mapping"],
+["show backplane mapping -detail","Shows detailed mapping info"],
+["show backplane throughput","Shows backplane throughput"],
+["show backplane errors","Shows backplane errors"],
+["show backplane health","Shows backplane health summary"]
+],
+"SSL Chips":[
+["show sslchip","Shows SSL chip allocation"],
+["show sslchip -detail","Shows detailed SSL chip allocation"],
+["show sslchip stats","Shows SSL chip statistics"],
+["show sslchip stats -detail","Shows detailed SSL chip statistics"],
+["show sslchip mapping","Shows VPX SSL chip mapping"],
+["show sslchip mapping -detail","Shows detailed mapping info"],
+["show sslchip health","Shows SSL chip health"],
+["show sslchip utilization","Shows SSL chip utilization"],
+["show sslchip utilization -detail","Shows detailed SSL chip utilization"]
+],
+"CPU":[
+["show cpu","Shows CPU usage summary"],
+["show cpu -detail","Shows detailed CPU usage"],
+["show cpu cores","Lists CPU cores"],
+["show cpu cores -detail","Shows detailed core info"],
+["show cpu allocation","Shows VPX CPU allocation"],
+["show cpu allocation -detail","Shows detailed CPU allocation"],
+["show cpu health","Shows CPU health"],
+["show cpu temperature","Shows CPU temperature"],
+["show cpu frequency","Shows CPU frequency scaling"],
+["show cpu interrupts","Shows CPU interrupt statistics"]
+],
+"Memory":[
+["show memory","Shows memory usage summary"],
+["show memory -detail","Shows detailed memory usage"],
+["show memory allocation","Shows VPX memory allocation"],
+["show memory allocation -detail","Shows detailed memory allocation"],
+["show memory hugepages","Shows hugepage usage"],
+["show memory health","Shows memory health"],
+["show memory errors","Shows memory errors"],
+["show memory dimms","Shows DIMM information"],
+["show memory dimms -detail","Shows detailed DIMM info"],
+["show memory thermal","Shows memory thermal readings"]
+],
+"VPX":[
+["show vpx","Lists all VPX instances"],
+["show vpx <name>","Shows details for a VPX instance"],
+["show vpx -detail","Shows detailed VPX configuration"],
+["show vpx status","Shows VPX power and health status"],
+["show vpx status -detail","Shows detailed VPX status"],
+["show vpx resources","Shows VPX resource allocation"],
+["show vpx resources -detail","Shows detailed VPX resource allocation"],
+["show vpx cpu","Shows VPX CPU allocation"],
+["show vpx memory","Shows VPX memory allocation"],
+["show vpx disk","Shows VPX disk allocation"],
+["show vpx network","Shows VPX network interfaces"],
+["show vpx network -detail","Shows detailed VPX network info"],
+["show vpx sslchips","Shows VPX SSL chip allocation"],
+["show vpx sslchips -detail","Shows detailed SSL chip allocation"],
+["show vpx throughput","Shows VPX throughput statistics"],
+["show vpx health","Shows VPX health summary"],
+["show vpx alarms","Shows VPX alarms"],
+["show vpx logs","Shows VPX logs"],
+["show vpx license","Shows VPX license info"],
+["show vpx version","Shows VPX firmware version"]
+],
+"VPX Lifecycle":[
+["add vpx <name> -cpu <n> -memory <mb> -disk <gb>","Creates a new VPX instance"],
+["add vpx <name> -profile <profile>","Creates VPX using a profile"],
+["add vpx <name> -image <image>","Creates VPX from image"],
+["delete vpx <name>","Deletes a VPX instance"],
+["start vpx <name>","Starts a VPX instance"],
+["stop vpx <name>","Stops a VPX instance"],
+["restart vpx <name>","Restarts a VPX instance"],
+["reset vpx <name>","Resets VPX to factory defaults"],
+["upgrade vpx <name> -image <image>","Upgrades VPX firmware"],
+["clone vpx <src> <dst>","Clones a VPX instance"],
+["resize vpx <name> -cpu <n>","Changes VPX CPU allocation"],
+["resize vpx <name> -memory <mb>","Changes VPX memory allocation"],
+["resize vpx <name> -disk <gb>","Changes VPX disk allocation"],
+["bind vpx <name> -network <net>","Binds VPX to a network"],
+["unbind vpx <name> -network <net>","Unbinds VPX from a network"],
+["bind vpx <name> -sslchip <chip>","Assigns SSL chip to VPX"],
+["unbind vpx <name> -sslchip <chip>","Removes SSL chip from VPX"],
+["bind vpx <name> -vlan <id>","Assigns VLAN to VPX"],
+["unbind vpx <name> -vlan <id>","Removes VLAN from VPX"]
+],
+"VPX Networking":[
+["show vpx interface","Lists VPX interfaces"],
+["show vpx interface <name>","Shows interface details"],
+["show vpx interface stats","Shows interface statistics"],
+["show vpx interface stats -detail","Shows detailed interface stats"],
+["show vpx vlan","Lists VPX VLANs"],
+["show vpx vlan <id>","Shows VLAN details"],
+["show vpx channel","Lists VPX link aggregation channels"],
+["show vpx channel <id>","Shows channel details"],
+["show vpx lacp","Shows LACP status"],
+["show vpx lacp -detail","Shows detailed LACP info"],
+["show vpx throughput","Shows VPX throughput"],
+["show vpx throughput -detail","Shows detailed throughput"],
+["show vpx packetdrops","Shows packet drops"],
+["show vpx packetdrops -detail","Shows detailed packet drop info"],
+["show vpx ip","Shows VPX IP configuration"],
+["show vpx ip6","Shows VPX IPv6 configuration"],
+["show vpx route","Shows VPX routing table"],
+["show vpx arp","Shows VPX ARP table"],
+["show vpx ndp","Shows VPX IPv6 neighbor table"]
+],
+"VPX Provisioning":[
+["show vpx image","Lists VPX images"],
+["show vpx image <name>","Shows image details"],
+["add vpx image <name> -file <file>","Uploads VPX image"],
+["delete vpx image <name>","Deletes VPX image"],
+["show vpx profile","Lists VPX profiles"],
+["show vpx profile <name>","Shows profile details"],
+["add vpx profile <name> -cpu <n> -memory <mb>","Creates VPX profile"],
+["delete vpx profile <name>","Deletes VPX profile"],
+["show vpx template","Lists VPX templates"],
+["show vpx template <name>","Shows template details"],
+["add vpx template <name> -image <image>","Creates VPX template"],
+["delete vpx template <name>","Deletes VPX template"]
+],
+"VM Management":[
+["show vm","Lists all VMs on SDX"],
+["show vm <name>","Shows VM details"],
+["show vm -detail","Shows detailed VM info"],
+["start vm <name>","Starts a VM"],
+["stop vm <name>","Stops a VM"],
+["restart vm <name>","Restarts a VM"],
+["reset vm <name>","Resets a VM"],
+["delete vm <name>","Deletes a VM"],
+["clone vm <src> <dst>","Clones a VM"],
+["show vm cpu","Shows VM CPU allocation"],
+["show vm memory","Shows VM memory allocation"],
+["show vm disk","Shows VM disk allocation"],
+["show vm network","Shows VM network interfaces"],
+["resize vm <name> -cpu <n>","Resizes VM CPU"],
+["resize vm <name> -memory <mb>","Resizes VM memory"],
+["resize vm <name> -disk <gb>","Resizes VM disk"],
+["bind vm <name> -network <net>","Binds VM to network"],
+["unbind vm <name> -network <net>","Unbinds VM from network"],
+["show vm health","Shows VM health summary"],
+["show vm alarms","Shows VM alarms"],
+["show vm logs","Shows VM logs"],
+["show vm throughput","Shows VM throughput"],
+["show vm throughput -detail","Shows detailed VM throughput"],
+["show vm packetdrops","Shows VM packet drops"],
+["show vm packetdrops -detail","Shows detailed packet drop info"]
+],
+"XenServer":[
+["show xenserver","Shows XenServer summary"],
+["show xenserver version","Shows XenServer version"],
+["show xenserver patches","Lists installed patches"],
+["show xenserver patches -detail","Shows detailed patch info"],
+["show xenserver hosts","Lists XenServer hosts"],
+["show xenserver hosts -detail","Shows detailed host info"],
+["show xenserver vms","Lists all Xen VMs"],
+["show xenserver vms -detail","Shows detailed VM info"],
+["show xenserver storage","Shows storage repositories"],
+["show xenserver storage -detail","Shows detailed storage info"],
+["show xenserver network","Shows XenServer networks"],
+["show xenserver network -detail","Shows detailed network info"],
+["show xenserver pifs","Shows physical interfaces"],
+["show xenserver vifs","Shows virtual interfaces"],
+["show xenserver bonds","Shows NIC bonding"],
+["show xenserver bridges","Shows network bridges"],
+["show xenserver logs","Shows XenServer logs"],
+["show xenserver health","Shows XenServer health summary"]
+],
+"XenServer CLI":[
+["xe host-list","Lists Xen hosts"],
+["xe vm-list","Lists VMs"],
+["xe vm-list params=all","Shows detailed VM info"],
+["xe vm-start uuid=<uuid>","Starts a VM"],
+["xe vm-shutdown uuid=<uuid>","Gracefully shuts down VM"],
+["xe vm-reboot uuid=<uuid>","Reboots VM"],
+["xe vm-reset uuid=<uuid>","Hard resets VM"],
+["xe vm-snapshot uuid=<uuid> new-name-label=<name>","Creates VM snapshot"],
+["xe vm-disk-list uuid=<uuid>","Lists VM disks"],
+["xe vm-disk-add uuid=<uuid> disk-size=<size>","Adds disk to VM"],
+["xe vm-disk-remove uuid=<uuid> disk-id=<id>","Removes disk from VM"],
+["xe pif-list","Lists physical NICs"],
+["xe vif-list","Lists virtual NICs"],
+["xe network-list","Lists networks"],
+["xe sr-list","Lists storage repositories"],
+["xe sr-scan uuid=<uuid>","Scans storage repository"],
+["xe host-cpu-info","Shows CPU info"],
+["xe host-memory-list","Shows memory info"],
+["xe host-param-list uuid=<uuid>","Shows host parameters"]
+],
+"Xen Hypervisor":[
+["xl list","Lists running Xen domains"],
+["xl top","Shows real-time VM usage"],
+["xl dmesg","Shows hypervisor logs"],
+["xl info","Shows hypervisor info"],
+["xl vcpu-list","Lists vCPUs"],
+["xl vcpu-pin <domid> <vcpu> <pcpu>","Pins vCPU to pCPU"],
+["xl sched-credit","Shows credit scheduler info"],
+["xl sched-credit -d <domid>","Shows domain scheduler info"],
+["xl block-list <domid>","Lists block devices"],
+["xl network-list <domid>","Lists network interfaces"],
+["xl shutdown <domid>","Shuts down domain"],
+["xl reboot <domid>","Reboots domain"],
+["xl destroy <domid>","Destroys domain"]
+],
+"Open vSwitch":[
+["ovs-vsctl show","Shows OVS configuration"],
+["ovs-vsctl list-br","Lists OVS bridges"],
+["ovs-vsctl list-ports <bridge>","Lists ports on bridge"],
+["ovs-vsctl list-ifaces <bridge>","Lists interfaces on bridge"],
+["ovs-vsctl get bridge <bridge> datapath_type","Shows datapath type"],
+["ovs-vsctl get interface <iface> statistics","Shows interface stats"],
+["ovs-ofctl dump-flows <bridge>","Shows OpenFlow flows"],
+["ovs-ofctl dump-ports <bridge>","Shows port statistics"],
+["ovs-ofctl dump-tables <bridge>","Shows OpenFlow tables"],
+["ovs-appctl fdb/show <bridge>","Shows FDB table"],
+["ovs-appctl bond/show","Shows bonding info"],
+["ovs-appctl dpif/show","Shows datapath info"],
+["ovs-appctl dpif/dump-flows","Shows datapath flows"]
+],
+"Storage":[
+["show storage","Shows storage summary"],
+["show storage disks","Lists disks"],
+["show storage disks -detail","Shows detailed disk info"],
+["show storage partitions","Shows disk partitions"],
+["show storage raid","Shows RAID status"],
+["show storage raid -detail","Shows detailed RAID info"],
+["show storage usage","Shows storage usage"],
+["show storage usage -detail","Shows detailed storage usage"],
+["show storage filesystem","Shows filesystem info"],
+["show storage filesystem -detail","Shows detailed filesystem info"],
+["show storage latency","Shows storage latency"],
+["show storage throughput","Shows storage throughput"],
+["show storage iops","Shows IOPS statistics"],
+["show storage errors","Shows storage errors"],
+["show storage health","Shows storage health summary"]
+],
+"Performance":[
+["xentop -b","Shows batch performance stats"],
+["xentop -f","Shows full performance stats"],
+["xentop -i 1","Shows 1?second interval stats"],
+["xentop -d 5","Shows 5?second interval stats"],
+["xentop -r","Sorts by CPU usage"],
+["xentop -m","Sorts by memory usage"],
+["xentop -n","Sorts by network usage"],
+["xentop -x","Sorts by disk usage"],
+["vmstat 1","Shows CPU/memory stats"],
+["iostat -x 1","Shows disk I/O stats"],
+["mpstat -P ALL 1","Shows per?CPU stats"],
+["top -b -n 1","Shows process usage"],
+["free -m","Shows memory usage"],
+["df -h","Shows disk usage"],
+["uptime","Shows load averages"],
+["perf stat -a","Shows system performance counters"],
+["perf top","Shows kernel hotspots"],
+["perf record -a","Records performance profile"],
+["perf report","Shows perf report"]
+],
+"Diagnostics":[
+["show logs","Shows system logs"],
+["show logs -detail","Shows detailed logs"],
+["show logs messages","Shows /var/log/messages"],
+["show logs xen","Shows Xen logs"],
+["show logs ovs","Shows OVS logs"],
+["show logs vm","Shows VM logs"],
+["show logs hardware","Shows hardware logs"],
+["show logs storage","Shows storage logs"],
+["show logs network","Shows network logs"],
+["show logs security","Shows security logs"],
+["show events","Shows system events"],
+["show events -detail","Shows detailed events"],
+["show alerts","Shows alerts"],
+["show alerts -detail","Shows detailed alerts"],
+["show faults","Shows system faults"],
+["show faults -detail","Shows detailed faults"],
+["show crashdump","Shows crash dumps"],
+["show crashdump -detail","Shows detailed crash dump info"],
+["show techsupport","Generates tech support bundle"],
+["show debug","Shows debug settings"],
+["show debug modules","Shows debug modules"],
+["show debug logs","Shows debug logs"]
+],
+"HA":[
+["show ha","Shows HA configuration"],
+["show ha status","Shows HA status"],
+["show ha status -detail","Shows detailed HA status"],
+["show ha nodes","Lists HA nodes"],
+["show ha nodes -detail","Shows detailed node info"],
+["show ha sync","Shows HA sync status"],
+["show ha sync -detail","Shows detailed sync info"],
+["show ha failover","Shows failover history"],
+["show ha failover -detail","Shows detailed failover info"],
+["show ha heartbeat","Shows heartbeat status"],
+["show ha heartbeat -detail","Shows detailed heartbeat info"],
+["show ha interfaces","Shows HA interfaces"],
+["show ha interfaces -detail","Shows detailed HA interface info"],
+["show ha health","Shows HA health summary"],
+["show ha logs","Shows HA logs"],
+["show ha alerts","Shows HA alerts"],
+["show ha events","Shows HA events"],
+["show ha config","Shows HA configuration"],
+["add ha node <id> -ip <ip>","Adds HA node"],
+["delete ha node <id>","Deletes HA node"],
+["set ha node <id> -state primary","Sets node as primary"],
+["set ha node <id> -state secondary","Sets node as secondary"],
+["force ha failover","Forces HA failover"],
+["force ha sync","Forces HA sync"]
+],
+"Clustering":[
+["show cluster","Shows cluster summary"],
+["show cluster nodes","Lists cluster nodes"],
+["show cluster nodes -detail","Shows detailed cluster node info"],
+["show cluster status","Shows cluster status"],
+["show cluster status -detail","Shows detailed cluster status"],
+["show cluster sync","Shows cluster sync status"],
+["show cluster sync -detail","Shows detailed sync info"],
+["show cluster health","Shows cluster health summary"],
+["show cluster logs","Shows cluster logs"],
+["add cluster node <id> -ip <ip>","Adds cluster node"],
+["delete cluster node <id>","Deletes cluster node"],
+["join cluster -ip <ip> -password <pass>","Joins cluster"],
+["leave cluster","Leaves cluster"]
+],
+"Security":[
+["show security","Shows security configuration"],
+["show security policies","Lists security policies"],
+["show security policies -detail","Shows detailed policy info"],
+["show security firewall","Shows firewall configuration"],
+["show security firewall rules","Lists firewall rules"],
+["show security firewall rules -detail","Shows detailed firewall rule info"],
+["show security ssh","Shows SSH configuration"],
+["show security tls","Shows TLS configuration"],
+["show security certs","Lists certificates"],
+["show security certs -detail","Shows detailed certificate info"],
+["show security users","Lists security users"],
+["show security users -detail","Shows detailed user info"],
+["show security roles","Lists roles"],
+["show security roles -detail","Shows detailed role info"],
+["show security audit","Shows audit logs"],
+["show security audit -detail","Shows detailed audit logs"],
+["show security hardening","Shows hardening status"],
+["show security hardening -detail","Shows detailed hardening info"],
+["show security password-policy","Shows password policy"],
+["show security lockdown","Shows lockdown mode status"]
+],
+"Firmware":[
+["show firmware","Shows firmware summary"],
+["show firmware version","Shows firmware version"],
+["show firmware images","Lists firmware images"],
+["show firmware images -detail","Shows detailed image info"],
+["add firmware image <name> -file <file>","Uploads firmware image"],
+["delete firmware image <name>","Deletes firmware image"],
+["upgrade firmware -image <name>","Upgrades SDX firmware"],
+["upgrade firmware -staged","Stages firmware upgrade"],
+["show firmware upgrade-status","Shows upgrade status"],
+["show firmware rollback","Shows rollback options"],
+["rollback firmware -image <name>","Rolls back firmware"]
+],
+"Backup":[
+["show backup","Shows backup summary"],
+["show backup files","Lists backup files"],
+["show backup files -detail","Shows detailed backup info"],
+["add backup <name>","Creates backup"],
+["delete backup <name>","Deletes backup"],
+["restore backup <name>","Restores backup"],
+["show backup status","Shows backup status"],
+["show backup logs","Shows backup logs"]
+],
+"Networking Internals":[
+["show network","Shows network summary"],
+["show network interfaces","Lists interfaces"],
+["show network interfaces -detail","Shows detailed interface info"],
+["show network routes","Shows routing table"],
+["show network routes -detail","Shows detailed routing info"],
+["show network arp","Shows ARP table"],
+["show network ndp","Shows IPv6 neighbor table"],
+["show network lacp","Shows LACP status"],
+["show network lacp -detail","Shows detailed LACP info"],
+["show network bonding","Shows NIC bonding"],
+["show network bonding -detail","Shows detailed bonding info"],
+["show network vlan","Shows VLAN configuration"],
+["show network vlan -detail","Shows detailed VLAN info"],
+["show network throughput","Shows network throughput"],
+["show network throughput -detail","Shows detailed throughput"],
+["show network errors","Shows network errors"],
+["show network errors -detail","Shows detailed error info"],
+["show network health","Shows network health summary"]
+],
+"Services":[
+["show service","Shows service summary"],
+["show service status","Shows service status"],
+["show service status -detail","Shows detailed service status"],
+["show service logs","Shows service logs"],
+["start service <name>","Starts service"],
+["stop service <name>","Stops service"],
+["restart service <name>","Restarts service"],
+["show service health","Shows service health"],
+["show service alerts","Shows service alerts"],
+["show service events","Shows service events"]
+],
+"Monitoring":[
+["show monitor","Shows monitoring summary"],
+["show monitor metrics","Lists metrics"],
+["show monitor metrics -detail","Shows detailed metric info"],
+["show monitor cpu","Shows CPU metrics"],
+["show monitor memory","Shows memory metrics"],
+["show monitor disk","Shows disk metrics"],
+["show monitor network","Shows network metrics"],
+["show monitor vpx","Shows VPX metrics"],
+["show monitor vm","Shows VM metrics"],
+["show monitor hardware","Shows hardware metrics"],
+["show monitor alerts","Shows monitoring alerts"],
+["show monitor events","Shows monitoring events"]
+],
+"Telemetry":[
+["show telemetry","Shows telemetry configuration"],
+["show telemetry status","Shows telemetry status"],
+["show telemetry metrics","Lists telemetry metrics"],
+["show telemetry metrics -detail","Shows detailed telemetry metrics"],
+["show telemetry endpoints","Lists telemetry endpoints"],
+["show telemetry endpoints -detail","Shows detailed endpoint info"],
+["show telemetry logs","Shows telemetry logs"],
+["show telemetry health","Shows telemetry health summary"],
+["show telemetry events","Shows telemetry events"],
+["show telemetry alerts","Shows telemetry alerts"]
+],
+"Analytics":[
+["show analytics","Shows analytics summary"],
+["show analytics cpu","Shows CPU analytics"],
+["show analytics memory","Shows memory analytics"],
+["show analytics disk","Shows disk analytics"],
+["show analytics network","Shows network analytics"],
+["show analytics vpx","Shows VPX analytics"],
+["show analytics vm","Shows VM analytics"],
+["show analytics hardware","Shows hardware analytics"],
+["show analytics events","Shows analytics events"],
+["show analytics alerts","Shows analytics alerts"]
+],
+"Logging":[
+["show logging","Shows logging configuration"],
+["show logging status","Shows logging status"],
+["show logging files","Lists log files"],
+["show logging files -detail","Shows detailed log file info"],
+["show logging syslog","Shows syslog configuration"],
+["show logging syslog servers","Lists syslog servers"],
+["show logging audit","Shows audit logs"],
+["show logging debug","Shows debug logs"],
+["show logging events","Shows event logs"],
+["show logging alerts","Shows alert logs"]
+],
+"Platform Internals":[
+["show internal processes","Shows internal processes"],
+["show internal threads","Shows internal threads"],
+["show internal modules","Shows internal modules"],
+["show internal modules -detail","Shows detailed module info"],
+["show internal tasks","Shows internal tasks"],
+["show internal tasks -detail","Shows detailed task info"],
+["show internal queues","Shows internal queues"],
+["show internal queues -detail","Shows detailed queue info"],
+["show internal memory","Shows internal memory usage"],
+["show internal memory -detail","Shows detailed internal memory usage"]
+],
+"System Control":[
+["show control","Shows system control summary"],
+["show control power","Shows power control options"],
+["show control reboot","Shows reboot options"],
+["show control shutdown","Shows shutdown options"],
+["reboot system","Reboots SDX system"],
+["shutdown system","Shuts down SDX system"],
+["restart services","Restarts all services"],
+["restart service <name>","Restarts specific service"],
+["stop service <name>","Stops service"],
+["start service <name>","Starts service"]
+],
+"Advanced Debug":[
+["show debug modules","Lists debug modules"],
+["show debug modules -detail","Shows detailed debug module info"],
+["show debug flags","Shows debug flags"],
+["show debug flags -detail","Shows detailed debug flag info"],
+["show debug logs","Shows debug logs"],
+["show debug trace","Shows trace logs"],
+["show debug trace -detail","Shows detailed trace logs"],
+["show debug crash","Shows crash debug info"],
+["show debug crash -detail","Shows detailed crash debug info"],
+["show debug memory","Shows debug memory info"],
+["show debug memory -detail","Shows detailed debug memory info"],
+["show debug scheduler","Shows scheduler debug info"],
+["show debug scheduler -detail","Shows detailed scheduler info"],
+["show debug hypervisor","Shows hypervisor debug info"],
+["show debug hypervisor -detail","Shows detailed hypervisor debug info"]
+],
+"Hardware Internals":[
+["show hardware pci","Shows PCI devices"],
+["show hardware pci -detail","Shows detailed PCI info"],
+["show hardware cpu","Shows CPU hardware info"],
+["show hardware cpu -detail","Shows detailed CPU hardware info"],
+["show hardware memory","Shows memory hardware info"],
+["show hardware memory -detail","Shows detailed memory hardware info"],
+["show hardware sensors","Shows hardware sensors"],
+["show hardware sensors -detail","Shows detailed sensor info"],
+["show hardware fans","Shows fan info"],
+["show hardware fans -detail","Shows detailed fan info"],
+["show hardware psu","Shows PSU info"],
+["show hardware psu -detail","Shows detailed PSU info"],
+["show hardware thermal","Shows thermal info"],
+["show hardware thermal -detail","Shows detailed thermal info"],
+["show hardware voltage","Shows voltage info"],
+["show hardware voltage -detail","Shows detailed voltage info"],
+["show hardware inventory","Shows hardware inventory"],
+["show hardware inventory -detail","Shows detailed hardware inventory"]
+],
+"Engineering":[
+["show engineering","Shows engineering mode status"],
+["show engineering logs","Shows engineering logs"],
+["show engineering modules","Lists engineering modules"],
+["show engineering modules -detail","Shows detailed engineering module info"],
+["show engineering debug","Shows engineering debug info"],
+["show engineering trace","Shows engineering trace logs"],
+["show engineering trace -detail","Shows detailed trace logs"],
+["show engineering scheduler","Shows engineering scheduler info"],
+["show engineering scheduler -detail","Shows detailed scheduler info"],
+["show engineering hypervisor","Shows engineering hypervisor info"],
+["show engineering hypervisor -detail","Shows detailed hypervisor info"]
+],
+"System Internals":[
+["show sysctl","Shows sysctl parameters"],
+["show sysctl -detail","Shows detailed sysctl info"],
+["show kernel","Shows kernel info"],
+["show kernel modules","Lists kernel modules"],
+["show kernel modules -detail","Shows detailed module info"],
+["show kernel logs","Shows kernel logs"],
+["show kernel threads","Shows kernel threads"],
+["show kernel memory","Shows kernel memory usage"],
+["show kernel memory -detail","Shows detailed kernel memory info"],
+["show kernel scheduler","Shows kernel scheduler info"],
+["show kernel scheduler -detail","Shows detailed scheduler info"]
+],
+"Low-Level":[
+["show pci","Shows PCI devices"],
+["show pci -detail","Shows detailed PCI info"],
+["show dmidecode","Shows DMI hardware info"],
+["show dmidecode -detail","Shows detailed DMI info"],
+["show lspci","Shows PCI bus info"],
+["show lspci -vv","Shows verbose PCI info"],
+["show lsblk","Shows block devices"],
+["show lsblk -detail","Shows detailed block device info"],
+["show smartctl -a /dev/<disk>","Shows SMART disk info"],
+["show hdparm -I /dev/<disk>","Shows disk hardware info"]
+],
+"Final":[
+["show everything","Displays full SDX system state"],
+["show all","Displays all SDX subsystems"],
+["show full-diagnostics","Runs full diagnostics suite"],
+["show platform-summary","Shows complete platform summary"],
+["show platform-health","Shows complete platform health"]
+]
+}},
+ciscoiosxe_wlc:{label:"Cisco IOS XE WLC",badge:"badge-wlc",short:"IOS-XE WLC",sections:{
+"System":[
+["show version","Shows WLC software version"],
+["show platform","Shows platform details"],
+["show inventory","Shows hardware inventory"],
+["show environment all","Shows fans","PSU"],
+["show processes cpu sorted","Shows CPU usage sorted"],
+["show processes memory sorted","Shows memory usage sorted"],
+["show logging","Shows system logs"],
+["show logging onboard","Shows onboard logging"],
+["show tech-support","Generates full tech support output"],
+["show redundancy","Shows redundancy state"],
+["show redundancy status","Shows HA status"],
+["show redundancy switchover history","Shows HA switchover history"],
+["show wireless management trustpoint","Shows trustpoint configuration"],
+["show wireless country","Shows configured regulatory domain"],
+["show wireless profile policy summary","Shows policy profiles"],
+["show wireless profile flex summary","Shows FlexConnect profiles"],
+["show wireless profile qos summary","Shows QoS profiles"],
+["show wireless profile avc summary","Shows AVC profiles"],
+["show wireless profile wips summary","Shows WIPS profiles"]
+],
+"AP Management":[
+["show ap summary","Lists all APs"],
+["show ap name <ap> summary","Shows AP summary"],
+["show ap name <ap> config general","Shows AP general config"],
+["show ap name <ap> config slot <slot>","Shows AP radio config"],
+["show ap name <ap> config dot11 24ghz","Shows 2.4GHz config"],
+["show ap name <ap> config dot11 5ghz","Shows 5GHz config"],
+["show ap name <ap> config dot11 6ghz","Shows 6GHz config"],
+["show ap name <ap> join stats","Shows AP join statistics"],
+["show ap name <ap> join detail","Shows AP join details"],
+["show ap name <ap> packet-capture status","Shows AP packet capture status"],
+["show ap name <ap> packet-capture config","Shows AP capture config"],
+["show ap name <ap> stats","Shows AP statistics"],
+["show ap name <ap> stats dot11 24ghz","Shows 2.4GHz stats"],
+["show ap name <ap> stats dot11 5ghz","Shows 5GHz stats"],
+["show ap name <ap> stats dot11 6ghz","Shows 6GHz stats"],
+["show ap name <ap> stats client","Shows client stats per AP"],
+["show ap name <ap> stats packet","Shows packet counters"],
+["show ap name <ap> stats error","Shows AP error counters"],
+["show ap name <ap> stats cpu","Shows AP CPU usage"],
+["show ap name <ap> stats memory","Shows AP memory usage"],
+["show ap name <ap> stats temperature","Shows AP temperature"],
+["show ap name <ap> stats power","Shows AP power draw"],
+["show ap name <ap> stats poe","Shows PoE status"],
+["show ap name <ap> stats uptime","Shows AP uptime"],
+["show ap name <ap> stats crash","Shows AP crash logs"],
+["show ap name <ap> stats reboot-history","Shows AP reboot history"]
+],
+"RF":[
+["show wireless rf-summary","Shows RF summary"],
+["show wireless rf-stats","Shows RF statistics"],
+["show wireless rf-stats dot11 24ghz","Shows 2.4GHz RF stats"],
+["show wireless rf-stats dot11 5ghz","Shows 5GHz RF stats"],
+["show wireless rf-stats dot11 6ghz","Shows 6GHz RF stats"],
+["show wireless rrm summary","Shows RRM summary"],
+["show wireless rrm dot11 24ghz summary","Shows 2.4GHz RRM summary"],
+["show wireless rrm dot11 5ghz summary","Shows 5GHz RRM summary"],
+["show wireless rrm dot11 6ghz summary","Shows 6GHz RRM summary"],
+["show wireless rrm dot11 24ghz channel","Shows 2.4GHz channel plan"],
+["show wireless rrm dot11 5ghz channel","Shows 5GHz channel plan"],
+["show wireless rrm dot11 6ghz channel","Shows 6GHz channel plan"],
+["show wireless rrm dot11 24ghz txpower","Shows 2.4GHz power levels"],
+["show wireless rrm dot11 5ghz txpower","Shows 5GHz power levels"],
+["show wireless rrm dot11 6ghz txpower","Shows 6GHz power levels"],
+["show wireless rrm neighbor summary","Shows RRM neighbor list"],
+["show wireless rrm stats","Shows RRM stats"],
+["show wireless rrm measurements","Shows RRM measurements"]
+],
+"WLANs":[
+["show wlan summary","Lists WLANs"],
+["show wlan id <id>","Shows WLAN details"],
+["show wlan name <name>","Shows WLAN details by name"],
+["show wlan security <id>","Shows WLAN security settings"],
+["show wlan qos <id>","Shows WLAN QoS settings"],
+["show wlan aaa <id>","Shows WLAN AAA settings"],
+["show wlan timers <id>","Shows WLAN timers"],
+["show wlan stats <id>","Shows WLAN statistics"],
+["show wlan stats client <id>","Shows WLAN client stats"],
+["show wlan stats traffic <id>","Shows WLAN traffic stats"],
+["show wlan stats qos <id>","Shows WLAN QoS stats"],
+["show wlan stats security <id>","Shows WLAN security stats"],
+["show wlan stats dot11 24ghz <id>","Shows WLAN 2.4GHz stats"],
+["show wlan stats dot11 5ghz <id>","Shows WLAN 5GHz stats"],
+["show wlan stats dot11 6ghz <id>","Shows WLAN 6GHz stats"],
+["show wlan mobility <id>","Shows WLAN mobility settings"],
+["show wlan wips <id>","Shows WLAN WIPS settings"],
+["show wlan avc <id>","Shows WLAN AVC settings"],
+["show wlan policy <id>","Shows WLAN policy profile"],
+["show wlan flex <id>","Shows WLAN FlexConnect settings"],
+["show wlan stats multicast <id>","Shows WLAN multicast stats"],
+["show wlan stats mcast <id>","Shows WLAN multicast counters"],
+["show wlan stats roam <id>","Shows WLAN roaming stats"],
+["show wlan stats auth <id>","Shows WLAN authentication stats"],
+["show wlan stats assoc <id>","Shows WLAN association stats"],
+["show wlan stats dhcp <id>","Shows WLAN DHCP stats"],
+["show wlan stats radius <id>","Shows WLAN RADIUS stats"],
+["show wlan stats eap <id>","Shows WLAN EAP stats"],
+["show wlan stats pmkid <id>","Shows WLAN PMKID stats"],
+["show wlan stats keymgmt <id>","Shows WLAN key management stats"],
+["show wlan stats dot1x <id>","Shows WLAN 802.1X stats"]
+],
+"Clients":[
+["show wireless client summary","Shows all wireless clients"],
+["show wireless client mac <mac>","Shows client details"],
+["show wireless client mac <mac> detail","Shows detailed client info"],
+["show wireless client mac <mac> statistics","Shows client statistics"],
+["show wireless client mac <mac> mobility","Shows client mobility info"],
+["show wireless client mac <mac> security","Shows client security info"],
+["show wireless client mac <mac> dot11 24ghz","Shows 2.4GHz client stats"],
+["show wireless client mac <mac> dot11 5ghz","Shows 5GHz client stats"],
+["show wireless client mac <mac> dot11 6ghz","Shows 6GHz client stats"],
+["show wireless client mac <mac> traffic","Shows client traffic counters"],
+["show wireless client mac <mac> dhcp","Shows DHCP state for client"],
+["show wireless client mac <mac> dot1x","Shows 802.1X state"],
+["show wireless client mac <mac> eap","Shows EAP authentication state"],
+["show wireless client mac <mac> timers","Shows client timers"],
+["show wireless client mac <mac> stats roam","Shows roaming stats"],
+["show wireless client mac <mac> stats auth","Shows authentication stats"],
+["show wireless client mac <mac> stats assoc","Shows association stats"],
+["show wireless client mac <mac> stats qos","Shows QoS stats"],
+["show wireless client mac <mac> stats avc","Shows AVC stats"],
+["show wireless client mac <mac> stats wips","Shows WIPS stats"],
+["show wireless client ap <ap>","Shows clients on AP"],
+["show wireless client vlan <vlan>","Shows clients on VLAN"],
+["show wireless client username <user>","Shows client by username"],
+["show wireless client summary | include <ssid>","Filters clients by SSID"],
+["show wireless client summary | include <mac>","Filters clients by MAC"]
+],
+"Mobility":[
+["show wireless mobility summary","Shows mobility summary"],
+["show wireless mobility peers","Shows mobility peers"],
+["show wireless mobility statistics","Shows mobility statistics"],
+["show wireless mobility timers","Shows mobility timers"],
+["show wireless mobility ap-list","Shows AP mobility list"],
+["show wireless mobility client <mac>","Shows mobility info for client"],
+["show wireless mobility roam-history <mac>","Shows client roam history"],
+["show wireless mobility statistics detail","Shows detailed mobility stats"],
+["show wireless mobility anchor","Shows anchor WLCs"],
+["show wireless mobility foreign","Shows foreign WLCs"]
+],
+"Security":[
+["show wireless security summary","Shows security summary"],
+["show wireless security wpa","Shows WPA settings"],
+["show wireless security wpa akm","Shows AKM settings"],
+["show wireless security wpa pmf","Shows PMF settings"],
+["show wireless security dot1x","Shows 802.1X settings"],
+["show wireless security eap","Shows EAP settings"],
+["show wireless security macfilter","Shows MAC filtering settings"],
+["show wireless security wips","Shows WIPS settings"],
+["show wireless security wpa keymgmt","Shows key management settings"],
+["show wireless security timers","Shows security timers"],
+["show wireless security stats","Shows security statistics"],
+["show wireless security stats dot1x","Shows 802.1X stats"],
+["show wireless security stats eap","Shows EAP stats"],
+["show wireless security stats pmf","Shows PMF stats"],
+["show wireless security stats wpa","Shows WPA stats"]
+],
+"AAA":[
+["show aaa servers","Shows AAA servers"],
+["show aaa authentication","Shows authentication config"],
+["show aaa authorization","Shows authorization config"],
+["show aaa accounting","Shows accounting config"],
+["show radius statistics","Shows RADIUS statistics"],
+["show radius server-group","Shows RADIUS server groups"],
+["show tacacs server-group","Shows TACACS server groups"],
+["show wireless aaa summary","Shows AAA summary"],
+["show wireless aaa timers","Shows AAA timers"],
+["show wireless aaa stats","Shows AAA statistics"]
+],
+"WIPS":[
+["show wireless wips summary","Shows WIPS summary"],
+["show wireless wips rogue-summary","Shows rogue summary"],
+["show wireless wips rogue ap","Shows rogue APs"],
+["show wireless wips rogue client","Shows rogue clients"],
+["show wireless wips containment","Shows containment settings"],
+["show wireless wips stats","Shows WIPS statistics"],
+["show wireless wips alarms","Shows WIPS alarms"],
+["show wireless wips events","Shows WIPS events"],
+["show wireless wips signatures","Shows WIPS signatures"],
+["show wireless wips signature-stats","Shows signature statistics"]
+],
+"AVC":[
+["show wireless avc summary","Shows AVC summary"],
+["show wireless avc statistics","Shows AVC statistics"],
+["show wireless avc applications","Shows AVC applications"],
+["show wireless avc profile summary","Shows AVC profiles"],
+["show wireless avc profile <name>","Shows AVC profile details"],
+["show wireless avc client <mac>","Shows AVC stats for client"],
+["show wireless avc wlan <id>","Shows AVC stats for WLAN"],
+["show wireless avc ap <ap>","Shows AVC stats for AP"]
+],
+"Policy":[
+["show wireless profile policy summary","Shows policy profiles"],
+["show wireless profile policy <name>","Shows policy profile details"],
+["show wireless profile policy <name> qos","Shows QoS settings"],
+["show wireless profile policy <name> vlan","Shows VLAN settings"],
+["show wireless profile policy <name> acl","Shows ACL settings"],
+["show wireless profile policy <name> timers","Shows timer settings"],
+["show wireless profile policy <name> stats","Shows policy stats"]
+],
+"FlexConnect":[
+["show wireless flexconnect summary","Shows FlexConnect summary"],
+["show wireless flexconnect group summary","Shows FlexConnect groups"],
+["show wireless flexconnect group <name>","Shows group details"],
+["show wireless flexconnect ap summary","Shows AP FlexConnect status"],
+["show wireless flexconnect ap <ap>","Shows AP FlexConnect config"],
+["show wireless flexconnect vlan summary","Shows VLAN mappings"],
+["show wireless flexconnect vlan <ap>","Shows VLAN mapping for AP"]
+],
+"RF Diagnostics":[
+["show wireless interference summary","Shows interference summary"],
+["show wireless interference device","Shows interference devices"],
+["show wireless interference stats","Shows interference stats"],
+["show wireless noise summary","Shows noise summary"],
+["show wireless noise stats","Shows noise stats"],
+["show wireless coverage summary","Shows coverage summary"],
+["show wireless coverage hole","Shows coverage hole detection"],
+["show wireless coverage hole stats","Shows CHD stats"]
+],
+"Troubleshooting":[
+["show wireless stats summary","Shows wireless stats summary"],
+["show wireless stats dot11 24ghz","Shows 2.4GHz stats"],
+["show wireless stats dot11 5ghz","Shows 5GHz stats"],
+["show wireless stats dot11 6ghz","Shows 6GHz stats"],
+["show wireless stats mobility","Shows mobility stats"],
+["show wireless stats auth","Shows authentication stats"],
+["show wireless stats assoc","Shows association stats"],
+["show wireless stats roam","Shows roaming stats"],
+["show wireless stats dhcp","Shows DHCP stats"],
+["show wireless stats radius","Shows RADIUS stats"],
+["show wireless stats eap","Shows EAP stats"],
+["show wireless stats qos","Shows QoS stats"],
+["show wireless stats avc","Shows AVC stats"],
+["show wireless stats wips","Shows WIPS stats"]
+]
+}},
+ciscoiosxe_sw:{label:"Cisco IOS XE Switch",badge:"badge-sw",short:"IOS-XE SW",sections:{
+"System":[
+["show version","Shows software version"],
+["show running-config","Shows running configuration"],
+["show startup-config","Shows startup configuration"],
+["show platform","Shows platform details"],
+["show platform software status control-processor brief","Shows control-plane CPU status"],
+["show platform software status switch active","Shows active switch status"],
+["show platform software status switch standby","Shows standby switch status"],
+["show platform software process list","Shows platform processes"],
+["show platform software memory switch active","Shows active switch memory"],
+["show platform software memory switch standby","Shows standby switch memory"],
+["show platform software fed switch active","Shows forwarding engine details"],
+["show platform software fed switch active qos","Shows QoS details"],
+["show platform software fed switch active punt","Shows punt statistics"],
+["show platform software fed switch active acl","Shows ACL hardware programming"],
+["show platform software fed switch active resources","Shows hardware resource usage"],
+["show platform software fed switch active ifm mappings","Shows interface mappings"],
+["show platform software fed switch active fwd-asic drops","Shows ASIC drop counters"],
+["show platform software fed switch active fwd-asic errors","Shows ASIC error counters"],
+["show platform software fed switch active fwd-asic utilization","Shows ASIC utilization"]
+],
+"Hardware":[
+["show inventory","Shows hardware inventory"],
+["show diag","Shows diagnostic info"],
+["show diag chassis","Shows chassis diagnostics"],
+["show diag power-supply","Shows PSU diagnostics"],
+["show diag fan","Shows fan diagnostics"],
+["show diag temperature","Shows temperature sensors"],
+["show diag environment","Shows environment status"],
+["show environment all","Shows all environmental sensors"],
+["show environment power","Shows power supply status"],
+["show environment fan","Shows fan status"],
+["show environment temperature","Shows temperature status"],
+["show environment stack","Shows stack environment"],
+["show environment alarms","Shows environmental alarms"],
+["show environment cooling","Shows cooling system status"],
+["show environment detail","Shows detailed environment info"]
+],
+"Licensing":[
+["show license","Shows license summary"],
+["show license status","Shows license status"],
+["show license all","Shows all license info"],
+["show license usage","Shows license usage"],
+["show license feature","Shows licensed features"],
+["show license udi","Shows UDI information"],
+["show license summary","Shows license summary"],
+["show license platform","Shows platform license info"],
+["show license registration","Shows smart licensing registration"],
+["show license tech-support","Shows license tech support info"]
+],
+"Processes":[
+["show processes cpu","Shows CPU usage"],
+["show processes cpu sorted","Shows CPU usage sorted"],
+["show processes cpu history","Shows CPU history"],
+["show processes memory","Shows memory usage"],
+["show processes memory sorted","Shows memory usage sorted"],
+["show processes platform","Shows platform processes"],
+["show processes platform sorted","Shows sorted platform processes"],
+["show processes cpu platform","Shows CPU usage by platform processes"],
+["show processes cpu platform sorted","Shows sorted platform CPU usage"],
+["show processes cpu extended","Shows extended CPU info"]
+],
+"Logging":[
+["show logging","Shows system logs"],
+["show logging onboard","Shows onboard logging"],
+["show logging history","Shows logging history"],
+["show logging persistent","Shows persistent logs"],
+["show logging process","Shows process logs"],
+["show logging alarms","Shows alarm logs"],
+["show logging events","Shows event logs"],
+["show logging system","Shows system log summary"],
+["show logging last 100","Shows last 100 log entries"],
+["show logging interface <int>","Shows logs for interface"]
+],
+"File System":[
+["show file systems","Shows file systems"],
+["show flash:","Shows flash contents"],
+["show bootflash:","Shows bootflash contents"],
+["show nvram:","Shows NVRAM contents"],
+["show usb0:","Shows USB0 contents"],
+["show usb1:","Shows USB1 contents"],
+["show boot","Shows boot variables"],
+["show bootvar","Shows boot variables"],
+["show boot system","Shows boot system settings"],
+["show file systems detail","Shows detailed file system info"]
+],
+"Boot":[
+["show rom-monitor","Shows ROMMON version"],
+["show boot","Shows boot configuration"],
+["show boot system","Shows boot system settings"],
+["show bootvar","Shows boot variables"],
+["show version | include ROM","Shows ROMMON info"],
+["show platform integrity","Shows image integrity status"],
+["show platform integrity verify","Verifies image integrity"],
+["show platform integrity sign","Shows image signing info"],
+["show platform integrity status","Shows integrity status"],
+["show platform integrity summary","Shows integrity summary"]
+],
+"StackWise":[
+["show switch","Shows switch stack members"],
+["show switch detail","Shows detailed stack info"],
+["show switch stack-ports","Shows stack ports"],
+["show switch stack-ring speed","Shows stack ring speed"],
+["show switch neighbors","Shows stack neighbors"],
+["show switch redundancy","Shows stack redundancy"],
+["show switch power","Shows stack power info"],
+["show switch uptime","Shows uptime per switch"],
+["show switch stack-power","Shows StackPower info"],
+["show switch stack-power detail","Shows detailed StackPower info"]
+],
+"Redundancy":[
+["show redundancy","Shows redundancy summary"],
+["show redundancy status","Shows redundancy status"],
+["show redundancy switchover history","Shows switchover history"],
+["show redundancy config-sync","Shows config sync status"],
+["show redundancy peer","Shows redundancy peer info"],
+["show redundancy state","Shows redundancy state"],
+["show redundancy timers","Shows redundancy timers"],
+["show redundancy ha","Shows HA status"],
+["show redundancy ha statistics","Shows HA statistics"],
+["show redundancy ha detail","Shows detailed HA info"]
+],
+"Interfaces":[
+["show interfaces","Shows all interfaces"],
+["show interfaces status","Shows interface status"],
+["show interfaces description","Shows interface descriptions"],
+["show interfaces counters","Shows interface counters"],
+["show interfaces counters errors","Shows interface error counters"],
+["show interfaces transceiver","Shows SFP/optics info"],
+["show interfaces transceiver detail","Shows detailed optics info"],
+["show interfaces switchport","Shows switchport configuration"],
+["show interfaces trunk","Shows trunk interfaces"],
+["show interfaces capabilities","Shows interface capabilities"],
+["show interfaces flowcontrol","Shows flow control settings"],
+["show interfaces mtu","Shows MTU settings"],
+["show interfaces summary","Shows interface summary"],
+["show interfaces accounting","Shows interface accounting"],
+["show interfaces stats","Shows interface statistics"],
+["show interfaces switchport detail","Shows detailed switchport info"],
+["show interfaces negotiation","Shows negotiation settings"],
+["show interfaces power inline","Shows PoE status"],
+["show interfaces power inline detail","Shows detailed PoE info"]
+],
+"VLAN":[
+["show vlan","Shows VLANs"],
+["show vlan brief","Shows VLAN summary"],
+["show vlan id <id>","Shows VLAN details"],
+["show vlan name <name>","Shows VLAN by name"],
+["show vlan internal usage","Shows internal VLAN usage"],
+["show vlan filter","Shows VLAN filters"],
+["show vlan access-map","Shows VLAN access maps"],
+["show vlan private-vlan","Shows private VLANs"],
+["show vlan private-vlan mapping","Shows PVLAN mappings"],
+["show vlan private-vlan type","Shows PVLAN types"]
+],
+"STP":[
+["show spanning-tree","Shows spanning-tree summary"],
+["show spanning-tree detail","Shows detailed STP info"],
+["show spanning-tree vlan <id>","Shows STP for VLAN"],
+["show spanning-tree interface <int>","Shows STP for interface"],
+["show spanning-tree mst","Shows MST configuration"],
+["show spanning-tree mst configuration","Shows MST config details"],
+["show spanning-tree mst detail","Shows MST detailed info"],
+["show spanning-tree summary","Shows STP summary"],
+["show spanning-tree inconsistentports","Shows inconsistent ports"],
+["show spanning-tree backbonefast","Shows backbonefast status"]
+],
+"STP_RPVST":[
+["show spanning-tree rapid-pvst","Shows RPVST summary"],
+["show spanning-tree rapid-pvst detail","Shows detailed RPVST info"],
+["show spanning-tree rapid-pvst vlan <id>","Shows RPVST for VLAN"],
+["show spanning-tree rapid-pvst interface <int>","Shows RPVST for interface"]
+],
+"EtherChannel":[
+["show etherchannel summary","Shows EtherChannel summary"],
+["show etherchannel detail","Shows detailed EtherChannel info"],
+["show etherchannel port-channel","Shows port-channel info"],
+["show etherchannel load-balance","Shows load-balancing method"],
+["show lacp counters","Shows LACP counters"],
+["show lacp neighbor","Shows LACP neighbors"],
+["show lacp internal","Shows internal LACP state"],
+["show pagp neighbor","Shows PAgP neighbors"],
+["show pagp internal","Shows internal PAgP state"],
+["show pagp counters","Shows PAgP counters"]
+],
+"Switching":[
+["show mac address-table","Shows MAC address table"],
+["show mac address-table dynamic","Shows dynamic MAC entries"],
+["show mac address-table static","Shows static MAC entries"],
+["show mac address-table aging-time","Shows MAC aging time"],
+["show mac address-table count","Shows MAC table count"],
+["show mac address-table interface <int>","Shows MACs on interface"],
+["show mac address-table vlan <id>","Shows MACs on VLAN"],
+["show mac address-table multicast","Shows multicast MACs"],
+["show mac address-table secure","Shows port security MACs"],
+["show mac address-table notification","Shows MAC notification settings"]
+],
+"PortSecurity":[
+["show port-security","Shows port security summary"],
+["show port-security interface <int>","Shows port security on interface"],
+["show port-security address","Shows secure MAC addresses"],
+["show port-security violation","Shows security violations"],
+["show port-security aging","Shows aging settings"],
+["show port-security sticky","Shows sticky MACs"],
+["show port-security counters","Shows port security counters"],
+["show port-security summary","Shows summary of all ports"],
+["show port-security vlan <id>","Shows port security on VLAN"],
+["show port-security mac-address","Shows secure MAC database"]
+],
+"ACL":[
+["show access-lists","Shows all ACLs"],
+["show ip access-lists","Shows IPv4 ACLs"],
+["show ipv6 access-lists","Shows IPv6 ACLs"],
+["show access-lists hardware","Shows hardware ACL programming"],
+["show platform hardware acl usage","Shows ACL hardware usage"],
+["show platform hardware acl statistics","Shows ACL hardware stats"],
+["show platform hardware acl tcam","Shows TCAM ACL usage"],
+["show platform hardware acl tcam detail","Shows detailed TCAM usage"],
+["show platform hardware acl counters","Shows ACL counters"],
+["show platform hardware acl drops","Shows ACL drop counters"]
+],
+"QoS":[
+["show mls qos","Shows QoS status"],
+["show mls qos interface <int>","Shows QoS on interface"],
+["show mls qos maps","Shows QoS maps"],
+["show mls qos queue-set","Shows queue-set configuration"],
+["show mls qos statistics","Shows QoS statistics"],
+["show platform qos queue stats","Shows hardware queue stats"],
+["show platform qos interface <int>","Shows hardware QoS interface info"],
+["show platform qos policer","Shows policer info"],
+["show platform qos scheduler","Shows scheduler info"],
+["show platform qos buffer","Shows buffer usage"]
+],
+"Routing":[
+["show ip route","Shows IPv4 routing table"],
+["show ip route <prefix>","Shows route for prefix"],
+["show ip route summary","Shows route summary"],
+["show ip cef","Shows CEF table"],
+["show ip cef <prefix>","Shows CEF entry"],
+["show ip arp","Shows ARP table"],
+["show ip arp detail","Shows detailed ARP info"],
+["show ip protocols","Shows routing protocols"],
+["show ip forwarding","Shows forwarding status"],
+["show ip redirects","Shows redirect settings"]
+],
+"OSPF":[
+["show ip ospf","Shows OSPF summary"],
+["show ip ospf neighbor","Shows OSPF neighbors"],
+["show ip ospf interface","Shows OSPF interfaces"],
+["show ip ospf database","Shows OSPF LSDB"],
+["show ip ospf border-routers","Shows ABRs/ASBRs"],
+["show ip ospf traffic","Shows OSPF traffic stats"],
+["show ip ospf sham-links","Shows sham links"],
+["show ip ospf virtual-links","Shows virtual links"],
+["show ip ospf events","Shows OSPF events"],
+["show ip ospf statistics","Shows OSPF statistics"]
+],
+"EIGRP":[
+["show ip eigrp neighbors","Shows EIGRP neighbors"],
+["show ip eigrp topology","Shows EIGRP topology"],
+["show ip eigrp interfaces","Shows EIGRP interfaces"],
+["show ip eigrp traffic","Shows EIGRP traffic stats"],
+["show ip eigrp events","Shows EIGRP events"],
+["show ip eigrp neighbors detail","Shows detailed neighbor info"],
+["show ip eigrp topology detail","Shows detailed topology"],
+["show ip eigrp vrf <vrf>","Shows EIGRP VRF info"],
+["show ip eigrp traffic detail","Shows detailed traffic stats"],
+["show ip eigrp summary","Shows EIGRP summary"]
+],
+"BGP":[
+["show ip bgp","Shows BGP table"],
+["show ip bgp summary","Shows BGP summary"],
+["show ip bgp neighbors","Shows BGP neighbors"],
+["show ip bgp neighbors <ip>","Shows neighbor details"],
+["show ip bgp dampening parameters","Shows dampening parameters"],
+["show ip bgp paths","Shows BGP paths"],
+["show ip bgp community","Shows BGP communities"],
+["show ip bgp regexp <regex>","Filters BGP routes"],
+["show ip bgp vrf <vrf>","Shows BGP VRF table"],
+["show ip bgp vpnv4 all","Shows VPNv4 routes"]
+],
+"Multicast":[
+["show ip igmp groups","Shows IGMP groups"],
+["show ip igmp snooping","Shows IGMP snooping"],
+["show ip igmp snooping groups","Shows snooping groups"],
+["show ip pim neighbor","Shows PIM neighbors"],
+["show ip pim interface","Shows PIM interfaces"],
+["show ip pim rp mapping","Shows RP mapping"],
+["show ip mroute","Shows multicast routing table"],
+["show ip mroute count","Shows mroute count"],
+["show ip mroute summary","Shows mroute summary"],
+["show ip multicast","Shows multicast summary"]
+],
+"Security":[
+["show ip ssh","Shows SSH configuration"],
+["show ip ssh statistics","Shows SSH statistics"],
+["show ip ssh active-session","Shows active SSH sessions"],
+["show ip http server","Shows HTTP server status"],
+["show ip http secure-server","Shows HTTPS server status"],
+["show login failures","Shows login failures"],
+["show login on-failure","Shows login failure tracking"],
+["show login on-success","Shows login success tracking"],
+["show aaa servers","Shows AAA servers"],
+["show aaa sessions","Shows AAA sessions"],
+["show aaa user","Shows AAA user info"],
+["show radius statistics","Shows RADIUS statistics"],
+["show radius server-group","Shows RADIUS server groups"],
+["show tacacs","Shows TACACS configuration"],
+["show tacacs server","Shows TACACS servers"],
+["show crypto key mypubkey rsa","Shows RSA public key"],
+["show crypto key mypubkey ecdsa","Shows ECDSA public key"],
+["show crypto pki certificates","Shows PKI certificates"],
+["show crypto pki trustpoints","Shows trustpoints"],
+["show crypto pki server","Shows PKI server info"]
+],
+"DHCP":[
+["show ip dhcp binding","Shows DHCP bindings"],
+["show ip dhcp pool","Shows DHCP pools"],
+["show ip dhcp conflict","Shows DHCP conflicts"],
+["show ip dhcp snooping","Shows DHCP snooping status"],
+["show ip dhcp snooping binding","Shows snooping bindings"],
+["show ip dhcp snooping statistics","Shows snooping stats"],
+["show ip dhcp relay information","Shows DHCP relay info"],
+["show ip dhcp relay statistics","Shows relay statistics"],
+["show ip dhcp server statistics","Shows DHCP server stats"],
+["show ip dhcp database","Shows DHCP database"]
+],
+"NTP":[
+["show ntp status","Shows NTP status"],
+["show ntp associations","Shows NTP associations"],
+["show ntp associations detail","Shows detailed NTP info"],
+["show ntp config","Shows NTP configuration"],
+["show ntp statistics","Shows NTP statistics"],
+["show ntp peer-status","Shows peer status"],
+["show ntp clock","Shows NTP clock state"],
+["show ntp server-status","Shows server status"],
+["show ntp trace","Shows NTP trace logs"],
+["show ntp sync-status","Shows sync status"]
+],
+"SNMP":[
+["show snmp","Shows SNMP configuration"],
+["show snmp community","Shows SNMP communities"],
+["show snmp group","Shows SNMP groups"],
+["show snmp user","Shows SNMP users"],
+["show snmp engineID","Shows SNMP engine ID"],
+["show snmp mib","Shows MIB info"],
+["show snmp packets","Shows SNMP packet counters"],
+["show snmp sessions","Shows SNMP sessions"],
+["show snmp traps","Shows SNMP traps"],
+["show snmp notifications","Shows SNMP notifications"]
+],
+"NetFlow":[
+["show flow monitor","Shows flow monitors"],
+["show flow monitor <name>","Shows monitor details"],
+["show flow exporter","Shows flow exporters"],
+["show flow exporter <name>","Shows exporter details"],
+["show flow record","Shows flow records"],
+["show flow record <name>","Shows record details"],
+["show platform hardware qfp active feature netflow","Shows QFP NetFlow info"],
+["show ip cache flow","Shows legacy NetFlow cache"],
+["show ip flow interface","Shows flow-enabled interfaces"],
+["show ip flow export","Shows flow export status"]
+],
+"Telemetry":[
+["show telemetry internal","Shows telemetry internal state"],
+["show telemetry model-driven","Shows MDT configuration"],
+["show telemetry model-driven subscription","Shows MDT subscriptions"],
+["show telemetry model-driven sensor-group","Shows sensor groups"],
+["show telemetry model-driven destination-group","Shows destination groups"],
+["show telemetry model-driven statistics","Shows MDT statistics"],
+["show telemetry model-driven transport","Shows transport settings"],
+["show telemetry model-driven errors","Shows MDT errors"],
+["show telemetry model-driven capabilities","Shows MDT capabilities"],
+["show telemetry model-driven summary","Shows MDT summary"]
+],
+"TrustSec":[
+["show cts","Shows TrustSec status"],
+["show cts role-based permissions","Shows RBAC permissions"],
+["show cts role-based counters","Shows RBAC counters"],
+["show cts role-based sgt-map","Shows SGT mappings"],
+["show cts environment-data","Shows environment data"],
+["show cts pacs","Shows PACs"],
+["show cts credentials","Shows CTS credentials"],
+["show cts interface <int>","Shows CTS on interface"],
+["show cts sxp connections","Shows SXP connections"],
+["show cts sxp peers","Shows SXP peers"]
+],
+"SD-Access":[
+["show fabric edge","Shows fabric edge status"],
+["show fabric edge neighbors","Shows fabric neighbors"],
+["show fabric edge statistics","Shows fabric statistics"],
+["show fabric control-plane","Shows control-plane status"],
+["show fabric control-plane lisp","Shows LISP control-plane"],
+["show fabric lisp eid-table","Shows EID table"],
+["show fabric lisp map-cache","Shows LISP map-cache"],
+["show fabric lisp session","Shows LISP sessions"],
+["show fabric vxlan","Shows VXLAN fabric info"],
+["show fabric authentication","Shows fabric authentication"]
+],
+"VXLAN":[
+["show vxlan","Shows VXLAN summary"],
+["show vxlan interface","Shows VXLAN interfaces"],
+["show vxlan vni","Shows VNI mappings"],
+["show vxlan tunnel","Shows VXLAN tunnels"],
+["show vxlan multicast","Shows VXLAN multicast groups"],
+["show vxlan control-plane","Shows VXLAN control-plane"],
+["show vxlan statistics","Shows VXLAN statistics"],
+["show vxlan encapsulation","Shows encapsulation info"],
+["show vxlan decapsulation","Shows decapsulation info"],
+["show vxlan vrf","Shows VXLAN VRF info"]
+],
+"EVPN":[
+["show evpn","Shows EVPN summary"],
+["show evpn evi","Shows EVPN instances"],
+["show evpn evi detail","Shows detailed EVI info"],
+["show evpn mac","Shows EVPN MAC table"],
+["show evpn mac detail","Shows detailed MAC info"],
+["show evpn route","Shows EVPN routes"],
+["show evpn route type-2","Shows type?2 routes"],
+["show evpn route type-5","Shows type?5 routes"],
+["show evpn neighbors","Shows EVPN neighbors"],
+["show evpn statistics","Shows EVPN statistics"]
+],
+"Automation":[
+["show netconf-yang sessions","Shows NETCONF sessions"],
+["show netconf-yang capabilities","Shows NETCONF capabilities"],
+["show netconf-yang statistics","Shows NETCONF statistics"],
+["show restconf","Shows RESTCONF status"],
+["show restconf resources","Shows RESTCONF resources"],
+["show restconf statistics","Shows RESTCONF statistics"],
+["show event manager policy registered","Shows EEM policies"],
+["show event manager history events","Shows EEM events"],
+["show event manager environment","Shows EEM environment"],
+["show event manager scheduler","Shows EEM scheduler"]
+],
+"SystemMgmt":[
+["show tech-support","Generates full tech support"],
+["show system integrity","Shows system integrity"],
+["show system resources","Shows system resources"],
+["show system uptime","Shows system uptime"],
+["show system internal logs","Shows internal logs"],
+["show system internal processes","Shows internal processes"],
+["show system internal memory","Shows internal memory"],
+["show system internal crashinfo","Shows crash info"],
+["show system internal trace","Shows internal trace logs"],
+["show system internal state","Shows internal system state"]
 ]
 }}
 };
@@ -1997,11 +3878,19 @@ function openBackupModal(){
         '<strong>Database summary:</strong> '+total+' total commands across '+Object.keys(RAW).length+' platforms'+
         (custom?' &nbsp;·&nbsp; <span style="color:#0369a1">'+custom+' user-added commands</span>':' &nbsp;·&nbsp; No user-added commands yet')+
       '</div>'+
-      '<div class="mgr-section">'+
-        '<div class="mgr-label">&#8595; Export entire database as CSV</div>'+
-        '<p style="font-size:12px;color:var(--text3);margin-bottom:10px">Exports every command (built-in + user-added) as a CSV file. Columns: platform_key, platform_label, section, command, description, type</p>'+
+      '<div class="mgr-section" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px">'+
+        '<div class="mgr-label" style="color:#1d4ed8">&#128190; Bake &amp; Download HTML <span style="font-size:10px;background:#1d4ed8;color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;letter-spacing:.04em">RECOMMENDED</span></div>'+
+        '<p style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5">Generates a fresh copy of this HTML file with every command baked directly into the source. Upload the downloaded file to replace your hosted copy and <strong>every device sees the same data on next reload</strong> \u2014 no per-device CSV import needed.<br><span style="font-size:11px;color:var(--text3)">Use this as your regular save workflow after adding or editing commands.</span></p>'+
         '<div class="mgr-row">'+
-          '<button class="mbtn primary" onclick="_csvExport()" style="flex:1">&#8595; Download CSV Backup</button>'+
+          '<button class="mbtn primary" id="bakeBtn" onclick="bakeAndDownloadHTML()" style="flex:1;background:#1d4ed8">&#128190; Bake &amp; Download HTML</button>'+
+        '</div>'+
+        '<div id="bakeMsg" style="display:none;margin-top:10px;font-size:12px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid var(--border);line-height:1.5"></div>'+
+      '</div>'+
+      '<div class="mgr-section" style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">'+
+        '<div class="mgr-label">&#8595; Export database as CSV</div>'+
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:10px">For inspection, diffs, or processing outside the app. Not needed for distributing changes \u2014 use Bake &amp; Download above.</p>'+
+        '<div class="mgr-row">'+
+          '<button class="mbtn" onclick="_csvExport()" style="flex:1">&#8595; Download CSV Backup</button>'+
         '</div>'+
       '</div>'+
       '<div class="mgr-section" style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">'+
@@ -2023,10 +3912,84 @@ function openBackupModal(){
 
 function _csvEscape(s){
   s=String(s||'');
-  if(s.indexOf(',')!==-1||s.indexOf('"')!==-1||s.indexOf('\n')!==-1){
+  if(s.indexOf(',')!==-1||s.indexOf('"')!==-1||s.indexOf('\n')!==-1||s.indexOf('\r')!==-1){
     return '"'+s.replace(/"/g,'""')+'"';
   }
   return s;
+}
+
+// ===== BAKE & DOWNLOAD HTML =====
+// Serializes the current in-memory RAW object (built-ins + every command
+// added via the UI or CSV import) into a JS literal matching the on-disk
+// format exactly, then fetches this page's source, swaps the RAW block in,
+// and triggers a download. Upload the resulting file to replace the hosted
+// copy — every device will see the updated data on next reload.
+function _buildRawBlockFromMemory(){
+  var lines=['var RAW = {'];
+  var plats=Object.keys(RAW);
+  plats.forEach(function(pk,pi){
+    var p=RAW[pk]||{};
+    var label=p.label||pk;
+    var badge=p.badge||'badge-ns';
+    var shortName=p.short||pk.substring(0,10);
+    lines.push(pk+':{label:'+JSON.stringify(label)+',badge:'+JSON.stringify(badge)+',short:'+JSON.stringify(shortName)+',sections:{');
+    var secs=Object.keys(p.sections||{});
+    secs.forEach(function(sec,si){
+      lines.push(JSON.stringify(sec)+':[');
+      var cmds=p.sections[sec]||[];
+      cmds.forEach(function(c,ci){
+        // Normalize: drop the 3rd element if type is 'show' or missing — matches the
+        // existing built-in convention where 'show' is implicit
+        var arr=(c.length===3&&(!c[2]||c[2]==='show'))?[c[0],c[1]]:c;
+        var parts=arr.map(function(x){return JSON.stringify(String(x==null?'':x));});
+        lines.push('['+parts.join(',')+']'+(ci<cmds.length-1?',':''));
+      });
+      lines.push(']'+(si<secs.length-1?',':''));
+    });
+    lines.push('}}'+(pi<plats.length-1?',':''));
+  });
+  lines.push('};');
+  return lines.join('\n');
+}
+
+async function bakeAndDownloadHTML(){
+  var btn=document.getElementById('bakeBtn');
+  var msg=document.getElementById('bakeMsg');
+  if(msg){msg.style.display='none';msg.style.color='';}
+  if(btn){btn.disabled=true;btn.innerHTML='&#8987; Building\u2026';}
+  try{
+    var resp=await fetch(location.href,{cache:'reload'});
+    if(!resp.ok)throw new Error('HTTP '+resp.status+' fetching page source');
+    var html=await resp.text();
+    var startIdx=html.indexOf('var RAW = {');
+    if(startIdx<0)throw new Error('Could not locate RAW block in page source');
+    var endMarker='\n};\n';
+    var endIdx=html.indexOf(endMarker,startIdx);
+    if(endIdx<0)throw new Error('Could not locate end of RAW block');
+    var newRaw=_buildRawBlockFromMemory();
+    var newHtml=html.substring(0,startIdx)+newRaw+'\n'+html.substring(endIdx+endMarker.length);
+    var blob=new Blob([newHtml],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var d=new Date();
+    var stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var a=document.createElement('a');
+    a.href=url;a.download='network-kb-baked-'+stamp+'.html';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    if(msg){
+      var total=cmdStore.length;
+      var plats=Object.keys(RAW).length;
+      msg.innerHTML='\u2713 Baked <strong>'+total+'</strong> commands across <strong>'+plats+'</strong> platforms into a fresh HTML file ('+Math.round(newHtml.length/1024)+' KB). Upload it to replace your hosted copy \u2014 every device will see the updates after a hard refresh.';
+      msg.style.display='block';msg.style.color='#166534';
+    }
+  }catch(err){
+    if(msg){
+      msg.innerHTML='\u2717 Bake failed: '+(err.message||err)+'<br><span style="font-size:11px;color:var(--text3)">Note: this requires the page to be served over http(s). Opening the HTML directly from disk (file://) blocks the fetch.</span>';
+      msg.style.display='block';msg.style.color='#b91c1c';
+    }
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='&#128190; Bake &amp; Download HTML';}
+  }
 }
 
 function _csvExport(){
