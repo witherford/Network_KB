@@ -10,7 +10,7 @@ import { esc, toast } from '../utils.js';
 const STEPS = ['repo', 'pat', 'password', 'ai', 'finish'];
 
 const AI_PROVIDERS = [
-  { id: 'openrouter', label: 'OpenRouter',  defaultModel: 'openai/gpt-4o-mini' },
+  { id: 'openrouter', label: 'OpenRouter',  defaultModel: 'openai/gpt-oss-20b:free' },
   { id: 'openai',     label: 'OpenAI',      defaultModel: 'gpt-4o-mini' },
   { id: 'anthropic',  label: 'Anthropic',   defaultModel: 'claude-haiku-4-5' },
   { id: 'groq',       label: 'Groq',        defaultModel: 'llama-3.3-70b-versatile' }

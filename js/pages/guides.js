@@ -36,6 +36,7 @@ export async function mount(root) {
   }
 
   on('pending:changed', () => { if (state.currentPage === 'guides') mount(root); });
+  on('editmode:changed', () => { if (state.currentPage === 'guides') mount(root); });
   window.addEventListener('nkb:reload', () => { if (state.currentPage === 'guides') mount(root); }, { once: true });
 }
 

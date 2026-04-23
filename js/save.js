@@ -34,6 +34,8 @@ export async function saveAll(message) {
     return;
   }
 
+  // If admin edited credentials in Settings, use the NEW PAT/repo for this
+  // commit. Otherwise a PAT rotation makes Save fail with 401 on the old token.
   const creds = state.pending.settings || state.settings;
   const { githubPat, githubRepo, branch } = creds;
   const changes = [];

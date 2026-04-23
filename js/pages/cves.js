@@ -38,6 +38,7 @@ export async function mount(root) {
   }
 
   on('pending:changed', () => { if (state.currentPage === 'cves') mount(root); });
+  on('editmode:changed', () => { if (state.currentPage === 'cves') mount(root); });
   window.addEventListener('nkb:reload', () => { if (state.currentPage === 'cves') mount(root); }, { once: true });
 }
 

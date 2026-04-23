@@ -35,6 +35,9 @@ export async function mount(root) {
   on('pending:changed', () => {
     if (state.currentPage === 'software') mount(root);
   });
+  on('editmode:changed', () => {
+    if (state.currentPage === 'software') mount(root);
+  });
   window.addEventListener('nkb:reload', () => { if (state.currentPage === 'software') mount(root); }, { once: true });
 }
 

@@ -441,12 +441,18 @@ function openCommandModal({ pk, section, idx } = {}) {
       const v = read();
       if (!v.pk || !v.section || !v.cmd) return toast('Platform, section and command required', 'error');
       const draft = ensureDraft();
-      if (existing) {
-        draft.platforms[pk].sections[section].splice(idx, 1);
-        if (!draft.platforms[pk].sections[section].length) delete draft.platforms[pk].sections[section];
+      const movedElsewhere = existing && (v.pk !== pk || v.section !== section);
+      const newEntry = { cmd: v.cmd, desc: v.desc, type: v.type, flagged: existing?.flagged || false };
+      if (existing && !movedElsewhere) {
+        draft.platforms[pk].sections[section][idx] = newEntry;
+      } else {
+        if (existing) {
+          draft.platforms[pk].sections[section].splice(idx, 1);
+          if (!draft.platforms[pk].sections[section].length) delete draft.platforms[pk].sections[section];
+        }
+        draft.platforms[v.pk].sections[v.section] ||= [];
+        draft.platforms[v.pk].sections[v.section].push(newEntry);
       }
-      draft.platforms[v.pk].sections[v.section] ||= [];
-      draft.platforms[v.pk].sections[v.section].push({ cmd: v.cmd, desc: v.desc, type: v.type, flagged: existing?.flagged || false });
       close(); renderAll();
     });
     el.querySelector('[data-act=del]')?.addEventListener('click', async () => {
