@@ -1,5 +1,11 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T22:47:25.312Z",
-  "items": []
+  "updatedAt": "2026-04-23T22:55:43.923Z",
+  "items": [
+    {
+      "error": "Unable to retrieve real-time CVE data for Cisco Nexus within the last 90 days. Please consult the official Cisco Security Advisories or NVD database for up-to-date information.",
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    }
+  ]
 }
