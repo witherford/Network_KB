@@ -144,7 +144,7 @@ function wireProviders(root, s) {
   attach();
   root.querySelector('#provAdd').addEventListener('click', () => {
     s.aiProviders ||= [];
-    s.aiProviders.push({ id: 'prov-' + uid().slice(-4), provider: 'openrouter', model: 'openai/gpt-4o-mini', key: '', enabled: true });
+    s.aiProviders.push({ id: 'prov-' + uid().slice(-4), provider: 'openrouter', model: 'openai/gpt-oss-20b:free', key: '', enabled: true });
     markDirty();
     rerender();
   });
@@ -185,6 +185,12 @@ function wireDomains(root, s) {
 function renderWatchlist(s) {
   const list = (s.watchlist && s.watchlist.vendors) || [];
   return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:8px">
+      Vendors and products that the scheduled AI pull and the <b>Fetch now</b> buttons iterate over. For every <i>vendor × product</i> pair, one prompt is sent per content type (software releases, guides, CVEs). Leave <b>products</b> empty to issue a single vendor-wide query.
+    </p>
+    <p style="font-size:11px;color:var(--text-3);line-height:1.5;margin-bottom:10px">
+      Example — Vendor: <code>Cisco</code>, Products: <code>IOS-XE, ASA, Nexus NX-OS</code>. This yields 3 pulls per content type per run (9 total for Cisco alone).
+    </p>
     <div id="wlRows">${list.map(renderWlRow).join('') || '<p style="font-size:12px;color:var(--text-3)">No vendors yet.</p>'}</div>
     <button class="btn" id="wlAdd" style="margin-top:8px">Add vendor</button>`;
 }
@@ -219,6 +225,19 @@ function wireWatchlist(root, s) {
 function renderCron(s) {
   const c = s.cron || { schedule: '0 3 * * *', enabled: true };
   return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:8px">
+      Standard 5-field cron expression (UTC) controlling how often GitHub Actions runs the scheduled AI pull. Cron has no year field — schedules repeat annually. Use <code>*</code> to mean &ldquo;every&rdquo; for that field.
+    </p>
+    <pre style="font-size:11px;color:var(--text-2);background:var(--surface-2);padding:8px 10px;border-radius:4px;margin:0 0 8px 0;line-height:1.5">┌──── minute        (0–59)
+│ ┌── hour          (0–23, UTC)
+│ │ ┌ day-of-month  (1–31)
+│ │ │ ┌ month       (1–12)
+│ │ │ │ ┌ day-of-week (0–6, Sun=0)
+│ │ │ │ │
+* * * * *</pre>
+    <p style="font-size:11px;color:var(--text-3);line-height:1.5;margin:0 0 8px 0">
+      Examples — <code>0 3 * * *</code> daily at 03:00 UTC · <code>*/30 * * * *</code> every 30 min · <code>0 */6 * * *</code> every 6 h · <code>0 9 * * 1</code> Mondays 09:00 UTC.
+    </p>
     <div class="form-row"><label>Cron schedule</label><input id="setCron" class="search-input" style="width:100%" value="${esc(c.schedule)}" placeholder="0 3 * * *"></div>
     <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px">
       <input type="checkbox" id="setCronOn" ${c.enabled ? 'checked' : ''}> Enabled
