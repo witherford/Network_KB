@@ -24,7 +24,15 @@ export async function fetchForKind(kind, { promptKey, fill, schemaGuard } = {}) 
   for (const v of vendors) {
     const products = v.products?.length ? v.products : [''];
     for (const product of products) {
-      const filled = (fill || defaultFill)(template, { vendor: v.vendor, product, domains: (s.domains || []).join(', ') });
+      const filled = (fill || defaultFill)(template, {
+        vendor: v.vendor,
+        product,
+        // Alias so guides-style prompts that use {{topic}} still resolve.
+        // Falls through to product, then to vendor, so single-vendor watchlist
+        // entries (no products) still produce a meaningful prompt.
+        topic: product || v.vendor,
+        domains: (s.domains || []).join(', ')
+      });
       try {
         const { text } = await chat({
           messages: [
