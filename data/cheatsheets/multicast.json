@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "items": [
+    { "address": "224.0.0.1",     "scope": "Link-local",     "use": "All hosts on the subnet",            "notes": "RFC 1112" },
+    { "address": "224.0.0.2",     "scope": "Link-local",     "use": "All multicast routers",              "notes": "" },
+    { "address": "224.0.0.5",     "scope": "Link-local",     "use": "OSPF all routers",                   "notes": "" },
+    { "address": "224.0.0.6",     "scope": "Link-local",     "use": "OSPF designated routers",            "notes": "" },
+    { "address": "224.0.0.9",     "scope": "Link-local",     "use": "RIPv2",                              "notes": "" },
+    { "address": "224.0.0.10",    "scope": "Link-local",     "use": "EIGRP",                              "notes": "" },
+    { "address": "224.0.0.13",    "scope": "Link-local",     "use": "PIM",                                "notes": "" },
+    { "address": "224.0.0.18",    "scope": "Link-local",     "use": "VRRP",                               "notes": "" },
+    { "address": "224.0.0.22",    "scope": "Link-local",     "use": "IGMP v3",                            "notes": "" },
+    { "address": "224.0.0.102",   "scope": "Link-local",     "use": "HSRPv2 / GLBP",                      "notes": "" },
+    { "address": "224.0.0.251",   "scope": "Link-local",     "use": "mDNS (Bonjour, Avahi)",              "notes": "" },
+    { "address": "224.0.0.252",   "scope": "Link-local",     "use": "LLMNR",                              "notes": "" },
+    { "address": "224.0.1.1",     "scope": "Internetwork",   "use": "NTP",                                "notes": "" },
+    { "address": "239.0.0.0/8",   "scope": "Organisation-local","use": "Administratively scoped (private)","notes": "RFC 2365" },
+    { "address": "ff02::1",       "scope": "IPv6 link-local","use": "All nodes",                          "notes": "" },
+    { "address": "ff02::2",       "scope": "IPv6 link-local","use": "All routers",                        "notes": "" },
+    { "address": "ff02::5",       "scope": "IPv6 link-local","use": "OSPFv3 all routers",                 "notes": "" },
+    { "address": "ff02::9",       "scope": "IPv6 link-local","use": "RIPng",                              "notes": "" },
+    { "address": "ff02::a",       "scope": "IPv6 link-local","use": "EIGRPv6",                            "notes": "" },
+    { "address": "ff02::d",       "scope": "IPv6 link-local","use": "PIMv6",                              "notes": "" },
+    { "address": "ff02::16",      "scope": "IPv6 link-local","use": "MLDv2 report",                       "notes": "" },
+    { "address": "ff02::1:2",     "scope": "IPv6 link-local","use": "DHCPv6 relay agents & servers",      "notes": "" },
+    { "address": "ff02::1:ff00:0/104","scope": "IPv6 link-local","use": "Solicited-node multicast",       "notes": "" }
+  ]
+}

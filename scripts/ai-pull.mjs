@@ -1,0 +1,203 @@
+#!/usr/bin/env node
+// Scheduled AI runner. Reads data/settings.enc.json, decrypts via
+// $SETTINGS_PASSWORD (GitHub Actions secret), fans out AI calls per watchlist
+// vendor × content type with rotating-key failover, and writes refreshed
+// data/software.json / data/guides.json / data/cves.json.
+
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const DATA = path.join(ROOT, 'data');
+
+const ENDPOINTS = {
+  openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+  openai:     'https://api.openai.com/v1/chat/completions',
+  groq:       'https://api.groq.com/openai/v1/chat/completions',
+  anthropic:  'https://api.anthropic.com/v1/messages'
+};
+
+const KINDS = [
+  { key: 'software', file: 'data/software.json',          promptKey: 'software' },
+  { key: 'guides',   file: 'data/guides.json',            promptKey: 'guides' },
+  { key: 'cves',     file: 'data/cves.json',              promptKey: 'cves' }
+];
+
+main().catch(err => { console.error(err); process.exit(1); });
+
+async function main() {
+  const password = process.env.SETTINGS_PASSWORD;
+  if (!password) die('SETTINGS_PASSWORD secret is missing');
+
+  const env = JSON.parse(await fs.readFile(path.join(DATA, 'settings.enc.json'), 'utf8'));
+  if (!env || env.v !== 1) die('settings.enc.json is not initialised');
+  const settings = await decrypt(env, password);
+
+  const vendors = (settings.watchlist?.vendors || []).filter(v => v.vendor);
+  if (!vendors.length) { console.log('No watchlist vendors; nothing to do.'); return; }
+
+  const keyring = buildKeyring(settings.aiProviders || []);
+  if (!keyring.length) die('No enabled AI providers');
+
+  const manifest = await readJson(path.join(DATA, 'manifest.json'), {});
+
+  for (const kind of KINDS) {
+    const absPath = path.join(ROOT, kind.file);
+    const existing = await readJson(absPath, { version: 1, items: [] });
+    existing.items ||= [];
+
+    for (const v of vendors) {
+      const products = v.products?.length ? v.products : [''];
+      for (const product of products) {
+        const filled = fillTemplate(settings.prompts?.[kind.promptKey] || '', {
+          vendor: v.vendor, product, topic: v.vendor, domains: (settings.domains || []).join(', ')
+        });
+        if (!filled) continue;
+        try {
+          const items = await callAI(filled, keyring);
+          for (const raw of (Array.isArray(items) ? items : (items?.items || []))) {
+            const tagged = { ...raw, vendor: raw.vendor || v.vendor, product: raw.product || product };
+            mergeItem(existing.items, tagged, kind.key);
+          }
+          console.log(`[${kind.key}] ${v.vendor}/${product}: OK (${(Array.isArray(items) ? items : items?.items || []).length})`);
+        } catch (err) {
+          console.error(`[${kind.key}] ${v.vendor}/${product}: ${err.message}`);
+        }
+      }
+    }
+
+    existing.updatedAt = new Date().toISOString();
+    await fs.writeFile(absPath, JSON.stringify(existing, null, 2) + '\n');
+    manifest[kind.key] = existing.updatedAt;
+  }
+
+  await fs.writeFile(path.join(DATA, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  console.log('Done.');
+}
+
+/* ---------- decrypt ---------- */
+async function decrypt(env, password) {
+  const salt = Buffer.from(env.kdf.salt, 'base64');
+  const iv = Buffer.from(env.enc.iv, 'base64');
+  const ct = Buffer.from(env.enc.ct, 'base64');
+  const key = crypto.pbkdf2Sync(password, salt, env.kdf.iter || 600_000, 32, 'sha256');
+  const tag = ct.subarray(ct.length - 16);
+  const body = ct.subarray(0, ct.length - 16);
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+  decipher.setAuthTag(tag);
+  const pt = Buffer.concat([decipher.update(body), decipher.final()]);
+  return JSON.parse(pt.toString('utf8'));
+}
+
+/* ---------- keyring ---------- */
+function buildKeyring(providers) {
+  return providers
+    .filter(p => p.enabled !== false && p.key)
+    .map(p => ({ ...p, failures: 0, cooldownUntil: 0 }));
+}
+
+function pickKey(keyring) {
+  const now = Date.now();
+  let best = null;
+  for (const k of keyring) if (k.cooldownUntil <= now && (best == null || k.failures < best.failures)) best = k;
+  return best;
+}
+
+/* ---------- AI call ---------- */
+async function callAI(prompt, keyring) {
+  const tried = new Set();
+  while (true) {
+    const k = pickKey(keyring);
+    if (!k || tried.has(k.id)) throw new Error('All AI keys exhausted');
+    tried.add(k.id);
+    try {
+      const text = await callProvider(k, prompt);
+      k.failures = 0; k.cooldownUntil = 0;
+      return extractJson(text);
+    } catch (err) {
+      if (err.retriable) {
+        k.failures++;
+        k.cooldownUntil = Date.now() + Math.min(30 * 60_000, 30_000 * 2 ** (k.failures - 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+async function callProvider(p, prompt) {
+  const url = ENDPOINTS[p.provider];
+  if (!url) throw new Error('Unknown provider: ' + p.provider);
+  let res, body;
+  if (p.provider === 'anthropic') {
+    body = {
+      model: p.model,
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+      system: 'You return JSON only. No prose, no markdown fences.'
+    };
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'x-api-key': p.key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } else {
+    body = {
+      model: p.model,
+      messages: [
+        { role: 'system', content: 'You return JSON only. No prose, no markdown fences.' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.2,
+      max_tokens: 2000
+    };
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + p.key, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  }
+  if (!res.ok) {
+    const e = new Error(`${p.provider} HTTP ${res.status}`);
+    e.retriable = res.status === 429 || (res.status >= 500 && res.status < 600);
+    throw e;
+  }
+  const j = await res.json();
+  if (p.provider === 'anthropic') return j.content?.[0]?.text || '';
+  return j.choices?.[0]?.message?.content || '';
+}
+
+/* ---------- utilities ---------- */
+function extractJson(text) {
+  try { return JSON.parse(text); } catch {}
+  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fence) { try { return JSON.parse(fence[1]); } catch {} }
+  const m = text.match(/[\[\{][\s\S]*[\]\}]/);
+  if (m) { try { return JSON.parse(m[0]); } catch {} }
+  throw new Error('AI returned non-JSON');
+}
+
+function fillTemplate(template, vars) {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? '');
+}
+
+function mergeItem(list, item, kind) {
+  const id = identityKey(item, kind);
+  const i = list.findIndex(x => identityKey(x, kind) === id);
+  if (i >= 0) list[i] = { ...list[i], ...item };
+  else list.push(item);
+}
+
+function identityKey(it, kind) {
+  if (kind === 'cves') return it.id || (it.summary || '').slice(0, 60);
+  if (kind === 'software') return `${it.vendor}|${it.product}`;
+  if (kind === 'guides') return it.title || it.topic || '';
+  return JSON.stringify(it);
+}
+
+async function readJson(p, fallback) {
+  try { return JSON.parse(await fs.readFile(p, 'utf8')); } catch { return fallback; }
+}
+
+function die(msg) { console.error(msg); process.exit(1); }

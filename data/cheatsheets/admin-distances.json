@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "items": [
+    { "protocol": "Directly connected", "distance": 0,   "notes": "Always preferred" },
+    { "protocol": "Static route",       "distance": 1,   "notes": "Default; can be raised to create floating static" },
+    { "protocol": "EIGRP summary",      "distance": 5,   "notes": "Cisco" },
+    { "protocol": "eBGP",               "distance": 20,  "notes": "" },
+    { "protocol": "EIGRP internal",     "distance": 90,  "notes": "Cisco" },
+    { "protocol": "IGRP",               "distance": 100, "notes": "Legacy Cisco" },
+    { "protocol": "OSPF",               "distance": 110, "notes": "IntraArea / InterArea / External" },
+    { "protocol": "IS-IS",              "distance": 115, "notes": "" },
+    { "protocol": "RIP",                "distance": 120, "notes": "v1 and v2" },
+    { "protocol": "EGP",                "distance": 140, "notes": "Legacy" },
+    { "protocol": "ODR",                "distance": 160, "notes": "Cisco On-Demand Routing" },
+    { "protocol": "EIGRP external",     "distance": 170, "notes": "Redistributed into EIGRP" },
+    { "protocol": "iBGP",               "distance": 200, "notes": "" },
+    { "protocol": "Unknown / unreachable","distance": 255,"notes": "Route will not be installed" }
+  ]
+}

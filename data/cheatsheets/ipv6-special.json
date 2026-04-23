@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "items": [
+    { "range": "::/128",        "rfc": "RFC 4291", "use": "Unspecified address" },
+    { "range": "::1/128",       "rfc": "RFC 4291", "use": "Loopback" },
+    { "range": "::ffff:0:0/96", "rfc": "RFC 4291", "use": "IPv4-mapped IPv6" },
+    { "range": "64:ff9b::/96",  "rfc": "RFC 6052", "use": "Well-known NAT64 prefix" },
+    { "range": "100::/64",      "rfc": "RFC 6666", "use": "Discard-only address block" },
+    { "range": "2000::/3",      "rfc": "RFC 4291", "use": "Global unicast range" },
+    { "range": "2001::/32",     "rfc": "RFC 4380", "use": "Teredo tunneling" },
+    { "range": "2001:2::/48",   "rfc": "RFC 5180", "use": "BMWG benchmark" },
+    { "range": "2001:10::/28",  "rfc": "RFC 4843", "use": "ORCHID (deprecated)" },
+    { "range": "2001:20::/28",  "rfc": "RFC 7343", "use": "ORCHIDv2" },
+    { "range": "2001:db8::/32", "rfc": "RFC 3849", "use": "Documentation prefix" },
+    { "range": "2002::/16",     "rfc": "RFC 3056", "use": "6to4 (deprecated)" },
+    { "range": "fc00::/7",      "rfc": "RFC 4193", "use": "Unique local (ULA)" },
+    { "range": "fe80::/10",     "rfc": "RFC 4291", "use": "Link-local" },
+    { "range": "ff00::/8",      "rfc": "RFC 4291", "use": "Multicast" }
+  ]
+}
