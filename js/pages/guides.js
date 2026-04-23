@@ -4,7 +4,8 @@ import { loadData } from '../dataloader.js';
 import { state, emit, on } from '../state.js';
 import { esc, fmtDateTime, toast } from '../utils.js';
 import { fetchForKind } from '../components/ai-fetch.js';
-import { confirmModal, openModal } from '../components/modal.js';
+import { confirmModal } from '../components/modal.js';
+import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
 
 function workingData() {
   return state.editMode && state.pending.guides ? state.pending.guides : state.data.guides;
@@ -48,7 +49,17 @@ export async function mount(root) {
       catch (err) { toast(err.message, 'error'); }
       finally { mount(root); }
     });
-    root.querySelector('#gdImport').addEventListener('click', openImportModal);
+    root.querySelector('#gdImport').addEventListener('click', () => {
+      openHtmlImport({
+        kind: 'guides',
+        topicLabel: 'Topic (optional — groups these files together)',
+        onImport: files => {
+          const draft = ensureDraft();
+          draft.items.push(...files);
+          emit('pending:changed');
+        }
+      });
+    });
     c.addEventListener('click', onCardClick);
   }
 
@@ -93,18 +104,11 @@ function renderGuides(c, items, filter) {
 }
 
 function renderCard(r, idx) {
-  // HTML-imported guides render raw (admin-written, admin-only write access).
-  // AI-fetched / structured guides go through esc() with step formatting.
   const deleteBtn = state.editMode
     ? `<button class="btn sm danger" data-act="del-gd" data-idx="${idx}" title="Delete guide" style="margin-left:auto">🗑</button>`
     : '';
   if (r.html && r.body) {
-    return `<article class="section-card">
-      <div class="section-title" style="display:flex;align-items:center;gap:8px">
-        <span>${esc(r.title || 'Untitled')}</span>${deleteBtn}
-      </div>
-      <div class="guide-html" style="padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--text-2)">${sanitizeHtml(r.body)}</div>
-    </article>`;
+    return renderHtmlCard({ title: r.title, body: r.body, deleteBtn });
   }
   const body = r.body || renderSteps(r.steps);
   return `<article class="section-card">
@@ -118,86 +122,4 @@ function renderCard(r, idx) {
 function renderSteps(steps) {
   if (!Array.isArray(steps)) return '';
   return steps.map((s, i) => `${s.n || i + 1}. ${s.action || ''}${s.expected ? ' → ' + s.expected : ''}`).join('\n');
-}
-
-// Strip <script>, <iframe>, and inline event handlers — this is admin-only
-// content in their own repo, but keep defensive so a malformed upload can't
-// hijack the page.
-function sanitizeHtml(html) {
-  return String(html)
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
-    .replace(/ on[a-z]+\s*=\s*"[^"]*"/gi, '')
-    .replace(/ on[a-z]+\s*=\s*'[^']*'/gi, '');
-}
-
-function openImportModal() {
-  openModal((el, close) => {
-    el.innerHTML = `
-      <h3>Import HTML guides</h3>
-      <p style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:8px">
-        Select one or more <code>.html</code> files. Each becomes a guide card — filename (or
-        the document's &lt;title&gt;) becomes the title, and the &lt;body&gt; is rendered as
-        rich HTML (code blocks, images, lists are all preserved). Scripts and event handlers
-        are stripped.
-      </p>
-      <div class="form-row" style="margin-top:6px">
-        <label>Topic (optional — groups these files together)</label>
-        <input id="ghTopic" class="search-input" placeholder="e.g. Cisco IOS">
-      </div>
-      <div class="form-row" style="margin-top:8px">
-        <label>Files</label>
-        <input type="file" id="ghFile" accept=".html,.htm,text/html" multiple>
-      </div>
-      <div id="ghPreview" style="margin-top:10px;font-size:12px;color:var(--text-3)"></div>
-      <div class="modal-footer">
-        <button class="btn" data-act="cancel">Cancel</button>
-        <button class="btn primary" data-act="apply" disabled>Import</button>
-      </div>`;
-    let staged = [];
-    const preview = el.querySelector('#ghPreview');
-    const applyBtn = el.querySelector('[data-act=apply]');
-
-    el.querySelector('#ghFile').addEventListener('change', async e => {
-      staged = [];
-      for (const f of e.target.files) {
-        const text = await f.text();
-        staged.push({ name: f.name, size: f.size, text });
-      }
-      preview.innerHTML = staged.map(f => `<div>• ${esc(f.name)} <span style="color:var(--text-3)">(${f.size} bytes)</span></div>`).join('');
-      applyBtn.disabled = !staged.length;
-      applyBtn.textContent = staged.length ? `Import ${staged.length} file${staged.length === 1 ? '' : 's'}` : 'Import';
-    });
-    el.querySelector('[data-act=cancel]').addEventListener('click', close);
-    applyBtn.addEventListener('click', () => {
-      if (!staged.length) return;
-      const topic = el.querySelector('#ghTopic').value.trim();
-      const draft = ensureDraft();
-      for (const f of staged) {
-        const title = extractTitle(f.text) || f.name.replace(/\.(html?|htm)$/i, '');
-        const body = extractBody(f.text);
-        draft.items.push({
-          title,
-          topic: topic || undefined,
-          html: true,
-          body,
-          source: 'html-import',
-          addedAt: new Date().toISOString()
-        });
-      }
-      emit('pending:changed');
-      toast(`Imported ${staged.length} guide${staged.length === 1 ? '' : 's'} — review and Save`, 'success');
-      close();
-    });
-  }, { wide: true });
-}
-
-function extractTitle(html) {
-  const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-  if (!m) return '';
-  return m[1].replace(/\s+/g, ' ').trim();
-}
-function extractBody(html) {
-  const m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-  return (m ? m[1] : html).trim();
 }
