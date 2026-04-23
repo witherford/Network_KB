@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-23T18:46:40.420Z",
+  "updatedAt": "2026-04-23T23:25:38.622Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -95,6 +95,30 @@
           {
             "cmd": "show ns capacity",
             "desc": "Shows licensed capacity: max SSL throughput, connections, RPS",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system backup",
+            "desc": "List on-box system backups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ns feature",
+            "desc": "Enabled features — many commands fail silently if feature is off",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ns mode",
+            "desc": "Global mode flags (USNIP, L2, MBF, etc.)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ns runningconfig | grep -v \"^#\"",
+            "desc": "Running config without comment lines",
             "type": "show",
             "flagged": false
           }
@@ -293,6 +317,24 @@
             "desc": "Configures spillover to backup when connection count exceeds threshold",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show lb vserver -summary",
+            "desc": "Compact view of all LB vservers and state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lb persistentSessions",
+            "desc": "Active persistence entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bind lb vserver <vs> <service>",
+            "desc": "Bind an existing service to a VIP",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Content Switching": [
@@ -439,6 +481,18 @@
           {
             "cmd": "show ssl ocspResponder",
             "desc": "Lists all configured OCSP responders for certificate revocation checking",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ssl fipsKey",
+            "desc": "FIPS key entries (SDX/FIPS builds)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ssl policy",
+            "desc": "SSL policies bound to vservers",
             "type": "show",
             "flagged": false
           }
@@ -943,6 +997,42 @@
             "desc": "Counts established TCP connections from the BSD shell",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "nstrace.sh -time 60 -size 0",
+            "desc": "Collect a capture for 60s with full packet size",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "nsconmsg -d current -s ConLb=1 -g lb_tot",
+            "desc": "Live LB counters (running total)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "shell grep -i ssl /var/log/ns.log | tail -200",
+            "desc": "Recent SSL-related events in ns.log",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "shell nsconmsg -K /var/nslog/newnslog -d event",
+            "desc": "Decode the binary event log for correlation",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "stat ssl",
+            "desc": "SSL transaction counters and errors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "stat ns",
+            "desc": "Overall system counters including memory/CPU/connections",
+            "type": "show",
+            "flagged": false
           }
         ]
       }
@@ -1272,6 +1362,30 @@
             "desc": "Tags a security rule for grouping and policy filtering",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show running security-policy | match \"<app>\"",
+            "desc": "Find rules matching an application name",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test security-policy-match source <ip> destination <ip> application <app> protocol 6 destination-port <p>",
+            "desc": "Which security rule will match a flow",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show system setting logging",
+            "desc": "Logging mode and rate",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set rulebase security rules <name> description \"<text>\"",
+            "desc": "Add a description to an existing rule",
+            "type": "config",
+            "flagged": false
           }
         ],
         "NAT": [
@@ -1445,6 +1559,24 @@
             "cmd": "show global-protect-gateway statistics",
             "desc": "GlobalProtect gateway stats: active tunnels, data rates, auth events",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test vpn ike-sa gateway <gw>",
+            "desc": "Trigger phase-1 negotiation to a specific gateway",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "test vpn ipsec-sa tunnel <tun>",
+            "desc": "Trigger phase-2 negotiation to a specific tunnel",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ike global on debug",
+            "desc": "Enable verbose IKE debug — view with less mp-log ikemgr.log",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -1694,6 +1826,42 @@
             "desc": "Layer 2 MAC address table (relevant in vwire/L2 deployments",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show counter global filter severity drop",
+            "desc": "Every global drop counter — key for policy/NAT/routing drops",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show counter interface <if>",
+            "desc": "Per-interface counters incl. errors and drops",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system statistics session",
+            "desc": "Session-slot statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running resource-monitor",
+            "desc": "Data-plane CPU, session, and packet-buffer usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "less mp-log pan_task.log",
+            "desc": "Recent management-plane task logs",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "less dp-log pan_packet_diag.log",
+            "desc": "Packet-diag log (capture status, errors)",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Commit & Config": [
@@ -1755,6 +1923,18 @@
             "cmd": "show config saved",
             "desc": "Displays the most recently committed saved configuration",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "commit force",
+            "desc": "Commit even when no operator has made changes (useful post-upgrade)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request commit-lock add comment \"<reason>\"",
+            "desc": "Prevent concurrent commits (multi-admin environments)",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -7664,6 +7844,54 @@
             "desc": "Shows per?interface traffic accounting",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show interfaces <int> transceiver detail",
+            "desc": "SFP DOM readings: Tx/Rx power, temperature, voltage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table interface <int>",
+            "desc": "MAC addresses learned on a specific interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces <int> counters etherchannel",
+            "desc": "Per-member traffic distribution in a LAG",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show etherchannel summary",
+            "desc": "LAG bundle state and member status (P=in-bundle)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp neighbors detail",
+            "desc": "LLDP info from directly-connected devices",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear counters <int>",
+            "desc": "Reset interface counters before reproducing a test",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "test cable-diagnostics tdr interface <int>",
+            "desc": "Physical-layer TDR on copper ports",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "interface range <range>\\n description <text>\\n switchport mode access\\n switchport access vlan <id>",
+            "desc": "Bulk-configure a range of access ports",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -7726,6 +7954,48 @@
             "desc": "Shows EIGRP topology table",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ip protocols",
+            "desc": "Summary of every routing protocol configured and its state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef <prefix>",
+            "desc": "CEF FIB entry, outgoing interface and next-hop for a prefix",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show adjacency <int> detail",
+            "desc": "L2 rewrite info CEF uses to forward out a given interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "Per-interface OSPF state, area, cost, neighbours",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip ospf adj",
+            "desc": "Live OSPF adjacency transitions — disable immediately after",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 route",
+            "desc": "IPv6 routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route <net> <mask> <next-hop> [name <tag>] [track <obj>]",
+            "desc": "Static route with optional IP SLA track",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Security": [
@@ -7786,6 +8056,128 @@
           {
             "cmd": "show ssh",
             "desc": "Shows SSH server status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table",
+            "desc": "All learned MACs across the switch",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-security",
+            "desc": "Port-security summary: violations, secure MAC counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show dot1x all",
+            "desc": "Per-port 802.1x authentication state and session info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show authentication sessions interface <int> details",
+            "desc": "MAB / 802.1x session details including VLAN and ACL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp snooping binding",
+            "desc": "DHCP snooping binding table — the source of truth for DAI/IPSG",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp inspection",
+            "desc": "Dynamic ARP Inspection stats per VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip source binding",
+            "desc": "IP source guard bindings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface <int>\\n switchport port-security maximum 2\\n switchport port-security violation restrict",
+            "desc": "Basic port-security config",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp snooping\\n ip dhcp snooping vlan <vlans>\\n interface <uplink>\\n ip dhcp snooping trust",
+            "desc": "Enable DHCP snooping with a trusted uplink",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip arp inspection vlan <vlans>",
+            "desc": "Enable Dynamic ARP Inspection on selected VLANs",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Troubleshooting": [
+          {
+            "cmd": "show processes cpu sorted",
+            "desc": "Top CPU consumers — look for control-plane pegging",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu history",
+            "desc": "ASCII histogram of CPU over last hour/day",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show memory statistics",
+            "desc": "Memory pool usage — watch for fragmentation",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform hardware fed switch active qos queue stats interface <int>",
+            "desc": "Cat9k queue drops per interface",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging | include <keyword>",
+            "desc": "Filter syslog buffer for a specific event",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor session 1 source interface <int> both\\n monitor session 1 destination interface <int>",
+            "desc": "Local SPAN between two ports",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "debug platform packet-capture monitor capture CAP interface <int> both",
+            "desc": "EPC in-box capture on newer IOS-XE",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "test crypto isakmp <peer>",
+            "desc": "Attempt an IKE negotiation manually for diagnosis",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support | redirect flash:tac.txt",
+            "desc": "Dump complete tech-support to flash for TAC upload",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show version | include uptime|Version|image",
+            "desc": "Quick uptime + software version one-liner",
             "type": "show",
             "flagged": false
           }
@@ -7857,6 +8249,48 @@
             "desc": "Shows system time",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "esxcli hardware platform get",
+            "desc": "Server vendor/model/serial",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli hardware cpu list",
+            "desc": "CPU topology and features",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli hardware memory get",
+            "desc": "Physical memory size",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli software vib list | grep -iE \"driver|firmware\"",
+            "desc": "Drivers/firmware VIBs currently installed",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/getallvms",
+            "desc": "Registered VMs with vmid, used by most vim-cmd operations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli system stats uptime get",
+            "desc": "Host uptime in seconds",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vmware -vl",
+            "desc": "ESXi version + build — matches KB articles",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Networking": [
@@ -7918,6 +8352,48 @@
             "cmd": "esxcli network firewall get",
             "desc": "Shows firewall status",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network ip connection list",
+            "desc": "All active network connections (netstat equivalent)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network ip neighbor list",
+            "desc": "ARP/ND neighbour cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network firewall ruleset list",
+            "desc": "ESXi firewall rulesets and enabled state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network firewall ruleset allowedip list",
+            "desc": "Allowed source IPs per ruleset",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network firewall ruleset set --ruleset-id=<id> --enabled=true",
+            "desc": "Enable an ESXi firewall ruleset",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli network ip dns server list",
+            "desc": "DNS servers configured on the host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vmkping -I <vmk> <ip>",
+            "desc": "Ping from a specific vmkernel interface — crucial for vMotion/NFS",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -7981,6 +8457,30 @@
             "desc": "Lists VMFS snapshots",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "esxcli storage nmp device list",
+            "desc": "PSP (path selection) per device",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli storage nmp path list",
+            "desc": "All paths with state/transport",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli storage core device vaai status get",
+            "desc": "VAAI primitives supported per device",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli storage core adapter rescan --all",
+            "desc": "Rescan every HBA for LUN changes",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "VM Management": [
@@ -8043,6 +8543,48 @@
             "desc": "Shows IPMI SEL logs",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/power.getstate <vmid>",
+            "desc": "Current power state of a VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/power.on <vmid>",
+            "desc": "Power on by vmid",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/power.shutdown <vmid>",
+            "desc": "Graceful guest shutdown (needs VMware Tools)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/power.off <vmid>",
+            "desc": "Hard power off",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/snapshot.get <vmid>",
+            "desc": "Snapshot tree of a VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/snapshot.removeall <vmid>",
+            "desc": "Consolidate: remove all snapshots",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vim-cmd vmsvc/reload <vmid>",
+            "desc": "Reload the .vmx — useful after out-of-band edits",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Diagnostics": [
@@ -8104,6 +8646,48 @@
             "cmd": "esxcli software sources vib list -d <url>",
             "desc": "Lists VIBs from depot",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/vmkernel.log",
+            "desc": "Live vmkernel log (the ESXi \"dmesg\")",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/hostd.log",
+            "desc": "Live hostd log (management-agent events)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/vpxa.log",
+            "desc": "vCenter-agent log — useful for HA/DRS actions",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli system coredump partition get",
+            "desc": "Active core-dump partition configured on host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxcli system coredump file get",
+            "desc": "Core-dump file configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esxtop -b -n 5 -d 2 | gzip > /tmp/esxtop.csv.gz",
+            "desc": "Batch-mode esxtop — capture performance snapshots",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "vm-support -w /vmfs/volumes/<ds>",
+            "desc": "Generate a complete support bundle",
+            "type": "troubleshooting",
             "flagged": false
           }
         ]
@@ -8174,6 +8758,36 @@
             "desc": "Shows license activation key",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show running-config | include ^hostname",
+            "desc": "Just the hostname (handy in multi-context)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show context detail",
+            "desc": "Multi-context details incl. resource usage per context",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cluster info",
+            "desc": "Cluster role/state (ASA in cluster mode)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment",
+            "desc": "Temperature, fans, power supplies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface detail",
+            "desc": "Interfaces with extended statistics + counters",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Interfaces": [
@@ -8234,6 +8848,36 @@
           {
             "cmd": "show switch spanning-tree",
             "desc": "Shows STP info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config interface <name>",
+            "desc": "Config snippet for one interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface <name> stats",
+            "desc": "In/out packet and byte counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear interface <name>",
+            "desc": "Reset per-interface counters",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-channel summary",
+            "desc": "EtherChannel members and their state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan",
+            "desc": "VLAN list on subinterfaces",
             "type": "show",
             "flagged": false
           }
@@ -8298,6 +8942,36 @@
             "desc": "Shows EIGRP topology",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show route summary",
+            "desc": "Counts per route source",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ospf neighbor detail",
+            "desc": "OSPF neighbour state with timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show asp table routing",
+            "desc": "Accelerated Security Path routing table (actual fast-path)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show asp drop",
+            "desc": "ASP drop counters — identify why packets die in fast path",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show route | include ^B|^O|^D",
+            "desc": "Only dynamic routes (BGP/OSPF/EIGRP)",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Security": [
@@ -8358,6 +9032,36 @@
           {
             "cmd": "show nat detail",
             "desc": "Shows NAT rules",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config access-list",
+            "desc": "All configured ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show conn all",
+            "desc": "All active connections through the firewall",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show conn count",
+            "desc": "Current connection count per context",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show object-group",
+            "desc": "Object-groups referenced by ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config all ssl",
+            "desc": "Full SSL/TLS config including default ciphers",
             "type": "show",
             "flagged": false
           }
@@ -8421,6 +9125,36 @@
             "cmd": "show webvpn session",
             "desc": "Shows WebVPN sessions",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto isakmp sa detail",
+            "desc": "IKE SAs with peer info and lifetime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpn-sessiondb summary",
+            "desc": "Active VPN session totals by type",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpn-sessiondb detail anyconnect",
+            "desc": "Detailed AnyConnect session info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear crypto ipsec sa peer <ip>",
+            "desc": "Force re-keying to a specific peer",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug crypto isakmp 127",
+            "desc": "Verbose IKE debug — use with capture filter",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -8544,6 +9278,68 @@
             "desc": "Shows LACP info",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show tech-support | redirect disk0:/tac.txt",
+            "desc": "Full tech-support dump to flash",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show capture <cap>",
+            "desc": "Inspect a running capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "capture <name> interface <ifc> match ip host <a> host <b>",
+            "desc": "Start a targeted capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "capture <name> type asp-drop all",
+            "desc": "Capture everything the ASP is dropping",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show resource usage",
+            "desc": "Per-resource usage vs. limits (contexts/connections/xlates)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu-usage sorted",
+            "desc": "Top CPU consumers on the CP",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "NAT": [
+          {
+            "cmd": "show nat",
+            "desc": "All NAT rules and their hit counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show nat detail",
+            "desc": "NAT rules with matching counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config nat",
+            "desc": "Running NAT config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "packet-tracer input <ifc> tcp <src> <sport> <dst> <dport> detailed",
+            "desc": "Trace a simulated packet through firewall including NAT",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ]
       }
@@ -8612,6 +9408,42 @@
             "cmd": "Get-EventLog -LogName Security -Newest 50",
             "desc": "Shows recent security events",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-HotFix | Sort-Object InstalledOn -Descending | Select -First 20",
+            "desc": "Recently installed updates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-WmiObject win32_operatingsystem | Select LastBootUpTime,FreePhysicalMemory,TotalVisibleMemorySize",
+            "desc": "Last boot and memory overview",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "(Get-CimInstance Win32_OperatingSystem).LastBootUpTime",
+            "desc": "Just the last-boot time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "winget upgrade --all --include-unknown --accept-source-agreements --accept-package-agreements",
+            "desc": "Upgrade everything installed via winget",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "sfc /scannow",
+            "desc": "System File Checker — repair protected OS files",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "DISM /Online /Cleanup-Image /RestoreHealth",
+            "desc": "Repair component store; run before sfc /scannow",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -8705,6 +9537,66 @@
             "desc": "Shows TCP connections",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "Get-NetTCPConnection -State Listen | Sort-Object LocalPort",
+            "desc": "Listening TCP ports (PowerShell replacement for netstat -an -p tcp)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-NetTCPConnection -State Established | Group-Object RemoteAddress | Sort-Object Count -Descending | Select -First 20",
+            "desc": "Top remote IPs by open connections",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-NetIPConfiguration -Detailed",
+            "desc": "Combined NIC + IP + DNS + gateway view",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-DnsClientServerAddress -AddressFamily IPv4",
+            "desc": "DNS servers per interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Test-NetConnection -ComputerName <host> -Port <n> -InformationLevel Detailed",
+            "desc": "TCP probe with route, RTT and source-interface info",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-NetRoute -AddressFamily IPv4 | Sort-Object ifMetric,RouteMetric",
+            "desc": "Routing table sorted by interface+route metric",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Clear-DnsClientCache",
+            "desc": "Flush resolver cache (modern alias of ipconfig /flushdns)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "netsh int ip reset",
+            "desc": "Reset TCP/IP stack to defaults — requires reboot",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pathping -n -q 10 <host>",
+            "desc": "Hop-by-hop loss and latency sample",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-NetNeighbor -AddressFamily IPv4 -State Reachable",
+            "desc": "ARP cache of reachable entries",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Processes": [
@@ -8767,6 +9659,48 @@
             "desc": "Starts a service",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "Get-Process | Sort-Object -Descending CPU | Select -First 15",
+            "desc": "Top 15 processes by CPU-time accumulated",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-Process | Sort-Object -Descending WS | Select -First 15 Name,Id,WS,CPU",
+            "desc": "Top processes by working-set memory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Stop-Process -Id <pid> -Force",
+            "desc": "PowerShell-native task kill",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-Service | Where-Object Status -eq Running | Sort-Object DisplayName",
+            "desc": "Running services alphabetised",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-ScheduledTask | Where-Object State -ne Disabled | Sort-Object TaskPath",
+            "desc": "Enabled scheduled tasks",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wevtutil qe System /c:20 /rd:true /f:text",
+            "desc": "Last 20 System-log events as plain text",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-WinEvent -LogName Application -MaxEvents 50 | Where-Object LevelDisplayName -in Error,Critical",
+            "desc": "Recent errors in Application log",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Storage": [
@@ -8828,6 +9762,48 @@
             "cmd": "Get-SmbSession",
             "desc": "Shows SMB sessions",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-PSDrive -PSProvider FileSystem",
+            "desc": "All filesystem drives with used/free",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-Volume | Sort-Object SizeRemaining",
+            "desc": "Volumes sorted by free space",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chkdsk <drive>: /scan",
+            "desc": "Online, non-destructive filesystem scan",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "Repair-Volume -DriveLetter <D> -Scan",
+            "desc": "PowerShell chkdsk equivalent, online",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "diskpart /s <script>",
+            "desc": "Run a prepared DiskPart script non-interactively",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Get-StoragePool",
+            "desc": "Storage Spaces pools and health",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Optimize-Volume -DriveLetter <D> -ReTrim -Verbose",
+            "desc": "SSD TRIM on a specific drive",
+            "type": "config",
             "flagged": false
           }
         ]
@@ -8898,6 +9874,66 @@
             "desc": "Shows instance health",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value|[0],PrivateIpAddress]' --output table",
+            "desc": "Running instances with name tag and private IP as a table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-network-interfaces --filters Name=addresses.private-ip-address,Values=<ip>",
+            "desc": "Find which ENI owns a given private IP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=<subnet>",
+            "desc": "Route table associated with a specific subnet",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-nat-gateways --filter Name=state,Values=available",
+            "desc": "All healthy NAT gateways",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-vpc-endpoints",
+            "desc": "Gateway and interface endpoints in this account/region",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 start-instances --instance-ids <id>",
+            "desc": "Start a stopped instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 stop-instances --instance-ids <id>",
+            "desc": "Stop (soft) an instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 get-console-output --instance-id <id>",
+            "desc": "Last 64KB of console output — useful for boot-fail debugging",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-instance-status --instance-ids <id> --include-all-instances",
+            "desc": "System / instance status checks + scheduled events",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 modify-instance-attribute --instance-id <id> --groups <sg1> <sg2>",
+            "desc": "Replace the security groups attached to an instance",
+            "type": "config",
+            "flagged": false
           }
         ],
         "S3": [
@@ -8960,6 +9996,48 @@
             "desc": "Lists object versions",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "aws s3api list-buckets --query \"Buckets[].Name\"",
+            "desc": "List bucket names only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3api get-bucket-location --bucket <b>",
+            "desc": "Region a bucket lives in",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3api get-bucket-versioning --bucket <b>",
+            "desc": "Versioning and MFA-delete state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3api get-bucket-policy --bucket <b> --output text --query Policy | jq .",
+            "desc": "Human-readable bucket policy",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3 sync <src> <dst> --delete --exact-timestamps",
+            "desc": "Mirror with removal and timestamp-accurate comparison",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3api list-object-versions --bucket <b> --prefix <p>",
+            "desc": "All object versions incl. delete markers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws s3 presign s3://<b>/<key> --expires-in 3600",
+            "desc": "Signed URL valid for 1 hour",
+            "type": "show",
+            "flagged": false
           }
         ],
         "CloudWatch": [
@@ -9020,6 +10098,124 @@
           {
             "cmd": "aws logs delete-log-group --log-group-name <group>",
             "desc": "Deletes log group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws logs tail /aws/lambda/<fn> --follow --format short",
+            "desc": "Live-tail a log group",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws logs filter-log-events --log-group-name <g> --filter-pattern \"ERROR\"",
+            "desc": "Grep-like search across a log group",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws logs describe-log-groups --query \"logGroups[].logGroupName\"",
+            "desc": "Every log group in the region",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws cloudwatch set-alarm-state --alarm-name <n> --state-value ALARM --state-reason \"test\"",
+            "desc": "Force an alarm into ALARM for testing notification path",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws cloudwatch put-metric-data --namespace <ns> --metric-name <m> --value 1 --dimensions Host=<h>",
+            "desc": "Publish a custom metric from the CLI",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aws cloudwatch describe-alarms --state-value ALARM --query \"MetricAlarms[].AlarmName\"",
+            "desc": "Alarms currently in ALARM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws logs start-query --log-group-name <g> --start-time <unix> --end-time <unix> --query-string \"fields @timestamp, @message | sort @timestamp desc | limit 50\"",
+            "desc": "Insights query — retrieve queryId for get-query-results",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "IAM": [
+          {
+            "cmd": "aws iam get-user",
+            "desc": "Identity of the caller if this is a user",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws sts get-caller-identity",
+            "desc": "Identity of the caller for user OR assumed role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws iam list-users --query \"Users[].UserName\"",
+            "desc": "All IAM users in the account",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws iam list-roles --query \"Roles[?contains(RoleName,'<substr>')].RoleName\"",
+            "desc": "Roles matching a name substring",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws iam simulate-principal-policy --policy-source-arn <role-arn> --action-names <svc>:<action> --resource-arns <arn>",
+            "desc": "Dry-run an IAM decision for a principal/action/resource",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "aws iam get-policy --policy-arn <arn>",
+            "desc": "Managed policy metadata (default version, attachments)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws iam get-policy-version --policy-arn <arn> --version-id v1 --query Policy.PolicyVersion.Document",
+            "desc": "Full JSON document of a managed policy version",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "VPC": [
+          {
+            "cmd": "aws ec2 describe-vpcs --query \"Vpcs[].[VpcId,CidrBlock,IsDefault]\" --output table",
+            "desc": "All VPCs with CIDR and default flag",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-security-groups --group-ids <sg> --query \"SecurityGroups[].IpPermissions\"",
+            "desc": "Ingress rules of a specific SG",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-flow-logs --filter Name=resource-id,Values=<vpc-id>",
+            "desc": "Flow-log configuration for a VPC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 create-flow-logs --resource-type VPC --resource-ids <vpc-id> --traffic-type ALL --log-destination-type cloud-watch-logs --log-group-name <lg> --deliver-logs-permission-arn <role>",
+            "desc": "Enable VPC flow logs to CloudWatch",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aws ec2 describe-transit-gateway-route-tables",
+            "desc": "TGW route tables (for multi-VPC designs)",
             "type": "show",
             "flagged": false
           }

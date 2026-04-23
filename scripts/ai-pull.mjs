@@ -19,10 +19,18 @@ const ENDPOINTS = {
 };
 
 const KINDS = [
-  { key: 'software', file: 'data/software.json',          promptKey: 'software' },
-  { key: 'guides',   file: 'data/guides.json',            promptKey: 'guides' },
-  { key: 'cves',     file: 'data/cves.json',              promptKey: 'cves' }
+  { key: 'software', file: 'data/software.json', promptKey: 'software' },
+  { key: 'guides',   file: 'data/guides.json',   promptKey: 'guides' },
+  { key: 'cves',     file: 'data/cves.json',     promptKey: 'cves' },
+  { key: 'commands', file: 'data/commands.json', promptKey: 'commands' }
 ];
+
+const FALLBACK_PROMPTS = {
+  commands: 'For vendor {{vendor}} product {{product}}, return JSON array of CLI commands. Each item: {cmd, desc, type (show|config|troubleshooting), section}. Aim for 20+ commands covering System, Interfaces, Routing, Troubleshooting.',
+  software: 'For vendor {{vendor}} product {{product}}, return JSON object: {latest, recommended, eol: [], notes}.',
+  guides:   'For topic {{topic}} (vendor {{vendor}}), return JSON object: {title, topic, steps: [{n, action, expected, commands: []}]}.',
+  cves:     'For vendor {{vendor}} product {{product}}, return JSON array of recent CVEs (last 90 days): [{id, cvss, severity, summary, references: []}].'
+};
 
 main().catch(err => { console.error(err); process.exit(1); });
 
@@ -44,32 +52,40 @@ async function main() {
 
   for (const kind of KINDS) {
     const absPath = path.join(ROOT, kind.file);
-    const existing = await readJson(absPath, { version: 1, items: [] });
-    existing.items ||= [];
+    const template = settings.prompts?.[kind.promptKey] || FALLBACK_PROMPTS[kind.promptKey];
+    if (!template) { console.log(`[${kind.key}] no prompt template, skipping`); continue; }
 
-    for (const v of vendors) {
-      const products = v.products?.length ? v.products : [''];
-      for (const product of products) {
-        const filled = fillTemplate(settings.prompts?.[kind.promptKey] || '', {
-          vendor: v.vendor, product, topic: v.vendor, domains: (settings.domains || []).join(', ')
-        });
-        if (!filled) continue;
-        try {
-          const items = await callAI(filled, keyring);
-          for (const raw of (Array.isArray(items) ? items : (items?.items || []))) {
-            const tagged = { ...raw, vendor: raw.vendor || v.vendor, product: raw.product || product };
-            mergeItem(existing.items, tagged, kind.key);
+    if (kind.key === 'commands') {
+      await refreshCommands(absPath, template, vendors, keyring, settings.domains || []);
+    } else {
+      const existing = await readJson(absPath, { version: 1, items: [] });
+      existing.items ||= [];
+
+      for (const v of vendors) {
+        const products = v.products?.length ? v.products : [''];
+        for (const product of products) {
+          const filled = fillTemplate(template, {
+            vendor: v.vendor, product, topic: product || v.vendor, domains: (settings.domains || []).join(', ')
+          });
+          if (!filled) continue;
+          try {
+            const items = await callAI(filled, keyring);
+            for (const raw of (Array.isArray(items) ? items : (items?.items || [items]))) {
+              if (!raw || typeof raw !== 'object') continue;
+              const tagged = { ...raw, vendor: raw.vendor || v.vendor, product: raw.product || product };
+              mergeItem(existing.items, tagged, kind.key);
+            }
+            console.log(`[${kind.key}] ${v.vendor}/${product}: OK`);
+          } catch (err) {
+            console.error(`[${kind.key}] ${v.vendor}/${product}: ${err.message}`);
           }
-          console.log(`[${kind.key}] ${v.vendor}/${product}: OK (${(Array.isArray(items) ? items : items?.items || []).length})`);
-        } catch (err) {
-          console.error(`[${kind.key}] ${v.vendor}/${product}: ${err.message}`);
         }
       }
-    }
 
-    existing.updatedAt = new Date().toISOString();
-    await fs.writeFile(absPath, JSON.stringify(existing, null, 2) + '\n');
-    manifest[kind.key] = existing.updatedAt;
+      existing.updatedAt = new Date().toISOString();
+      await fs.writeFile(absPath, JSON.stringify(existing, null, 2) + '\n');
+    }
+    manifest[kind.key] = new Date().toISOString();
   }
 
   await fs.writeFile(path.join(DATA, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
@@ -201,3 +217,64 @@ async function readJson(p, fallback) {
 }
 
 function die(msg) { console.error(msg); process.exit(1); }
+
+/* ---------- commands (nested shape) ---------- */
+async function refreshCommands(absPath, template, vendors, keyring, domains) {
+  const existing = await readJson(absPath, { version: 2, platforms: {} });
+  existing.platforms ||= {};
+  for (const v of vendors) {
+    const products = v.products?.length ? v.products : [''];
+    for (const product of products) {
+      const filled = fillTemplate(template, { vendor: v.vendor, product, topic: product || v.vendor, domains: domains.join(', ') });
+      try {
+        const parsed = await callAI(filled, keyring);
+        const items = Array.isArray(parsed) ? parsed
+          : Array.isArray(parsed?.items) ? parsed.items
+          : Array.isArray(parsed?.commands) ? parsed.commands
+          : [parsed];
+        const pkey = findOrCreatePlatform(existing, v.vendor, product);
+        let added = 0;
+        for (const raw of items) {
+          if (!raw || typeof raw !== 'object') continue;
+          const cmd = raw.cmd || raw.command || raw.cli || raw.syntax || '';
+          if (!cmd) continue;
+          const desc = raw.desc || raw.description || raw.purpose || '';
+          const rawType = (raw.type || raw.category || 'show').toLowerCase();
+          const type = ['show','config','troubleshooting'].includes(rawType) ? rawType
+            : /conf|set/.test(rawType) ? 'config'
+            : /trouble|debug|diag/.test(rawType) ? 'troubleshooting'
+            : 'show';
+          const section = raw.section || raw.group || product || 'General';
+          existing.platforms[pkey].sections[section] ||= [];
+          if (existing.platforms[pkey].sections[section].some(x => x.cmd === cmd)) continue;
+          existing.platforms[pkey].sections[section].push({ cmd, desc, type, flagged: false });
+          added++;
+        }
+        console.log(`[commands] ${v.vendor}/${product}: +${added}`);
+      } catch (err) {
+        console.error(`[commands] ${v.vendor}/${product}: ${err.message}`);
+      }
+    }
+  }
+  existing.updatedAt = new Date().toISOString();
+  await fs.writeFile(absPath, JSON.stringify(existing, null, 2) + '\n');
+}
+
+function findOrCreatePlatform(data, vendor, product) {
+  const vLow = vendor.toLowerCase();
+  const pLow = (product || '').toLowerCase();
+  for (const [k, p] of Object.entries(data.platforms)) {
+    const lbl = (p.label || '').toLowerCase();
+    const kLow = k.toLowerCase();
+    if (pLow && ((lbl.includes(vLow) && lbl.includes(pLow)) || kLow.includes(pLow))) return k;
+    if (!pLow && (lbl.includes(vLow) || kLow.includes(vLow))) return k;
+  }
+  const slug = String(product ? `${vendor}-${product}` : vendor).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  data.platforms[slug] ||= {
+    label: product ? `${vendor} ${product}` : vendor,
+    badge: 'badge-sw',
+    short: (product || vendor).slice(0, 6),
+    sections: {}
+  };
+  return slug;
+}
