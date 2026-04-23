@@ -35,7 +35,16 @@ export async function fetchForKind(kind, { promptKey, fill, schemaGuard } = {}) 
         });
         const parsed = extractJson(text);
         if (!parsed) throw new Error('AI returned non-JSON');
-        const items = Array.isArray(parsed) ? parsed : (parsed.items || []);
+        // Prompts ask for different shapes: commands/cves return arrays,
+        // guides/software return a single object. Accept all of:
+        //   [ {...}, {...} ]            → arr of items
+        //   { items: [...] }            → wrapper
+        //   { title: ..., steps: ... }  → single item (guides)
+        //   { latest: ..., eol: ... }   → single item (software)
+        let items;
+        if (Array.isArray(parsed)) items = parsed;
+        else if (Array.isArray(parsed.items)) items = parsed.items;
+        else items = [parsed];
         for (const item of items) {
           const tagged = { ...item, vendor: item.vendor || v.vendor, product: item.product || product };
           if (schemaGuard && !schemaGuard(tagged)) continue;

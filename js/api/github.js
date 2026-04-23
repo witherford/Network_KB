@@ -77,18 +77,14 @@ export async function putFile({ pat, repo, path, content, message, sha, branch }
 }
 
 // Atomic multi-file commit via the Git Data API: one commit, N files.
+// Retries once on 422 non-fast-forward (race with another commit landing
+// between our ref-fetch and ref-update).
 export async function commitBatch({ pat, repo, branch, message, changes }) {
   const { owner, repo: r } = parseRepo(repo);
   const h = headers(pat);
   const br = branch || (await validatePat({ pat, repo })).defaultBranch || 'main';
 
-  const refRes = await fetch(`${API}/repos/${owner}/${r}/git/ref/heads/${br}`, { headers: h });
-  if (!refRes.ok) throw new Error(`get ref: HTTP ${refRes.status}`);
-  const { object: { sha: baseSha } } = await refRes.json();
-
-  const commitRes = await fetch(`${API}/repos/${owner}/${r}/git/commits/${baseSha}`, { headers: h });
-  const { tree: { sha: baseTree } } = await commitRes.json();
-
+  // Blobs are content-addressed — create once, reuse across attempts.
   const blobs = await Promise.all(changes.map(async c => {
     const res = await fetch(`${API}/repos/${owner}/${r}/git/blobs`, {
       method: 'POST',
@@ -100,32 +96,43 @@ export async function commitBatch({ pat, repo, branch, message, changes }) {
     return { path: c.path, mode: '100644', type: 'blob', sha };
   }));
 
-  const treeRes = await fetch(`${API}/repos/${owner}/${r}/git/trees`, {
-    method: 'POST',
-    headers: { ...h, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ base_tree: baseTree, tree: blobs })
-  });
-  if (!treeRes.ok) throw new Error(`tree: HTTP ${treeRes.status}`);
-  const { sha: treeSha } = await treeRes.json();
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const refRes = await fetch(`${API}/repos/${owner}/${r}/git/ref/heads/${br}`, { headers: h });
+    if (!refRes.ok) throw new Error(`get ref: HTTP ${refRes.status}`);
+    const { object: { sha: baseSha } } = await refRes.json();
 
-  const cRes = await fetch(`${API}/repos/${owner}/${r}/git/commits`, {
-    method: 'POST',
-    headers: { ...h, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, tree: treeSha, parents: [baseSha] })
-  });
-  if (!cRes.ok) throw new Error(`commit: HTTP ${cRes.status}`);
-  const { sha: newCommit } = await cRes.json();
+    const commitRes = await fetch(`${API}/repos/${owner}/${r}/git/commits/${baseSha}`, { headers: h });
+    const { tree: { sha: baseTree } } = await commitRes.json();
 
-  const upRes = await fetch(`${API}/repos/${owner}/${r}/git/refs/heads/${br}`, {
-    method: 'PATCH',
-    headers: { ...h, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sha: newCommit })
-  });
-  if (!upRes.ok) {
+    const treeRes = await fetch(`${API}/repos/${owner}/${r}/git/trees`, {
+      method: 'POST',
+      headers: { ...h, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_tree: baseTree, tree: blobs })
+    });
+    if (!treeRes.ok) throw new Error(`tree: HTTP ${treeRes.status}`);
+    const { sha: treeSha } = await treeRes.json();
+
+    const cRes = await fetch(`${API}/repos/${owner}/${r}/git/commits`, {
+      method: 'POST',
+      headers: { ...h, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, tree: treeSha, parents: [baseSha] })
+    });
+    if (!cRes.ok) throw new Error(`commit: HTTP ${cRes.status}`);
+    const { sha: newCommit } = await cRes.json();
+
+    const upRes = await fetch(`${API}/repos/${owner}/${r}/git/refs/heads/${br}`, {
+      method: 'PATCH',
+      headers: { ...h, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sha: newCommit })
+    });
+    if (upRes.ok) return { commitSha: newCommit, branch: br };
+
     const j = await upRes.json().catch(() => ({}));
+    const nonFf = upRes.status === 422 && /fast forward/i.test(j.message || '');
+    if (nonFf && attempt === 0) continue; // race — rebase on new HEAD and retry
     throw new Error(`ref update: HTTP ${upRes.status} ${j.message || ''}`);
   }
-  return { commitSha: newCommit, branch: br };
+  throw new Error('ref update: exhausted retries');
 }
 
 function encodePath(path) {
