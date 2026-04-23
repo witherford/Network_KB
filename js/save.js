@@ -90,8 +90,19 @@ export async function saveAll(message) {
     changes
   });
 
-  if (state.pending.settings) {
+   if (state.pending.settings) {
     state.settings = state.pending.settings;
+  }
+  // Seed in-memory data cache with what we just committed. Without this, the
+  // next re-mount falls back to loadData() which returns the stale pre-save
+  // cache (and in preview, the local file hasn't changed to match the commit).
+  for (const key of Object.keys(DATA_PATHS)) {
+    if (state.pending[key]) state.data[key] = state.pending[key];
+  }
+  if (state.pending.cheatsheets) {
+    for (const [name, items] of Object.entries(state.pending.cheatsheets)) {
+      state.data.cheatsheets[name] = { version: 1, items };
+    }
   }
   state.data.manifest = manifest;
   clearPending();
