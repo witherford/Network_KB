@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-24T00:00:00.000Z",
+  "updatedAt": "2026-04-23T23:36:30.780Z",
   "items": [
     {
       "title": "NetScaler: diagnose a down VIP / service",
@@ -9,12 +9,59 @@
       "product": "NetScaler",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Confirm the VIP state", "expected": "State DOWN / OUT OF SERVICE tells you whether it's the vserver or the bound services.", "commands": ["show lb vserver <name>", "show cs vserver <name>"] },
-        { "n": 2, "action": "Inspect bound services and their monitors", "expected": "Any service UP? Any monitor failing with a clear 'last response'?", "commands": ["show service <name>", "show serviceGroup <name>"] },
-        { "n": 3, "action": "Check connectivity from the SNIP that owns the service", "expected": "Successful TCP handshake against the backend port.", "commands": ["shell nsping -c 3 <backend-ip>", "shell nc -vz <backend-ip> <port>"] },
-        { "n": 4, "action": "Look at the monitor reason", "expected": "Specific reason (Probe timeout, HTTP 500, SSL handshake failure).", "commands": ["show lb monitor <monitor-name>", "stat service <name>"] },
-        { "n": 5, "action": "Tail ns.log for fresh events", "expected": "Correlate VIP/service state transitions with ns.log timestamps.", "commands": ["shell tail -f /var/log/ns.log | grep -i '<vserver-or-service>'"] },
-        { "n": 6, "action": "If SSL: check cert chain and cipher negotiation", "expected": "Full chain present, negotiated cipher matches profile.", "commands": ["show ssl certKey", "show ssl vserver <name>"] }
+        {
+          "n": 1,
+          "action": "Confirm the VIP state",
+          "expected": "State DOWN / OUT OF SERVICE tells you whether it's the vserver or the bound services.",
+          "commands": [
+            "show lb vserver <name>",
+            "show cs vserver <name>"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Inspect bound services and their monitors",
+          "expected": "Any service UP? Any monitor failing with a clear 'last response'?",
+          "commands": [
+            "show service <name>",
+            "show serviceGroup <name>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Check connectivity from the SNIP that owns the service",
+          "expected": "Successful TCP handshake against the backend port.",
+          "commands": [
+            "shell nsping -c 3 <backend-ip>",
+            "shell nc -vz <backend-ip> <port>"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Look at the monitor reason",
+          "expected": "Specific reason (Probe timeout, HTTP 500, SSL handshake failure).",
+          "commands": [
+            "show lb monitor <monitor-name>",
+            "stat service <name>"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Tail ns.log for fresh events",
+          "expected": "Correlate VIP/service state transitions with ns.log timestamps.",
+          "commands": [
+            "shell tail -f /var/log/ns.log | grep -i '<vserver-or-service>'"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "If SSL: check cert chain and cipher negotiation",
+          "expected": "Full chain present, negotiated cipher matches profile.",
+          "commands": [
+            "show ssl certKey",
+            "show ssl vserver <name>"
+          ]
+        }
       ]
     },
     {
@@ -24,12 +71,61 @@
       "product": "PAN-OS",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Confirm policy match with a test", "expected": "Security rule, NAT rule, action = allow.", "commands": ["test security-policy-match source <src> destination <dst> protocol 6 destination-port <port>", "test nat-policy-match source <src> destination <dst> protocol 6 destination-port <port>"] },
-        { "n": 2, "action": "Verify route to destination & egress interface", "expected": "FIB route exists and is active.", "commands": ["test routing fib-lookup virtual-router default ip <dst>", "show routing route"] },
-        { "n": 3, "action": "Find the live session", "expected": "Session present with correct ingress/egress zones and NAT.", "commands": ["show session all filter source <src> destination <dst>", "show session id <id>"] },
-        { "n": 4, "action": "If no session, run a packet capture on ingress", "expected": "SYN arrives, SYN/ACK leaves. Missing SYN/ACK → backend or NAT issue; missing SYN → upstream routing.", "commands": ["debug dataplane packet-diag set filter match source <src> destination <dst>", "debug dataplane packet-diag set filter on", "debug dataplane packet-diag set capture stage receive file in.pcap", "debug dataplane packet-diag set capture on"] },
-        { "n": 5, "action": "Check for drops on the ingress interface", "expected": "Drop counter stays flat across the test.", "commands": ["show counter global filter packet-filter yes", "show counter interface <ingress>"] },
-        { "n": 6, "action": "If threat prevention is suspected, look at threat logs for the session", "expected": "No drop-IPS, drop-URL, drop-DNS entry for the flow.", "commands": ["show log threat direction equal backward"] }
+        {
+          "n": 1,
+          "action": "Confirm policy match with a test",
+          "expected": "Security rule, NAT rule, action = allow.",
+          "commands": [
+            "test security-policy-match source <src> destination <dst> protocol 6 destination-port <port>",
+            "test nat-policy-match source <src> destination <dst> protocol 6 destination-port <port>"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Verify route to destination & egress interface",
+          "expected": "FIB route exists and is active.",
+          "commands": [
+            "test routing fib-lookup virtual-router default ip <dst>",
+            "show routing route"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Find the live session",
+          "expected": "Session present with correct ingress/egress zones and NAT.",
+          "commands": [
+            "show session all filter source <src> destination <dst>",
+            "show session id <id>"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "If no session, run a packet capture on ingress",
+          "expected": "SYN arrives, SYN/ACK leaves. Missing SYN/ACK → backend or NAT issue; missing SYN → upstream routing.",
+          "commands": [
+            "debug dataplane packet-diag set filter match source <src> destination <dst>",
+            "debug dataplane packet-diag set filter on",
+            "debug dataplane packet-diag set capture stage receive file in.pcap",
+            "debug dataplane packet-diag set capture on"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Check for drops on the ingress interface",
+          "expected": "Drop counter stays flat across the test.",
+          "commands": [
+            "show counter global filter packet-filter yes",
+            "show counter interface <ingress>"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "If threat prevention is suspected, look at threat logs for the session",
+          "expected": "No drop-IPS, drop-URL, drop-DNS entry for the flow.",
+          "commands": [
+            "show log threat direction equal backward"
+          ]
+        }
       ]
     },
     {
@@ -39,11 +135,49 @@
       "product": "ASA",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Confirm tunnel is UP on the correct group-policy", "expected": "SA count > 0, the right tunnel-group is in use.", "commands": ["show vpn-sessiondb anyconnect filter name <user>", "show vpn-sessiondb l2l"] },
-        { "n": 2, "action": "Confirm the split-tunnel / tunnel-all ACL matches the resources the user needs", "expected": "ACL includes the destination networks.", "commands": ["show run group-policy <policy>", "show access-list <split-acl>"] },
-        { "n": 3, "action": "Verify there's no NAT shadowing the VPN pool", "expected": "NAT rule for (inside→outside) should exempt VPN pool before global NAT.", "commands": ["show run nat", "packet-tracer input outside tcp <vpn-client-ip> 1024 <inside-host> 443 detailed"] },
-        { "n": 4, "action": "Check that the inside hosts route back to the VPN pool via the ASA", "expected": "Inside host shows route for VPN pool pointing to ASA inside IP.", "commands": ["show route"] },
-        { "n": 5, "action": "Packet-trace the flow both directions", "expected": "Allow at every phase, NAT-exempt hit, no 'drop-reason'.", "commands": ["packet-tracer input inside icmp <inside-host> 0 0 <vpn-client> detailed"] }
+        {
+          "n": 1,
+          "action": "Confirm tunnel is UP on the correct group-policy",
+          "expected": "SA count > 0, the right tunnel-group is in use.",
+          "commands": [
+            "show vpn-sessiondb anyconnect filter name <user>",
+            "show vpn-sessiondb l2l"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Confirm the split-tunnel / tunnel-all ACL matches the resources the user needs",
+          "expected": "ACL includes the destination networks.",
+          "commands": [
+            "show run group-policy <policy>",
+            "show access-list <split-acl>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Verify there's no NAT shadowing the VPN pool",
+          "expected": "NAT rule for (inside→outside) should exempt VPN pool before global NAT.",
+          "commands": [
+            "show run nat",
+            "packet-tracer input outside tcp <vpn-client-ip> 1024 <inside-host> 443 detailed"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Check that the inside hosts route back to the VPN pool via the ASA",
+          "expected": "Inside host shows route for VPN pool pointing to ASA inside IP.",
+          "commands": [
+            "show route"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Packet-trace the flow both directions",
+          "expected": "Allow at every phase, NAT-exempt hit, no 'drop-reason'.",
+          "commands": [
+            "packet-tracer input inside icmp <inside-host> 0 0 <vpn-client> detailed"
+          ]
+        }
       ]
     },
     {
@@ -53,11 +187,54 @@
       "product": "IOS",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Check interface status and reason", "expected": "administratively down → shutdown; err-disabled → look at reason.", "commands": ["show interfaces status", "show interfaces <int>", "show errdisable recovery"] },
-        { "n": 2, "action": "If err-disabled, identify the trigger", "expected": "bpduguard, port-security, link-flap, storm-control, udld etc.", "commands": ["show errdisable detect", "show logging | include <int>"] },
-        { "n": 3, "action": "Fix the underlying cause (e.g. hub downstream, port-security MAC, wrong speed/duplex)", "expected": "Safe to re-enable.", "commands": ["show port-security interface <int>", "show spanning-tree interface <int> detail"] },
-        { "n": 4, "action": "Recover the port", "expected": "Interface transitions to up/up.", "commands": ["configure terminal", "interface <int>", "shutdown", "no shutdown"] },
-        { "n": 5, "action": "Optional: enable automatic recovery for this cause", "expected": "Future occurrences auto-recover after the configured timer.", "commands": ["errdisable recovery cause <cause>", "errdisable recovery interval 300"] }
+        {
+          "n": 1,
+          "action": "Check interface status and reason",
+          "expected": "administratively down → shutdown; err-disabled → look at reason.",
+          "commands": [
+            "show interfaces status",
+            "show interfaces <int>",
+            "show errdisable recovery"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "If err-disabled, identify the trigger",
+          "expected": "bpduguard, port-security, link-flap, storm-control, udld etc.",
+          "commands": [
+            "show errdisable detect",
+            "show logging | include <int>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Fix the underlying cause (e.g. hub downstream, port-security MAC, wrong speed/duplex)",
+          "expected": "Safe to re-enable.",
+          "commands": [
+            "show port-security interface <int>",
+            "show spanning-tree interface <int> detail"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Recover the port",
+          "expected": "Interface transitions to up/up.",
+          "commands": [
+            "configure terminal",
+            "interface <int>",
+            "shutdown",
+            "no shutdown"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Optional: enable automatic recovery for this cause",
+          "expected": "Future occurrences auto-recover after the configured timer.",
+          "commands": [
+            "errdisable recovery cause <cause>",
+            "errdisable recovery interval 300"
+          ]
+        }
       ]
     },
     {
@@ -67,12 +244,60 @@
       "product": "",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Separate runnable vs. uninterruptible-sleep load", "expected": "High D-state count → I/O. High R-state → CPU.", "commands": ["uptime", "vmstat 1 5", "ps -eo state,pid,comm | awk '$1==\"D\"'"] },
-        { "n": 2, "action": "Inspect CPU top consumers", "expected": "Clear culprit, or very even spread across many processes.", "commands": ["top -bn1 | head -30", "pidstat 1 5"] },
-        { "n": 3, "action": "Look at per-CPU softirq / iowait", "expected": "Spikes on softirq point to network; iowait points to storage.", "commands": ["mpstat -P ALL 1 3"] },
-        { "n": 4, "action": "If iowait: which disk / which process", "expected": "Identify hot device and PID doing the I/O.", "commands": ["iostat -xz 1 3", "iotop -oP"] },
-        { "n": 5, "action": "If softirq/network: which NIC / which queue", "expected": "Offending CPU/queue visible.", "commands": ["cat /proc/softirqs", "ethtool -S <iface> | grep -i -e drop -e error"] },
-        { "n": 6, "action": "Check kernel log for oom / blocked-task / hung-task events", "expected": "Any hung-task for >120s is a strong signal.", "commands": ["dmesg -T | tail -80", "journalctl -k --since '10 min ago'"] }
+        {
+          "n": 1,
+          "action": "Separate runnable vs. uninterruptible-sleep load",
+          "expected": "High D-state count → I/O. High R-state → CPU.",
+          "commands": [
+            "uptime",
+            "vmstat 1 5",
+            "ps -eo state,pid,comm | awk '$1==\"D\"'"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Inspect CPU top consumers",
+          "expected": "Clear culprit, or very even spread across many processes.",
+          "commands": [
+            "top -bn1 | head -30",
+            "pidstat 1 5"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Look at per-CPU softirq / iowait",
+          "expected": "Spikes on softirq point to network; iowait points to storage.",
+          "commands": [
+            "mpstat -P ALL 1 3"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "If iowait: which disk / which process",
+          "expected": "Identify hot device and PID doing the I/O.",
+          "commands": [
+            "iostat -xz 1 3",
+            "iotop -oP"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "If softirq/network: which NIC / which queue",
+          "expected": "Offending CPU/queue visible.",
+          "commands": [
+            "cat /proc/softirqs",
+            "ethtool -S <iface> | grep -i -e drop -e error"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Check kernel log for oom / blocked-task / hung-task events",
+          "expected": "Any hung-task for >120s is a strong signal.",
+          "commands": [
+            "dmesg -T | tail -80",
+            "journalctl -k --since '10 min ago'"
+          ]
+        }
       ]
     },
     {
@@ -82,11 +307,51 @@
       "product": "Windows Server",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Confirm the NIC state and IP configuration", "expected": "NIC is Up, has the expected IPv4, gateway, DNS.", "commands": ["Get-NetAdapter | ft -AutoSize", "ipconfig /all"] },
-        { "n": 2, "action": "Check the default-gateway is reachable and ARP resolves", "expected": "Ping succeeds, MAC is present.", "commands": ["Test-Connection <gateway> -Count 4", "arp -a"] },
-        { "n": 3, "action": "Verify DNS resolution path end-to-end", "expected": "A records resolve within SLA; no SERVFAIL.", "commands": ["Resolve-DnsName <fqdn> -Type A", "Resolve-DnsName <fqdn> -Server <dns-ip>"] },
-        { "n": 4, "action": "Look at the System event log for NIC / DHCP / WLAN issues", "expected": "Events 27/32 for NetBT, 1003/1006 for DHCP, 8003 for Browser.", "commands": ["Get-WinEvent -LogName System -MaxEvents 50 | Where-Object {$_.ProviderName -match 'Tcpip|Netbt|Dhcp'}"] },
-        { "n": 5, "action": "If recent change: firewall rules, route table, binding order", "expected": "No unexpected deny rule, routes to the destination are sane.", "commands": ["Get-NetFirewallRule -Action Block -Enabled True | ft DisplayName,Direction", "route print", "Get-NetIPInterface | ft InterfaceAlias,InterfaceMetric"] }
+        {
+          "n": 1,
+          "action": "Confirm the NIC state and IP configuration",
+          "expected": "NIC is Up, has the expected IPv4, gateway, DNS.",
+          "commands": [
+            "Get-NetAdapter | ft -AutoSize",
+            "ipconfig /all"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Check the default-gateway is reachable and ARP resolves",
+          "expected": "Ping succeeds, MAC is present.",
+          "commands": [
+            "Test-Connection <gateway> -Count 4",
+            "arp -a"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Verify DNS resolution path end-to-end",
+          "expected": "A records resolve within SLA; no SERVFAIL.",
+          "commands": [
+            "Resolve-DnsName <fqdn> -Type A",
+            "Resolve-DnsName <fqdn> -Server <dns-ip>"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Look at the System event log for NIC / DHCP / WLAN issues",
+          "expected": "Events 27/32 for NetBT, 1003/1006 for DHCP, 8003 for Browser.",
+          "commands": [
+            "Get-WinEvent -LogName System -MaxEvents 50 | Where-Object {$_.ProviderName -match 'Tcpip|Netbt|Dhcp'}"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "If recent change: firewall rules, route table, binding order",
+          "expected": "No unexpected deny rule, routes to the destination are sane.",
+          "commands": [
+            "Get-NetFirewallRule -Action Block -Enabled True | ft DisplayName,Direction",
+            "route print",
+            "Get-NetIPInterface | ft InterfaceAlias,InterfaceMetric"
+          ]
+        }
       ]
     },
     {
@@ -96,11 +361,49 @@
       "product": "ESXi",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Confirm the VM's vNIC is connected to the right portgroup and is up", "expected": "vNIC state is 'Connected', portgroup name matches.", "commands": ["esxcli network vm list", "esxcli network vm port list -w <worldID>"] },
-        { "n": 2, "action": "Check the vSwitch uplink state and CDP/LLDP neighbour", "expected": "At least one uplink is Up; CDP/LLDP shows the expected upstream switchport.", "commands": ["esxcli network vswitch standard list", "esxcli network nic list"] },
-        { "n": 3, "action": "Look at portgroup VLAN and upstream trunking", "expected": "Portgroup VLAN ID matches upstream allowed VLANs.", "commands": ["esxcli network vswitch standard portgroup list"] },
-        { "n": 4, "action": "Pktcap on the VM's vNIC to see inbound/outbound", "expected": "You can see the VM's packets on the expected side; otherwise it's a vSwitch/uplink issue.", "commands": ["pktcap-uw --switchport <port> --dir 0 -o /tmp/in.pcap", "pktcap-uw --uplink vmnic0 --dir 1 -o /tmp/out.pcap"] },
-        { "n": 5, "action": "Check vmkernel.log for portgroup / uplink / NIC teaming events", "expected": "No 'link down', no 'port blocked' for the VM's portID.", "commands": ["tail -200 /var/log/vmkernel.log | grep -Ei 'portgroup|uplink|vmnic|teaming'"] }
+        {
+          "n": 1,
+          "action": "Confirm the VM's vNIC is connected to the right portgroup and is up",
+          "expected": "vNIC state is 'Connected', portgroup name matches.",
+          "commands": [
+            "esxcli network vm list",
+            "esxcli network vm port list -w <worldID>"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Check the vSwitch uplink state and CDP/LLDP neighbour",
+          "expected": "At least one uplink is Up; CDP/LLDP shows the expected upstream switchport.",
+          "commands": [
+            "esxcli network vswitch standard list",
+            "esxcli network nic list"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Look at portgroup VLAN and upstream trunking",
+          "expected": "Portgroup VLAN ID matches upstream allowed VLANs.",
+          "commands": [
+            "esxcli network vswitch standard portgroup list"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Pktcap on the VM's vNIC to see inbound/outbound",
+          "expected": "You can see the VM's packets on the expected side; otherwise it's a vSwitch/uplink issue.",
+          "commands": [
+            "pktcap-uw --switchport <port> --dir 0 -o /tmp/in.pcap",
+            "pktcap-uw --uplink vmnic0 --dir 1 -o /tmp/out.pcap"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Check vmkernel.log for portgroup / uplink / NIC teaming events",
+          "expected": "No 'link down', no 'port blocked' for the VM's portID.",
+          "commands": [
+            "tail -200 /var/log/vmkernel.log | grep -Ei 'portgroup|uplink|vmnic|teaming'"
+          ]
+        }
       ]
     },
     {
@@ -110,12 +413,54 @@
       "product": "",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Capture with a tight filter to keep size manageable", "expected": "Capture file is small enough to load quickly.", "commands": ["tshark -i <iface> -f 'host <client> and host <server>' -w slow.pcap"] },
-        { "n": 2, "action": "Open in Wireshark and set a display filter for the TCP conversation", "expected": "One conversation selected.", "commands": ["tcp.stream eq 0"] },
-        { "n": 3, "action": "Use Statistics → Conversations → TCP to find the biggest/slowest stream", "expected": "You know which stream(s) dominate the page load.", "commands": [] },
-        { "n": 4, "action": "Review Expert Info for retransmissions, zero-window, dup-ACKs", "expected": "Visible correlation with the slow-down.", "commands": ["tcp.analysis.flags"] },
-        { "n": 5, "action": "For TLS, check handshake time and server certificate round-trips", "expected": "Handshake < 300 ms on a healthy path.", "commands": ["tls.handshake.type == 1", "tls.handshake.type == 2"] },
-        { "n": 6, "action": "For HTTP/1.1 and HTTP/2, measure request-to-first-byte", "expected": "Identify whether delay is in the request, the server response, or the body transfer.", "commands": ["http.request or http.response", "http2.type == 1"] }
+        {
+          "n": 1,
+          "action": "Capture with a tight filter to keep size manageable",
+          "expected": "Capture file is small enough to load quickly.",
+          "commands": [
+            "tshark -i <iface> -f 'host <client> and host <server>' -w slow.pcap"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Open in Wireshark and set a display filter for the TCP conversation",
+          "expected": "One conversation selected.",
+          "commands": [
+            "tcp.stream eq 0"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Use Statistics → Conversations → TCP to find the biggest/slowest stream",
+          "expected": "You know which stream(s) dominate the page load.",
+          "commands": []
+        },
+        {
+          "n": 4,
+          "action": "Review Expert Info for retransmissions, zero-window, dup-ACKs",
+          "expected": "Visible correlation with the slow-down.",
+          "commands": [
+            "tcp.analysis.flags"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "For TLS, check handshake time and server certificate round-trips",
+          "expected": "Handshake < 300 ms on a healthy path.",
+          "commands": [
+            "tls.handshake.type == 1",
+            "tls.handshake.type == 2"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "For HTTP/1.1 and HTTP/2, measure request-to-first-byte",
+          "expected": "Identify whether delay is in the request, the server response, or the body transfer.",
+          "commands": [
+            "http.request or http.response",
+            "http2.type == 1"
+          ]
+        }
       ]
     },
     {
@@ -125,25 +470,46 @@
       "product": "",
       "source": "curated",
       "steps": [
-        { "n": 1, "action": "Retrieve the chain the server actually presents", "expected": "Each certificate printed with subject / issuer.", "commands": ["openssl s_client -connect <host>:443 -servername <host> -showcerts < /dev/null"] },
-        { "n": 2, "action": "Validate the full chain against the system trust store", "expected": "Verify return code: 0 (ok).", "commands": ["openssl s_client -connect <host>:443 -servername <host> -verify_return_error < /dev/null"] },
-        { "n": 3, "action": "Inspect the leaf certificate's SAN and expiry", "expected": "FQDN in SAN; notAfter > today + renewal window.", "commands": ["openssl s_client -connect <host>:443 -servername <host> < /dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName"] },
-        { "n": 4, "action": "Check which CA signed the leaf and whether it's trusted locally", "expected": "Issuer appears in /etc/ssl/certs or the platform's trust bundle.", "commands": ["openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt chain.pem"] },
-        { "n": 5, "action": "If chain is incomplete, identify which intermediate is missing", "expected": "AIA URL in leaf points to the intermediate that should have been sent.", "commands": ["openssl x509 -in leaf.pem -noout -text | grep -A1 'Authority Information Access'"] }
-      ]
-    },
-    {
-      "title": "AWS CLI: an EC2 instance 'can't reach the internet'",
-      "topic": "AWS CLI",
-      "vendor": "AWS",
-      "product": "EC2",
-      "source": "curated",
-      "steps": [
-        { "n": 1, "action": "Check the instance has a public/EIP or NAT path", "expected": "Public subnet + public IP/EIP, OR private subnet + NAT gateway in route table.", "commands": ["aws ec2 describe-instances --instance-ids <id> --query 'Reservations[].Instances[].{IP:PublicIpAddress,Subnet:SubnetId}'", "aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=<subnet>"] },
-        { "n": 2, "action": "Validate security group egress and NACL egress", "expected": "0.0.0.0/0 on required ports egress; NACL not blocking return.", "commands": ["aws ec2 describe-security-groups --group-ids <sg>", "aws ec2 describe-network-acls --filters Name=association.subnet-id,Values=<subnet>"] },
-        { "n": 3, "action": "Confirm IGW / NAT GW is healthy", "expected": "IGW attached to VPC; NATGW state=available.", "commands": ["aws ec2 describe-internet-gateways --filters Name=attachment.vpc-id,Values=<vpc>", "aws ec2 describe-nat-gateways --filter Name=vpc-id,Values=<vpc>"] },
-        { "n": 4, "action": "Run VPC Reachability Analyzer from the instance to 8.8.8.8:443", "expected": "Path is 'reachable' end-to-end.", "commands": ["aws ec2 create-network-insights-path --source <eni> --destination 8.8.8.8 --protocol TCP --destination-port 443", "aws ec2 start-network-insights-analysis --network-insights-path-id <id>"] },
-        { "n": 5, "action": "From inside the instance, verify OS-level networking isn't the culprit", "expected": "Default route present, DNS resolves.", "commands": ["ip route", "curl -v https://checkip.amazonaws.com"] }
+        {
+          "n": 1,
+          "action": "Retrieve the chain the server actually presents",
+          "expected": "Each certificate printed with subject / issuer.",
+          "commands": [
+            "openssl s_client -connect <host>:443 -servername <host> -showcerts < /dev/null"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Validate the full chain against the system trust store",
+          "expected": "Verify return code: 0 (ok).",
+          "commands": [
+            "openssl s_client -connect <host>:443 -servername <host> -verify_return_error < /dev/null"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Inspect the leaf certificate's SAN and expiry",
+          "expected": "FQDN in SAN; notAfter > today + renewal window.",
+          "commands": [
+            "openssl s_client -connect <host>:443 -servername <host> < /dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Check which CA signed the leaf and whether it's trusted locally",
+          "expected": "Issuer appears in /etc/ssl/certs or the platform's trust bundle.",
+          "commands": [
+            "openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt chain.pem"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "If chain is incomplete, identify which intermediate is missing",
+          "expected": "AIA URL in leaf points to the intermediate that should have been sent.",
+          "commands": [
+            "openssl x509 -in leaf.pem -noout -text | grep -A1 'Authority Information Access'"
+          ]
+        }
       ]
     }
   ]
