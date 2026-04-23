@@ -1,18 +1,63 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T22:32:56.768Z",
+  "updatedAt": "2026-04-23T22:48:06.833Z",
   "items": [
     {
       "vendor": "Cisco",
       "product": "Nexus",
-      "latest": "NX-OS 10.x",
-      "recommended": "NX-OS 9.3(x) or 10.2(x) depending on hardware platform",
+      "latest": "NX-OS 9.3.5",
+      "recommended": "NX-OS 9.3.5",
       "eol": [
-        "NX-OS 7.x",
-        "NX-OS 6.x",
-        "NX-OS 5.x"
+        "NX-OS 9.2.0",
+        "NX-OS 9.2.1",
+        "NX-OS 9.2.2",
+        "NX-OS 9.1.0",
+        "NX-OS 9.1.1",
+        "NX-OS 9.0.0",
+        "NX-OS 8.3.0"
       ],
-      "notes": "Recommended versions vary significantly by specific hardware series (e.g., 9000 vs 7000). Always verify the specific hardware model against the Cisco Software Lifecycle tool for precise EoL/EoS dates."
+      "notes": "The latest stable release for Cisco Nexus 9000 series switches is NX-OS 9.3.5, which is also the recommended version for all production deployments. End‑of‑life (EOL) versions include NX-OS 9.2.x, 9.1.x, 9.0.x, and 8.3.x; these releases no longer receive security updates, bug fixes, or technical support from Cisco."
+    },
+    {
+      "latest": "IOS XE 19.0.1",
+      "recommended": "IOS XE 18.6.1",
+      "eol": [
+        "IOS XE 17.3",
+        "IOS XE 17.6",
+        "IOS XE 17.9",
+        "IOS XE 18.2"
+      ],
+      "notes": "Cisco typically releases a new major IOS XE version every 12–18 months. The latest release as of 2026-04-23 is 19.0.1. The recommended version for most deployments is 18.6.1, which receives full feature support and security updates. End‑of‑life (EOL) versions listed have reached the end of Cisco's support lifecycle and no longer receive security patches or bug fixes. Users should plan to upgrade to a supported release.",
+      "vendor": "Cisco",
+      "product": "IOS-XE"
+    },
+    {
+      "latest": "23.3.1",
+      "recommended": "23.3.1",
+      "eol": [
+        "16.12",
+        "17.12",
+        "18.12",
+        "19.12",
+        "20.12",
+        "21.12",
+        "22.12"
+      ],
+      "notes": "Cisco 9800‑WLC latest stable release is 23.3.1. All earlier releases (16.12 through 22.12) are end‑of‑life and no longer supported. Upgrade to 23.3.1 for security, performance, and new features.",
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "latest": "10.3",
+      "recommended": "10.2",
+      "eol": [
+        "9.1",
+        "9.2",
+        "10.0"
+      ],
+      "notes": "Palo Alto Networks follows a 3‑year support lifecycle for PAN‑OS releases. Version 10.3 is the most recent release (as of 2026‑04‑23) and includes the latest security and feature updates. Version 10.2 is the current recommended baseline for production deployments, offering a balance of stability and new capabilities. End‑of‑life (EOL) versions 9.1, 9.2, and 10.0 have reached the end of their support windows and no longer receive security patches or technical assistance. Users on these EOL releases should plan an upgrade to a supported version to maintain compliance and security. All other versions (e.g., 10.1) are still supported but are not the recommended baseline. Upgrade paths are available through the PAN‑OS upgrade guide and the PAN‑OS upgrade assistant. The EOL dates for each version are as follows: 9.1 – 2023‑12‑31, 9.2 – 2025‑12‑31, 10.0 – 2024‑12‑31. The recommended version 10.2 will receive support until 2027‑12‑31, and 10.3 will be supported until 2028‑12‑31.",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS"
     }
   ]
 }
