@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T22:59:54.705Z",
+  "updatedAt": "2026-04-23T23:10:34.108Z",
   "items": [
     {
       "error": "Unable to retrieve real-time CVE data for Cisco Nexus within the last 90 days. Please consult the official Cisco Security Advisories or NVD database for up-to-date information.",
