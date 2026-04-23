@@ -1,5 +1,18 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T19:07:54.567Z",
-  "items": []
+  "updatedAt": "2026-04-23T21:56:03.538Z",
+  "items": [
+    {
+      "vendor": "Cisco",
+      "product": "Nexus",
+      "latest": "NX-OS 10.x",
+      "recommended": "NX-OS 9.3(x) or 10.2(x) depending on hardware platform",
+      "eol": [
+        "NX-OS 7.x",
+        "NX-OS 6.x",
+        "NX-OS 5.x"
+      ],
+      "notes": "Recommended versions vary significantly by specific hardware series (e.g., 9000 vs 7000). Always verify the specific hardware model against the Cisco Software Lifecycle tool for precise EoL/EoS dates."
+    }
+  ]
 }
