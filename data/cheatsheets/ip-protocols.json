@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "items": [
+    { "number": 0,   "name": "HOPOPT",  "description": "IPv6 Hop-by-Hop Option" },
+    { "number": 1,   "name": "ICMP",    "description": "Internet Control Message Protocol" },
+    { "number": 2,   "name": "IGMP",    "description": "Internet Group Management Protocol" },
+    { "number": 4,   "name": "IPv4",    "description": "IPv4 encapsulation (IP-in-IP)" },
+    { "number": 6,   "name": "TCP",     "description": "Transmission Control Protocol" },
+    { "number": 8,   "name": "EGP",     "description": "Exterior Gateway Protocol" },
+    { "number": 9,   "name": "IGP",     "description": "Interior Gateway Protocol (any)" },
+    { "number": 17,  "name": "UDP",     "description": "User Datagram Protocol" },
+    { "number": 41,  "name": "IPv6",    "description": "IPv6 encapsulation (6in4)" },
+    { "number": 43,  "name": "IPv6-Route","description": "IPv6 Routing Header" },
+    { "number": 44,  "name": "IPv6-Frag","description": "IPv6 Fragment Header" },
+    { "number": 46,  "name": "RSVP",    "description": "Resource Reservation Protocol" },
+    { "number": 47,  "name": "GRE",     "description": "Generic Routing Encapsulation" },
+    { "number": 50,  "name": "ESP",     "description": "IPsec Encapsulating Security Payload" },
+    { "number": 51,  "name": "AH",      "description": "IPsec Authentication Header" },
+    { "number": 58,  "name": "ICMPv6",  "description": "ICMP for IPv6" },
+    { "number": 59,  "name": "IPv6-NoNxt","description": "No next header for IPv6" },
+    { "number": 60,  "name": "IPv6-Opts","description": "IPv6 Destination Options" },
+    { "number": 88,  "name": "EIGRP",   "description": "Cisco Enhanced Interior Gateway Routing" },
+    { "number": 89,  "name": "OSPF",    "description": "Open Shortest Path First" },
+    { "number": 94,  "name": "IPIP",    "description": "IP-within-IP Encapsulation" },
+    { "number": 97,  "name": "ETHERIP", "description": "Ethernet-in-IP" },
+    { "number": 103, "name": "PIM",     "description": "Protocol Independent Multicast" },
+    { "number": 108, "name": "IPComp",  "description": "IP Payload Compression" },
+    { "number": 112, "name": "VRRP",    "description": "Virtual Router Redundancy Protocol" },
+    { "number": 115, "name": "L2TP",    "description": "Layer 2 Tunneling Protocol" },
+    { "number": 132, "name": "SCTP",    "description": "Stream Control Transmission Protocol" },
+    { "number": 137, "name": "MPLS-in-IP","description": "MPLS over IP" }
+  ]
+}

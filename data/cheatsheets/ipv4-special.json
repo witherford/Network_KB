@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "items": [
+    { "range": "0.0.0.0/8",         "rfc": "RFC 791 / 1122", "use": "\"This\" network; source address only" },
+    { "range": "10.0.0.0/8",        "rfc": "RFC 1918",       "use": "Private use (Class A)" },
+    { "range": "100.64.0.0/10",     "rfc": "RFC 6598",       "use": "Shared address space / CGN" },
+    { "range": "127.0.0.0/8",       "rfc": "RFC 1122",       "use": "Loopback" },
+    { "range": "169.254.0.0/16",    "rfc": "RFC 3927",       "use": "Link-local (APIPA)" },
+    { "range": "172.16.0.0/12",     "rfc": "RFC 1918",       "use": "Private use (Class B)" },
+    { "range": "192.0.0.0/24",      "rfc": "RFC 6890",       "use": "IETF protocol assignments" },
+    { "range": "192.0.2.0/24",      "rfc": "RFC 5737",       "use": "Documentation (TEST-NET-1)" },
+    { "range": "192.88.99.0/24",    "rfc": "RFC 7526",       "use": "6to4 relay anycast (deprecated)" },
+    { "range": "192.168.0.0/16",    "rfc": "RFC 1918",       "use": "Private use (Class C)" },
+    { "range": "198.18.0.0/15",     "rfc": "RFC 2544",       "use": "Benchmark testing" },
+    { "range": "198.51.100.0/24",   "rfc": "RFC 5737",       "use": "Documentation (TEST-NET-2)" },
+    { "range": "203.0.113.0/24",    "rfc": "RFC 5737",       "use": "Documentation (TEST-NET-3)" },
+    { "range": "224.0.0.0/4",       "rfc": "RFC 5771",       "use": "Multicast (Class D)" },
+    { "range": "240.0.0.0/4",       "rfc": "RFC 1112",       "use": "Reserved for future use (Class E)" },
+    { "range": "255.255.255.255/32","rfc": "RFC 919",        "use": "Limited broadcast" }
+  ]
+}
