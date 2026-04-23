@@ -19,10 +19,20 @@ export function loadPool(providers) {
     p => p.id === 'pollinations-fallback' && p.enabled === false
   );
   if (!optedOut) {
+    // Register two Pollinations entries with different upstream models so a
+    // silent-empty response on one (common for CVE-style prompts) still has a
+    // second chance before the keyring declares exhaustion.
     pool.push({
       id: 'pollinations-fallback',
       provider: 'pollinations',
       model: 'openai',
+      key: '',
+      enabled: true
+    });
+    pool.push({
+      id: 'pollinations-fallback-mistral',
+      provider: 'pollinations',
+      model: 'mistral',
       key: '',
       enabled: true
     });
