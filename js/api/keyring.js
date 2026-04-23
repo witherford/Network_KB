@@ -11,6 +11,22 @@ const MAX_COOLDOWN_MS = 30 * 60_000;
 
 export function loadPool(providers) {
   pool = (providers || []).filter(p => p.enabled !== false && p.key);
+  // Always append the keyless Pollinations fallback last so it's the final
+  // resort when every configured key is exhausted or in cooldown. Users can
+  // opt out by adding { id: 'pollinations-fallback', enabled: false } to
+  // their aiProviders.
+  const optedOut = (providers || []).some(
+    p => p.id === 'pollinations-fallback' && p.enabled === false
+  );
+  if (!optedOut) {
+    pool.push({
+      id: 'pollinations-fallback',
+      provider: 'pollinations',
+      model: 'openai',
+      key: '',
+      enabled: true
+    });
+  }
   cursor = 0;
   cooldown.clear();
   failures.clear();
