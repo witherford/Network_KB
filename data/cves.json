@@ -1,11 +1,168 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-23T23:10:34.108Z",
+  "updatedAt": "2026-04-24T00:00:00.000Z",
   "items": [
     {
-      "error": "Unable to retrieve real-time CVE data for Cisco Nexus within the last 90 days. Please consult the official Cisco Security Advisories or NVD database for up-to-date information.",
+      "id": "CVE-2024-3400",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS (GlobalProtect)",
+      "severity": "critical",
+      "cvss": 10.0,
+      "summary": "Command injection in GlobalProtect on PAN-OS permitted unauthenticated remote code execution as root. Exploited in the wild. Fixed in 10.2.9-h1, 11.0.4-h1, 11.1.2-h3 and later; hot-patches issued for older trains.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-0012",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "critical",
+      "cvss": 9.3,
+      "summary": "Authentication bypass in PAN-OS web management interface allowed unauthenticated network-attacker admin access. Mitigation: restrict mgmt-plane access to trusted hosts; upgrade to 10.2.12-h2 / 11.0.6-h1 / 11.1.5-h1 / 11.2.4-h1.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-4966",
+      "vendor": "Citrix",
+      "product": "NetScaler ADC / Gateway",
+      "severity": "critical",
+      "cvss": 9.4,
+      "summary": "\"Citrix Bleed\" — sensitive memory disclosure from NetScaler Gateway / AAA VIPs, including session cookies enabling session hijack. Active ransomware exploitation Q4 2023. Fixed in 13.1-49.15, 13.0-92.19, and later; revoke all active sessions after patching.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-6548",
+      "vendor": "Citrix",
+      "product": "NetScaler ADC / Gateway",
+      "severity": "medium",
+      "cvss": 5.5,
+      "summary": "Authenticated remote code execution on NetScaler management interface when configured as Gateway/AAA vserver. Requires mgmt-plane access. Fixed in 14.1-12.35, 13.1-51.15, 13.0-92.21.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-20269",
       "vendor": "Cisco",
-      "product": "9800-WLC"
+      "product": "ASA / FTD",
+      "severity": "medium",
+      "cvss": 5.0,
+      "summary": "Unauthenticated brute-force of remote-access VPN credentials via a flaw in how ASA/FTD handled auth requests. Abused by Akira ransomware. Mitigation: MFA, default group lockout, disable default WebVPN connection profile; fixes in later 9.16/9.17/9.18/9.19 trains.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-20198",
+      "vendor": "Cisco",
+      "product": "IOS XE",
+      "severity": "critical",
+      "cvss": 10.0,
+      "summary": "Web UI privilege-escalation flaw letting an unauthenticated attacker create a privilege-15 local account. Exploited in the wild together with CVE-2023-20273. Fix: upgrade IOS XE and disable the HTTP server (no ip http server / secure-server) if not required.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-20273",
+      "vendor": "Cisco",
+      "product": "IOS XE",
+      "severity": "high",
+      "cvss": 7.2,
+      "summary": "Command injection in IOS XE web UI that lets an authenticated user (e.g. the account created via CVE-2023-20198) write files and gain root. Chained with 20198 for full device takeover.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20353",
+      "vendor": "Cisco",
+      "product": "ASA / FTD",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "DoS via crafted HTTP request to the WebVPN service on ASA/FTD, causing device reload. Reported alongside ArcaneDoor campaign. Fixed in 9.16.4.60, 9.18.4.24, 9.20.2.6 and later.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20356",
+      "vendor": "Cisco",
+      "product": "IMC (UCS/ISE appliances)",
+      "severity": "high",
+      "cvss": 8.7,
+      "summary": "Authenticated command-injection in Cisco Integrated Management Controller web interface. Fix: upgrade IMC per hardware model's matrix; restrict IMC network reachability to management VLAN.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-37085",
+      "vendor": "VMware",
+      "product": "ESXi",
+      "severity": "high",
+      "cvss": 6.8,
+      "summary": "Authentication bypass allowing AD domain members belonging to an attacker-created 'ESX Admins' group to gain full ESXi admin access. Exploited by ransomware. Mitigation: remove AD integration if not used, or explicitly set the admin group; fix in ESXi 8.0 U3.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-38812",
+      "vendor": "VMware",
+      "product": "vCenter Server",
+      "severity": "critical",
+      "cvss": 9.8,
+      "summary": "Heap-overflow in DCERPC protocol implementation enabling remote code execution via crafted network packets. No auth required. Fixed in vCenter 8.0 U3b / 8.0 U2d / 7.0 U3t.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-1086",
+      "vendor": "Linux",
+      "product": "Kernel (netfilter nf_tables)",
+      "severity": "high",
+      "cvss": 7.8,
+      "summary": "Use-after-free in nf_tables leading to local privilege escalation to root. Public exploit since early 2024. Patched across all stable trees; audit any host allowing unprivileged user namespaces.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-6387",
+      "vendor": "OpenSSH",
+      "product": "OpenSSH Server",
+      "severity": "high",
+      "cvss": 8.1,
+      "summary": "\"regreSSHion\" — signal-handler race in sshd on glibc systems allowing unauthenticated RCE on 32-bit builds; difficult but feasible on 64-bit. Fixed in OpenSSH 9.8p1; mitigate with LoginGraceTime 0 until patched.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2023-0464",
+      "vendor": "OpenSSL",
+      "product": "OpenSSL",
+      "severity": "high",
+      "cvss": 7.5,
+      "summary": "Denial of service via X.509 certificate policy constraints — malicious chain can cause exponential CPU use during verification. Fixed in 1.1.1t, 3.0.8, 3.1.0.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-43451",
+      "vendor": "Microsoft",
+      "product": "Windows (NTLM)",
+      "severity": "medium",
+      "cvss": 6.5,
+      "summary": "NTLM hash disclosure via crafted file — triggered by minimal user interaction (selecting/right-clicking a file). Exploited in the wild. Patched in the November 2024 cumulative update.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-49113",
+      "vendor": "Microsoft",
+      "product": "Windows (LDAP)",
+      "severity": "high",
+      "cvss": 7.5,
+      "summary": "\"LDAPNightmare\" — unauthenticated DoS / RCE pre-conditions via LDAP client path; crash domain controllers via crafted DSR referral. Patch from December 2024 cumulative update.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-38063",
+      "vendor": "Microsoft",
+      "product": "Windows (IPv6)",
+      "severity": "critical",
+      "cvss": 9.8,
+      "summary": "Zero-click remote code execution via crafted IPv6 packets processed by the Windows TCP/IP stack. Mitigate by disabling IPv6 on exposed hosts until patched; fix in August 2024 cumulative.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-0208",
+      "vendor": "Wireshark",
+      "product": "Wireshark",
+      "severity": "medium",
+      "cvss": 5.5,
+      "summary": "GVCP dissector infinite loop crashing Wireshark during capture analysis. Fix: upgrade to 4.0.12 / 4.2.2 or later. Impact limited to analyst workstations.",
+      "source": "curated"
     }
   ]
 }

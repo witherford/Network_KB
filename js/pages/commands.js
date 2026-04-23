@@ -8,6 +8,7 @@ import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleColl
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
+import { fetchForKind } from '../components/ai-fetch.js';
 
 const TYPE_LABELS = { all: 'All', show: 'Show', config: 'Configuration', troubleshooting: 'Troubleshooting' };
 
@@ -56,6 +57,7 @@ function shellHtml() {
       <span id="cmdMatch" style="font-size:11px;color:var(--text-3);margin-right:10px"></span>
       <button class="btn" id="cmdExport" title="Export CSV">Export</button>
       <span id="cmdEditActions" style="display:${state.editMode ? 'inline-flex' : 'none'};gap:6px">
+        <button class="btn" id="cmdFetch" title="Fetch commands from AI for watchlist vendors">Fetch now</button>
         <button class="btn" id="cmdImport" title="Import CSV">Import</button>
         <button class="btn primary" id="cmdAddPlat" title="Add platform">+ Platform</button>
         <button class="btn primary" id="cmdAddCmd" title="Add command">+ Command</button>
@@ -178,6 +180,12 @@ function wireToolbar(root) {
   root.querySelector('#cmdImport').addEventListener('click', openImportModal);
   root.querySelector('#cmdAddPlat').addEventListener('click', openAddPlatformModal);
   root.querySelector('#cmdAddCmd').addEventListener('click', () => openCommandModal());
+  root.querySelector('#cmdFetch').addEventListener('click', async e => {
+    e.target.disabled = true; e.target.textContent = 'Fetching…';
+    try { await fetchForKind('commands', { promptKey: 'commands' }); }
+    catch (err) { toast(err.message, 'error'); }
+    finally { e.target.disabled = false; e.target.textContent = 'Fetch now'; renderAll(); }
+  });
 }
 
 function* iterAll() {

@@ -1,16 +1,28 @@
 // CVE page — AI-populated per configured vendor/product.
 
 import { loadData } from '../dataloader.js';
-import { state, on } from '../state.js';
+import { state, emit, on } from '../state.js';
 import { esc, fmtDateTime, toast } from '../utils.js';
 import { fetchForKind } from '../components/ai-fetch.js';
+import { confirmModal } from '../components/modal.js';
 
 const SEV_COLOR = { critical: '#991b1b', high: '#b45309', medium: '#0369a1', low: '#6b7280' };
 
+function workingData() {
+  return state.editMode && state.pending.cves ? state.pending.cves : state.data.cves;
+}
+function ensureDraft() {
+  if (!state.pending.cves) {
+    state.pending.cves = structuredClone(state.data.cves || { version: 1, items: [] });
+    state.pending.cves.items ||= [];
+  }
+  return state.pending.cves;
+}
+
 export async function mount(root) {
   const diskData = await loadData('cves');
-  const data = state.pending.cves || diskData;
   state.data.cves = diskData;
+  const data = workingData() || diskData;
   const items = (data && data.items) || [];
 
   root.innerHTML = `
@@ -35,6 +47,7 @@ export async function mount(root) {
       catch (err) { toast(err.message, 'error'); }
       finally { mount(root); }
     });
+    c.addEventListener('click', onRowClick);
   }
 
   on('pending:changed', () => { if (state.currentPage === 'cves') mount(root); });
@@ -42,17 +55,32 @@ export async function mount(root) {
   window.addEventListener('nkb:reload', () => { if (state.currentPage === 'cves') mount(root); }, { once: true });
 }
 
+async function onRowClick(e) {
+  const btn = e.target.closest('button[data-act=del-cve]');
+  if (!btn) return;
+  const idx = Number(btn.dataset.idx);
+  const draft = ensureDraft();
+  const it = draft.items[idx];
+  if (!it) return;
+  const ok = await confirmModal(`Delete ${it.id || 'CVE'}?`, { danger: true });
+  if (!ok) return;
+  draft.items.splice(idx, 1);
+  emit('pending:changed');
+}
+
 function renderCves(c, items, filter) {
   const q = filter.trim().toLowerCase();
-  const matches = items.filter(it => !q || (it.id + ' ' + (it.vendor || '') + ' ' + (it.product || '') + ' ' + (it.summary || '')).toLowerCase().includes(q));
+  const indexed = items.map((it, idx) => ({ it, idx }));
+  const matches = indexed.filter(({ it }) => !q || (it.id + ' ' + (it.vendor || '') + ' ' + (it.product || '') + ' ' + (it.summary || '')).toLowerCase().includes(q));
   if (!matches.length) {
     c.innerHTML = `<div class="page-empty">No CVEs${q ? ' match' : ' yet'}. Configure watchlist vendors in Settings.</div>`;
     return;
   }
+  const editHeader = state.editMode ? '<th style="width:60px"></th>' : '';
   c.innerHTML = `<table class="tbl">
-    <thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Summary</th></tr></thead>
+    <thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Summary</th>${editHeader}</tr></thead>
     <tbody>
-      ${matches.map(r => {
+      ${matches.map(({ it: r, idx }) => {
         const sev = (r.severity || '').toLowerCase();
         const col = SEV_COLOR[sev] || 'inherit';
         return `<tr>
@@ -62,6 +90,7 @@ function renderCves(c, items, filter) {
           <td style="color:${col};font-weight:600;text-transform:capitalize">${esc(r.severity || '')}</td>
           <td class="mono">${esc(String(r.cvss ?? ''))}</td>
           <td>${esc(r.summary || '')}</td>
+          ${state.editMode ? `<td><button class="btn sm danger" data-act="del-cve" data-idx="${idx}" title="Delete">🗑</button></td>` : ''}
         </tr>`;
       }).join('')}
     </tbody>
