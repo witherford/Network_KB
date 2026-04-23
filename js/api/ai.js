@@ -4,10 +4,13 @@
 import * as keyring from './keyring.js';
 
 const ENDPOINTS = {
-  openrouter: 'https://openrouter.ai/api/v1/chat/completions',
-  openai:     'https://api.openai.com/v1/chat/completions',
-  groq:       'https://api.groq.com/openai/v1/chat/completions',
-  anthropic:  'https://api.anthropic.com/v1/messages'
+  openrouter:   'https://openrouter.ai/api/v1/chat/completions',
+  openai:       'https://api.openai.com/v1/chat/completions',
+  groq:         'https://api.groq.com/openai/v1/chat/completions',
+  anthropic:    'https://api.anthropic.com/v1/messages',
+  // Free, keyless, community-run — used as an auto-injected last-resort
+  // fallback in the keyring when all configured providers are exhausted.
+  pollinations: 'https://text.pollinations.ai/openai'
 };
 
 export function isRetriable(status) {
@@ -67,7 +70,7 @@ async function callProvider(p, { messages, maxTokens, temperature, json }) {
     return j.content?.[0]?.text || '';
   }
 
-  // OpenAI-compatible (openrouter, openai, groq)
+  // OpenAI-compatible (openrouter, openai, groq, pollinations)
   const body = {
     model: p.model,
     messages,
@@ -75,12 +78,12 @@ async function callProvider(p, { messages, maxTokens, temperature, json }) {
     max_tokens: maxTokens,
     ...(json ? { response_format: { type: 'json_object' } } : {})
   };
+  const reqHeaders = { 'Content-Type': 'application/json' };
+  // Pollinations is keyless; other OpenAI-compatible providers need a bearer.
+  if (p.provider !== 'pollinations') reqHeaders['Authorization'] = 'Bearer ' + p.key;
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + p.key,
-      'Content-Type': 'application/json'
-    },
+    headers: reqHeaders,
     body: JSON.stringify(body)
   });
   if (!res.ok) {
@@ -88,9 +91,12 @@ async function callProvider(p, { messages, maxTokens, temperature, json }) {
     e.retriable = isRetriable(res.status);
     throw e;
   }
-const j = await res.json();
+  const j = await res.json();
   const content = j.choices?.[0]?.message?.content;
   if (!content) {
+    // Some OpenRouter upstreams (e.g. auto-router hitting minimax free tier)
+    // return HTTP 200 with content: null and completion_tokens: 0. Surface
+    // the underlying model so the user can pin a reliable one.
     const upstreamModel = j.model || p.model;
     const e = new Error(`${p.provider} returned empty content (upstream=${upstreamModel}); pin a specific model instead of the auto-router`);
     e.retriable = false;
