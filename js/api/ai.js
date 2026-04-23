@@ -94,12 +94,13 @@ async function callProvider(p, { messages, maxTokens, temperature, json }) {
   const j = await res.json();
   const content = j.choices?.[0]?.message?.content;
   if (!content) {
-    // Some OpenRouter upstreams (e.g. auto-router hitting minimax free tier)
-    // return HTTP 200 with content: null and completion_tokens: 0. Surface
-    // the underlying model so the user can pin a reliable one.
+    // Some upstreams (OpenRouter auto-router hitting minimax, Pollinations under
+    // load) return HTTP 200 with content: null and completion_tokens: 0.
+    // Mark retriable so the keyring moves to the next provider — a silent empty
+    // response is no more useful than a 5xx.
     const upstreamModel = j.model || p.model;
-    const e = new Error(`${p.provider} returned empty content (upstream=${upstreamModel}); pin a specific model instead of the auto-router`);
-    e.retriable = false;
+    const e = new Error(`${p.provider} returned empty content (upstream=${upstreamModel})`);
+    e.retriable = true;
     throw e;
   }
   return content;

@@ -52,7 +52,13 @@ export async function fetchForKind(kind, { promptKey, fill, schemaGuard } = {}) 
         for (const raw of items) {
           const item = normalize(raw, kind);
           const tagged = { ...item, vendor: item.vendor || v.vendor, product: item.product || product };
-          if (!hasSubstance(tagged, kind) || (schemaGuard && !schemaGuard(tagged))) { skipped++; continue; }
+          const substantive = hasSubstance(tagged, kind);
+          if (!substantive || (schemaGuard && !schemaGuard(tagged))) {
+            skipped++;
+            // Log so "skipped N" in the toast has a traceable cause.
+            console.warn(`[ai-fetch] skipped ${kind} item`, { reason: !substantive ? 'no substance' : 'schema guard failed', raw, normalized: tagged });
+            continue;
+          }
           mergeItem(merged.items, tagged, kind);
           added++;
         }
@@ -79,7 +85,10 @@ function normalize(raw, kind) {
   if (kind === 'guides') {
     it.title ||= raw.name || raw.heading || raw.topic || '';
     it.topic ||= raw.category || raw.section || '';
-    it.steps ||= raw.procedure || raw.instructions || [];
+    it.steps ||= raw.procedure || raw.instructions || raw.steps_list || [];
+    // Some models return a free-text guide instead of structured steps. The
+    // renderer already falls back to `body`, so accept any of these aliases.
+    it.body ||= raw.body || raw.content || raw.text || raw.markdown || raw.guide || '';
     if (Array.isArray(it.steps)) {
       it.steps = it.steps.map((s, i) => typeof s === 'string'
         ? { n: i + 1, action: s }
@@ -104,7 +113,7 @@ function normalize(raw, kind) {
 function hasSubstance(it, kind) {
   if (kind === 'cves') return !!(it.id || (it.summary && it.summary.length > 8));
   if (kind === 'software') return !!(it.latest || it.recommended || (Array.isArray(it.eol) ? it.eol.length : it.eol) || it.notes);
-  if (kind === 'guides') return !!(it.title || (Array.isArray(it.steps) && it.steps.length));
+  if (kind === 'guides') return !!(it.title || it.body || (Array.isArray(it.steps) && it.steps.length));
   if (kind === 'commands') return !!it.cmd;
   return true;
 }
