@@ -5,6 +5,7 @@ import { state, emit, on } from '../state.js';
 import { esc, fmtDateTime, toast } from '../utils.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 import { confirmModal } from '../components/modal.js';
+import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
 
 function workingData() {
   return state.editMode && state.pending.software ? state.pending.software : state.data.software;
@@ -27,7 +28,10 @@ export async function mount(root) {
     <div class="page-toolbar">
       <strong style="font-size:13px">Software releases</strong>
       <span class="spacer"></span>
-      ${state.editMode ? '<button class="btn" id="swFetch">Fetch now</button>' : ''}
+      ${state.editMode ? `
+        <button class="btn" id="swFetch">Fetch now</button>
+        <button class="btn" id="swImport" title="Upload one or more HTML files as release notes / vendor guides">Import HTML</button>
+      ` : ''}
       <span style="font-size:11px;color:var(--text-3);margin-left:12px">Updated: ${fmtDateTime(data?.updatedAt)}</span>
     </div>
     <div class="page" id="swPage"></div>`;
@@ -41,6 +45,19 @@ export async function mount(root) {
       try { await fetchForKind('software', { promptKey: 'software' }); }
       catch (err) { toast(err.message, 'error'); }
       finally { mount(root); }
+    });
+    root.querySelector('#swImport').addEventListener('click', () => {
+      openHtmlImport({
+        kind: 'software',
+        topicLabel: 'Vendor group (optional — e.g. "Cisco", "Palo Alto")',
+        onImport: files => {
+          const draft = ensureDraft();
+          for (const f of files) {
+            draft.items.push({ ...f, vendor: f.topic || 'HTML docs' });
+          }
+          emit('pending:changed');
+        }
+      });
     });
     c.addEventListener('click', onRowClick);
   }
@@ -57,7 +74,8 @@ async function onRowClick(e) {
   const draft = ensureDraft();
   const it = draft.items[idx];
   if (!it) return;
-  const ok = await confirmModal(`Delete ${it.vendor || ''} ${it.product || ''}?`, { danger: true });
+  const label = it.html ? (it.title || 'HTML card') : `${it.vendor || ''} ${it.product || ''}`.trim();
+  const ok = await confirmModal(`Delete ${label}?`, { danger: true });
   if (!ok) return;
   draft.items.splice(idx, 1);
   emit('pending:changed');
@@ -66,19 +84,35 @@ async function onRowClick(e) {
 function renderBody(c, items) {
   if (!items.length) {
     c.innerHTML = `<div class="page-empty">
-      <p>No release data yet. Configure vendors/products in Settings and click <b>Fetch now</b> or wait for the scheduled AI pull.</p>
+      <p>No release data yet. Configure vendors/products in Settings and click <b>Fetch now</b>, upload an HTML file with <b>Import HTML</b>, or wait for the scheduled AI pull.</p>
     </div>`;
     return;
   }
-  // Index by original position so delete keeps working after grouping.
   const indexed = items.map((it, idx) => ({ it, idx }));
+  const htmlRows = indexed.filter(r => r.it.html && r.it.body);
+  const tableRows = indexed.filter(r => !(r.it.html && r.it.body));
+
+  const htmlSection = htmlRows.length ? `
+    <section class="platform-section">
+      <div class="platform-header"><h2 class="ptitle">Imported HTML</h2><span class="pcnt">${htmlRows.length}</span></div>
+      <div class="sections-grid">
+        ${htmlRows.map(({ it: r, idx }) => renderHtmlCard({
+          title: r.title || `${r.vendor || ''} ${r.product || ''}`.trim() || 'Untitled',
+          body: r.body,
+          deleteBtn: state.editMode
+            ? `<button class="btn sm danger" data-act="del-sw" data-idx="${idx}" title="Delete" style="margin-left:auto">🗑</button>`
+            : ''
+        })).join('')}
+      </div>
+    </section>` : '';
+
   const byVendor = {};
-  for (const row of indexed) {
+  for (const row of tableRows) {
     const v = row.it.vendor || 'Unknown';
     (byVendor[v] = byVendor[v] || []).push(row);
   }
   const editCol = state.editMode ? '<th style="width:60px"></th>' : '';
-  c.innerHTML = Object.entries(byVendor).map(([vendor, rows]) => `
+  const tableSections = Object.entries(byVendor).map(([vendor, rows]) => `
     <section class="platform-section">
       <div class="platform-header"><h2 class="ptitle">${esc(vendor)}</h2></div>
       <table class="tbl">
@@ -97,4 +131,6 @@ function renderBody(c, items) {
         </tbody>
       </table>
     </section>`).join('');
+
+  c.innerHTML = htmlSection + tableSections;
 }
