@@ -1,0 +1,264 @@
+// Interactive learning centre for Palo Alto PAN-OS.
+// Mounts into the Guides page root. Left rail = modules, right pane = lesson.
+
+import { CURRICULUM } from './panos-content.js';
+import { esc, copyToClipboard, toast, slugify } from '../../utils.js';
+
+const LS_KEY = 'nkb.learning.panos';
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveProgress(p) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(p)); } catch {}
+}
+
+export function mount(root, { onBack } = {}) {
+  const progress = loadProgress();
+  const modules = CURRICULUM.modules;
+  const startId = progress.lastModule && modules.find(m => m.id === progress.lastModule)
+    ? progress.lastModule : modules[0].id;
+
+  root.innerHTML = `
+    <div class="lc-shell">
+      <aside class="lc-rail">
+        <div class="lc-rail-top">
+          <button class="btn ghost lc-back" id="lcBack" title="Back to Learning Hub">← Hub</button>
+          <div class="lc-title">
+            <div class="lc-title-main">${esc(CURRICULUM.title)}</div>
+            <div class="lc-title-sub">${esc(CURRICULUM.tagline)}</div>
+          </div>
+        </div>
+        <div class="lc-rail-search">
+          <input type="search" id="lcSearch" placeholder="Filter lessons…" class="search-input" style="width:100%">
+        </div>
+        <div class="lc-rail-progress">
+          <div class="lc-progress-bar"><span id="lcProgressFill"></span></div>
+          <div class="lc-progress-text" id="lcProgressText"></div>
+        </div>
+        <nav class="lc-modules" id="lcModules"></nav>
+        <div class="lc-rail-foot">
+          <button class="btn sm ghost" id="lcReset" title="Reset progress on this device">Reset progress</button>
+        </div>
+      </aside>
+      <main class="lc-main" id="lcMain"></main>
+    </div>`;
+
+  const nav = root.querySelector('#lcModules');
+  const main = root.querySelector('#lcMain');
+
+  const state = { activeId: startId, filter: '' };
+
+  function renderRail() {
+    const q = state.filter.trim().toLowerCase();
+    nav.innerHTML = modules.map((m, i) => {
+      const match = !q || (m.title + ' ' + m.tagline + ' ' + JSON.stringify(m.sections)).toLowerCase().includes(q);
+      if (!match) return '';
+      const done = !!(progress.completed && progress.completed[m.id]);
+      const active = m.id === state.activeId;
+      return `
+        <a href="#" class="lc-mod ${active ? 'active' : ''} ${done ? 'done' : ''}" data-id="${m.id}">
+          <span class="lc-mod-icon">${m.icon || '•'}</span>
+          <span class="lc-mod-body">
+            <span class="lc-mod-title">${String(i + 1).padStart(2,'0')}. ${esc(m.title)}</span>
+            <span class="lc-mod-tag">${esc(m.tagline)}</span>
+          </span>
+          <span class="lc-mod-state">${done ? '✓' : ''}</span>
+        </a>`;
+    }).join('') || '<div class="lc-empty">No matches.</div>';
+    updateProgressBar();
+  }
+
+  function updateProgressBar() {
+    const done = modules.filter(m => progress.completed?.[m.id]).length;
+    const total = modules.length;
+    const pct = Math.round((done / total) * 100);
+    const fill = root.querySelector('#lcProgressFill');
+    const txt  = root.querySelector('#lcProgressText');
+    if (fill) fill.style.width = pct + '%';
+    if (txt)  txt.textContent = `${done} / ${total} modules · ${pct}%`;
+  }
+
+  function renderMain() {
+    const m = modules.find(x => x.id === state.activeId) || modules[0];
+    const idx = modules.indexOf(m);
+    const prev = modules[idx - 1];
+    const next = modules[idx + 1];
+    const done = !!(progress.completed && progress.completed[m.id]);
+
+    main.innerHTML = `
+      <article class="lc-article">
+        <header class="lc-article-head">
+          <div class="lc-crumb">Module ${idx + 1} of ${modules.length}</div>
+          <h1>${m.icon ? `<span class="lc-h-icon">${m.icon}</span>` : ''}${esc(m.title)}</h1>
+          <p class="lc-tagline">${esc(m.tagline)}</p>
+          <div class="lc-toolbar">
+            <button class="btn sm ${done ? 'primary' : ''}" id="lcMark">${done ? '✓ Completed' : 'Mark as completed'}</button>
+            <button class="btn sm ghost" id="lcExpandAll">Expand all</button>
+            <button class="btn sm ghost" id="lcCollapseAll">Collapse all</button>
+          </div>
+        </header>
+        <div class="lc-body">${m.sections.map(renderSection).join('')}</div>
+        <footer class="lc-article-foot">
+          <button class="btn ${prev ? '' : 'ghost'}" id="lcPrev" ${prev ? '' : 'disabled'}>← ${prev ? esc(prev.title) : 'Start'}</button>
+          <div class="lc-foot-spacer"></div>
+          <button class="btn primary" id="lcNext" ${next ? '' : 'disabled'}>${next ? esc(next.title) + ' →' : 'End of curriculum'}</button>
+        </footer>
+      </article>`;
+
+    wireSectionInteractions(main);
+
+    main.querySelector('#lcMark').addEventListener('click', () => {
+      progress.completed = progress.completed || {};
+      progress.completed[m.id] = !progress.completed[m.id];
+      saveProgress(progress);
+      renderMain(); renderRail();
+    });
+    main.querySelector('#lcExpandAll').addEventListener('click', () =>
+      main.querySelectorAll('details').forEach(d => d.open = true));
+    main.querySelector('#lcCollapseAll').addEventListener('click', () =>
+      main.querySelectorAll('details').forEach(d => d.open = false));
+
+    if (prev) main.querySelector('#lcPrev').addEventListener('click', () => setActive(prev.id));
+    if (next) main.querySelector('#lcNext').addEventListener('click', () => setActive(next.id));
+
+    main.scrollTop = 0;
+  }
+
+  function setActive(id) {
+    state.activeId = id;
+    progress.lastModule = id;
+    saveProgress(progress);
+    renderRail();
+    renderMain();
+  }
+
+  nav.addEventListener('click', e => {
+    const a = e.target.closest('.lc-mod');
+    if (!a) return;
+    e.preventDefault();
+    setActive(a.dataset.id);
+  });
+
+  root.querySelector('#lcSearch').addEventListener('input', e => {
+    state.filter = e.target.value;
+    renderRail();
+  });
+
+  root.querySelector('#lcBack').addEventListener('click', () => {
+    if (onBack) onBack();
+  });
+
+  root.querySelector('#lcReset').addEventListener('click', () => {
+    if (!confirm('Reset progress on this device? (The content itself is not changed.)')) return;
+    localStorage.removeItem(LS_KEY);
+    for (const k of Object.keys(progress)) delete progress[k];
+    toast('Progress reset', 'info');
+    renderRail();
+    renderMain();
+  });
+
+  renderRail();
+  renderMain();
+}
+
+// --- section renderers ---
+
+function renderSection(s) {
+  switch (s.kind) {
+    case 'prose':     return `<div class="lc-prose">${s.html}</div>`;
+    case 'cli':       return renderCli(s);
+    case 'diagram':   return renderDiagram(s);
+    case 'callout':   return renderCallout(s);
+    case 'checklist': return renderChecklist(s);
+    case 'table':     return renderTable(s);
+    default:          return '';
+  }
+}
+
+function renderCli(s) {
+  const id = 'cli-' + slugify(s.title || Math.random().toString(36).slice(2));
+  return `
+    <section class="lc-cli">
+      ${s.title ? `<div class="lc-cli-head">
+        <span class="lc-cli-title">${esc(s.title)}</span>
+        <button class="btn sm ghost lc-copy" data-target="${id}">Copy</button>
+      </div>` : ''}
+      <pre class="lc-cli-pre" id="${id}"><code>${esc(s.code)}</code></pre>
+      ${s.desc ? `<div class="lc-cli-desc">${esc(s.desc)}</div>` : ''}
+    </section>`;
+}
+
+function renderDiagram(s) {
+  return `
+    <section class="lc-diagram">
+      ${s.title ? `<div class="lc-diagram-title">${esc(s.title)}</div>` : ''}
+      <pre class="lc-diagram-pre">${esc(s.ascii || '')}</pre>
+    </section>`;
+}
+
+function renderCallout(s) {
+  const level = s.level || 'info';
+  const icon = { info: 'ℹ️', tip: '💡', warn: '⚠️', danger: '🛑' }[level] || 'ℹ️';
+  return `
+    <aside class="lc-callout lc-callout-${level}">
+      <div class="lc-callout-ic">${icon}</div>
+      <div class="lc-callout-body">
+        ${s.title ? `<div class="lc-callout-title">${esc(s.title)}</div>` : ''}
+        <div class="lc-callout-text">${s.body}</div>
+      </div>
+    </aside>`;
+}
+
+function renderChecklist(s) {
+  const id = 'cl-' + slugify(s.title || Math.random().toString(36).slice(2));
+  return `
+    <details class="lc-checklist" open>
+      <summary>${esc(s.title || 'Checklist')}</summary>
+      <ul class="lc-checklist-list" data-id="${id}">
+        ${(s.items || []).map((t, i) =>
+          `<li><label><input type="checkbox" data-i="${i}"> <span>${t}</span></label></li>`
+        ).join('')}
+      </ul>
+    </details>`;
+}
+
+function renderTable(s) {
+  return `
+    <section class="lc-tablewrap">
+      ${s.title ? `<div class="lc-table-title">${esc(s.title)}</div>` : ''}
+      <table class="lc-table">
+        <thead><tr>${(s.headers || []).map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${(s.rows || []).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
+    </section>`;
+}
+
+function wireSectionInteractions(scope) {
+  scope.querySelectorAll('.lc-copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const el = scope.querySelector('#' + btn.dataset.target);
+      if (!el) return;
+      const ok = await copyToClipboard(el.innerText);
+      const oldText = btn.textContent;
+      btn.textContent = ok ? 'Copied ✓' : 'Failed';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = oldText; btn.classList.remove('copied'); }, 1200);
+    });
+  });
+  scope.querySelectorAll('.lc-checklist-list').forEach(list => {
+    const key = LS_KEY + '.cl.' + list.dataset.id;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
+    list.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      if (saved[cb.dataset.i]) cb.checked = true;
+      cb.addEventListener('change', () => {
+        saved[cb.dataset.i] = cb.checked;
+        try { localStorage.setItem(key, JSON.stringify(saved)); } catch {}
+      });
+    });
+  });
+}
