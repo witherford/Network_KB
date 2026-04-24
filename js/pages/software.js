@@ -117,15 +117,22 @@ function renderBody(c, items) {
       <div class="platform-header"><h2 class="ptitle">${esc(vendor)}</h2></div>
       <table class="tbl">
         <thead><tr>
-          <th>Product</th><th>Latest</th><th>Recommended</th><th>EOL</th><th>Notes</th>${editCol}
+          <th>Product</th><th>Recommended</th><th>Latest</th><th>Lifecycle</th><th>Released</th><th>Notes / Source</th>${editCol}
         </tr></thead>
         <tbody>
           ${rows.map(({ it: r, idx }) => `<tr>
-            <td>${esc(r.product || '')}</td>
+            <td>
+              <div>${esc(r.product || '')}</div>
+              ${r.pid ? `<div style="font-size:11px;color:var(--text-3)" class="mono">${esc(r.pid)}</div>` : ''}
+            </td>
+            <td class="mono" style="font-weight:600">${esc(r.recommended || '')}</td>
             <td class="mono">${esc(r.latest || '')}</td>
-            <td class="mono">${esc(r.recommended || '')}</td>
-            <td class="mono">${esc(Array.isArray(r.eol) ? r.eol.join(', ') : (r.eol || ''))}</td>
-            <td>${esc(r.notes || '')}</td>
+            <td class="mono">${esc(r.lifecycle || (Array.isArray(r.eol) ? r.eol.join(', ') : (r.eol || '')))}</td>
+            <td class="mono" style="font-size:11px">${esc((r.releaseDate || '').slice(0, 10))}</td>
+            <td>
+              ${esc(r.notes || '')}
+              ${r.source ? `<span class="src-pill" title="Data source">${esc(r.source)}</span>` : ''}
+            </td>
             ${state.editMode ? `<td><button class="btn sm danger" data-act="del-sw" data-idx="${idx}" title="Delete">🗑</button></td>` : ''}
           </tr>`).join('')}
         </tbody>

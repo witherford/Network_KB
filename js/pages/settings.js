@@ -42,6 +42,7 @@ export async function mount(root) {
     <div class="settings-wrap">
       ${renderSection('Repository', renderRepo(s))}
       ${renderSection('AI providers (keyring)', renderProviders(s))}
+      ${renderSection('Vendor APIs (Cisco / NVD / MSRC)', renderVendorApis(s))}
       ${renderSection('AI prompts', renderPrompts(s))}
       ${renderSection('Source domains', renderDomains(s))}
       ${renderSection('Watchlist', renderWatchlist(s))}
@@ -51,6 +52,7 @@ export async function mount(root) {
 
   wireRepo(root, s);
   wireProviders(root, s);
+  wireVendorApis(root, s);
   wirePrompts(root, s);
   wireDomains(root, s);
   wireWatchlist(root, s);
@@ -148,6 +150,61 @@ function wireProviders(root, s) {
     markDirty();
     rerender();
   });
+}
+
+/* ---------- Vendor APIs ---------- */
+function renderVendorApis(s) {
+  s.ciscoApi ||= { clientId: '', clientSecret: '', pidPresets: {} };
+  s.nvdApi ||= { apiKey: '' };
+  s.msrcApi ||= {};
+  s.corsProxy ||= '';
+  return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
+      Real-API credentials for the Software and CVE pages. When configured, the <b>Fetch now</b>
+      button and the scheduled pull call the vendor API directly and only fall back to AI for
+      anything the API doesn't cover. NVD is CORS-friendly and works in the browser; the others
+      are normally Node-only unless you also set a CORS proxy URL below.
+    </p>
+    <h4 style="margin:12px 0 6px 0;font-size:12px;color:var(--text-2)">Cisco (apix.cisco.com — OAuth2)</h4>
+    <div class="form-row"><label>Client ID</label>
+      <input id="cscId" class="search-input" style="width:100%" value="${esc(s.ciscoApi.clientId || '')}" placeholder="Cisco API Console client_id">
+    </div>
+    <div class="form-row" style="margin-top:6px"><label>Client Secret</label>
+      <input id="cscSec" type="password" class="search-input" style="width:100%" value="${esc(s.ciscoApi.clientSecret || '')}" placeholder="client_secret">
+    </div>
+    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
+      Provides Software Suggestion v2 (TAC-recommended releases) and PSIRT openVuln advisories.
+      Register an app at <code>apiconsole.cisco.com</code>.
+    </p>
+
+    <h4 style="margin:14px 0 6px 0;font-size:12px;color:var(--text-2)">NVD (services.nvd.nist.gov)</h4>
+    <div class="form-row"><label>API key (optional but recommended)</label>
+      <input id="nvdKey" type="password" class="search-input" style="width:100%" value="${esc(s.nvdApi.apiKey || '')}" placeholder="nvd.nist.gov/developers/request-an-api-key">
+    </div>
+    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
+      Without a key NVD rate-limits to 5 req / 30 s; a key raises that to 50 / 30 s.
+    </p>
+
+    <h4 style="margin:14px 0 6px 0;font-size:12px;color:var(--text-2)">CORS proxy (browser only)</h4>
+    <div class="form-row"><label>Proxy URL prefix</label>
+      <input id="corsProxy" class="search-input" style="width:100%" value="${esc(s.corsProxy || '')}" placeholder="https://your-worker.example.com/?url=">
+    </div>
+    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
+      Cisco / MSRC / Palo Alto / Citrix don't send CORS headers. Provide a proxy that forwards
+      Authorization + Accept headers unchanged if you want the browser <b>Fetch now</b> to hit
+      these sources; otherwise they're only consulted during the scheduled Node-side pull.
+    </p>
+  `;
+}
+function wireVendorApis(root, s) {
+  const on = (id, fn) => {
+    const el = root.querySelector('#' + id);
+    if (el) el.addEventListener('input', e => { fn(e.target.value.trim()); markDirty(); });
+  };
+  on('cscId',     v => { s.ciscoApi.clientId = v; });
+  on('cscSec',    v => { s.ciscoApi.clientSecret = v; });
+  on('nvdKey',    v => { s.nvdApi.apiKey = v; });
+  on('corsProxy', v => { s.corsProxy = v; });
 }
 
 /* ---------- Prompts ---------- */

@@ -113,18 +113,27 @@ function renderCves(c, items, filter) {
 
   const editHeader = state.editMode ? '<th style="width:60px"></th>' : '';
   const table = tableRows.length ? `<table class="tbl">
-    <thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Summary</th>${editHeader}</tr></thead>
+    <thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Published</th><th>Summary</th>${editHeader}</tr></thead>
     <tbody>
       ${tableRows.map(({ it: r, idx }) => {
         const sev = (r.severity || '').toLowerCase();
         const col = SEV_COLOR[sev] || 'inherit';
+        const vendorLink = vendorAdvisoryLink(r);
+        const sourceList = Array.isArray(r.sources) ? r.sources : (r.source ? [r.source] : []);
         return `<tr>
-          <td class="mono"><a href="https://nvd.nist.gov/vuln/detail/${esc(r.id || '')}" target="_blank" rel="noopener">${esc(r.id || '')}</a></td>
+          <td class="mono">
+            <a href="https://nvd.nist.gov/vuln/detail/${esc(r.id || '')}" target="_blank" rel="noopener">${esc(r.id || '')}</a>
+            ${vendorLink ? ` · <a href="${esc(vendorLink.href)}" target="_blank" rel="noopener" title="${esc(vendorLink.title)}">↗</a>` : ''}
+          </td>
           <td>${esc(r.vendor || '')}</td>
           <td>${esc(r.product || '')}</td>
           <td style="color:${col};font-weight:600;text-transform:capitalize">${esc(r.severity || '')}</td>
           <td class="mono">${esc(String(r.cvss ?? ''))}</td>
-          <td>${esc(r.summary || '')}</td>
+          <td class="mono" style="font-size:11px">${esc((r.published || '').slice(0, 10))}</td>
+          <td>
+            ${esc(r.summary || '')}
+            ${sourceList.length ? `<div style="margin-top:3px">${sourceList.map(s => `<span class="src-pill">${esc(s)}</span>`).join('')}</div>` : ''}
+          </td>
           ${state.editMode ? `<td><button class="btn sm danger" data-act="del-cve" data-idx="${idx}" title="Delete">🗑</button></td>` : ''}
         </tr>`;
       }).join('')}
@@ -132,4 +141,20 @@ function renderCves(c, items, filter) {
   </table>` : '';
 
   c.innerHTML = htmlSection + table;
+}
+
+// Prefer the vendor-supplied advisory URL when one is present; otherwise
+// synthesise the best known public link for that vendor/product.
+function vendorAdvisoryLink(r) {
+  const refs = Array.isArray(r.references) ? r.references.filter(Boolean) : [];
+  const v = (r.vendor || '').toLowerCase();
+  const pick = refs.find(u => {
+    if (v.includes('cisco')) return /cisco\.com\/security\//i.test(u);
+    if (v.includes('microsoft')) return /msrc\.microsoft\.com|microsoft\.com\/.*security/i.test(u);
+    if (v.includes('palo')) return /paloaltonetworks\.com/i.test(u);
+    if (v.includes('citrix')) return /citrix\.com/i.test(u);
+    return false;
+  }) || refs[0];
+  if (!pick) return null;
+  return { href: pick, title: `${r.vendor || ''} advisory` };
 }

@@ -4,6 +4,7 @@
 import { state, emit } from '../state.js';
 import { loadPool } from '../api/keyring.js';
 import { chat, extractJson } from '../api/ai.js';
+import { fetchSoftware as fetchSoftwareFromVendors, fetchCves as fetchCvesFromVendors } from '../api/vendors.js';
 import { toast } from '../utils.js';
 
 // Used when settings.prompts.<kind> is missing — keeps "Fetch now" working for
@@ -33,10 +34,33 @@ export async function fetchForKind(kind, { promptKey, fill, schemaGuard } = {}) 
   const merged = structuredClone(state.data[kind] || { version: 1, items: [] });
   merged.items ||= [];
 
+  // Real-API pass: preferred source for software and CVEs. We tag each
+  // vendor/product pair that was handled so the AI pass below skips it.
+  const apiHandled = new Set();
+  const sourceTally = {};
+  if (kind === 'software' || kind === 'cves') {
+    try {
+      const { items: apiItems, sources, errors: apiErrors } = kind === 'software'
+        ? await fetchSoftwareFromVendors(s, { env: 'browser' })
+        : await fetchCvesFromVendors(s, { env: 'browser' });
+      for (const it of apiItems) {
+        const tagged = normalize(it, kind);
+        mergeItem(merged.items, tagged, kind);
+        apiHandled.add(`${tagged.vendor}|${tagged.product}`);
+      }
+      Object.assign(sourceTally, sources);
+      for (const e of apiErrors || []) toast(e, 'warn', 4000);
+    } catch (err) {
+      console.warn('[fetch] real-API path failed, falling back to AI:', err);
+    }
+  }
+
   let added = 0, skipped = 0, errors = 0;
   for (const v of vendors) {
     const products = v.products?.length ? v.products : [''];
     for (const product of products) {
+      // Skip AI lookup if a real API already supplied data for this pair.
+      if (apiHandled.has(`${v.vendor}|${product}`)) continue;
       const filled = (fill || defaultFill)(template, {
         vendor: v.vendor,
         product,
@@ -88,7 +112,10 @@ export async function fetchForKind(kind, { promptKey, fill, schemaGuard } = {}) 
   const bits = [`+${added}`];
   if (skipped) bits.push(`${skipped} skipped`);
   if (errors) bits.push(`${errors} errors`);
-  toast(`Fetched ${kind}: ${bits.join(', ')} — review and Save`, added ? 'success' : 'warn', 6000);
+  // Append the per-source tally from the real-API pass (e.g. "nvd:12, cisco:3")
+  const srcBits = Object.entries(sourceTally).filter(([, n]) => n > 0).map(([k, n]) => `${k}:${n}`);
+  if (srcBits.length) bits.push('via ' + srcBits.join(', '));
+  toast(`Fetched ${kind}: ${bits.join(', ')} — review and Save`, (added || srcBits.length) ? 'success' : 'warn', 6000);
 }
 
 // Map common synonyms the AI might return into the fields the renderer expects.
@@ -112,11 +139,24 @@ function normalize(raw, kind) {
     it.recommended ||= raw.stable || raw.recommended_version || raw.lts || '';
     it.eol = raw.eol || raw.end_of_life || raw.endOfLife || [];
     it.notes ||= raw.note || raw.comments || raw.remarks || '';
+    // Real-API extras (preserve if present).
+    if (raw.pid)         it.pid ||= raw.pid;
+    if (raw.lifecycle)   it.lifecycle ||= raw.lifecycle;
+    if (raw.releaseDate) it.releaseDate ||= raw.releaseDate;
+    if (raw.trainName)   it.trainName ||= raw.trainName;
+    if (Array.isArray(raw.releases)) it.releases ||= raw.releases;
+    if (raw.source)      it.source ||= raw.source;
   } else if (kind === 'cves') {
     it.id ||= raw.cve || raw.cveId || raw.identifier || '';
     it.cvss ||= raw.score || raw.cvssScore || '';
     it.severity = (raw.severity || raw.level || '').toLowerCase();
     it.summary ||= raw.description || raw.summary || '';
+    if (raw.references)  it.references ||= raw.references;
+    if (raw.published)   it.published ||= raw.published;
+    if (raw.advisoryId)  it.advisoryId ||= raw.advisoryId;
+    if (raw.advisoryTitle) it.advisoryTitle ||= raw.advisoryTitle;
+    if (raw.source)      it.source ||= raw.source;
+    if (raw.sources)     it.sources ||= raw.sources;
   }
   return it;
 }
