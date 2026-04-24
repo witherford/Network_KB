@@ -37,6 +37,32 @@ const TOPICS = [
     loader: () => import('./learning/panos.js'),
     status: 'available'
   },
+  {
+    id: 'azure',
+    title: 'Microsoft Azure Networking',
+    subtitle: 'VNet, NSG/ASG, Azure Firewall, Virtual WAN, Private Link, ExpressRoute, Network Watcher.',
+    vendor: 'Microsoft',
+    badgeClass: 'badge-azure',
+    icon: '☁️',
+    modules: 15,
+    minutes: 270,
+    tags: ['Cloud', 'Azure', 'VNet', 'Virtual WAN', 'Private Link'],
+    loader: () => import('./learning/azure.js'),
+    status: 'available'
+  },
+  {
+    id: 'aws',
+    title: 'AWS Networking',
+    subtitle: 'VPC, SG/NACL, Transit Gateway, ELB, Direct Connect, Route 53, PrivateLink, CloudFront.',
+    vendor: 'AWS',
+    badgeClass: 'badge-aws',
+    icon: '🟧',
+    modules: 15,
+    minutes: 280,
+    tags: ['Cloud', 'AWS', 'VPC', 'Transit Gateway', 'PrivateLink'],
+    loader: () => import('./learning/aws.js'),
+    status: 'available'
+  },
   { id: 'asa-ftd',       title: 'Cisco ASA / FTD',        subtitle: 'VPN, ACLs, packet-tracer deep-dive.',             vendor: 'Cisco',    badgeClass: 'badge-asa', icon: '🛡️', status: 'soon', tags: ['Firewall', 'VPN'] },
   { id: 'ise',           title: 'Cisco ISE',              subtitle: '802.1X, profiling, BYOD, posture.',               vendor: 'Cisco',    badgeClass: 'badge-sw', icon: '🧾', status: 'soon', tags: ['AAA', 'Security'] }
 ];
