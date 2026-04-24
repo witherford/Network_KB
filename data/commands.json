@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-23T23:25:38.622Z",
+  "updatedAt": "2026-04-24T00:03:05.581Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -1114,6 +1114,12 @@
             "desc": "Lists all background jobs: content updates, commits, software installs",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show jobs id <id>",
+            "desc": "Detail for one job including warnings",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Interfaces": [
@@ -1162,6 +1168,24 @@
           {
             "cmd": "show interface hardware",
             "desc": "Shows physical hardware details for all interfaces: MAC, speed, duplex",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface <name>",
+            "desc": "Full detail: zone, VR, MAC, IPv4/v6, LACP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface logical",
+            "desc": "Logical/sub-interface summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface ethernet1/1 transceiver",
+            "desc": "SFP info + DOM readings",
             "type": "show",
             "flagged": false
           }
@@ -1268,6 +1292,24 @@
           {
             "cmd": "show routing protocol bgp summary",
             "desc": "BGP peer summary: state, prefixes received, and uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show routing fib virtual-router <vr>",
+            "desc": "Hardware FIB for a virtual router",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show routing protocol bgp peer",
+            "desc": "BGP peer list and state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show routing protocol bgp rib-out peer <peer>",
+            "desc": "Prefixes advertised to a BGP peer",
             "type": "show",
             "flagged": false
           }
@@ -1386,6 +1428,30 @@
             "desc": "Add a description to an existing rule",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "test security-policy-match from <src-zone> to <dst-zone> source <ip> destination <ip> protocol 6 destination-port <p> application <app>",
+            "desc": "Most accurate rule match tester — fill in as much as you know",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show running rule-use rule-base security type unused vsys vsys1",
+            "desc": "Every rule that hasn't matched since last reboot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running rule-hit-count vsys vsys1 rule-base security",
+            "desc": "Rule-hit counters for policy cleanup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show rule-hit-count vsys vsys1 rule-base security rules \"<name>\"",
+            "desc": "Hit count for a single rule",
+            "type": "show",
+            "flagged": false
           }
         ],
         "NAT": [
@@ -1422,6 +1488,18 @@
           {
             "cmd": "set rulebase nat rules <rule-name> destination-translation translated-port <port>",
             "desc": "Override destination port for port forwarding scenarios",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test nat-policy-match from <src-zone> to <dst-zone> source <ip> destination <ip> protocol 6 destination-port <p>",
+            "desc": "Which NAT rule will apply to this flow",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show session all filter nat-rule \"<name>\"",
+            "desc": "Sessions matching a specific NAT rule",
             "type": "show",
             "flagged": false
           }
@@ -1578,6 +1656,30 @@
             "desc": "Enable verbose IKE debug — view with less mp-log ikemgr.log",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show vpn ipsec-sa tunnel <name>",
+            "desc": "Single tunnel detail incl. encrypt/decrypt bytes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpn tunnel",
+            "desc": "Tunnel state summary (up/down, peer, local/remote proxy-IDs)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear vpn ike-sa gateway <gw>",
+            "desc": "Force IKE re-negotiation to a gateway",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear vpn ipsec-sa tunnel <t>",
+            "desc": "Force phase-2 re-key on a tunnel",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "High Availability": [
@@ -1644,6 +1746,18 @@
           {
             "cmd": "show high-availability control-link statistics",
             "desc": "Displays HA control-link traffic stats and keepalive counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show high-availability link-monitoring",
+            "desc": "Per-link HA monitoring state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show high-availability flap-statistics",
+            "desc": "HA flap history",
             "type": "show",
             "flagged": false
           }
@@ -1862,6 +1976,36 @@
             "desc": "Packet-diag log (capture status, errors)",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show counter global filter delta yes packet-filter yes",
+            "desc": "Only global counters that changed AND match packet-diag filter",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show counter global filter severity drop delta yes",
+            "desc": "Deltas on drop-class counters since last command",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show system logdb-quota",
+            "desc": "Per-log quota usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log traffic direction equal backward count 50",
+            "desc": "Last 50 traffic-log entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log threat direction equal backward count 50",
+            "desc": "Last 50 threat-log entries",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Commit & Config": [
@@ -1936,6 +2080,42 @@
             "desc": "Prevent concurrent commits (multi-admin environments)",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "configure",
+            "desc": "Enter candidate-config mode",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show config diff",
+            "desc": "Diff between candidate and running config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "commit description \"<msg>\"",
+            "desc": "Commit with audit-log description",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit partial admin <user>",
+            "desc": "Commit only changes owned by a specific admin",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show commit-locks",
+            "desc": "Who currently holds a commit lock",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request commit-lock remove admin <user>",
+            "desc": "Remove a stale commit lock",
+            "type": "config",
+            "flagged": false
           }
         ],
         "User-ID": [
@@ -1980,6 +2160,36 @@
             "desc": "Manually removes a user's IP-to-username mapping from the table",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show user user-ids all",
+            "desc": "Every known username → IP mapping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user ip-user-mapping ip <ip>",
+            "desc": "Who is this IP mapped to right now",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user group list",
+            "desc": "Known AD groups from User-ID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user group name \"<grp>\"",
+            "desc": "Members of a specific AD group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear user-cache all",
+            "desc": "Clear all IP-user mappings (reset User-ID cache)",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Panorama": [
@@ -2011,6 +2221,100 @@
             "cmd": "request license fetch",
             "desc": "Fetches updated licences from the Panorama licence server",
             "type": "show",
+            "flagged": false
+          }
+        ],
+        "Sessions & Flows": [
+          {
+            "cmd": "show session all filter source <ip> destination <ip>",
+            "desc": "Active sessions between two hosts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show session all filter application <app>",
+            "desc": "Sessions matched to a specific application",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show session id <n>",
+            "desc": "Detail for a specific session ID (NAT, policy, app, state)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show session info",
+            "desc": "Global session-table statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show session meter",
+            "desc": "Per-vsys session-rate counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear session all filter source <ip>",
+            "desc": "Clear all sessions for a given source IP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear session id <n>",
+            "desc": "Clear a single session by ID",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Packet Diagnostics": [
+          {
+            "cmd": "debug dataplane packet-diag set filter match source <ip> destination <ip>",
+            "desc": "Install a packet-diag filter",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane packet-diag set filter on",
+            "desc": "Enable the configured filter",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane packet-diag set capture stage receive file rx.pcap",
+            "desc": "Capture at the \"receive\" stage",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane packet-diag set capture stage drop file drop.pcap",
+            "desc": "Capture only dropped packets",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane packet-diag set capture on",
+            "desc": "Turn capture on",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane packet-diag set capture off",
+            "desc": "Turn capture off",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "view-pcap filter-pcap rx.pcap",
+            "desc": "Inspect captured pcap from CLI",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "scp export filter-pcap from rx.pcap to <user>@<host>:/tmp/",
+            "desc": "Pull captured pcap off the firewall",
+            "type": "troubleshooting",
             "flagged": false
           }
         ]
@@ -7401,6 +7705,1076 @@
       "badge": "badge-custom2",
       "short": "Wireshark",
       "sections": {
+        "Display Filters — Basic": [
+          {
+            "cmd": "ip.addr == 10.0.0.1",
+            "desc": "Match packets to or from a single host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.src == 10.0.0.1",
+            "desc": "Packets sourced from a given IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.dst == 10.0.0.1",
+            "desc": "Packets destined to a given IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.addr == 10.0.0.0/24",
+            "desc": "CIDR — whole subnet, source or destination",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "not (ip.addr == 10.0.0.1)",
+            "desc": "Exclude anything involving a specific host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.addr == 10.0.0.1 and ip.addr == 10.0.0.2",
+            "desc": "Conversation between two specific hosts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6.addr == 2001:db8::1",
+            "desc": "Match an IPv6 host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "eth.addr == aa:bb:cc:dd:ee:ff",
+            "desc": "Match by MAC (source or destination)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "eth.dst == ff:ff:ff:ff:ff:ff",
+            "desc": "All Ethernet broadcasts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan.id == 20",
+            "desc": "Frames tagged with a specific VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "frame.len > 1500",
+            "desc": "Jumbo frames or fragmented IP above 1500",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "frame.time >= \"2026-04-24 09:00:00\" and frame.time <= \"2026-04-24 09:05:00\"",
+            "desc": "Time-bounded slice of the capture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "frame.number == 1234",
+            "desc": "Jump to a specific frame by number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.ttl < 5",
+            "desc": "Packets near TTL exhaustion — loops, traceroute replies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.flags.df == 1 and ip.len > 1400",
+            "desc": "DF-bit packets near MTU — classic PMTUD hunt",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — TCP/UDP": [
+          {
+            "cmd": "tcp.port == 443",
+            "desc": "TCP traffic on port 443 (either direction)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.srcport == 22",
+            "desc": "TCP sourced from port 22",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.dstport == 80",
+            "desc": "TCP destined to port 80",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 0",
+            "desc": "SYN-only — new connection attempts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 1",
+            "desc": "SYN/ACK — server is responding",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.flags.reset == 1",
+            "desc": "All RST packets — connections aborted",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.flags.fin == 1",
+            "desc": "FIN packets — graceful close",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.retransmission",
+            "desc": "TCP retransmits (marked by Wireshark heuristics)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.fast_retransmission",
+            "desc": "Fast retransmits — 3 dup ACKs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.duplicate_ack",
+            "desc": "Duplicate ACKs — loss indicator",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.out_of_order",
+            "desc": "Packets arriving out of order",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.lost_segment",
+            "desc": "Segments never seen — capture gaps or real loss",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.zero_window",
+            "desc": "Receiver window closed — receiver-side back-pressure",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.window_update",
+            "desc": "Window-size updates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.analysis.flags",
+            "desc": "All Wireshark TCP analysis tags in one filter",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.window_size_value == 0",
+            "desc": "Advertised window is zero",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.len > 0",
+            "desc": "TCP segments that actually carry payload",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.stream eq 0",
+            "desc": "First TCP stream — right-click → Follow Stream to set this",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "udp.port == 53",
+            "desc": "DNS queries/responses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "udp.length > 512",
+            "desc": "Large UDP datagrams — e.g. DNS EDNS0 responses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.options.mss_val < 1460",
+            "desc": "Non-default MSS — PPPoE/VPN/GRE path markers",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — HTTP/HTTPS": [
+          {
+            "cmd": "http",
+            "desc": "All HTTP traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.request",
+            "desc": "Only HTTP request lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.response",
+            "desc": "Only HTTP responses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.request.method == \"POST\"",
+            "desc": "POST requests",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.request.method == \"GET\"",
+            "desc": "GET requests",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.request.uri contains \"login\"",
+            "desc": "URIs containing \"login\"",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.host == \"example.com\"",
+            "desc": "Requests for a specific Host header",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.user_agent contains \"curl\"",
+            "desc": "User-Agent substring match",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.response.code == 500",
+            "desc": "HTTP 500 Internal Server Error",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.response.code >= 400 and http.response.code < 600",
+            "desc": "All HTTP error responses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.response.code == 301 or http.response.code == 302",
+            "desc": "HTTP redirects",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.cookie contains \"sessionid\"",
+            "desc": "Cookie header with a session cookie",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.authorization",
+            "desc": "Basic/Bearer Authorization headers in requests",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.content_type contains \"json\"",
+            "desc": "JSON API traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http2",
+            "desc": "HTTP/2 frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http2.type == 1",
+            "desc": "HTTP/2 HEADERS frames only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "quic",
+            "desc": "QUIC (HTTP/3 transport) traffic",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — TLS/SSL": [
+          {
+            "cmd": "tls",
+            "desc": "All TLS records",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake",
+            "desc": "TLS handshake records only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake.type == 1",
+            "desc": "ClientHello — inspect SNI, cipher list, versions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake.type == 2",
+            "desc": "ServerHello — chosen cipher and version",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake.type == 11",
+            "desc": "Certificate message — the server's cert chain",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake.extensions_server_name == \"example.com\"",
+            "desc": "Match by SNI host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.record.version == 0x0301",
+            "desc": "TLS 1.0",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.record.version == 0x0303",
+            "desc": "TLS 1.2",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.record.version == 0x0304",
+            "desc": "TLS 1.3",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.alert_message",
+            "desc": "TLS alert records — version/cert/other handshake failures",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.alert_message.level == 2",
+            "desc": "Fatal TLS alerts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tls.handshake.ciphersuite",
+            "desc": "Any handshake that negotiates a cipher",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — DNS": [
+          {
+            "cmd": "dns",
+            "desc": "All DNS traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.response == 0",
+            "desc": "DNS queries only (no responses)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.response == 1",
+            "desc": "DNS responses only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.qry.name contains \"example.com\"",
+            "desc": "Queries for a specific name",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.qry.type == 1",
+            "desc": "Type A lookups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.qry.type == 28",
+            "desc": "Type AAAA (IPv6) lookups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.qry.type == 15",
+            "desc": "MX-record lookups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.qry.type == 33",
+            "desc": "SRV-record lookups (AD/SIP discovery)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.rcode != 0",
+            "desc": "DNS responses with an error (NXDOMAIN, SERVFAIL…)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.rcode == 3",
+            "desc": "NXDOMAIN responses only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.rcode == 2",
+            "desc": "SERVFAIL responses only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.resp.len > 512",
+            "desc": "DNS responses that cross the 512-byte UDP boundary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns.flags.truncated == 1",
+            "desc": "Truncated responses — client will retry over TCP",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — DHCP": [
+          {
+            "cmd": "dhcp",
+            "desc": "All DHCP (IPv4) traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 1",
+            "desc": "DHCPDISCOVER",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 2",
+            "desc": "DHCPOFFER",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 3",
+            "desc": "DHCPREQUEST",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 5",
+            "desc": "DHCPACK",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 6",
+            "desc": "DHCPNAK — server refused client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.option.dhcp == 7",
+            "desc": "DHCPRELEASE",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcp.hw.mac_addr == aa:bb:cc:dd:ee:ff",
+            "desc": "Everything from a specific client MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dhcpv6",
+            "desc": "All DHCPv6 traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bootp.option.value",
+            "desc": "DHCP option payloads — use for option 82 checks",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — ARP / ICMP": [
+          {
+            "cmd": "arp",
+            "desc": "All ARP frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arp.opcode == 1",
+            "desc": "ARP requests only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arp.opcode == 2",
+            "desc": "ARP replies only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arp.duplicate-address-detected",
+            "desc": "Gratuitous-ARP duplicate-address alerts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arp.src.proto_ipv4 == 10.0.0.1",
+            "desc": "ARP sourced from a specific IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp",
+            "desc": "All ICMP traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp.type == 0",
+            "desc": "ICMP echo reply",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp.type == 8",
+            "desc": "ICMP echo request",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp.type == 3",
+            "desc": "ICMP destination unreachable (with code = sub-reason)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp.type == 3 and icmp.code == 4",
+            "desc": "Fragmentation needed + DF-set → PMTUD signal",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp.type == 11",
+            "desc": "ICMP time exceeded — traceroute replies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmpv6",
+            "desc": "All ICMPv6 traffic (NDP, RA, RS, PMTUD)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmpv6.type == 135",
+            "desc": "Neighbor Solicitation (IPv6 ARP equivalent)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmpv6.type == 136",
+            "desc": "Neighbor Advertisement",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmpv6.type == 134",
+            "desc": "Router Advertisement",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — VoIP / SIP / RTP": [
+          {
+            "cmd": "sip",
+            "desc": "All SIP signalling",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sip.Method == \"INVITE\"",
+            "desc": "Only SIP INVITEs — new calls",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sip.Method == \"BYE\"",
+            "desc": "SIP call-termination messages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sip.Status-Code >= 400",
+            "desc": "SIP failure responses (4xx/5xx/6xx)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sip.Call-ID == \"<id>\"",
+            "desc": "Every SIP message in a specific call",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rtp",
+            "desc": "All RTP streams",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rtp.p_type == 0",
+            "desc": "G.711 µ-law payload",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rtp.p_type == 8",
+            "desc": "G.711 a-law payload",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rtp.marker == 1",
+            "desc": "Marker-bit RTP packets (talk-spurt start, DTMF events)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rtcp",
+            "desc": "All RTCP control traffic (stats, NACKs)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sdp",
+            "desc": "Session Description Protocol bodies inside SIP",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — AD / Kerberos / SMB / LDAP": [
+          {
+            "cmd": "kerberos",
+            "desc": "All Kerberos traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kerberos.msg_type == 10",
+            "desc": "AS-REQ — initial ticket request",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kerberos.msg_type == 12",
+            "desc": "TGS-REQ — service ticket request",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kerberos.error_code",
+            "desc": "Kerberos errors (PREAUTH_FAILED, CLOCKSKEW…)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kerberos.error_code == 24",
+            "desc": "PREAUTH_FAILED — bad password",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kerberos.error_code == 37",
+            "desc": "KRB_AP_ERR_SKEW — clock skew",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ldap",
+            "desc": "LDAP traffic (unencrypted)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ldap.messageType == 3",
+            "desc": "LDAP search requests",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smb",
+            "desc": "SMBv1 traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smb2",
+            "desc": "SMBv2/v3 traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smb2.cmd == 5",
+            "desc": "SMB2 CREATE (file/folder open)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smb2.cmd == 6",
+            "desc": "SMB2 CLOSE",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smb2.nt_status != 0",
+            "desc": "SMB2 responses with an NT_STATUS error",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dcerpc",
+            "desc": "DCE/RPC payloads — RPC-over-SMB, MS-RPC",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — Routing / Switching Control Plane": [
+          {
+            "cmd": "ospf",
+            "desc": "All OSPF packets (Hello, LSA, DBD)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ospf.msg == 1",
+            "desc": "OSPF Hello packets",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp",
+            "desc": "EIGRP traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp",
+            "desc": "All BGP messages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp.type == 1",
+            "desc": "BGP OPEN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp.type == 2",
+            "desc": "BGP UPDATE",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp.type == 3",
+            "desc": "BGP NOTIFICATION (session tear-down reason)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "stp",
+            "desc": "All Spanning-Tree BPDUs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lldp",
+            "desc": "LLDP neighbor-discovery frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cdp",
+            "desc": "Cisco Discovery Protocol frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vrrp",
+            "desc": "VRRP advertisements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "hsrp",
+            "desc": "Cisco HSRP advertisements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bfd",
+            "desc": "BFD session packets",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — 802.11 / Wireless": [
+          {
+            "cmd": "wlan",
+            "desc": "Any 802.11 frame",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type == 0",
+            "desc": "Management frames (beacons, probe, auth, assoc)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x08",
+            "desc": "Beacon frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x04",
+            "desc": "Probe requests",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x05",
+            "desc": "Probe responses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x0b",
+            "desc": "802.11 Authentication",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x00",
+            "desc": "Association request",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x0c",
+            "desc": "Deauthentication — track client drops",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type_subtype == 0x0a",
+            "desc": "Disassociation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type == 1",
+            "desc": "Control frames (RTS/CTS/ACK/block-ACK)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.fc.type == 2",
+            "desc": "Data frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.ssid == \"CorpWiFi\"",
+            "desc": "Frames referencing a specific SSID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan.addr == aa:bb:cc:dd:ee:ff",
+            "desc": "Everything involving a specific wireless MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "eapol",
+            "desc": "802.1X EAPOL (including 4-way handshake)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wlan_radio.channel == 36",
+            "desc": "Frames captured on a specific channel",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "radiotap.dbm_antsignal < -75",
+            "desc": "Frames received below -75 dBm — weak-signal hunting",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — VPN / IPsec / GRE": [
+          {
+            "cmd": "isakmp",
+            "desc": "IKE (UDP/500, UDP/4500) negotiation messages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "esp",
+            "desc": "Encrypted ESP payloads",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ah",
+            "desc": "IPsec AH packets",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "gre",
+            "desc": "GRE-tunnelled traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.proto == 47",
+            "desc": "GRE by IP protocol number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.proto == 50",
+            "desc": "ESP by IP protocol number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.proto == 51",
+            "desc": "AH by IP protocol number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "l2tp",
+            "desc": "L2TP control/data",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pppoes",
+            "desc": "PPPoE session traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wireguard",
+            "desc": "WireGuard control + data packets",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Display Filters — Operators & Syntax": [
+          {
+            "cmd": "tcp.port in {80 443 8080}",
+            "desc": "Set-membership (Wireshark 3.2+)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "!(arp or stp or cdp or lldp)",
+            "desc": "Hide everyday L2 control-plane chatter",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip.addr == 10.0.0.0/8 and not tcp.port == 22",
+            "desc": "Boolean composition — subnet minus a port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "frame matches \"User-Agent: curl\"",
+            "desc": "Regex content search across the whole frame",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "http.user_agent ~ \"Mozilla\"",
+            "desc": "Shorthand regex match (~)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp.payload contains 50:4f:53:54",
+            "desc": "Hex-string search (\"POST\") in TCP payload",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "frame.protocols contains \"gtp\"",
+            "desc": "Filter by protocol name in the dissector chain",
+            "type": "show",
+            "flagged": false
+          }
+        ],
         "Capture Filters": [
           {
             "cmd": "host <ip>",
@@ -7665,6 +9039,208 @@
             "desc": "Captures LLMNR IPv6",
             "type": "capture",
             "flagged": false
+          },
+          {
+            "cmd": "tcp port 443 and host 10.0.0.1",
+            "desc": "TLS traffic to/from a specific host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "net 10.0.0.0/24 and not port 22",
+            "desc": "Subnet traffic minus SSH noise",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ether host aa:bb:cc:dd:ee:ff",
+            "desc": "All frames involving a specific MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan 20",
+            "desc": "Only frames in VLAN 20",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "icmp[icmptype] == icmp-echoreply",
+            "desc": "ICMP echo replies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcp[tcpflags] & (tcp-syn|tcp-fin) != 0",
+            "desc": "Any SYN or FIN in the TCP flags",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "port not in (22,23)",
+            "desc": "Exclude SSH/Telnet on capture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip proto 47",
+            "desc": "GRE by IP protocol number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "greater 1500",
+            "desc": "Frames larger than 1500 bytes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "less 100",
+            "desc": "Tiny frames (< 100 bytes)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "broadcast or multicast",
+            "desc": "L2 broadcast + multicast traffic",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Analysis & Statistics": [
+          {
+            "cmd": "Statistics → Conversations",
+            "desc": "Top talkers by pair (IPv4/v6, TCP, UDP tabs)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → Endpoints",
+            "desc": "Per-host byte/packet totals",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → Protocol Hierarchy",
+            "desc": "Share of bytes per protocol in the capture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → IO Graph",
+            "desc": "Plot traffic rate over time; overlay filters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → TCP Stream Graphs → Time-Sequence (Stevens)",
+            "desc": "Visualise TCP throughput/retransmits",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → TCP Stream Graphs → Round Trip Time",
+            "desc": "Per-flow RTT plot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → Expert Information",
+            "desc": "Aggregated notes/warnings/errors across the capture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → Flow Graph",
+            "desc": "Sequence diagram between hosts / by stream",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → DNS",
+            "desc": "DNS query/response breakdown",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Statistics → HTTP → Requests",
+            "desc": "Request-count histogram by host/URI",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Telephony → VoIP Calls",
+            "desc": "RTP/SIP call list with replay and graph options",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Analyze → Display Filter Macros…",
+            "desc": "Define reusable named display-filter snippets",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Coloring Rules & Workflow": [
+          {
+            "cmd": "View → Coloring Rules…",
+            "desc": "Per-filter colors to spot anomalies at a glance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "View → Time Display Format → Seconds Since Previous Displayed Packet",
+            "desc": "Inter-arrival time for gap hunting",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Right-click → Follow → TCP Stream",
+            "desc": "Filter to a single TCP conversation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Right-click → Follow → TLS Stream",
+            "desc": "Reassemble + decrypt (with SSLKEYLOGFILE)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "File → Export Objects → HTTP",
+            "desc": "Extract every HTTP object to disk",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "File → Export Specified Packets → Displayed",
+            "desc": "Save only the frames that match the current filter",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Edit → Preferences → Protocols → TLS → (Pre)-Master-Secret log filename",
+            "desc": "Point to SSLKEYLOGFILE for decryption",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Edit → Preferences → Name Resolution",
+            "desc": "Enable network/transport/manual name resolution",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Ctrl+Shift+L",
+            "desc": "Jump to the display-filter bar",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "Ctrl+F",
+            "desc": "Find packet by string / hex / regex in payload",
+            "type": "show",
+            "flagged": false
           }
         ],
         "TShark": [
@@ -7774,6 +9350,78 @@
             "cmd": "tshark -q -z io",
             "desc": "phs",
             "type": "Shows protocol hierarchy statistics",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -i <n> -w out.pcapng -b filesize:100000 -b files:10",
+            "desc": "Ring-buffer capture: 10 × 100MB files",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -Y \"tcp.analysis.retransmission\" -T fields -e ip.src -e ip.dst -e tcp.stream",
+            "desc": "Export retransmits as TSV",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz io,stat,10",
+            "desc": "Bucketed IO stats every 10s for the whole capture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz conv,tcp",
+            "desc": "Top TCP conversations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz expert",
+            "desc": "Dump the Expert Info panel to stdout",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz http,tree",
+            "desc": "HTTP request/response tree stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz rtp,streams",
+            "desc": "RTP stream list with jitter/loss",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -qz dns,tree",
+            "desc": "DNS query-type / response-code breakdown",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tshark -r in.pcap -Y \"dns.qry.name\" -T fields -e dns.qry.name | sort -u",
+            "desc": "Unique DNS names queried",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "editcap -A \"2026-04-24 09:00:00\" -B \"2026-04-24 09:05:00\" in.pcap slice.pcap",
+            "desc": "Cut a time window from a large capture",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "mergecap -w merged.pcapng a.pcap b.pcap",
+            "desc": "Merge multiple captures preserving timestamps",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "capinfos in.pcap",
+            "desc": "Quick summary: duration, packets, bytes, drops",
+            "type": "show",
             "flagged": false
           }
         ]
@@ -7892,6 +9540,48 @@
             "desc": "Bulk-configure a range of access ports",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show interfaces counters",
+            "desc": "Bytes/packets in/out per interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show power inline",
+            "desc": "PoE budget, per-port draw, operational state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces <int> controller",
+            "desc": "SFP/Phy details (useful for SFP-DOM issues)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan brief",
+            "desc": "VLANs and their access-port membership",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree",
+            "desc": "STP state per VLAN — root/designated/blocking",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree inconsistentports",
+            "desc": "Ports currently in an inconsistent STP state",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show cdp neighbors detail",
+            "desc": "CDP neighbors with platform, address, capabilities",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -7995,6 +9685,42 @@
             "cmd": "ip route <net> <mask> <next-hop> [name <tag>] [track <obj>]",
             "desc": "Static route with optional IP SLA track",
             "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route summary",
+            "desc": "Route-count summary by protocol",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors <ip> advertised-routes",
+            "desc": "Prefixes being advertised to a specific BGP peer",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp <prefix>",
+            "desc": "Best-path and all paths for a specific BGP prefix",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vrf",
+            "desc": "List configured VRFs and their interfaces",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route vrf <name>",
+            "desc": "Routing table for a specific VRF",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip mroute",
+            "desc": "IP multicast routing table",
+            "type": "show",
             "flagged": false
           }
         ],
@@ -8118,6 +9844,12 @@
             "desc": "Enable Dynamic ARP Inspection on selected VLANs",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show ip access-lists <name>",
+            "desc": "Single named/numbered ACL with per-line hits",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Troubleshooting": [
@@ -8178,6 +9910,128 @@
           {
             "cmd": "show version | include uptime|Version|image",
             "desc": "Quick uptime + software version one-liner",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment all",
+            "desc": "Voltages, temperatures, fan/PSU state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Serial numbers + PIDs for TAC cases",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform",
+            "desc": "Platform-specific state (FP, linecards, supervisor)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip traffic",
+            "desc": "IP layer counters incl. drops per reason",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tcp brief",
+            "desc": "Active TCP sessions on the device (SSH/BGP/telnet)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip sockets",
+            "desc": "UDP/TCP listening sockets in the control plane",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu sorted | exclude 0.00",
+            "desc": "Only processes with non-zero CPU usage",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging summary",
+            "desc": "Counts per facility/severity in the log buffer",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "ping vrf <name> <dst> size <b> df-bit",
+            "desc": "Per-VRF ping with DF-bit for PMTUD check",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute mpls ipv4 <prefix>",
+            "desc": "MPLS LSP traceroute",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Management": [
+          {
+            "cmd": "show running-config | section <keyword>",
+            "desc": "Show config starting from a section header",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config interface <int>",
+            "desc": "Running config scoped to a single interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show archive",
+            "desc": "Rollback-archive contents if configured",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Persist running to startup (write mem)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "archive config",
+            "desc": "Take a named snapshot for rollback",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "configure replace flash:<file> force",
+            "desc": "Roll back to a previous archived config",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock detail",
+            "desc": "Clock, timezone, and time-source",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ntp associations",
+            "desc": "NTP peers and stratum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active VTY/console sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ssh",
+            "desc": "Active SSH sessions and versions",
             "type": "show",
             "flagged": false
           }
@@ -13734,6 +15588,30 @@
             "desc": "Shows WIPS profiles",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless summary",
+            "desc": "One-page summary: APs joined, clients, tags, controller role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show boot",
+            "desc": "Boot variable and pending software image",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show redundancy states",
+            "desc": "HA Active/Standby state and role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show chassis",
+            "desc": "SSO/HA chassis summary",
+            "type": "show",
+            "flagged": false
           }
         ],
         "AP Management": [
@@ -13892,6 +15770,42 @@
             "desc": "Shows AP reboot history",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ap join stats summary",
+            "desc": "Join-phase counters per AP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap join stats detailed <ap>",
+            "desc": "Detailed join statistics for one AP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap cdp neighbors",
+            "desc": "What each AP sees on its switchport via CDP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap config general <ap>",
+            "desc": "AP general config: tags, primary/secondary/tertiary WLC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap image",
+            "desc": "Image pre-download status per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ap name <ap> reset",
+            "desc": "Reload a single AP",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "RF": [
@@ -14000,6 +15914,42 @@
           {
             "cmd": "show wireless rrm measurements",
             "desc": "Shows RRM measurements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap rf-profile summary",
+            "desc": "RF-profile list + linked RF tag",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap rf-profile detailed <name>",
+            "desc": "RF profile parameters (channels, power, DCA)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 5ghz summary",
+            "desc": "5GHz radio state per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 24ghz summary",
+            "desc": "2.4GHz radio state per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 dual-band summary",
+            "desc": "6GHz (Wi-Fi 6E) radio state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap auto-rf dot11 5ghz",
+            "desc": "DCA / TPC / coverage-hole data for 5GHz",
             "type": "show",
             "flagged": false
           }
@@ -14190,6 +16140,36 @@
             "desc": "Shows WLAN 802.1X stats",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy summary",
+            "desc": "Policy-profile names and state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy detailed <name>",
+            "desc": "Policy profile: VLAN, AAA, QoS, session timeout",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag policy summary",
+            "desc": "Policy-tag list (WLAN ↔ profile bindings)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag site summary",
+            "desc": "Site tags and AP mapping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag rf summary",
+            "desc": "RF tags (radio profiles bound by band)",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Clients": [
@@ -14342,6 +16322,30 @@
             "desc": "Filters clients by MAC",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> detail",
+            "desc": "Full detail: AP, VLAN, policy, encryption, IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> mobility",
+            "desc": "Roaming/mobility history for one client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> stats",
+            "desc": "RSSI / SNR / Rx/Tx counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear wireless client mac-address <mac>",
+            "desc": "Disconnect a single client",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Mobility": [
@@ -14402,6 +16406,12 @@
           {
             "cmd": "show wireless mobility foreign",
             "desc": "Shows foreign WLCs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility peer ip <ip>",
+            "desc": "Detail of a specific mobility peer (CAPWAP state, MTU)",
             "type": "show",
             "flagged": false
           }
@@ -14496,6 +16506,30 @@
             "desc": "Shows WPA stats",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless security rogue ap summary",
+            "desc": "Detected rogue APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security rogue client summary",
+            "desc": "Rogue/ad-hoc clients seen on-air",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wps summary",
+            "desc": "Wireless IPS configuration summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security psk summary",
+            "desc": "PSK profile summary",
+            "type": "show",
+            "flagged": false
           }
         ],
         "AAA": [
@@ -14557,6 +16591,18 @@
             "cmd": "show wireless aaa stats",
             "desc": "Shows AAA statistics",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config | section radius server",
+            "desc": "All RADIUS server stanzas",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test aaa group <group> <user> <pass> legacy",
+            "desc": "Test AAA auth end-to-end against configured servers",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -14758,6 +16804,24 @@
             "desc": "Shows VLAN mapping for AP",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless profile flex summary",
+            "desc": "Flex profiles configured",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap config general <ap> | include mode|Flex",
+            "desc": "Verify AP is in FlexConnect mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> detail | include switching",
+            "desc": "Per-client local/central switching state",
+            "type": "show",
+            "flagged": false
           }
         ],
         "RF Diagnostics": [
@@ -14893,6 +16957,42 @@
             "cmd": "show wireless stats wips",
             "desc": "Shows WIPS stats",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support wireless",
+            "desc": "Wireless-only tech-support bundle for TAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats client detail",
+            "desc": "Aggregate client connection stats (joins, excl., deauth)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug wireless mac <mac>",
+            "desc": "Enable client-centric RA trace",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging profile wireless internal to-file bootflash:wlc-log.txt",
+            "desc": "Collect internal wireless logs to flash",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "set trace wncd-filter add mac <mac>",
+            "desc": "Filter always-on traces for a specific client",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless trace-on-failure summary",
+            "desc": "Last-join-failure traces collected automatically",
+            "type": "troubleshooting",
             "flagged": false
           }
         ]
@@ -15659,6 +17759,42 @@
             "desc": "Shows detailed PoE info",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show interfaces status err-disabled",
+            "desc": "Ports currently err-disabled with reason",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show errdisable recovery",
+            "desc": "Err-disable recovery timers and enabled causes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery cause <cause>",
+            "desc": "Enable auto-recovery for a specific err-disable cause",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery interval 300",
+            "desc": "Set auto-recovery interval (seconds)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show idprom interface <int>",
+            "desc": "SFP serial + part number (vendor/lot)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform software fed switch active punt cpuq rates",
+            "desc": "Control-plane punt rates per queue",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "VLAN": [
@@ -15719,6 +17855,18 @@
           {
             "cmd": "show vlan private-vlan type",
             "desc": "Shows PVLAN types",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vtp status",
+            "desc": "VTP version, domain, mode, revision number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces trunk | include <vlan>",
+            "desc": "Which trunks pass a specific VLAN",
             "type": "show",
             "flagged": false
           }
@@ -15782,6 +17930,30 @@
             "cmd": "show spanning-tree backbonefast",
             "desc": "Shows backbonefast status",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree root",
+            "desc": "Who is root for each VLAN and via which port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree bridge",
+            "desc": "Local bridge ID per VLAN (priority + MAC)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree guard root",
+            "desc": "Enforce root-guard on a port facing downstream devices",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree bpduguard enable",
+            "desc": "Drop/err-disable on any BPDU received (edge ports)",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -15870,6 +18042,12 @@
             "cmd": "show pagp counters",
             "desc": "Shows PAgP counters",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test etherchannel load-balance interface port-channel<n> ip <src> <dst>",
+            "desc": "Predict outgoing member for a given 5-tuple",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -15995,6 +18173,12 @@
             "desc": "Shows secure MAC database",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "clear port-security sticky",
+            "desc": "Clear sticky-learnt MACs",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "ACL": [
@@ -16119,6 +18303,24 @@
             "desc": "Shows buffer usage",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show platform hardware fed switch active qos queue config interface <int>",
+            "desc": "Queue config applied in hardware to a port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform hardware fed switch active qos queue stats interface <int> clear",
+            "desc": "Read then clear hardware queue stats",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy-map interface <int>",
+            "desc": "Software policy-map counters on an interface",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -16181,6 +18383,24 @@
             "desc": "Shows redirect settings",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ip cef exact-route <src> <dst>",
+            "desc": "Exact CEF path selection for a given flow",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef summary",
+            "desc": "CEF FIB size and memory footprint",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp <ip>",
+            "desc": "ARP entry for a single IP incl. age and MAC",
+            "type": "show",
+            "flagged": false
           }
         ],
         "OSPF": [
@@ -16241,6 +18461,18 @@
           {
             "cmd": "show ip ospf statistics",
             "desc": "Shows OSPF statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database router self-originate",
+            "desc": "This router's own LSA — verify what you're advertising",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface <int>",
+            "desc": "OSPF state/timers/metric on one interface",
             "type": "show",
             "flagged": false
           }
@@ -16367,6 +18599,24 @@
             "desc": "Shows VPNv4 routes",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast summary",
+            "desc": "AFI/SAFI-scoped BGP neighbor summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast <prefix>",
+            "desc": "Best/alt paths and attributes for a prefix",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear bgp ipv4 unicast <neighbor> soft",
+            "desc": "Soft-reset a BGP neighbor without bouncing session",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "Multicast": [
@@ -16427,6 +18677,12 @@
           {
             "cmd": "show ip multicast",
             "desc": "Shows multicast summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip mroute active",
+            "desc": "Only multicast flows with live traffic",
             "type": "show",
             "flagged": false
           }
@@ -16549,6 +18805,24 @@
           {
             "cmd": "show crypto pki server",
             "desc": "Shows PKI server info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform software fed switch active access-list interface <int> output",
+            "desc": "Hardware-ACL programming for egress on a port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show device-tracking database",
+            "desc": "IP-to-MAC binding database (used for IPv6 FHS / DAI)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show device-tracking policies",
+            "desc": "Configured device-tracking policies and bindings",
             "type": "show",
             "flagged": false
           }
@@ -16797,6 +19071,18 @@
           {
             "cmd": "show ip flow export",
             "desc": "Shows flow export status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show flow monitor <name> cache",
+            "desc": "Flow-cache contents for a monitor",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show flow monitor <name> statistics",
+            "desc": "Drop/flows/packet counters for the monitor",
             "type": "show",
             "flagged": false
           }
@@ -17232,6 +19518,56 @@
             "cmd": "show system internal state",
             "desc": "Shows internal system state",
             "type": "show",
+            "flagged": false
+          }
+        ],
+        "Troubleshooting": [
+          {
+            "cmd": "show tech-support | redirect bootflash:tac.txt",
+            "desc": "Capture tech-support for TAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform software process slot switch active r0 monitor",
+            "desc": "Top-style view of processes on RP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform software status control-processor brief",
+            "desc": "Control-plane CPU, memory, load averages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show monitor capture",
+            "desc": "EPC capture sessions configured",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP interface <int> both match any buffer size 10 limit pps 1000",
+            "desc": "Set up in-box packet capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP start",
+            "desc": "Start a configured capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP stop",
+            "desc": "Stop it",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP export flash:cap.pcap",
+            "desc": "Write captured packets to flash",
+            "type": "troubleshooting",
             "flagged": false
           }
         ]
