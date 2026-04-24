@@ -1,5 +1,389 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-24T00:00:00.000Z",
-  "items": []
+  "updatedAt": "2026-04-24T05:26:17.829Z",
+  "items": [
+    {
+      "title": "IOS-XE Basic Troubleshooting and Configuration Guide",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Check device reachability and basic connectivity.",
+          "expected": "Successful ping to the device and/or gateway; interface link/line protocol up.",
+          "commands": [
+            "ping <IP_ADDRESS>",
+            "show ip interface brief"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Verify interface status and configuration.",
+          "expected": "Interface is up/up with correct IP and no errors.",
+          "commands": [
+            "show ip interface <INTERFACE>",
+            "show controllers <INTERFACE>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Review routing table and next-hop resolution.",
+          "expected": "Correct routes present and next-hop reachable.",
+          "commands": [
+            "show ip route",
+            "show ip route <NETWORK>"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Check ARP and neighbor resolution.",
+          "expected": "ARP entry for directly connected peers; ND entries for IPv6.",
+          "commands": [
+            "show ip arp",
+            "show ipv6 neighbors"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Inspect control-plane and management plane health.",
+          "expected": "CPU/memory within normal ranges; no critical syslog errors.",
+          "commands": [
+            "show processes cpu",
+            "show memory",
+            "show logging | include severity"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Verify platform and feature compatibility (license/app-host).",
+          "expected": "Feature is installed and licensed; app-host container is healthy.",
+          "commands": [
+            "show license",
+            "show platform software list",
+            "show app-host list"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Apply a minimal configuration (e.g., interface IP and enable).",
+          "expected": "Interface comes up and end-to-end ping succeeds.",
+          "commands": [
+            "configure terminal",
+            "interface <INTERFACE>",
+            "ip address <IP> <MASK>",
+            "no shutdown",
+            "exit",
+            "end",
+            "write memory"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Save configuration and verify persistence.",
+          "expected": "Running config matches saved config after reload.",
+          "commands": [
+            "copy running-config startup-config",
+            "show running-config interface <INTERFACE>"
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Cisco",
+      "product": "IOS-XE"
+    },
+    {
+      "title": "Nexus Troubleshooting/Config Guide",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Check Nexus service status",
+          "expected": "Service is active and running",
+          "commands": [
+            "systemctl status nexus"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Verify listening ports (default 8081)",
+          "expected": "Port 8081 is LISTEN",
+          "commands": [
+            "ss -tlnp | grep 8081",
+            "netstat -tlnp | grep 8081"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Inspect recent Nexus logs",
+          "expected": "No ERROR entries; clean INFO/WARN",
+          "commands": [
+            "tail -n 200 /nexus-data/log/nexus.log",
+            "grep -i error /nexus-data/log/nexus.log | tail -20"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Confirm JVM heap settings",
+          "expected": "Xms and Xmx within recommended range (e.g., 2g/4g)",
+          "commands": [
+            "grep -i '^-X' /etc/nexus/jvm.options"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Validate repository configuration",
+          "expected": "Repositories are in expected state (online, correct type)",
+          "commands": [
+            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/repositories | jq ."
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Test anonymous access if enabled",
+          "expected": "200 OK with repository list or metadata",
+          "commands": [
+            "curl -I http://localhost:8081/repository/maven-public/"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Check storage and disk space",
+          "expected": "Data directory has adequate free space (>20%)",
+          "commands": [
+            "df -h /nexus-data",
+            "du -sh /nexus-data/*"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Verify network/DNS resolution",
+          "expected": "Hostname resolves to correct IP; no connectivity blocks",
+          "commands": [
+            "hostname -f",
+            "ping -c 2 $(hostname -f)",
+            "curl -v http://localhost:8081"
+          ]
+        },
+        {
+          "n": 9,
+          "action": "Rotate/trim logs if oversized",
+          "expected": "Log size reduced; new log file created",
+          "commands": [
+            "mv /nexus-data/log/nexus.log /nexus-data/log/nexus-$(date +%s).log",
+            "kill -HUP $(pgrep -f 'nexus')"
+          ]
+        },
+        {
+          "n": 10,
+          "action": "Backup and apply config changes",
+          "expected": "Configuration persisted; Nexus responds with new settings",
+          "commands": [
+            "cp -r /nexus-data/conf /nexus-data/conf.bak",
+            "curl -u admin:$(cat /nexus-data/admin.password) -X PUT http://localhost:8081/service/rest/v1/configuration/attributes -H 'Content-Type: application/json' -d '{}'"
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "title": "Troubleshooting and Configuration Guide for 9800-WLC",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Verify physical connectivity and power",
+          "expected": "WLC is powered on, LEDs indicate normal operation (e.g., green power and status LEDs).",
+          "commands": []
+        },
+        {
+          "n": 2,
+          "action": "Access the WLC management interface",
+          "expected": "Successfully log in to the WLC GUI or CLI using administrative credentials.",
+          "commands": [
+            "Open a web browser and enter the WLC management IP address.",
+            "Or via console/SSH: ssh admin@<WLC_IP>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Check system health and logs",
+          "expected": "No critical alerts; logs show normal operation or specific errors for further investigation.",
+          "commands": [
+            "GUI: Monitor > System Health",
+            "CLI: show system health",
+            "GUI: Monitor > Logs",
+            "CLI: show logging console"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Verify controller IP configuration",
+          "expected": "Management interface has correct IP, subnet, gateway, and DNS settings.",
+          "commands": [
+            "GUI: Settings > Controller > IP Settings",
+            "CLI: show ip interface"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Check and configure radio settings",
+          "expected": "2.4 GHz and 5 GHz radios are enabled and operating on correct channels.",
+          "commands": [
+            "GUI: WLANs > Radio 0/Radio 1",
+            "CLI: show radio 0",
+            "CLI: show radio 1"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Validate WLAN configuration",
+          "expected": "WLANs are enabled with correct SSID, security, and VLAN settings.",
+          "commands": [
+            "GUI: WLANs > WLAN List",
+            "CLI: show wlan summary",
+            "CLI: show wlan <wlan_id>"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Verify AP join and status",
+          "expected": "Access Points are in 'RUN' state and associated with the controller.",
+          "commands": [
+            "GUI: Monitor > APs",
+            "CLI: show ap summary",
+            "CLI: show ap name <ap_name> config general"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Test client connectivity",
+          "expected": "Clients can associate, authenticate, and obtain IP connectivity via DHCP.",
+          "commands": [
+            "From a client device, connect to the SSID.",
+            "Verify IP assignment: ipconfig (Windows) or ifconfig/ip (Linux/Mac).",
+            "Ping gateway and external host to confirm connectivity."
+          ]
+        },
+        {
+          "n": 9,
+          "action": "Check Layer 3 connectivity and routing",
+          "expected": "Traffic routes correctly through the WLC and upstream gateway.",
+          "commands": [
+            "CLI: show route",
+            "CLI: ping <gateway_ip>",
+            "CLI: ping <external_ip>"
+          ]
+        },
+        {
+          "n": 10,
+          "action": "Review and apply firmware/software updates if needed",
+          "expected": "WLC runs a stable, recommended firmware version with latest patches.",
+          "commands": [
+            "GUI: System > Software Management",
+            "CLI: show version",
+            "Follow upgrade procedure if update is required."
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "title": "PAN-OS Basic Troubleshooting and Configuration Guide",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Check device connectivity and management access.",
+          "expected": "Management interface is reachable and you can log in via SSH/HTTPS.",
+          "commands": [
+            "ping <management-ip>",
+            "ssh admin@<management-ip>"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Verify PAN-OS software version and license status.",
+          "expected": "Device shows expected PAN-OS version and valid license.",
+          "commands": [
+            "show system info",
+            "show license"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Check interface status and IP assignment.",
+          "expected": "Interfaces are operational (up/up) with correct IP configuration.",
+          "commands": [
+            "show interface",
+            "show ip interface brief"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Review system logs for errors and warnings.",
+          "expected": "No critical or repeated errors; logs show normal operation.",
+          "commands": [
+            "show log system",
+            "show log config"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Validate routing and reachability to external networks.",
+          "expected": "Routes present and next-hop reachable; pings/traceroute succeed.",
+          "commands": [
+            "show routing-table",
+            "traceroute <external-ip>"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Check security policy matches and hit counts.",
+          "expected": "Policies show expected matches/hits; no unintended denials.",
+          "commands": [
+            "show policy hit-count",
+            "show rulebase security"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Verify NAT configuration if used.",
+          "expected": "Source/Destination NAT rules are correctly applied and translated IPs as expected.",
+          "commands": [
+            "show nat policy",
+            "show running nat-policy"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Test end-to-end traffic and application visibility.",
+          "expected": "Allowed traffic flows; apps are identified correctly by App-ID.",
+          "commands": [
+            "show app-identification",
+            "debug dataplane packet-trace basic <src> <dst> <port> <protocol>"
+          ]
+        },
+        {
+          "n": 9,
+          "action": "Commit changes and confirm configuration is saved.",
+          "expected": "Commit succeeds and configuration is saved to startup.",
+          "commands": [
+            "commit",
+            "show config running | save /config/backup-config.xml"
+          ]
+        },
+        {
+          "n": 10,
+          "action": "Monitor performance and resource utilization.",
+          "expected": "CPU/memory/disk within normal thresholds; no saturation.",
+          "commands": [
+            "show system performance",
+            "show system disk-space"
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Palo Alto",
+      "product": "PAN-OS"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-24T00:14:36.599Z",
+  "updatedAt": "2026-04-24T05:26:32.819Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5841,6 +5841,106 @@
           {
             "cmd": "copy tftp: running-config",
             "desc": "Restores a running config from a TFTP server",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display software version and hardware information",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display current running configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running configuration to startup configuration",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "reload",
+            "desc": "Reload the device",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show interfaces",
+            "desc": "Display interface status and statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "Display IP routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/1",
+            "desc": "Enter interface configuration mode for a specific interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Enable an interface",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "troubleshoot": [
+          {
+            "cmd": "ping 8.8.8.8",
+            "desc": "Test connectivity to a destination IP address",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 8.8.8.8",
+            "desc": "Trace the route to a destination IP address",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging",
+            "desc": "Display system logs and events",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging for IP packets (use with caution)",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "monitor": [
+          {
+            "cmd": "show cpu usage",
+            "desc": "Display CPU utilization statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Display memory usage statistics",
             "type": "show",
             "flagged": false
           }
@@ -20413,6 +20513,233 @@
           {
             "cmd": "monitor capture CAP export flash:cap.pcap",
             "desc": "Write captured packets to flash",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "cisco_nexus": {
+      "label": "Cisco Nexus",
+      "badge": "badge-sw",
+      "short": "Nexus",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system hardware and software version information.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license",
+            "desc": "Display installed license information.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show interfaces",
+            "desc": "Display status and statistics for all interfaces.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "Display the current IP routing table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/1",
+            "desc": "Enter interface configuration mode for a specific interface.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "troubleshoot syslog show recent",
+            "desc": "Display recent system log entries for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging for IP packet processing.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support",
+            "desc": "Generate and display a technical support snapshot.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "cisco_9800_wlc": {
+      "label": "Cisco 9800-WLC",
+      "badge": "badge-sw",
+      "short": "9800-W",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system hardware and software version information.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show ns ip",
+            "desc": "Display NetScaler IP address configurations.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set ns ip <ip_addr> <netmask>",
+            "desc": "Configure a NetScaler IP address.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "loadbalancing": [
+          {
+            "cmd": "show lb vserver",
+            "desc": "Display load balancing virtual server status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set lb vserver <name> <serviceType> <IP> <port>",
+            "desc": "Create or modify a load balancing virtual server.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "global": [
+          {
+            "cmd": "config t",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ns config",
+            "desc": "Clear the current configuration (use with caution).",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show logging",
+            "desc": "Display system log messages.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "cmd": "show techsupport",
+            "desc": "Generate and display technical support information.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration.",
+            "type": "show",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "palo_alto_pan_os": {
+      "label": "Palo Alto PAN-OS",
+      "badge": "badge-sw",
+      "short": "PAN-OS",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system information and software version for Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show network interface",
+            "desc": "Display network interface status and configuration on Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set network interface ethernet ethernet1/1 layer3 ip-address 192.168.1.1/24",
+            "desc": "Configure IP address on an Ethernet interface for Palo Alto Networks firewall.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration of the Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure",
+            "desc": "Enter configuration mode on Palo Alto Networks firewall to modify settings.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit",
+            "desc": "Commit the configuration changes on Palo Alto Networks firewall.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show log threat",
+            "desc": "Display threat logs to identify potential security threats on Palo Alto Networks firewall.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show log traffic",
+            "desc": "Display traffic logs to analyze allowed or denied traffic on Palo Alto Networks firewall.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "debug dataplane packet-trace advanced",
+            "desc": "Run an advanced packet trace for troubleshooting traffic issues on Palo Alto Networks firewall.",
             "type": "troubleshooting",
             "flagged": false
           }
