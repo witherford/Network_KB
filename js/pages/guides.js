@@ -24,7 +24,19 @@ const TOPICS = [
   // Placeholders — show as "coming soon" until a module is added.
   { id: 'nexus-vxlan',   title: 'Cisco Nexus VXLAN-EVPN', subtitle: 'Fabric underlay, overlay, multi-site.',            vendor: 'Cisco',    badgeClass: 'badge-sw', icon: '🕸️', status: 'soon', tags: ['Data Centre', 'VXLAN', 'EVPN'] },
   { id: 'netscaler',     title: 'Citrix NetScaler',       subtitle: 'Load balancing, SSL, content switching, HA.',     vendor: 'Citrix',   badgeClass: 'badge-ns', icon: '⚖️', status: 'soon', tags: ['ADC', 'Load Balancer'] },
-  { id: 'panos',         title: 'Palo Alto PAN-OS',       subtitle: 'Policy, NAT, zones, GlobalProtect.',              vendor: 'Palo Alto', badgeClass: 'badge-pa', icon: '🔥', status: 'soon', tags: ['Firewall', 'NGFW'] },
+  {
+    id: 'panos',
+    title: 'Palo Alto PAN-OS',
+    subtitle: 'Single-pass engine — App-ID, User-ID, Content-ID, decryption, GlobalProtect, HA, Panorama.',
+    vendor: 'Palo Alto',
+    badgeClass: 'badge-pa',
+    icon: '🔥',
+    modules: 16,
+    minutes: 260,
+    tags: ['Firewall', 'NGFW', 'App-ID', 'GlobalProtect', 'Panorama'],
+    loader: () => import('./learning/panos.js'),
+    status: 'available'
+  },
   { id: 'asa-ftd',       title: 'Cisco ASA / FTD',        subtitle: 'VPN, ACLs, packet-tracer deep-dive.',             vendor: 'Cisco',    badgeClass: 'badge-asa', icon: '🛡️', status: 'soon', tags: ['Firewall', 'VPN'] },
   { id: 'ise',           title: 'Cisco ISE',              subtitle: '802.1X, profiling, BYOD, posture.',               vendor: 'Cisco',    badgeClass: 'badge-sw', icon: '🧾', status: 'soon', tags: ['AAA', 'Security'] }
 ];
