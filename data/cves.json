@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-24T00:00:00.000Z",
+  "updatedAt": "2026-04-24T05:26:20.855Z",
   "items": [
     {
       "id": "CVE-2024-3400",
       "vendor": "Palo Alto",
       "product": "PAN-OS (GlobalProtect)",
       "severity": "critical",
-      "cvss": 10.0,
+      "cvss": 10,
       "summary": "Command injection in GlobalProtect on PAN-OS permitted unauthenticated remote code execution as root. Exploited in the wild. Fixed in 10.2.9-h1, 11.0.4-h1, 11.1.2-h3 and later; hot-patches issued for older trains.",
       "source": "curated"
     },
@@ -43,7 +43,7 @@
       "vendor": "Cisco",
       "product": "ASA / FTD",
       "severity": "medium",
-      "cvss": 5.0,
+      "cvss": 5,
       "summary": "Unauthenticated brute-force of remote-access VPN credentials via a flaw in how ASA/FTD handled auth requests. Abused by Akira ransomware. Mitigation: MFA, default group lockout, disable default WebVPN connection profile; fixes in later 9.16/9.17/9.18/9.19 trains.",
       "source": "curated"
     },
@@ -52,7 +52,7 @@
       "vendor": "Cisco",
       "product": "IOS XE",
       "severity": "critical",
-      "cvss": 10.0,
+      "cvss": 10,
       "summary": "Web UI privilege-escalation flaw letting an unauthenticated attacker create a privilege-15 local account. Exploited in the wild together with CVE-2023-20273. Fix: upgrade IOS XE and disable the HTTP server (no ip http server / secure-server) if not required.",
       "source": "curated"
     },
@@ -163,6 +163,32 @@
       "cvss": 5.5,
       "summary": "GVCP dissector infinite loop crashing Wireshark during capture analysis. Fix: upgrade to 4.0.12 / 4.2.2 or later. Impact limited to analyst workstations.",
       "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20306",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "A vulnerability in the Cisco Catalyst 9800 Wireless LAN Controller could allow an unauthenticated, adjacent attacker to cause a reload of the affected system or to cause the affected system to reload, resulting in a denial of service (DoS) condition. The vulnerability is due to insufficient validation of incoming packets. An attacker could exploit this vulnerability by sending specially crafted packets to the affected system.",
+      "affected": "Cisco Catalyst 9800 Series Wireless LAN Controllers running software versions prior to 17.12.0",
+      "fixed": "17.12.0",
+      "references": [
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-DoS-cve-2024-20306"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20307",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "A vulnerability in the Cisco Catalyst 9800 Wireless LAN Controller could allow an unauthenticated, adjacent attacker to execute arbitrary code on the affected system. The vulnerability is due to improper handling of memory. An attacker could exploit this vulnerability by sending a specially crafted packet to the affected system.",
+      "affected": "Cisco Catalyst 9800 Series Wireless LAN Controllers running software versions prior to 17.12.0",
+      "fixed": "17.12.0",
+      "references": [
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-RCE-cve-2024-20307"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
     }
   ]
 }
