@@ -7,9 +7,14 @@
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const DATA = path.join(ROOT, 'data');
+
+// Dynamic imports of the shared API modules — they live under js/api and the
+// script-relative path must be file:// to work on Windows.
+const API_DIR = pathToFileURL(path.join(ROOT, 'js', 'api')).href;
 
 const ENDPOINTS = {
   openrouter: 'https://openrouter.ai/api/v1/chat/completions',
@@ -50,6 +55,11 @@ async function main() {
 
   const manifest = await readJson(path.join(DATA, 'manifest.json'), {});
 
+  // Real-API pass first — sources data for software.json and cves.json from
+  // vendor APIs (Cisco, NVD, MSRC, Palo Alto, Citrix). Anything the APIs
+  // don't cover falls through to the AI pass below.
+  const apiResults = await runRealApis(settings);
+
   for (const kind of KINDS) {
     const absPath = path.join(ROOT, kind.file);
     const template = settings.prompts?.[kind.promptKey] || FALLBACK_PROMPTS[kind.promptKey];
@@ -61,9 +71,24 @@ async function main() {
       const existing = await readJson(absPath, { version: 1, items: [] });
       existing.items ||= [];
 
+      // Merge real-API results for software / cves.
+      if (apiResults[kind.key]?.items?.length) {
+        for (const it of apiResults[kind.key].items) {
+          mergeItem(existing.items, it, kind.key);
+        }
+        const src = apiResults[kind.key].sources || {};
+        const tally = Object.entries(src).filter(([, n]) => n > 0).map(([k, n]) => `${k}:${n}`).join(', ');
+        console.log(`[${kind.key}] real APIs → ${tally || 'nothing'}`);
+      }
+
       for (const v of vendors) {
         const products = v.products?.length ? v.products : [''];
         for (const product of products) {
+          // Skip AI for pairs already satisfied by a real API.
+          if (apiResults[kind.key]?.handled?.has(`${v.vendor}|${product}`)) {
+            console.log(`[${kind.key}] ${v.vendor}/${product}: skipped (real-API)`);
+            continue;
+          }
           const filled = fillTemplate(template, {
             vendor: v.vendor, product, topic: product || v.vendor, domains: (settings.domains || []).join(', ')
           });
@@ -90,6 +115,23 @@ async function main() {
 
   await fs.writeFile(path.join(DATA, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   console.log('Done.');
+}
+
+/* ---------- real vendor APIs ---------- */
+async function runRealApis(settings) {
+  const out = { software: null, cves: null };
+  try {
+    const vendorsMod = await import(API_DIR + '/vendors.js');
+    try {
+      out.software = await vendorsMod.fetchSoftware(settings, { env: 'node' });
+    } catch (err) { console.error('[software] real-API error:', err.message); }
+    try {
+      out.cves = await vendorsMod.fetchCves(settings, { env: 'node' });
+    } catch (err) { console.error('[cves] real-API error:', err.message); }
+  } catch (err) {
+    console.error('Failed to load vendor API modules:', err.message);
+  }
+  return out;
 }
 
 /* ---------- decrypt ---------- */
