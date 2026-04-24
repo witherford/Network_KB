@@ -8,6 +8,8 @@ import { confirmModal } from '../components/modal.js';
 import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
 
 const SEV_COLOR = { critical: '#991b1b', high: '#b45309', medium: '#0369a1', low: '#6b7280' };
+const SEV_RANK  = { critical: 0, high: 1, medium: 2, low: 3, informational: 4, '': 5 };
+const RECENT_DAYS = 7;
 
 function workingData() {
   return state.editMode && state.pending.cves ? state.pending.cves : state.data.cves;
@@ -111,36 +113,108 @@ function renderCves(c, items, filter) {
       </div>
     </section>` : '';
 
-  const editHeader = state.editMode ? '<th style="width:60px"></th>' : '';
-  const table = tableRows.length ? `<table class="tbl">
-    <thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Published</th><th>Summary</th>${editHeader}</tr></thead>
-    <tbody>
-      ${tableRows.map(({ it: r, idx }) => {
-        const sev = (r.severity || '').toLowerCase();
-        const col = SEV_COLOR[sev] || 'inherit';
-        const vendorLink = vendorAdvisoryLink(r);
-        const sourceList = Array.isArray(r.sources) ? r.sources : (r.source ? [r.source] : []);
-        return `<tr>
-          <td class="mono">
-            <a href="https://nvd.nist.gov/vuln/detail/${esc(r.id || '')}" target="_blank" rel="noopener">${esc(r.id || '')}</a>
-            ${vendorLink ? ` · <a href="${esc(vendorLink.href)}" target="_blank" rel="noopener" title="${esc(vendorLink.title)}">↗</a>` : ''}
-          </td>
-          <td>${esc(r.vendor || '')}</td>
-          <td>${esc(r.product || '')}</td>
-          <td style="color:${col};font-weight:600;text-transform:capitalize">${esc(r.severity || '')}</td>
-          <td class="mono">${esc(String(r.cvss ?? ''))}</td>
-          <td class="mono" style="font-size:11px">${esc((r.published || '').slice(0, 10))}</td>
-          <td>
-            ${esc(r.summary || '')}
-            ${sourceList.length ? `<div style="margin-top:3px">${sourceList.map(s => `<span class="src-pill">${esc(s)}</span>`).join('')}</div>` : ''}
-          </td>
-          ${state.editMode ? `<td><button class="btn sm danger" data-act="del-cve" data-idx="${idx}" title="Delete">🗑</button></td>` : ''}
-        </tr>`;
-      }).join('')}
-    </tbody>
-  </table>` : '';
+  // Group table rows by vendor, then sort each group by severity rank then
+  // CVSS desc. Vendor groups themselves come out sorted by "worst CVE first"
+  // so the most urgent section is always at the top.
+  const byVendor = {};
+  for (const row of tableRows) {
+    const v = row.it.vendor || 'Unknown';
+    (byVendor[v] = byVendor[v] || []).push(row);
+  }
+  for (const v of Object.keys(byVendor)) byVendor[v].sort(sortBySeverity);
+  const vendorOrder = Object.keys(byVendor).sort((a, b) => {
+    const aw = worstIn(byVendor[a]);
+    const bw = worstIn(byVendor[b]);
+    if (aw !== bw) return aw - bw;
+    return a.localeCompare(b);
+  });
 
-  c.innerHTML = htmlSection + table;
+  const editHeader = state.editMode ? '<th style="width:60px"></th>' : '';
+  const recentCutoff = Date.now() - RECENT_DAYS * 86400_000;
+  const recentCount = tableRows.filter(({ it }) => isRecent(it, recentCutoff)).length;
+  const banner = recentCount ? `
+    <div class="cve-recent-banner">
+      <span class="cve-recent-dot"></span>
+      <span>${recentCount} CVE${recentCount === 1 ? '' : 's'} discovered in the last ${RECENT_DAYS} days</span>
+    </div>` : '';
+
+  const tableSections = vendorOrder.map(vendor => {
+    const rows = byVendor[vendor];
+    const critical = rows.filter(r => (r.it.severity || '').toLowerCase() === 'critical').length;
+    const high     = rows.filter(r => (r.it.severity || '').toLowerCase() === 'high').length;
+    return `
+    <section class="platform-section">
+      <div class="platform-header">
+        <h2 class="ptitle">${esc(vendor)}</h2>
+        <span class="pcnt">${rows.length}</span>
+        ${critical ? `<span class="sev-chip sev-chip-critical">${critical} critical</span>` : ''}
+        ${high ? `<span class="sev-chip sev-chip-high">${high} high</span>` : ''}
+      </div>
+      <table class="tbl">
+        <thead><tr><th>CVE</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Published</th><th>Summary</th>${editHeader}</tr></thead>
+        <tbody>
+          ${rows.map(({ it: r, idx }) => {
+            const sev = (r.severity || '').toLowerCase();
+            const col = SEV_COLOR[sev] || 'inherit';
+            const vendorLink = vendorAdvisoryLink(r);
+            const sourceList = Array.isArray(r.sources) ? r.sources : (r.source ? [r.source] : []);
+            const recent = isRecent(r, recentCutoff);
+            const pubDate = (r.published || '').slice(0, 10);
+            return `<tr class="${recent ? 'cve-recent' : ''}">
+              <td class="mono">
+                ${recent ? '<span class="cve-new-badge" title="Discovered in the last 7 days">NEW</span> ' : ''}
+                <a href="https://nvd.nist.gov/vuln/detail/${esc(r.id || '')}" target="_blank" rel="noopener">${esc(r.id || '')}</a>
+                ${vendorLink ? ` · <a href="${esc(vendorLink.href)}" target="_blank" rel="noopener" title="${esc(vendorLink.title)}">↗</a>` : ''}
+              </td>
+              <td>${esc(r.product || '')}</td>
+              <td style="color:${col};font-weight:600;text-transform:capitalize">${esc(r.severity || '')}</td>
+              <td class="mono">${esc(String(r.cvss ?? ''))}</td>
+              <td class="mono" style="font-size:11px">${esc(pubDate)}${recent ? ` <span style="color:var(--danger)">(${daysAgo(r.published)}d ago)</span>` : ''}</td>
+              <td>
+                ${esc(r.summary || '')}
+                ${sourceList.length ? `<div style="margin-top:3px">${sourceList.map(s => `<span class="src-pill">${esc(s)}</span>`).join('')}</div>` : ''}
+              </td>
+              ${state.editMode ? `<td><button class="btn sm danger" data-act="del-cve" data-idx="${idx}" title="Delete">🗑</button></td>` : ''}
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </section>`;
+  }).join('');
+
+  c.innerHTML = htmlSection + banner + tableSections;
+}
+
+function sortBySeverity(a, b) {
+  const ra = SEV_RANK[(a.it.severity || '').toLowerCase()] ?? 5;
+  const rb = SEV_RANK[(b.it.severity || '').toLowerCase()] ?? 5;
+  if (ra !== rb) return ra - rb;
+  const ca = Number(a.it.cvss) || 0;
+  const cb = Number(b.it.cvss) || 0;
+  if (ca !== cb) return cb - ca;
+  // Tie-break: newer first
+  return new Date(b.it.published || 0) - new Date(a.it.published || 0);
+}
+
+function worstIn(rows) {
+  let worst = 99;
+  for (const { it } of rows) {
+    const r = SEV_RANK[(it.severity || '').toLowerCase()] ?? 5;
+    if (r < worst) worst = r;
+  }
+  return worst;
+}
+
+function isRecent(it, cutoff) {
+  if (!it.published) return false;
+  const t = Date.parse(it.published);
+  return !isNaN(t) && t >= cutoff;
+}
+
+function daysAgo(iso) {
+  const t = Date.parse(iso);
+  if (isNaN(t)) return '?';
+  return Math.max(0, Math.floor((Date.now() - t) / 86400_000));
 }
 
 // Prefer the vendor-supplied advisory URL when one is present; otherwise

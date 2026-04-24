@@ -1,4 +1,5 @@
-// DNS bulk-resolve script builder.
+// DNS bulk-resolve script builder. Output is CSV — each target is resolved
+// and printed as a row with the hostname/FQDN and the matching IP(s).
 
 import { copyToClipboard, toast } from '../utils.js';
 
@@ -34,17 +35,22 @@ export async function mount(root) {
         <textarea id="dInput" placeholder="example.com&#10;google.com&#10;8.8.8.8"></textarea>
       </div>
     </div>
-    <div style="display:flex;gap:8px;margin:12px 0">
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
       <button class="btn primary" id="dBuild">Build script</button>
-      <button class="btn" id="dCopy">Copy</button>
+      <button class="btn" id="dCopy">Copy script</button>
+      <span class="spacer" style="flex:1"></span>
+      <button class="btn" id="dCsv" title="Export targets as a CSV stub (fill the IP column after running the script)">Export CSV</button>
     </div>
     <pre class="script-out" id="dOut"></pre>`;
+
+  const targets = () => root.querySelector('#dInput').value
+    .split(/\r?\n/).map(s => s.trim()).filter(Boolean);
 
   const build = () => {
     const os = root.querySelector('#dOs').value;
     const type = root.querySelector('#dType').value;
     const server = root.querySelector('#dServer').value.trim();
-    const items = root.querySelector('#dInput').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const items = targets();
     if (!items.length) { root.querySelector('#dOut').textContent = '# No hostnames'; return; }
     root.querySelector('#dOut').textContent = render(os, type, server, items);
   };
@@ -54,6 +60,12 @@ export async function mount(root) {
     const out = root.querySelector('#dOut').textContent;
     if (out) copyToClipboard(out).then(ok => toast(ok ? 'Script copied' : 'Copy failed', ok ? 'success' : 'error'));
   });
+  root.querySelector('#dCsv').addEventListener('click', () => {
+    const items = targets();
+    if (!items.length) { toast('No targets to export', 'error'); return; }
+    const csv = 'FQDN,IP\r\n' + items.map(t => `${csvEscape(t)},`).join('\r\n') + '\r\n';
+    downloadCsv('dns-targets.csv', csv);
+  });
   build();
 }
 
@@ -61,25 +73,52 @@ function render(os, type, server, items) {
   if (os === 'ps') {
     const list = items.map(h => `"${h}"`).join(', ');
     const serverArg = server ? ` -Server ${server}` : '';
-    return `$targets = @(${list})\n` +
+    return `# Outputs CSV: FQDN,IP\n` +
+      `$targets = @(${list})\n` +
+      `"FQDN,IP"\n` +
       `foreach ($t in $targets) {\n` +
       `  try {\n` +
-      `    Resolve-DnsName -Name $t -Type ${type}${serverArg} -ErrorAction Stop |\n` +
-      `      Select-Object Name, Type, IPAddress, NameHost, Strings |\n` +
-      `      Format-Table -AutoSize\n` +
-      `  } catch { Write-Host ("{0}: not resolvable" -f $t) -ForegroundColor Yellow }\n` +
-      `}`;
+      `    $r = Resolve-DnsName -Name $t -Type ${type}${serverArg} -ErrorAction Stop\n` +
+      `    $ips = $r | Where-Object { $_.IPAddress -or $_.NameHost } |\n` +
+      `      ForEach-Object { if ($_.IPAddress) { $_.IPAddress } else { $_.NameHost } }\n` +
+      `    if (-not $ips) { "$t," }\n` +
+      `    else { $ips | ForEach-Object { "$t,$_" } }\n` +
+      `  } catch { "$t,UNRESOLVED" }\n` +
+      `} | Tee-Object -FilePath dns-results.csv`;
   }
-  // bash using dig if available, fall back to host
+  // bash — dig preferred, host fallback. Always CSV: FQDN,IP
   const serverArg = server ? `@${server} ` : '';
   return `#!/usr/bin/env bash\n` +
+    `# Outputs CSV: FQDN,IP (also written to dns-results.csv)\n` +
     `targets=(${items.map(h => `"${h}"`).join(' ')})\n` +
-    `for t in "\${targets[@]}"; do\n` +
-    `  printf '%-40s ' "$t"\n` +
-    `  if command -v dig >/dev/null; then\n` +
-    `    dig +short ${serverArg}"$t" ${type} | paste -sd, -\n` +
-    `  else\n` +
-    `    host -t ${type} "$t" ${server || ''} | awk 'NR==1{print; exit}'\n` +
-    `  fi\n` +
-    `done`;
+    `{\n` +
+    `  echo "FQDN,IP"\n` +
+    `  for t in "\${targets[@]}"; do\n` +
+    `    if command -v dig >/dev/null; then\n` +
+    `      ips=$(dig +short ${serverArg}"$t" ${type})\n` +
+    `    else\n` +
+    `      ips=$(host -t ${type} "$t" ${server || ''} 2>/dev/null | awk '/has address|has IPv6|domain name pointer|mail is handled/{print $NF}')\n` +
+    `    fi\n` +
+    `    if [ -z "$ips" ]; then\n` +
+    `      echo "$t,UNRESOLVED"\n` +
+    `    else\n` +
+    `      while IFS= read -r ip; do echo "$t,$ip"; done <<< "$ips"\n` +
+    `    fi\n` +
+    `  done\n` +
+    `} | tee dns-results.csv`;
+}
+
+function csvEscape(v) {
+  const s = String(v ?? '');
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadCsv(name, text) {
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
