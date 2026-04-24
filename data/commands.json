@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-24T00:03:05.581Z",
+  "updatedAt": "2026-04-24T00:14:36.599Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2379,9 +2379,185 @@
             "desc": "Extract the public key from any private key (RSA, EC, or Ed25519)",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa3072.key",
+            "desc": "Generate 3072-bit RSA key via genpkey (modern API)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out rsa4096.key",
+            "desc": "Generate password-protected 4096-bit RSA key",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-384 -out ec384.key",
+            "desc": "P-384 EC key via genpkey",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-521 -out ec521.key",
+            "desc": "P-521 EC key via genpkey",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm X25519 -out x25519.key",
+            "desc": "X25519 key for modern ECDH",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm X448 -out x448.key",
+            "desc": "X448 key (higher security level than X25519)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm ed448 -out ed448.key",
+            "desc": "Ed448 signing key",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ecparam -list_curves",
+            "desc": "List every named EC curve supported by the build",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ecparam -name prime256v1 -out ecparams.pem",
+            "desc": "Save EC parameters to a file",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -out random.bin 256",
+            "desc": "Write 256 random bytes to a binary file",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -hex 16",
+            "desc": "Print 16 random bytes hex (32 chars) — token / IV material",
+            "type": "show",
+            "flagged": false
           }
         ],
-        "CSR & Certificates": [
+        "Key Inspection & Manipulation": [
+          {
+            "cmd": "openssl genrsa -out <key> 2048",
+            "desc": "Generates RSA key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm RSA -out <key>",
+            "desc": "Generates RSA key (modern)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out <key>",
+            "desc": "Generates EC key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in <key> -check",
+            "desc": "Checks RSA key integrity",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in <key> -pubout -out <pubkey>",
+            "desc": "Extracts public key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in <key> -pubout",
+            "desc": "Extracts public key (generic)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in <key> -text -noout",
+            "desc": "Shows key details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in private.key -text -noout",
+            "desc": "Print full RSA key structure (n, e, d, p, q, primes, CRT coeffs)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in private.key -noout -modulus",
+            "desc": "Public modulus of an RSA key — use to cross-check against cert/CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ec -in ec.key -text -noout",
+            "desc": "Print EC key parameters and curve",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in private.key -pubout",
+            "desc": "Print the public key for any key type (RSA / EC / Ed25519)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in enc.key -out dec.key",
+            "desc": "Remove passphrase from an RSA private key (will prompt for current pass)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in dec.key -aes256 -out enc.key",
+            "desc": "Add a passphrase to a plaintext RSA key (AES-256)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs8 -topk8 -nocrypt -in traditional.key -out pkcs8.key",
+            "desc": "Convert legacy PEM to unencrypted PKCS#8",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs8 -topk8 -v2 aes-256-cbc -in plain.key -out pkcs8-enc.key",
+            "desc": "Convert + encrypt to PKCS#8 with AES-256-CBC",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs8 -in pkcs8-enc.key -out decrypted.key",
+            "desc": "Decrypt a PKCS#8 key back to PEM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in private.key -traditional -out rsa.key",
+            "desc": "Convert PKCS#8 → legacy PKCS#1 \"BEGIN RSA PRIVATE KEY\" format",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in private.key -passin pass:<password> -out unenc.key",
+            "desc": "Scripted remove-passphrase (no TTY prompt)",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "CSR & Certificate Signing": [
           {
             "cmd": "openssl req -new -key private.key -out request.csr",
             "desc": "Generate a Certificate Signing Request from an existing key",
@@ -2428,6 +2604,48 @@
             "cmd": "openssl req -new -key private.key -out req.csr -config openssl-san.cnf",
             "desc": "Generate a CSR with SANs defined in a custom config file",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -new -key private.key -out req.csr -addext \"subjectAltName = DNS:example.com,DNS:*.example.com\"",
+            "desc": "Generate CSR with SAN on the command line (no config file)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -verify -in req.csr -noout",
+            "desc": "Verify CSR self-signature is valid",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -in req.csr -text -noout -verify",
+            "desc": "CSR content + self-signature verification in one command",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ca -config openssl-ca.cnf -extensions v3_intermediate_ca -days 3650 -in intermediate.csr -out intermediate.crt",
+            "desc": "Sign an intermediate CA cert with your root",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ca -config openssl-ca.cnf -extensions server_cert -days 365 -in req.csr -out server.crt",
+            "desc": "Sign a server cert with full CA workflow (index.txt + serial)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ca -config openssl-ca.cnf -revoke server.crt",
+            "desc": "Revoke a previously-signed cert",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ca -config openssl-ca.cnf -gencrl -out ca.crl",
+            "desc": "Generate a fresh CRL from the CA database",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -2497,6 +2715,212 @@
             "desc": "Print all subjects in a PEM certificate chain file",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in <cert> -text -noout",
+            "desc": "Displays certificate details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in <cert> -issuer -noout",
+            "desc": "Shows certificate issuer",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in <cert> -subject -noout",
+            "desc": "Shows certificate subject",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in <cert> -dates -noout",
+            "desc": "Shows certificate validity dates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in <cert> -fingerprint -noout",
+            "desc": "Shows certificate fingerprint",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -CAfile <ca.pem> <cert>",
+            "desc": "Verifies certificate chain",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -in <pfx> -nodes",
+            "desc": "Extracts keys and certs from PFX",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -export -out <pfx> -inkey <key> -in <cert>",
+            "desc": "Creates PFX file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -new -key <key> -out <csr>",
+            "desc": "Generates CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -newkey rsa:2048 -nodes -keyout <key> -out <csr>",
+            "desc": "Generates key + CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -purpose",
+            "desc": "Purposes a cert is valid for (server, client, code-sign…)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -ext extendedKeyUsage",
+            "desc": "Just the EKU extension values",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -ext keyUsage",
+            "desc": "Just the keyUsage extension",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -ext authorityInfoAccess",
+            "desc": "AIA extension — OCSP URL and CA issuer URL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -ext crlDistributionPoints",
+            "desc": "CRL Distribution Points",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -issuer_hash",
+            "desc": "Hash of the issuer name (used by OpenSSL CAfile symlinks)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -subject_hash",
+            "desc": "Hash of the subject name (c_rehash symlink target)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -checkend 604800",
+            "desc": "Exit non-zero if cert expires within 7 days (scriptable)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -startdate -enddate",
+            "desc": "NotBefore + NotAfter in one command",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -text -certopt no_pubkey,no_sigdump",
+            "desc": "Full cert minus noisy pubkey + signature hex",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Verification & Matching": [
+          {
+            "cmd": "openssl verify -CAfile ca.crt cert.crt",
+            "desc": "Verify a certificate is properly signed by the specified CA",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -CAfile ca.crt -untrusted intermediate.crt cert.crt",
+            "desc": "Verify a certificate using a full chain with intermediate CA",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -noout -modulus -in cert.crt | openssl md5",
+            "desc": "Get MD5 hash of certificate modulus for key/cert matching",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -noout -modulus -in private.key | openssl md5",
+            "desc": "Get MD5 hash of private key modulus — compare with cert to confirm match",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -noout -modulus -in request.csr | openssl md5",
+            "desc": "Get MD5 hash of CSR modulus — compare with key and cert",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dhparam -check -in dhparam.pem",
+            "desc": "Verify a Diffie-Hellman parameters file is valid",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -CAfile ca.crt -untrusted chain.pem -verbose cert.crt",
+            "desc": "Verify leaf against root, using intermediates, with verbose output",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -CApath /etc/ssl/certs cert.crt",
+            "desc": "Verify against the system-trust directory (c_rehash style)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -partial_chain -CAfile intermediate.crt cert.crt",
+            "desc": "Let OpenSSL stop at an intermediate rather than chaining to a root",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify -show_chain -CAfile ca.crt cert.crt",
+            "desc": "Print the full chain as OpenSSL built it",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in private.key -pubout | openssl sha256",
+            "desc": "Hash of the public key — compare against cert and CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -pubkey -noout | openssl sha256",
+            "desc": "Hash of the cert's public key — pin / match against key/CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -in req.csr -pubkey -noout | openssl sha256",
+            "desc": "Hash of the CSR's public key — compare against private key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -fingerprint -sha1",
+            "desc": "SHA-1 fingerprint (for UI comparison)",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Format Conversion": [
@@ -2559,47 +2983,63 @@
             "desc": "Convert a traditional RSA key to PKCS#8 unencrypted format",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -export -out bundle.pfx -inkey private.key -in cert.crt -certfile chain.crt -name \"my-cert\"",
+            "desc": "Build PFX with a friendly-name alias",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -export -out legacy.pfx -inkey private.key -in cert.crt -legacy",
+            "desc": "PFX encrypted with legacy RC2/3DES algorithms (for old Java/Windows)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -in bundle.pfx -clcerts -nokeys -out client-only.crt",
+            "desc": "Extract only the client-cert leaf from a PFX",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -in bundle.pfx -cacerts -nokeys -out ca-chain.crt",
+            "desc": "Extract only the CA chain (no leaf, no key)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs7 -print_certs -in chain.p7b -out chain.pem",
+            "desc": "PKCS#7 bundle → PEM chain",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl2pkcs7 -nocrl -certfile leaf.crt -certfile chain.pem -out bundle.p7b",
+            "desc": "Build a PKCS#7 cert bundle for Windows/Java import",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in private.key -outform DER -out private.der",
+            "desc": "Convert a private key to DER",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkey -in private.der -inform DER -out private.pem",
+            "desc": "Convert a DER key to PEM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "cat leaf.crt intermediate.crt root.crt > fullchain.pem",
+            "desc": "Build a concatenated PEM chain (leaf → root)",
+            "type": "config",
+            "flagged": false
           }
         ],
-        "Verification & Matching": [
-          {
-            "cmd": "openssl verify -CAfile ca.crt cert.crt",
-            "desc": "Verify a certificate is properly signed by the specified CA",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl verify -CAfile ca.crt -untrusted intermediate.crt cert.crt",
-            "desc": "Verify a certificate using a full chain with intermediate CA",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl x509 -noout -modulus -in cert.crt | openssl md5",
-            "desc": "Get MD5 hash of certificate modulus for key/cert matching",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl rsa -noout -modulus -in private.key | openssl md5",
-            "desc": "Get MD5 hash of private key modulus — compare with cert to confirm match",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl req -noout -modulus -in request.csr | openssl md5",
-            "desc": "Get MD5 hash of CSR modulus — compare with key and cert",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl dhparam -check -in dhparam.pem",
-            "desc": "Verify a Diffie-Hellman parameters file is valid",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "TLS Testing": [
+        "TLS Client Testing": [
           {
             "cmd": "openssl s_client -connect hostname:443",
             "desc": "Connect to a TLS endpoint and display the full certificate chain and handshake",
@@ -2683,197 +3123,7 @@
             "desc": "Benchmark ECDH key exchange performance on P-256 curve",
             "type": "show",
             "flagged": false
-          }
-        ],
-        "OCSP & CRL": [
-          {
-            "cmd": "openssl ocsp -issuer ca.crt -cert cert.crt -url http://ocsp.ca.com -resp_text",
-            "desc": "Check a certificate's revocation status using OCSP",
-            "type": "show",
-            "flagged": false
           },
-          {
-            "cmd": "openssl crl -in crl.der -inform DER -noout -text",
-            "desc": "Display the contents of a DER-encoded CRL file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl crl -in crl.pem -noout -text",
-            "desc": "Display the contents of a PEM-encoded CRL file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl ocsp -index index.txt -CA ca.crt -rsigner ca.crt -rkey ca.key -port 8080",
-            "desc": "Start a simple local OCSP responder for testing revocation",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Encryption & Hashing": [
-          {
-            "cmd": "openssl dgst -sha256 file.txt",
-            "desc": "Compute the SHA-256 digest of a file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl dgst -sha256 -sign private.key -out sig.bin file.txt",
-            "desc": "Digitally sign a file using an RSA private key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl dgst -sha256 -verify public.key -signature sig.bin file.txt",
-            "desc": "Verify a digital signature against a file using the public key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl base64 -in file.bin -out file.b64",
-            "desc": "Base64-encode a binary file to a text file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl base64 -d -in file.b64 -out file.bin",
-            "desc": "Base64-decode a text file back to binary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl enc -aes-256-cbc -salt -pbkdf2 -in file.txt -out file.enc",
-            "desc": "Encrypt a file using AES-256-CBC with a password",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl enc -d -aes-256-cbc -pbkdf2 -in file.enc -out file.txt",
-            "desc": "Decrypt an AES-256-CBC encrypted file using a password",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl dgst -sha512 file.txt",
-            "desc": "Compute the SHA-512 digest of a file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl dgst -md5 file.txt",
-            "desc": "Compute the MD5 digest of a file (legacy use only — not for security)",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Certificates": [
-          {
-            "cmd": "openssl x509 -in <cert> -text -noout",
-            "desc": "Displays certificate details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl x509 -in <cert> -issuer -noout",
-            "desc": "Shows certificate issuer",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl x509 -in <cert> -subject -noout",
-            "desc": "Shows certificate subject",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl x509 -in <cert> -dates -noout",
-            "desc": "Shows certificate validity dates",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl x509 -in <cert> -fingerprint -noout",
-            "desc": "Shows certificate fingerprint",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl verify -CAfile <ca.pem> <cert>",
-            "desc": "Verifies certificate chain",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl pkcs12 -in <pfx> -nodes",
-            "desc": "Extracts keys and certs from PFX",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl pkcs12 -export -out <pfx> -inkey <key> -in <cert>",
-            "desc": "Creates PFX file",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl req -new -key <key> -out <csr>",
-            "desc": "Generates CSR",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl req -newkey rsa:2048 -nodes -keyout <key> -out <csr>",
-            "desc": "Generates key + CSR",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Keys": [
-          {
-            "cmd": "openssl genrsa -out <key> 2048",
-            "desc": "Generates RSA key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl genpkey -algorithm RSA -out <key>",
-            "desc": "Generates RSA key (modern)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out <key>",
-            "desc": "Generates EC key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl rsa -in <key> -check",
-            "desc": "Checks RSA key integrity",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl rsa -in <key> -pubout -out <pubkey>",
-            "desc": "Extracts public key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl pkey -in <key> -pubout",
-            "desc": "Extracts public key (generic)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "openssl pkey -in <key> -text -noout",
-            "desc": "Shows key details",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "SSL/TLS": [
           {
             "cmd": "openssl s_client -connect <host:443>",
             "desc": "Tests SSL/TLS connection",
@@ -2933,9 +3183,347 @@
             "desc": "Lists supported ciphers",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -alpn h2,http/1.1",
+            "desc": "Negotiate ALPN — check whether HTTP/2 is offered",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -reconnect",
+            "desc": "Force session resumption to test session-ticket / ID reuse",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -sess_out sess.pem",
+            "desc": "Save the TLS session to disk",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -sess_in sess.pem",
+            "desc": "Resume using a previously-saved session",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -verify_return_error",
+            "desc": "Fail the connection on any verify error (don't mask in output)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -CAfile chain.pem",
+            "desc": "Validate using a custom trust bundle",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host 2>/dev/null </dev/null | openssl x509 -noout -text",
+            "desc": "Full text of whatever cert the server presents",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host 2>/dev/null </dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName",
+            "desc": "Common one-liner: subject/issuer/dates/SAN of the presented cert",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -groups X25519:P-256:P-384",
+            "desc": "Offer a specific list of ECDH groups (TLS 1.3)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -sigalgs RSA+SHA256:ECDSA+SHA256",
+            "desc": "Offer a specific list of signature algorithms",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -tls1_3 -ciphersuites TLS_AES_128_GCM_SHA256",
+            "desc": "Force a specific TLS 1.3 ciphersuite",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls imap",
+            "desc": "STARTTLS on IMAP (143)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls pop3",
+            "desc": "STARTTLS on POP3 (110)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls ftp",
+            "desc": "STARTTLS on FTP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls ldap",
+            "desc": "STARTTLS on LDAP (389 → 636 TLS-upgrade)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls postgres",
+            "desc": "STARTTLS on PostgreSQL",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -starttls mysql",
+            "desc": "STARTTLS on MySQL/MariaDB",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:5671 -servername host -tls1_3 -cert client.crt -key client.key",
+            "desc": "Present a client cert during a TLS handshake (mTLS)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -prexit 2>&1 | grep -E \"(Session-ID|Cipher|Protocol)\"",
+            "desc": "Extract just cipher/protocol/session-ID fields",
+            "type": "show",
+            "flagged": false
           }
         ],
-        "Hashing": [
+        "TLS Server Testing": [
+          {
+            "cmd": "openssl s_server -accept 4433 -cert cert.crt -key private.key -www",
+            "desc": "Tiny TLS test server that serves a status page on /",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_server -accept 4433 -cert cert.crt -key private.key -CAfile ca.crt -verify 1",
+            "desc": "Require client cert (mTLS) on the test server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_server -accept 4433 -cert cert.crt -key private.key -tls1_3",
+            "desc": "Force TLS 1.3 only on the test server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_server -accept 4433 -cert cert.crt -key private.key -alpn h2,http/1.1",
+            "desc": "Advertise ALPN for testing client HTTP/2 negotiation",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_time -connect host:443 -new -time 30",
+            "desc": "Benchmark: count fresh TLS handshakes in 30 seconds",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_time -connect host:443 -reuse -time 30",
+            "desc": "Benchmark: resumed handshakes in 30 seconds",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Cipher & Protocol Listing": [
+          {
+            "cmd": "openssl ciphers -v \"ALL:!aNULL:!eNULL\"",
+            "desc": "All ciphers this OpenSSL build supports with no anon/null ciphers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ciphers -v \"DEFAULT\"",
+            "desc": "Default cipher list (post-TLS-1.3: includes AEAD suites)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ciphers -v -tls1_2",
+            "desc": "Only TLS 1.2 cipher names",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ciphers -v -s -tls1_3",
+            "desc": "Only TLS 1.3 ciphersuites (\"-s\" = supported by current settings)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ciphers -stdname -v",
+            "desc": "Include IANA/RFC cipher names next to OpenSSL names",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ciphers -V",
+            "desc": "Cipher list with hex IDs — useful when correlating with packet captures",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ecparam -list_curves | head",
+            "desc": "First page of supported EC curves",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -providers",
+            "desc": "Loaded providers (default / legacy / fips) — OpenSSL 3+",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -public-key-algorithms",
+            "desc": "All public-key algorithms this build supports",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -digest-algorithms",
+            "desc": "All supported hash algorithms",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -cipher-algorithms",
+            "desc": "All supported symmetric algorithms",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl version -a",
+            "desc": "Full build info: version, compile flags, platform, openssldir",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "TLS Handshake Debugging": [
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -msg",
+            "desc": "Print each TLS protocol message direction + type as it flies by",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -debug",
+            "desc": "Hex-dump every wire byte — very noisy but shows true framing",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -trace",
+            "desc": "Full structured TLS message trace (extensions, certs, key_shares)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -state",
+            "desc": "Print the TLS state machine transitions",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -status",
+            "desc": "Ask the server for an OCSP stapled response",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -tlsextdebug",
+            "desc": "Print every TLS extension the server sends back",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -servername host -keylogfile ssl-keys.log",
+            "desc": "Write a Wireshark-readable pre-master-secret file for decryption",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl errstr <hex-code>",
+            "desc": "Translate an OpenSSL error code (e.g. 0A000086) to a human string",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "OCSP & CRL": [
+          {
+            "cmd": "openssl ocsp -issuer ca.crt -cert cert.crt -url http://ocsp.ca.com -resp_text",
+            "desc": "Check a certificate's revocation status using OCSP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl -in crl.der -inform DER -noout -text",
+            "desc": "Display the contents of a DER-encoded CRL file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl -in crl.pem -noout -text",
+            "desc": "Display the contents of a PEM-encoded CRL file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ocsp -index index.txt -CA ca.crt -rsigner ca.crt -rkey ca.key -port 8080",
+            "desc": "Start a simple local OCSP responder for testing revocation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ocsp -issuer ca.crt -cert cert.crt -text -url http://ocsp.ca.com -noverify",
+            "desc": "OCSP query without verifying the OCSP responder's cert (debug only)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ocsp -issuer ca.crt -cert cert.crt -url http://ocsp.ca.com -header Host=ocsp.ca.com",
+            "desc": "OCSP with explicit Host header (some responders need it)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl ocsp -issuer ca.crt -cert cert.crt -respin response.der -text",
+            "desc": "Parse a pre-saved OCSP response",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl -in crl.pem -noout -issuer -lastupdate -nextupdate",
+            "desc": "Quick CRL info (who issued, lastUpdate, nextUpdate)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl -in crl.pem -noout -CAfile ca.crt",
+            "desc": "Verify the CRL's signature",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl crl -in crl.pem -noout -text | grep -A1 \"Serial Number\"",
+            "desc": "List revoked serial numbers in a CRL",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Hashing & HMAC": [
           {
             "cmd": "openssl dgst -sha256 <file>",
             "desc": "Computes SHA?256 hash",
@@ -2965,9 +3553,93 @@
             "desc": "Outputs hash in reversed format",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha256 file.txt",
+            "desc": "Compute the SHA-256 digest of a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha512 file.txt",
+            "desc": "Compute the SHA-512 digest of a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -md5 file.txt",
+            "desc": "Compute the MD5 digest of a file (legacy use only — not for security)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha256 -c file.txt",
+            "desc": "SHA-256 with colon-separated hex output",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha3-256 file.txt",
+            "desc": "SHA3-256 hash of a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha3-512 file.txt",
+            "desc": "SHA3-512 hash of a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -blake2s256 file.txt",
+            "desc": "BLAKE2s hash of a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha256 -hmac \"secret\" file.txt",
+            "desc": "HMAC-SHA256 with a string key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl mac -macopt hexkey:00112233 -macopt digest:SHA256 HMAC < file.txt",
+            "desc": "HMAC via the newer \"mac\" command (OpenSSL 3+)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha256 -binary file.txt | openssl base64",
+            "desc": "Binary SHA-256 re-encoded as base64 (e.g. for SRI integrity attributes)",
+            "type": "show",
+            "flagged": false
           }
         ],
-        "Encoding": [
+        "Symmetric Encryption & Encoding": [
+          {
+            "cmd": "openssl base64 -in file.bin -out file.b64",
+            "desc": "Base64-encode a binary file to a text file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl base64 -d -in file.b64 -out file.bin",
+            "desc": "Base64-decode a text file back to binary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -aes-256-cbc -salt -pbkdf2 -in file.txt -out file.enc",
+            "desc": "Encrypt a file using AES-256-CBC with a password",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -d -aes-256-cbc -pbkdf2 -in file.enc -out file.txt",
+            "desc": "Decrypt an AES-256-CBC encrypted file using a password",
+            "type": "show",
+            "flagged": false
+          },
           {
             "cmd": "openssl base64 -in <file> -out <out>",
             "desc": "Encodes file in Base64",
@@ -2996,6 +3668,180 @@
             "cmd": "openssl rand -hex 32",
             "desc": "Generates 32?byte hex string",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -aes-256-gcm -pbkdf2 -in plain.txt -out enc.bin",
+            "desc": "AES-256-GCM with PBKDF2 (authenticated encryption)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -d -aes-256-gcm -pbkdf2 -in enc.bin -out plain.txt",
+            "desc": "Decrypt AES-256-GCM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -aes-256-ctr -pbkdf2 -in plain.txt -out enc.bin",
+            "desc": "AES-256-CTR (streaming mode, no padding)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -chacha20 -pbkdf2 -in plain.txt -out enc.bin",
+            "desc": "ChaCha20 stream cipher",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -aes-256-cbc -pbkdf2 -md sha256 -iter 100000 -in plain.txt -out enc.bin",
+            "desc": "Explicit KDF parameters — portable between boxes",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -base64 32 | tr -d \"=\" | head -c 32",
+            "desc": "Generate a 32-char URL-safe random token",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -engine rdrand -hex 32",
+            "desc": "Force hardware RNG (Intel RDRAND) — OpenSSL 1.1.x",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Digital Signatures": [
+          {
+            "cmd": "openssl dgst -sha256 -sign private.key -out sig.bin file.txt",
+            "desc": "Digitally sign a file using an RSA private key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl dgst -sha256 -verify public.key -signature sig.bin file.txt",
+            "desc": "Verify a digital signature against a file using the public key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkeyutl -sign -inkey private.key -in hash.bin -out sig.bin -pkeyopt digest:sha256",
+            "desc": "Low-level sign (Ed25519, raw digests, PSS)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkeyutl -verify -pubin -inkey public.key -in hash.bin -sigfile sig.bin",
+            "desc": "Low-level verify",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkeyutl -sign -inkey rsa.key -in hash.bin -out sig.bin -pkeyopt rsa_padding_mode:pss -pkeyopt rsa_pss_saltlen:digest",
+            "desc": "RSA-PSS signature (required for TLS 1.3 with RSA)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl cms -sign -in file.txt -signer cert.crt -inkey private.key -out signed.p7s -outform DER",
+            "desc": "CMS / PKCS#7 detached signature (S/MIME-style)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl cms -verify -in signed.p7s -inform DER -content file.txt -CAfile ca.crt",
+            "desc": "Verify CMS signature",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Performance & Benchmarks": [
+          {
+            "cmd": "openssl speed",
+            "desc": "Benchmark every algorithm (takes minutes)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed -evp aes-256-gcm",
+            "desc": "Benchmark AES-256-GCM via EVP (uses AES-NI if available)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed -evp sha256",
+            "desc": "Benchmark SHA-256 via EVP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed rsa4096",
+            "desc": "Benchmark RSA-4096 sign/verify",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed ecdsap384 ecdhp384",
+            "desc": "Benchmark P-384 sign + ECDH op rates",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed -async_jobs 8 rsa2048",
+            "desc": "Benchmark with 8 async jobs (multi-engine / QAT / KTLS)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl speed -multi 4 -evp aes-256-gcm",
+            "desc": "Multi-process benchmark across 4 cores",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Providers & FIPS (OpenSSL 3+)": [
+          {
+            "cmd": "openssl list -providers -verbose",
+            "desc": "Providers loaded with their version and parameters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -cipher-algorithms -provider legacy",
+            "desc": "Cipher algorithms exposed by a specific provider",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "OPENSSL_CONF=/etc/ssl/fipsmodule.cnf openssl list -providers",
+            "desc": "Run a command under an alternate openssl.cnf (e.g. FIPS config)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl fipsinstall -out fipsmodule.cnf -module /usr/lib64/ossl-modules/fips.so",
+            "desc": "Generate FIPS-module install config",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl fipsinstall -in fipsmodule.cnf -verify",
+            "desc": "Verify an existing FIPS-module install",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl list -kdf-algorithms",
+            "desc": "Available KDFs (HKDF, PBKDF2, SCRYPT, X9.63…)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl kdf -keylen 32 -kdfopt digest:SHA256 -kdfopt key:password -kdfopt salt:salt -kdfopt iter:100000 PBKDF2",
+            "desc": "Run PBKDF2 from the command line (OpenSSL 3+)",
+            "type": "config",
             "flagged": false
           }
         ]
