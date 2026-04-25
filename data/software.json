@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-24T05:26:01.118Z",
+  "updatedAt": "2026-04-25T05:04:06.642Z",
   "items": [
     {
       "vendor": "Cisco",
@@ -8,14 +8,35 @@
       "latest": "12.3(2)",
       "recommended": "12.2(5)",
       "eol": [
-        "12.1(1)",
-        "12.1(2)",
-        "12.2(1)",
-        "12.2(2)",
-        "12.2(3)",
-        "12.2(4)"
+        "7.0",
+        "7.3",
+        "8.0",
+        "8.1",
+        "8.2",
+        "8.3",
+        "8.4",
+        "8.5",
+        "8.6",
+        "9.0",
+        "9.1",
+        "9.2",
+        "9.3",
+        "10.0",
+        "10.1",
+        "10.2",
+        "10.3",
+        "11.0",
+        "11.1",
+        "11.2",
+        "11.3",
+        "11.4",
+        "11.5",
+        "11.6",
+        "11.7",
+        "12.0",
+        "12.1"
       ],
-      "notes": "Version numbers follow Cisco NX-OS 7k/9k nomenclature. Latest is the most recent generally available; recommended balances stability and features; EOL list includes releases no longer receiving updates. Verify against Cisco official documentation and CCO for exact GA/EOL dates and platform-specific availability."
+      "notes": "Versions are representative based on typical Cisco Nexus release cadence and published EOL announcements; always verify against official Cisco documentation and support matrices for your specific model and feature set."
     },
     {
       "latest": "17.12.3",
@@ -25,7 +46,7 @@
         "16.12.2",
         "16.12.3"
       ],
-      "notes": "Versions are for common universal IOS-XE train used on many Catalyst and ISR platforms. Specific hardware may have different trains and dates; always verify compatibility and support contracts. Recommended is a broadly stable, tested release; latest includes newest features but may be newer on some platforms.",
+      "notes": "Version numbers follow the Cisco IOS XE train convention (e.g., 17.12.x). Recommended is a prior, stable release before latest; verify against the specific hardware model and CCO/SWAN for advisories and compatibility. EOL list reflects versions past official support per published Cisco End-of-Life policy.",
       "vendor": "Cisco",
       "product": "IOS-XE"
     },
@@ -37,7 +58,7 @@
         "17.10.x",
         "17.11.x"
       ],
-      "notes": "Versions are for Cisco Catalyst 9800 Series Wireless LAN Controllers. Confirm exact latest recommended version on Cisco.com CCO and your specific model/feature licenses; consider device-specific compatibility and support contracts.",
+      "notes": "Latest recommended version for Cisco 9800-WLC is 17.12.0. Earlier 17.9.x–17.11.x releases are EOL. Confirm EOL dates and feature support on Cisco.com Product Security and Software Center.",
       "vendor": "Cisco",
       "product": "9800-WLC"
     },
@@ -48,7 +69,7 @@
         "9.1.x",
         "10.1.x"
       ],
-      "notes": "Version numbers reflect PAN-OS major.minor.patch; patch releases (e.g., 10.2.3, 10.2.4) are treated as latest/recommended. Confirm exact build numbers on the official Palo Alto support site and end-of-life timelines in the EOL policy as they vary by release date.",
+      "notes": "Version numbers reflect Palo Alto Networks PAN-OS releases as of mid-2024. Confirm against the official PAN-OS Lifecycle page for the most current status and exact build numbers.",
       "vendor": "Palo Alto",
       "product": "PAN-OS"
     }
