@@ -128,6 +128,19 @@ const TOPICS = [
     status: 'available'
   },
   {
+    id: 'storage',
+    title: 'Storage',
+    subtitle: 'Block, file, object — SAN/NAS/S3, RAID, multipathing, FC fabrics, NVMe-oF, snapshots, replication, cloud.',
+    vendor: 'Storage',
+    badgeClass: 'badge-storage',
+    icon: '💾',
+    modules: 12,
+    minutes: 260,
+    tags: ['Storage', 'SAN', 'NAS', 'S3', 'NVMe-oF', 'RAID'],
+    loader: () => import('./learning/storage.js'),
+    status: 'available'
+  },
+  {
     id: 'panos',
     title: 'Palo Alto PAN-OS',
     subtitle: 'Single-pass engine — App-ID, User-ID, Content-ID, decryption, GlobalProtect, HA, Panorama.',
