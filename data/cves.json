@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-24T05:26:20.855Z",
+  "updatedAt": "2026-04-25T05:04:32.923Z",
   "items": [
     {
       "id": "CVE-2024-3400",
@@ -186,6 +186,45 @@
       "fixed": "17.12.0",
       "references": [
         "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-RCE-cve-2024-20307"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20314",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Command Injection Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20314"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20315",
+      "cvss": 9.1,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Path Traversal Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20315"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20316",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Improper Input Validation Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20316"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"

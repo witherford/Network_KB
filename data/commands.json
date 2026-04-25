@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-24T05:26:32.819Z",
+  "updatedAt": "2026-04-25T05:04:45.064Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5903,6 +5903,24 @@
             "desc": "Enable an interface",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show ns ip",
+            "desc": "Display NetScaler IP address configurations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set ns ip <ip_addr> <netmask>",
+            "desc": "Configure a NetScaler IP address",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show route",
+            "desc": "Display routing table",
+            "type": "show",
+            "flagged": false
           }
         ],
         "troubleshoot": [
@@ -5941,6 +5959,52 @@
           {
             "cmd": "show memory",
             "desc": "Display memory usage statistics",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "loadbalancing": [
+          {
+            "cmd": "show lb vserver",
+            "desc": "Display load balancing virtual server status and statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set lb vserver <name> <serviceType> <IP> <port>",
+            "desc": "Create or modify a load balancing virtual server",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "global": [
+          {
+            "cmd": "config t",
+            "desc": "Enter global configuration mode",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "maintenance": [
+          {
+            "cmd": "clear ns tcpConns",
+            "desc": "Clear all TCP connections (troubleshooting)",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "monitoring": [
+          {
+            "cmd": "show stats cpu",
+            "desc": "Display CPU utilization statistics",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "security": [
+          {
+            "cmd": "show auditlog",
+            "desc": "Display audit log entries",
             "type": "show",
             "flagged": false
           }
@@ -20570,6 +20634,12 @@
             "desc": "Enter interface configuration mode for a specific interface.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show ip interface brief",
+            "desc": "Display a summary of interfaces and their IP addresses.",
+            "type": "show",
+            "flagged": false
           }
         ],
         "troubleshooting": [
@@ -20590,6 +20660,28 @@
             "desc": "Generate and display a technical support snapshot.",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show logging",
+            "desc": "Display system logs and event messages.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "interface": [
+          {
+            "cmd": "interface GigabitEthernet0/1",
+            "desc": "Enter interface configuration mode for a specific interface.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "hardware": [
+          {
+            "cmd": "show controllers",
+            "desc": "Display hardware controller status and statistics.",
+            "type": "show",
+            "flagged": false
           }
         ]
       }
@@ -20605,6 +20697,12 @@
             "desc": "Display system hardware and software version information.",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show cpu usage",
+            "desc": "Display current CPU utilization for performance monitoring.",
+            "type": "show",
+            "flagged": false
           }
         ],
         "network": [
@@ -20618,6 +20716,24 @@
             "cmd": "set ns ip <ip_addr> <netmask>",
             "desc": "Configure a NetScaler IP address.",
             "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface",
+            "desc": "Display status and statistics for network interfaces.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show arp",
+            "desc": "Display the ARP table mapping IP to MAC addresses.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show route",
+            "desc": "Display the routing table.",
+            "type": "show",
             "flagged": false
           }
         ],
@@ -20671,6 +20787,32 @@
             "desc": "Display the current running configuration.",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode to apply changes.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "config t",
+            "desc": "Shortcut to enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "show logging",
+            "desc": "Display system log messages for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging for IP packet processing to troubleshoot connectivity.",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ]
       }
@@ -20686,6 +20828,12 @@
             "desc": "Display system information and software version for Palo Alto Networks firewall.",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show system info",
+            "desc": "Show detailed system information for troubleshooting purposes.",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "network": [
@@ -20698,6 +20846,12 @@
           {
             "cmd": "set network interface ethernet ethernet1/1 layer3 ip-address 192.168.1.1/24",
             "desc": "Configure IP address on an Ethernet interface for Palo Alto Networks firewall.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set interface ethernet1/1 layer3 ipv4 192.168.1.1/24",
+            "desc": "Configure IPv4 address on an Ethernet interface.",
             "type": "config",
             "flagged": false
           }
@@ -20740,6 +20894,12 @@
           {
             "cmd": "debug dataplane packet-trace advanced",
             "desc": "Run an advanced packet trace for troubleshooting traffic issues on Palo Alto Networks firewall.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show log traffic",
+            "desc": "Display traffic logs to troubleshoot connectivity or security issues.",
             "type": "troubleshooting",
             "flagged": false
           }
