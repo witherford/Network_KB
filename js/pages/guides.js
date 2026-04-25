@@ -21,8 +21,19 @@ const TOPICS = [
     loader: () => import('./learning/wlc-ios-xe.js'),
     status: 'available'
   },
-  // Placeholders — show as "coming soon" until a module is added.
-  { id: 'nexus-vxlan',   title: 'Cisco Nexus VXLAN-EVPN', subtitle: 'Fabric underlay, overlay, multi-site.',            vendor: 'Cisco',    badgeClass: 'badge-sw', icon: '🕸️', status: 'soon', tags: ['Data Centre', 'VXLAN', 'EVPN'] },
+  {
+    id: 'nexus-vxlan',
+    title: 'Cisco Nexus VXLAN-EVPN',
+    subtitle: 'Fabric underlay & overlay, VTEPs, BGP EVPN, anycast gateway, vPC + VXLAN, multi-site.',
+    vendor: 'Cisco',
+    badgeClass: 'badge-vxlan',
+    icon: '🕸️',
+    modules: 11,
+    minutes: 280,
+    tags: ['Data Centre', 'VXLAN', 'EVPN', 'Multi-site', 'Anycast Gateway'],
+    loader: () => import('./learning/nexus-vxlan.js'),
+    status: 'available'
+  },
   {
     id: 'netscaler',
     title: 'Citrix NetScaler',
@@ -179,8 +190,32 @@ const TOPICS = [
     loader: () => import('./learning/aws.js'),
     status: 'available'
   },
-  { id: 'asa-ftd',       title: 'Cisco ASA / FTD',        subtitle: 'VPN, ACLs, packet-tracer deep-dive.',             vendor: 'Cisco',    badgeClass: 'badge-asa', icon: '🛡️', status: 'soon', tags: ['Firewall', 'VPN'] },
-  { id: 'ise',           title: 'Cisco ISE',              subtitle: '802.1X, profiling, BYOD, posture.',               vendor: 'Cisco',    badgeClass: 'badge-sw', icon: '🧾', status: 'soon', tags: ['AAA', 'Security'] }
+  {
+    id: 'asa-ftd',
+    title: 'Cisco ASA / FTD',
+    subtitle: 'Stateful firewalls — interfaces, ACLs, NAT, IKEv2 + AnyConnect, packet-tracer, FTD migration.',
+    vendor: 'Cisco',
+    badgeClass: 'badge-asa',
+    icon: '🛡️',
+    modules: 12,
+    minutes: 260,
+    tags: ['Firewall', 'VPN', 'IKEv2', 'AnyConnect', 'packet-tracer'],
+    loader: () => import('./learning/asa-ftd.js'),
+    status: 'available'
+  },
+  {
+    id: 'ise',
+    title: 'Cisco ISE',
+    subtitle: '802.1X, MAB, profiling, posture, BYOD, guest, TrustSec, TACACS+, pxGrid integrations.',
+    vendor: 'Cisco',
+    badgeClass: 'badge-ise',
+    icon: '🧾',
+    modules: 12,
+    minutes: 280,
+    tags: ['AAA', 'Security', '802.1X', 'TrustSec', 'pxGrid'],
+    loader: () => import('./learning/ise.js'),
+    status: 'available'
+  }
 ];
 
 let _activeTopic = null;

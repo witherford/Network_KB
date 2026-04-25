@@ -1,5 +1,7 @@
 // DNS bulk-resolve script builder. Output is CSV — each target is resolved
-// and printed as a row with the hostname/FQDN and the matching IP(s).
+// and printed as one row per record, with columns appropriate to the type:
+//   FQDN, Type, Value, Extra
+// Extra holds priority for MX/SRV, TTL fall-back, or remains blank for A/AAAA.
 
 import { copyToClipboard, toast } from '../utils.js';
 
@@ -24,6 +26,8 @@ export async function mount(root) {
           <option value="MX">MX</option>
           <option value="TXT">TXT</option>
           <option value="NS">NS</option>
+          <option value="SOA">SOA</option>
+          <option value="SRV">SRV</option>
         </select>
       </div>
       <div class="form-row">
@@ -39,7 +43,7 @@ export async function mount(root) {
       <button class="btn primary" id="dBuild">Build script</button>
       <button class="btn" id="dCopy">Copy script</button>
       <span class="spacer" style="flex:1"></span>
-      <button class="btn" id="dCsv" title="Export targets as a CSV stub (fill the IP column after running the script)">Export CSV</button>
+      <button class="btn" id="dCsv" title="Export targets as a CSV stub matching the script's output columns">Export CSV</button>
     </div>
     <pre class="script-out" id="dOut"></pre>`;
 
@@ -56,56 +60,115 @@ export async function mount(root) {
   };
 
   root.querySelector('#dBuild').addEventListener('click', build);
+  root.querySelector('#dOs').addEventListener('change', build);
+  root.querySelector('#dType').addEventListener('change', build);
+  root.querySelector('#dServer').addEventListener('input', build);
+  root.querySelector('#dInput').addEventListener('input', build);
   root.querySelector('#dCopy').addEventListener('click', () => {
     const out = root.querySelector('#dOut').textContent;
     if (out) copyToClipboard(out).then(ok => toast(ok ? 'Script copied' : 'Copy failed', ok ? 'success' : 'error'));
   });
   root.querySelector('#dCsv').addEventListener('click', () => {
     const items = targets();
+    const type = root.querySelector('#dType').value;
     if (!items.length) { toast('No targets to export', 'error'); return; }
-    const csv = 'FQDN,IP\r\n' + items.map(t => `${csvEscape(t)},`).join('\r\n') + '\r\n';
+    const csv = 'FQDN,Type,Value,Extra\r\n' +
+      items.map(t => `${csvEscape(t)},${type},,`).join('\r\n') + '\r\n';
     downloadCsv('dns-targets.csv', csv);
   });
   build();
 }
 
 function render(os, type, server, items) {
-  if (os === 'ps') {
-    const list = items.map(h => `"${h}"`).join(', ');
-    const serverArg = server ? ` -Server ${server}` : '';
-    return `# Outputs CSV: FQDN,IP\n` +
-      `$targets = @(${list})\n` +
-      `"FQDN,IP"\n` +
-      `foreach ($t in $targets) {\n` +
-      `  try {\n` +
-      `    $r = Resolve-DnsName -Name $t -Type ${type}${serverArg} -ErrorAction Stop\n` +
-      `    $ips = $r | Where-Object { $_.IPAddress -or $_.NameHost } |\n` +
-      `      ForEach-Object { if ($_.IPAddress) { $_.IPAddress } else { $_.NameHost } }\n` +
-      `    if (-not $ips) { "$t," }\n` +
-      `    else { $ips | ForEach-Object { "$t,$_" } }\n` +
-      `  } catch { "$t,UNRESOLVED" }\n` +
-      `} | Tee-Object -FilePath dns-results.csv`;
-  }
-  // bash — dig preferred, host fallback. Always CSV: FQDN,IP
+  if (os === 'ps') return renderPS(type, server, items);
+  return renderBash(type, server, items);
+}
+
+// PowerShell — handles every record type by mapping each Resolve-DnsName
+// answer object to the right fields.
+function renderPS(type, server, items) {
+  const list = items.map(h => `"${h.replace(/"/g, '`"')}"`).join(', ');
+  const serverArg = server ? ` -Server ${server}` : '';
+  return [
+    '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
+    '# Also written to dns-results.csv',
+    `$targets = @(${list})`,
+    `$type    = '${type}'`,
+    '"FQDN,Type,Value,Extra" | Tee-Object -FilePath dns-results.csv',
+    'foreach ($t in $targets) {',
+    '  try {',
+    `    $records = Resolve-DnsName -Name $t -Type $type${serverArg} -ErrorAction Stop |`,
+    '      Where-Object { $_.Type -eq $type -or $_.QueryType -eq $type }',
+    '    if (-not $records) {',
+    '      $records = Resolve-DnsName -Name $t -Type $type' + serverArg + ' -ErrorAction Stop',
+    '    }',
+    '    if (-not $records) { "$t,$type,," | Tee-Object -FilePath dns-results.csv -Append; continue }',
+    '    foreach ($r in $records) {',
+    '      switch -Wildcard ($r.Type) {',
+    "        'A'     { $val = $r.IPAddress;     $extra = $r.TTL }",
+    "        'AAAA'  { $val = $r.IPAddress;     $extra = $r.TTL }",
+    "        'PTR'   { $val = $r.NameHost;      $extra = $r.TTL }",
+    "        'CNAME' { $val = $r.NameHost;      $extra = $r.TTL }",
+    "        'NS'    { $val = $r.NameHost;      $extra = $r.TTL }",
+    "        'MX'    { $val = $r.NameExchange;  $extra = \"pri=$($r.Preference)\" }",
+    "        'TXT'   { $val = ($r.Strings -join ' '); $extra = $r.TTL }",
+    "        'SOA'   { $val = $r.PrimaryServer; $extra = \"admin=$($r.NameAdministrator) serial=$($r.SerialNumber)\" }",
+    "        'SRV'   { $val = \"$($r.NameTarget):$($r.Port)\"; $extra = \"pri=$($r.Priority) wt=$($r.Weight)\" }",
+    "        default { $val = $r.NameHost; if (-not $val) { $val = $r.IPAddress }; $extra = $r.TTL }",
+    '      }',
+    '      $valEsc = if ($val -match \'[",\\r\\n]\') { \'"\' + ($val -replace \'"\',\'""\') + \'"\' } else { $val }',
+    '      $exEsc  = if ("$extra" -match \'[",\\r\\n]\') { \'"\' + ("$extra" -replace \'"\',\'""\') + \'"\' } else { "$extra" }',
+    '      "$t,$($r.Type),$valEsc,$exEsc" | Tee-Object -FilePath dns-results.csv -Append',
+    '    }',
+    '  } catch {',
+    '    "$t,$type,UNRESOLVED,$($_.Exception.Message -replace \',\',\';\')" | Tee-Object -FilePath dns-results.csv -Append',
+    '  }',
+    '}'
+  ].join('\n');
+}
+
+// bash — uses dig +short with field-aware parsing per record type so the
+// CSV columns line up. Falls back to host(1) if dig is missing.
+function renderBash(type, server, items) {
   const serverArg = server ? `@${server} ` : '';
-  return `#!/usr/bin/env bash\n` +
-    `# Outputs CSV: FQDN,IP (also written to dns-results.csv)\n` +
-    `targets=(${items.map(h => `"${h}"`).join(' ')})\n` +
-    `{\n` +
-    `  echo "FQDN,IP"\n` +
-    `  for t in "\${targets[@]}"; do\n` +
-    `    if command -v dig >/dev/null; then\n` +
-    `      ips=$(dig +short ${serverArg}"$t" ${type})\n` +
-    `    else\n` +
-    `      ips=$(host -t ${type} "$t" ${server || ''} 2>/dev/null | awk '/has address|has IPv6|domain name pointer|mail is handled/{print $NF}')\n` +
-    `    fi\n` +
-    `    if [ -z "$ips" ]; then\n` +
-    `      echo "$t,UNRESOLVED"\n` +
-    `    else\n` +
-    `      while IFS= read -r ip; do echo "$t,$ip"; done <<< "$ips"\n` +
-    `    fi\n` +
-    `  done\n` +
-    `} | tee dns-results.csv`;
+  const list = items.map(h => `"${h.replace(/"/g, '\\"')}"`).join(' ');
+  return [
+    '#!/usr/bin/env bash',
+    '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
+    '# Also written to dns-results.csv',
+    `targets=(${list})`,
+    `TYPE='${type}'`,
+    'csv_escape() { local v=$1; if [[ $v == *,* || $v == *\\"* || $v == *$\'\\n\'* ]]; then v=${v//\\"/\\"\\"}; printf \'"%s"\' "$v"; else printf \'%s\' "$v"; fi; }',
+    'resolve_one() {',
+    '  local t=$1',
+    '  if ! command -v dig >/dev/null; then',
+    `    host -t "$TYPE" "$t" ${server || ''} 2>/dev/null | awk -v t="$t" -v ty="$TYPE" '/has address|has IPv6 address|domain name pointer|is an alias for|name server|mail is handled by|text/ { v=$NF; print t","ty","v"," }'`,
+    '    return',
+    '  fi',
+    `  local raw; raw=$(dig +short ${serverArg}"$t" "$TYPE" 2>/dev/null)`,
+    '  if [ -z "$raw" ]; then echo "$t,$TYPE,UNRESOLVED,"; return; fi',
+    '  while IFS= read -r line; do',
+    '    [ -z "$line" ] && continue',
+    '    case "$TYPE" in',
+    '      MX)  pri=${line%% *}; val=${line#* }; val=${val%.}',
+    '           printf \'%s,%s,%s,pri=%s\\n\' "$t" "$TYPE" "$(csv_escape "$val")" "$pri" ;;',
+    '      SRV) read -r pri wt port tgt <<< "$line"; tgt=${tgt%.}',
+    '           printf \'%s,%s,%s,pri=%s wt=%s\\n\' "$t" "$TYPE" "$(csv_escape "$tgt:$port")" "$pri" "$wt" ;;',
+    '      TXT) val=${line#\\"}; val=${val%\\"}',
+    '           printf \'%s,%s,%s,\\n\' "$t" "$TYPE" "$(csv_escape "$val")" ;;',
+    '      SOA) read -r ns admin serial rest <<< "$line"; ns=${ns%.}; admin=${admin%.}',
+    '           printf \'%s,%s,%s,admin=%s serial=%s\\n\' "$t" "$TYPE" "$(csv_escape "$ns")" "$admin" "$serial" ;;',
+    '      CNAME|NS|PTR) val=${line%.}',
+    '           printf \'%s,%s,%s,\\n\' "$t" "$TYPE" "$(csv_escape "$val")" ;;',
+    '      *) printf \'%s,%s,%s,\\n\' "$t" "$TYPE" "$(csv_escape "$line")" ;;',
+    '    esac',
+    '  done <<< "$raw"',
+    '}',
+    '{',
+    '  echo "FQDN,Type,Value,Extra"',
+    '  for t in "${targets[@]}"; do resolve_one "$t"; done',
+    '} | tee dns-results.csv'
+  ].join('\n');
 }
 
 function csvEscape(v) {
