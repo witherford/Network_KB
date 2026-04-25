@@ -1,13 +1,17 @@
 // Toolkit container — sub-router over subnet/ping/dns/regex/calculator/cheatsheets/worldclock.
 
 const SUBS = {
-  subnet:       { label: 'Subnet calc',  load: () => import('../toolkit/subnet.js') },
-  ping:         { label: 'Ping script',  load: () => import('../toolkit/ping-script.js') },
-  dns:          { label: 'DNS script',   load: () => import('../toolkit/dns-script.js') },
-  regex:        { label: 'Regex builder',load: () => import('../toolkit/regex-builder.js') },
-  calculator:   { label: 'Calculator',   load: () => import('../toolkit/calculator.js') },
-  cheatsheets:  { label: 'Cheat sheets', load: () => import('../toolkit/cheatsheets.js') },
-  worldclock:   { label: 'World clock',  load: () => import('../toolkit/worldclock.js') }
+  subnet:       { label: 'Subnet calc',     load: () => import('../toolkit/subnet.js') },
+  ping:         { label: 'Ping script',     load: () => import('../toolkit/ping-script.js') },
+  dns:          { label: 'DNS script',      load: () => import('../toolkit/dns-script.js') },
+  mac:          { label: 'MAC / OUI',       load: () => import('../toolkit/mac-lookup.js') },
+  filter:       { label: 'Capture filters', load: () => import('../toolkit/filter-builder.js') },
+  throughput:   { label: 'Throughput / MTU', load: () => import('../toolkit/throughput.js') },
+  encoding:     { label: 'Encoding & hash', load: () => import('../toolkit/encoding.js') },
+  regex:        { label: 'Regex builder',   load: () => import('../toolkit/regex-builder.js') },
+  calculator:   { label: 'Calculator',      load: () => import('../toolkit/calculator.js') },
+  cheatsheets:  { label: 'Cheat sheets',    load: () => import('../toolkit/cheatsheets.js') },
+  worldclock:   { label: 'World clock',     load: () => import('../toolkit/worldclock.js') }
 };
 
 function subFromHash() {
