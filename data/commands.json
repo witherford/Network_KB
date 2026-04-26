@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-24T00:14:36.599Z",
+  "updatedAt": "2026-04-26T05:29:44.550Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5842,6 +5842,110 @@
             "cmd": "copy tftp: running-config",
             "desc": "Restores a running config from a TFTP server",
             "type": "show",
+            "flagged": false
+          }
+        ],
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display software version and hardware information.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license",
+            "desc": "Display license information.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "performance": [
+          {
+            "cmd": "show ns cpu",
+            "desc": "Display CPU usage statistics on NetScaler.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system performance",
+            "desc": "Display system performance metrics.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show interface",
+            "desc": "Display interface status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip interface brief",
+            "desc": "Display brief IP interface status.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface",
+            "desc": "Enter interface configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip address",
+            "desc": "Set IP address and subnet on an interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Enable an interface.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display current running configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show logging",
+            "desc": "Display system logs.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "cmd": "show tech-support",
+            "desc": "Collect diagnostic information for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support file",
+            "desc": "Save diagnostic output to a file.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "connections": [
+          {
+            "cmd": "clear ns tcp",
+            "desc": "Reset TCP connections on NetScaler.",
+            "type": "troubleshooting",
             "flagged": false
           }
         ]
@@ -20469,194 +20573,1148 @@
       "short": "Proxmox",
       "sections": {
         "System & Status": [
-          { "cmd": "pveversion", "desc": "Show Proxmox VE version and kernel", "type": "show", "flagged": false },
-          { "cmd": "pveversion -v", "desc": "Verbose component version list (kernel, qemu, lxc, zfs, ceph, ...)", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /version", "desc": "API-side version + repoid", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /nodes", "desc": "List nodes in cluster with status, uptime, load, memory", "type": "show", "flagged": false },
-          { "cmd": "pveperf", "desc": "Quick host benchmark — CPU, HDD, fsync/s, DNS lookup", "type": "show", "flagged": false },
-          { "cmd": "systemctl status pve-cluster pveproxy pvedaemon pvestatd", "desc": "Status of the four core PVE services", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /cluster/resources --type vm", "desc": "All VMs cluster-wide with node, status, mem, disk", "type": "show", "flagged": false },
-          { "cmd": "pvereport", "desc": "Generate full diagnostic bundle (paste to support)", "type": "troubleshooting", "flagged": false },
-          { "cmd": "pveum ticket root@pam", "desc": "Generate an API ticket for the given user", "type": "config", "flagged": false }
+          {
+            "cmd": "pveversion",
+            "desc": "Show Proxmox VE version and kernel",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveversion -v",
+            "desc": "Verbose component version list (kernel, qemu, lxc, zfs, ceph, ...)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /version",
+            "desc": "API-side version + repoid",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /nodes",
+            "desc": "List nodes in cluster with status, uptime, load, memory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveperf",
+            "desc": "Quick host benchmark — CPU, HDD, fsync/s, DNS lookup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl status pve-cluster pveproxy pvedaemon pvestatd",
+            "desc": "Status of the four core PVE services",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /cluster/resources --type vm",
+            "desc": "All VMs cluster-wide with node, status, mem, disk",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvereport",
+            "desc": "Generate full diagnostic bundle (paste to support)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum ticket root@pam",
+            "desc": "Generate an API ticket for the given user",
+            "type": "config",
+            "flagged": false
+          }
         ],
         "Cluster (pvecm)": [
-          { "cmd": "pvecm status", "desc": "Cluster quorum status, expected/total votes, ring info", "type": "show", "flagged": false },
-          { "cmd": "pvecm nodes", "desc": "List nodes by ID with name and votes", "type": "show", "flagged": false },
-          { "cmd": "pvecm create <CLUSTERNAME>", "desc": "Initialise a new cluster on this node (run on first node only)", "type": "config", "flagged": false },
-          { "cmd": "pvecm add <FIRST-NODE-IP>", "desc": "Join this node to an existing cluster", "type": "config", "flagged": false },
-          { "cmd": "pvecm add <FIRST-NODE-IP> --link0 <local-ip> --link1 <secondary-ip>", "desc": "Join with redundant Corosync rings", "type": "config", "flagged": false },
-          { "cmd": "pvecm delnode <NODENAME>", "desc": "Remove a (powered-off) node from the cluster", "type": "config", "flagged": true },
-          { "cmd": "pvecm expected <N>", "desc": "Force expected votes — emergency quorum recovery on partial cluster", "type": "troubleshooting", "flagged": true },
-          { "cmd": "pvecm updatecerts --force", "desc": "Re-issue PVE certificates after IP/hostname changes", "type": "config", "flagged": false },
-          { "cmd": "pvecm qdevice setup <QDEVICE-IP>", "desc": "Add an external Corosync QDevice for two-node cluster quorum", "type": "config", "flagged": false }
+          {
+            "cmd": "pvecm status",
+            "desc": "Cluster quorum status, expected/total votes, ring info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm nodes",
+            "desc": "List nodes by ID with name and votes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm create <CLUSTERNAME>",
+            "desc": "Initialise a new cluster on this node (run on first node only)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm add <FIRST-NODE-IP>",
+            "desc": "Join this node to an existing cluster",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm add <FIRST-NODE-IP> --link0 <local-ip> --link1 <secondary-ip>",
+            "desc": "Join with redundant Corosync rings",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm delnode <NODENAME>",
+            "desc": "Remove a (powered-off) node from the cluster",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pvecm expected <N>",
+            "desc": "Force expected votes — emergency quorum recovery on partial cluster",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "pvecm updatecerts --force",
+            "desc": "Re-issue PVE certificates after IP/hostname changes",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvecm qdevice setup <QDEVICE-IP>",
+            "desc": "Add an external Corosync QDevice for two-node cluster quorum",
+            "type": "config",
+            "flagged": false
+          }
         ],
         "Virtual Machines (qm)": [
-          { "cmd": "qm list", "desc": "List all VMs on this node with VMID, name, status, memory, disk", "type": "show", "flagged": false },
-          { "cmd": "qm config <VMID>", "desc": "Show pending and current configuration for a VM", "type": "show", "flagged": false },
-          { "cmd": "qm config <VMID> --current", "desc": "Show only the running (effective) configuration", "type": "show", "flagged": false },
-          { "cmd": "qm start <VMID>", "desc": "Start a VM", "type": "config", "flagged": false },
-          { "cmd": "qm shutdown <VMID>", "desc": "Graceful shutdown via ACPI/guest agent", "type": "config", "flagged": false },
-          { "cmd": "qm shutdown <VMID> --forceStop 1 --timeout 60", "desc": "Try graceful then force-stop after timeout", "type": "config", "flagged": false },
-          { "cmd": "qm stop <VMID>", "desc": "Hard power off (equivalent to pulling the plug)", "type": "config", "flagged": true },
-          { "cmd": "qm reboot <VMID>", "desc": "Graceful reboot (ACPI)", "type": "config", "flagged": false },
-          { "cmd": "qm reset <VMID>", "desc": "Hard reset", "type": "config", "flagged": true },
-          { "cmd": "qm suspend <VMID>", "desc": "Suspend VM to RAM", "type": "config", "flagged": false },
-          { "cmd": "qm resume <VMID>", "desc": "Resume a suspended VM", "type": "config", "flagged": false },
-          { "cmd": "qm sendkey <VMID> <KEY>", "desc": "Send a key/key-combo to the VM console — e.g. qm sendkey 100 ctrl-alt-delete to send CAD without VNC", "type": "config", "flagged": false },
-          { "cmd": "qm sendkey 100 ctrl-alt-f1", "desc": "Switch a Linux guest to TTY1 from the host", "type": "config", "flagged": false },
-          { "cmd": "qm sendkey 100 ret", "desc": "Send Enter — useful to dismiss bootloader prompts in headless start-up", "type": "config", "flagged": false },
-          { "cmd": "qm migrate <VMID> <TARGET-NODE>", "desc": "Offline migrate a stopped VM to another node", "type": "config", "flagged": false },
-          { "cmd": "qm migrate <VMID> <TARGET-NODE> --online --with-local-disks", "desc": "Live migrate including local-disk storage", "type": "config", "flagged": false },
-          { "cmd": "qm clone <VMID> <NEW-VMID> --name <NAME> --full 1", "desc": "Full clone of an existing VM into a new VMID", "type": "config", "flagged": false },
-          { "cmd": "qm clone <VMID> <NEW-VMID> --name <NAME>", "desc": "Linked clone (only works from a template) — far faster, less disk", "type": "config", "flagged": false },
-          { "cmd": "qm template <VMID>", "desc": "Convert a VM into a template (read-only, source for linked clones)", "type": "config", "flagged": false },
-          { "cmd": "qm destroy <VMID> --purge --destroy-unreferenced-disks 1", "desc": "Remove a VM and all referenced disks. Cannot be undone.", "type": "config", "flagged": true },
-          { "cmd": "qm set <VMID> --memory 8192 --cores 4 --balloon 0", "desc": "Adjust runtime parameters; balloon=0 disables ballooning", "type": "config", "flagged": false },
-          { "cmd": "qm set <VMID> --net0 virtio,bridge=vmbr0,tag=10", "desc": "Replace network adapter — virtio on vmbr0 with VLAN 10", "type": "config", "flagged": false },
-          { "cmd": "qm set <VMID> --hostpci0 0000:01:00.0,pcie=1", "desc": "Pass through a PCIe device (GPU, NIC) by BDF", "type": "config", "flagged": false },
-          { "cmd": "qm resize <VMID> <DISK> +50G", "desc": "Grow a virtual disk by 50 GB (e.g. scsi0)", "type": "config", "flagged": false },
-          { "cmd": "qm importdisk <VMID> /path/to/image.qcow2 <STORAGE>", "desc": "Import an external disk image into a VM (then attach with qm set)", "type": "config", "flagged": false },
-          { "cmd": "qm importovf <NEW-VMID> /path/file.ovf <STORAGE>", "desc": "Import a VMware OVF/OVA into a new Proxmox VM", "type": "config", "flagged": false },
-          { "cmd": "qm snapshot <VMID> <NAME> --description \"text\" --vmstate 1", "desc": "Take a snapshot including RAM (vmstate) for live VMs", "type": "config", "flagged": false },
-          { "cmd": "qm rollback <VMID> <SNAPSHOT>", "desc": "Roll back to a snapshot. VM is stopped first.", "type": "config", "flagged": true },
-          { "cmd": "qm delsnapshot <VMID> <SNAPSHOT>", "desc": "Delete a snapshot", "type": "config", "flagged": false },
-          { "cmd": "qm listsnapshot <VMID>", "desc": "List snapshots for a VM", "type": "show", "flagged": false },
-          { "cmd": "qm unlock <VMID>", "desc": "Clear a stuck lock (e.g. backup, migrate) — only after confirming the operation has actually died", "type": "troubleshooting", "flagged": true },
-          { "cmd": "qm guest exec <VMID> -- <CMD> [ARGS]", "desc": "Run a command inside the guest via QEMU Guest Agent (must be installed in guest)", "type": "config", "flagged": false },
-          { "cmd": "qm guest cmd <VMID> ping", "desc": "Verify guest agent is responding", "type": "show", "flagged": false },
-          { "cmd": "qm guest cmd <VMID> network-get-interfaces", "desc": "Pull live interface/IP info from inside the guest", "type": "show", "flagged": false },
-          { "cmd": "qm monitor <VMID>", "desc": "Open the QEMU monitor console (info qtree, info block, info pci, etc.)", "type": "troubleshooting", "flagged": false },
-          { "cmd": "qm terminal <VMID>", "desc": "Attach to the VM serial console (requires serial0: socket in config)", "type": "show", "flagged": false },
-          { "cmd": "qm vncproxy <VMID>", "desc": "Open a temporary VNC proxy for the VM console", "type": "show", "flagged": false },
-          { "cmd": "qm rescan", "desc": "Re-scan storages for unreferenced disks (after manual import)", "type": "config", "flagged": false },
-          { "cmd": "qm cloudinit dump <VMID> user", "desc": "Dump rendered cloud-init user-data for inspection", "type": "show", "flagged": false },
-          { "cmd": "qm showcmd <VMID> --pretty", "desc": "Print the full QEMU command line PVE will use to start the VM", "type": "troubleshooting", "flagged": false }
+          {
+            "cmd": "qm list",
+            "desc": "List all VMs on this node with VMID, name, status, memory, disk",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm config <VMID>",
+            "desc": "Show pending and current configuration for a VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm config <VMID> --current",
+            "desc": "Show only the running (effective) configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm start <VMID>",
+            "desc": "Start a VM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm shutdown <VMID>",
+            "desc": "Graceful shutdown via ACPI/guest agent",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm shutdown <VMID> --forceStop 1 --timeout 60",
+            "desc": "Try graceful then force-stop after timeout",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm stop <VMID>",
+            "desc": "Hard power off (equivalent to pulling the plug)",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "qm reboot <VMID>",
+            "desc": "Graceful reboot (ACPI)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm reset <VMID>",
+            "desc": "Hard reset",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "qm suspend <VMID>",
+            "desc": "Suspend VM to RAM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm resume <VMID>",
+            "desc": "Resume a suspended VM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm sendkey <VMID> <KEY>",
+            "desc": "Send a key/key-combo to the VM console — e.g. qm sendkey 100 ctrl-alt-delete to send CAD without VNC",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm sendkey 100 ctrl-alt-f1",
+            "desc": "Switch a Linux guest to TTY1 from the host",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm sendkey 100 ret",
+            "desc": "Send Enter — useful to dismiss bootloader prompts in headless start-up",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm migrate <VMID> <TARGET-NODE>",
+            "desc": "Offline migrate a stopped VM to another node",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm migrate <VMID> <TARGET-NODE> --online --with-local-disks",
+            "desc": "Live migrate including local-disk storage",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm clone <VMID> <NEW-VMID> --name <NAME> --full 1",
+            "desc": "Full clone of an existing VM into a new VMID",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm clone <VMID> <NEW-VMID> --name <NAME>",
+            "desc": "Linked clone (only works from a template) — far faster, less disk",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm template <VMID>",
+            "desc": "Convert a VM into a template (read-only, source for linked clones)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm destroy <VMID> --purge --destroy-unreferenced-disks 1",
+            "desc": "Remove a VM and all referenced disks. Cannot be undone.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "qm set <VMID> --memory 8192 --cores 4 --balloon 0",
+            "desc": "Adjust runtime parameters; balloon=0 disables ballooning",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm set <VMID> --net0 virtio,bridge=vmbr0,tag=10",
+            "desc": "Replace network adapter — virtio on vmbr0 with VLAN 10",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm set <VMID> --hostpci0 0000:01:00.0,pcie=1",
+            "desc": "Pass through a PCIe device (GPU, NIC) by BDF",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm resize <VMID> <DISK> +50G",
+            "desc": "Grow a virtual disk by 50 GB (e.g. scsi0)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm importdisk <VMID> /path/to/image.qcow2 <STORAGE>",
+            "desc": "Import an external disk image into a VM (then attach with qm set)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm importovf <NEW-VMID> /path/file.ovf <STORAGE>",
+            "desc": "Import a VMware OVF/OVA into a new Proxmox VM",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm snapshot <VMID> <NAME> --description \"text\" --vmstate 1",
+            "desc": "Take a snapshot including RAM (vmstate) for live VMs",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm rollback <VMID> <SNAPSHOT>",
+            "desc": "Roll back to a snapshot. VM is stopped first.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "qm delsnapshot <VMID> <SNAPSHOT>",
+            "desc": "Delete a snapshot",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm listsnapshot <VMID>",
+            "desc": "List snapshots for a VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm unlock <VMID>",
+            "desc": "Clear a stuck lock (e.g. backup, migrate) — only after confirming the operation has actually died",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "qm guest exec <VMID> -- <CMD> [ARGS]",
+            "desc": "Run a command inside the guest via QEMU Guest Agent (must be installed in guest)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm guest cmd <VMID> ping",
+            "desc": "Verify guest agent is responding",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm guest cmd <VMID> network-get-interfaces",
+            "desc": "Pull live interface/IP info from inside the guest",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm monitor <VMID>",
+            "desc": "Open the QEMU monitor console (info qtree, info block, info pci, etc.)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "qm terminal <VMID>",
+            "desc": "Attach to the VM serial console (requires serial0: socket in config)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm vncproxy <VMID>",
+            "desc": "Open a temporary VNC proxy for the VM console",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm rescan",
+            "desc": "Re-scan storages for unreferenced disks (after manual import)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qm cloudinit dump <VMID> user",
+            "desc": "Dump rendered cloud-init user-data for inspection",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qm showcmd <VMID> --pretty",
+            "desc": "Print the full QEMU command line PVE will use to start the VM",
+            "type": "troubleshooting",
+            "flagged": false
+          }
         ],
         "LXC Containers (pct)": [
-          { "cmd": "pct list", "desc": "List all containers with VMID, status, memory, name", "type": "show", "flagged": false },
-          { "cmd": "pct config <CTID>", "desc": "Show full configuration for a container", "type": "show", "flagged": false },
-          { "cmd": "pct create <CTID> <STORAGE>:vztmpl/<TEMPLATE>.tar.zst --hostname <NAME> --memory 1024 --cores 2 --net0 name=eth0,bridge=vmbr0,ip=dhcp", "desc": "Create a new unprivileged LXC from a template", "type": "config", "flagged": false },
-          { "cmd": "pct start <CTID>", "desc": "Start container", "type": "config", "flagged": false },
-          { "cmd": "pct shutdown <CTID>", "desc": "Graceful container shutdown", "type": "config", "flagged": false },
-          { "cmd": "pct stop <CTID>", "desc": "Force-stop container", "type": "config", "flagged": true },
-          { "cmd": "pct reboot <CTID>", "desc": "Reboot container", "type": "config", "flagged": false },
-          { "cmd": "pct enter <CTID>", "desc": "Open a shell inside the container (no SSH needed)", "type": "config", "flagged": false },
-          { "cmd": "pct exec <CTID> -- <CMD> [ARGS]", "desc": "Run a single command in the container without an interactive shell", "type": "config", "flagged": false },
-          { "cmd": "pct push <CTID> <LOCAL> <CT-PATH>", "desc": "Copy a file from host into the container", "type": "config", "flagged": false },
-          { "cmd": "pct pull <CTID> <CT-PATH> <LOCAL>", "desc": "Copy a file from the container to the host", "type": "config", "flagged": false },
-          { "cmd": "pct mount <CTID>", "desc": "Mount the container rootfs on the host (under /var/lib/lxc/<CTID>/rootfs) for offline edits", "type": "troubleshooting", "flagged": false },
-          { "cmd": "pct unmount <CTID>", "desc": "Unmount after pct mount", "type": "troubleshooting", "flagged": false },
-          { "cmd": "pct migrate <CTID> <TARGET-NODE> --restart 1", "desc": "Migrate a container to another node (offline; --restart restarts after)", "type": "config", "flagged": false },
-          { "cmd": "pct clone <CTID> <NEW-CTID> --hostname <NAME> --full 1", "desc": "Full clone of a container", "type": "config", "flagged": false },
-          { "cmd": "pct snapshot <CTID> <NAME>", "desc": "Take a container snapshot (filesystem-level)", "type": "config", "flagged": false },
-          { "cmd": "pct rollback <CTID> <SNAPSHOT>", "desc": "Roll back to snapshot", "type": "config", "flagged": true },
-          { "cmd": "pct destroy <CTID> --purge 1", "desc": "Delete container and its disks", "type": "config", "flagged": true },
-          { "cmd": "pct unlock <CTID>", "desc": "Clear stuck container lock", "type": "troubleshooting", "flagged": true }
+          {
+            "cmd": "pct list",
+            "desc": "List all containers with VMID, status, memory, name",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pct config <CTID>",
+            "desc": "Show full configuration for a container",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pct create <CTID> <STORAGE>:vztmpl/<TEMPLATE>.tar.zst --hostname <NAME> --memory 1024 --cores 2 --net0 name=eth0,bridge=vmbr0,ip=dhcp",
+            "desc": "Create a new unprivileged LXC from a template",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct start <CTID>",
+            "desc": "Start container",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct shutdown <CTID>",
+            "desc": "Graceful container shutdown",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct stop <CTID>",
+            "desc": "Force-stop container",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pct reboot <CTID>",
+            "desc": "Reboot container",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct enter <CTID>",
+            "desc": "Open a shell inside the container (no SSH needed)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct exec <CTID> -- <CMD> [ARGS]",
+            "desc": "Run a single command in the container without an interactive shell",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct push <CTID> <LOCAL> <CT-PATH>",
+            "desc": "Copy a file from host into the container",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct pull <CTID> <CT-PATH> <LOCAL>",
+            "desc": "Copy a file from the container to the host",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct mount <CTID>",
+            "desc": "Mount the container rootfs on the host (under /var/lib/lxc/<CTID>/rootfs) for offline edits",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pct unmount <CTID>",
+            "desc": "Unmount after pct mount",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pct migrate <CTID> <TARGET-NODE> --restart 1",
+            "desc": "Migrate a container to another node (offline; --restart restarts after)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct clone <CTID> <NEW-CTID> --hostname <NAME> --full 1",
+            "desc": "Full clone of a container",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct snapshot <CTID> <NAME>",
+            "desc": "Take a container snapshot (filesystem-level)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct rollback <CTID> <SNAPSHOT>",
+            "desc": "Roll back to snapshot",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pct destroy <CTID> --purge 1",
+            "desc": "Delete container and its disks",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pct unlock <CTID>",
+            "desc": "Clear stuck container lock",
+            "type": "troubleshooting",
+            "flagged": true
+          }
         ],
         "Storage (pvesm)": [
-          { "cmd": "pvesm status", "desc": "Show all storages with type, total, used, free, %", "type": "show", "flagged": false },
-          { "cmd": "pvesm list <STORAGE>", "desc": "List volumes on a storage (disks, ISOs, templates, backups)", "type": "show", "flagged": false },
-          { "cmd": "pvesm scan iscsi <PORTAL-IP>", "desc": "Discover iSCSI targets on a portal", "type": "show", "flagged": false },
-          { "cmd": "pvesm scan nfs <SERVER>", "desc": "Discover NFS exports on a server", "type": "show", "flagged": false },
-          { "cmd": "pvesm scan zfs", "desc": "Discover importable ZFS pools", "type": "show", "flagged": false },
-          { "cmd": "pvesm add nfs <NAME> --server <IP> --export /exports/proxmox --content backup,iso,vztmpl", "desc": "Add an NFS storage with content types", "type": "config", "flagged": false },
-          { "cmd": "pvesm add lvmthin <NAME> --vgname pve --thinpool data --content rootdir,images", "desc": "Add an LVM-Thin pool storage", "type": "config", "flagged": false },
-          { "cmd": "pvesm set <NAME> --disable 1", "desc": "Disable a storage without removing it", "type": "config", "flagged": false },
-          { "cmd": "pvesm remove <NAME>", "desc": "Remove a storage definition (does not delete data)", "type": "config", "flagged": true },
-          { "cmd": "pvesm alloc <STORAGE> <VMID> <NAME> 32G", "desc": "Manually allocate a 32 GB disk for VMID on storage", "type": "config", "flagged": false },
-          { "cmd": "pvesm free <STORAGE>:<VOLUME>", "desc": "Free an allocated volume", "type": "config", "flagged": true }
+          {
+            "cmd": "pvesm status",
+            "desc": "Show all storages with type, total, used, free, %",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm list <STORAGE>",
+            "desc": "List volumes on a storage (disks, ISOs, templates, backups)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm scan iscsi <PORTAL-IP>",
+            "desc": "Discover iSCSI targets on a portal",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm scan nfs <SERVER>",
+            "desc": "Discover NFS exports on a server",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm scan zfs",
+            "desc": "Discover importable ZFS pools",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm add nfs <NAME> --server <IP> --export /exports/proxmox --content backup,iso,vztmpl",
+            "desc": "Add an NFS storage with content types",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm add lvmthin <NAME> --vgname pve --thinpool data --content rootdir,images",
+            "desc": "Add an LVM-Thin pool storage",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm set <NAME> --disable 1",
+            "desc": "Disable a storage without removing it",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm remove <NAME>",
+            "desc": "Remove a storage definition (does not delete data)",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pvesm alloc <STORAGE> <VMID> <NAME> 32G",
+            "desc": "Manually allocate a 32 GB disk for VMID on storage",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm free <STORAGE>:<VOLUME>",
+            "desc": "Free an allocated volume",
+            "type": "config",
+            "flagged": true
+          }
         ],
         "Networking": [
-          { "cmd": "ip -br -c addr", "desc": "Brief, coloured IP address summary per interface", "type": "show", "flagged": false },
-          { "cmd": "ip link show", "desc": "All interfaces with state, MTU, MAC", "type": "show", "flagged": false },
-          { "cmd": "ip route", "desc": "Show routing table", "type": "show", "flagged": false },
-          { "cmd": "bridge link", "desc": "Show bridge port membership", "type": "show", "flagged": false },
-          { "cmd": "bridge vlan show", "desc": "Show VLAN-aware bridge mappings", "type": "show", "flagged": false },
-          { "cmd": "cat /etc/network/interfaces", "desc": "View the persistent network config", "type": "show", "flagged": false },
-          { "cmd": "ifreload -a", "desc": "Apply changes from /etc/network/interfaces without rebooting", "type": "config", "flagged": false },
-          { "cmd": "pvesh get /nodes/<NODE>/network", "desc": "API view of node network config", "type": "show", "flagged": false },
-          { "cmd": "pvesh create /nodes/<NODE>/network --iface <NAME> --type bridge --bridge_ports eth0 --autostart 1", "desc": "Create a bridge via the API", "type": "config", "flagged": false },
-          { "cmd": "pvesh set /nodes/<NODE>/network --reload 1", "desc": "Apply pending network changes", "type": "config", "flagged": false }
+          {
+            "cmd": "ip -br -c addr",
+            "desc": "Brief, coloured IP address summary per interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip link show",
+            "desc": "All interfaces with state, MTU, MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route",
+            "desc": "Show routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bridge link",
+            "desc": "Show bridge port membership",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bridge vlan show",
+            "desc": "Show VLAN-aware bridge mappings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /etc/network/interfaces",
+            "desc": "View the persistent network config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ifreload -a",
+            "desc": "Apply changes from /etc/network/interfaces without rebooting",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /nodes/<NODE>/network",
+            "desc": "API view of node network config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh create /nodes/<NODE>/network --iface <NAME> --type bridge --bridge_ports eth0 --autostart 1",
+            "desc": "Create a bridge via the API",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh set /nodes/<NODE>/network --reload 1",
+            "desc": "Apply pending network changes",
+            "type": "config",
+            "flagged": false
+          }
         ],
         "Backup & Restore (vzdump)": [
-          { "cmd": "vzdump <VMID>", "desc": "Backup a single VM with default settings", "type": "config", "flagged": false },
-          { "cmd": "vzdump <VMID> --mode snapshot --compress zstd --storage <BACKUP-STORE>", "desc": "Live snapshot backup, zstd compression, to named storage", "type": "config", "flagged": false },
-          { "cmd": "vzdump --all --mode snapshot --compress zstd --storage <BACKUP-STORE> --mailto admin@example.com", "desc": "Backup all VMs/CTs, email summary", "type": "config", "flagged": false },
-          { "cmd": "vzdump <VMID> --stdout | ssh root@dr-host 'cat > /backups/vm-<VMID>.vma.zst'", "desc": "Stream a backup directly to another host", "type": "config", "flagged": false },
-          { "cmd": "qmrestore <ARCHIVE>.vma.zst <NEW-VMID> --storage <STORAGE>", "desc": "Restore a VM backup into a new VMID", "type": "config", "flagged": false },
-          { "cmd": "pct restore <NEW-CTID> <ARCHIVE>.tar.zst --storage <STORAGE>", "desc": "Restore an LXC container backup", "type": "config", "flagged": false },
-          { "cmd": "pvesm list <BACKUP-STORE> | grep backup", "desc": "List available backups on a storage", "type": "show", "flagged": false }
+          {
+            "cmd": "vzdump <VMID>",
+            "desc": "Backup a single VM with default settings",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vzdump <VMID> --mode snapshot --compress zstd --storage <BACKUP-STORE>",
+            "desc": "Live snapshot backup, zstd compression, to named storage",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vzdump --all --mode snapshot --compress zstd --storage <BACKUP-STORE> --mailto admin@example.com",
+            "desc": "Backup all VMs/CTs, email summary",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vzdump <VMID> --stdout | ssh root@dr-host 'cat > /backups/vm-<VMID>.vma.zst'",
+            "desc": "Stream a backup directly to another host",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "qmrestore <ARCHIVE>.vma.zst <NEW-VMID> --storage <STORAGE>",
+            "desc": "Restore a VM backup into a new VMID",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pct restore <NEW-CTID> <ARCHIVE>.tar.zst --storage <STORAGE>",
+            "desc": "Restore an LXC container backup",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesm list <BACKUP-STORE> | grep backup",
+            "desc": "List available backups on a storage",
+            "type": "show",
+            "flagged": false
+          }
         ],
         "High Availability": [
-          { "cmd": "ha-manager status", "desc": "Cluster HA state — quorate, master, services", "type": "show", "flagged": false },
-          { "cmd": "ha-manager config", "desc": "Show HA-managed resources", "type": "show", "flagged": false },
-          { "cmd": "ha-manager add vm:<VMID> --state started --max_relocate 3 --max_restart 1", "desc": "Add a VM to HA management", "type": "config", "flagged": false },
-          { "cmd": "ha-manager set vm:<VMID> --state stopped", "desc": "Tell HA to keep a managed VM stopped", "type": "config", "flagged": false },
-          { "cmd": "ha-manager remove vm:<VMID>", "desc": "Remove from HA management", "type": "config", "flagged": false },
-          { "cmd": "ha-manager migrate vm:<VMID> <TARGET-NODE>", "desc": "Manually migrate via HA manager", "type": "config", "flagged": false },
-          { "cmd": "ha-manager relocate vm:<VMID> <TARGET-NODE>", "desc": "Offline relocate via HA manager", "type": "config", "flagged": false }
+          {
+            "cmd": "ha-manager status",
+            "desc": "Cluster HA state — quorate, master, services",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager config",
+            "desc": "Show HA-managed resources",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager add vm:<VMID> --state started --max_relocate 3 --max_restart 1",
+            "desc": "Add a VM to HA management",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager set vm:<VMID> --state stopped",
+            "desc": "Tell HA to keep a managed VM stopped",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager remove vm:<VMID>",
+            "desc": "Remove from HA management",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager migrate vm:<VMID> <TARGET-NODE>",
+            "desc": "Manually migrate via HA manager",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ha-manager relocate vm:<VMID> <TARGET-NODE>",
+            "desc": "Offline relocate via HA manager",
+            "type": "config",
+            "flagged": false
+          }
         ],
         "ZFS": [
-          { "cmd": "zpool status", "desc": "All pools, vdev health, scrub progress, errors", "type": "show", "flagged": false },
-          { "cmd": "zpool list", "desc": "Pool capacity, fragmentation, dedup ratio", "type": "show", "flagged": false },
-          { "cmd": "zfs list", "desc": "All datasets with usage and mountpoints", "type": "show", "flagged": false },
-          { "cmd": "zfs list -t snapshot", "desc": "All snapshots", "type": "show", "flagged": false },
-          { "cmd": "zfs snapshot <POOL>/<DS>@<NAME>", "desc": "Create a ZFS snapshot", "type": "config", "flagged": false },
-          { "cmd": "zfs send -R <POOL>/<DS>@<SNAP> | ssh dr-host 'zfs recv -F dr-pool/<DS>'", "desc": "Replicate dataset (and children) to a remote pool", "type": "config", "flagged": false },
-          { "cmd": "zpool scrub <POOL>", "desc": "Trigger a scrub", "type": "config", "flagged": false },
-          { "cmd": "zpool replace <POOL> <OLD-DEV> <NEW-DEV>", "desc": "Replace a failed disk", "type": "config", "flagged": false },
-          { "cmd": "zpool set autoexpand=on <POOL>", "desc": "Auto-grow when underlying disks are replaced with larger ones", "type": "config", "flagged": false },
-          { "cmd": "zpool import -f <POOL>", "desc": "Force-import a pool (e.g. after a node move)", "type": "troubleshooting", "flagged": true }
+          {
+            "cmd": "zpool status",
+            "desc": "All pools, vdev health, scrub progress, errors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zpool list",
+            "desc": "Pool capacity, fragmentation, dedup ratio",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zfs list",
+            "desc": "All datasets with usage and mountpoints",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zfs list -t snapshot",
+            "desc": "All snapshots",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zfs snapshot <POOL>/<DS>@<NAME>",
+            "desc": "Create a ZFS snapshot",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zfs send -R <POOL>/<DS>@<SNAP> | ssh dr-host 'zfs recv -F dr-pool/<DS>'",
+            "desc": "Replicate dataset (and children) to a remote pool",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zpool scrub <POOL>",
+            "desc": "Trigger a scrub",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zpool replace <POOL> <OLD-DEV> <NEW-DEV>",
+            "desc": "Replace a failed disk",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zpool set autoexpand=on <POOL>",
+            "desc": "Auto-grow when underlying disks are replaced with larger ones",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zpool import -f <POOL>",
+            "desc": "Force-import a pool (e.g. after a node move)",
+            "type": "troubleshooting",
+            "flagged": true
+          }
         ],
         "Users & Auth (pveum)": [
-          { "cmd": "pveum user list", "desc": "List PVE users with realm and groups", "type": "show", "flagged": false },
-          { "cmd": "pveum user add ops@pve --groups admins --comment \"Ops team\"", "desc": "Create a PVE-realm user", "type": "config", "flagged": false },
-          { "cmd": "pveum passwd <USER>@<REALM>", "desc": "Change a PVE-realm user password", "type": "config", "flagged": false },
-          { "cmd": "pveum group add admins -comment \"Admin group\"", "desc": "Create a group", "type": "config", "flagged": false },
-          { "cmd": "pveum role list", "desc": "Built-in and custom roles", "type": "show", "flagged": false },
-          { "cmd": "pveum acl modify / -group admins -role Administrator", "desc": "Grant admins the Administrator role at the root path", "type": "config", "flagged": false },
-          { "cmd": "pveum realm list", "desc": "Auth realms (pve, pam, AD, LDAP, OIDC)", "type": "show", "flagged": false },
-          { "cmd": "pveum tfa list <USER>@<REALM>", "desc": "Show 2FA factors for a user", "type": "show", "flagged": false }
+          {
+            "cmd": "pveum user list",
+            "desc": "List PVE users with realm and groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum user add ops@pve --groups admins --comment \"Ops team\"",
+            "desc": "Create a PVE-realm user",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum passwd <USER>@<REALM>",
+            "desc": "Change a PVE-realm user password",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum group add admins -comment \"Admin group\"",
+            "desc": "Create a group",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum role list",
+            "desc": "Built-in and custom roles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum acl modify / -group admins -role Administrator",
+            "desc": "Grant admins the Administrator role at the root path",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum realm list",
+            "desc": "Auth realms (pve, pam, AD, LDAP, OIDC)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveum tfa list <USER>@<REALM>",
+            "desc": "Show 2FA factors for a user",
+            "type": "show",
+            "flagged": false
+          }
         ],
         "API & Automation (pvesh)": [
-          { "cmd": "pvesh get /version", "desc": "API version", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /cluster/status", "desc": "Cluster nodes + quorum from API", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /nodes/<NODE>/qemu", "desc": "All VMs on a node (machine-readable)", "type": "show", "flagged": false },
-          { "cmd": "pvesh get /nodes/<NODE>/qemu/<VMID>/status/current", "desc": "Live runtime state of a VM (CPU, memory, balloon, IOPS)", "type": "show", "flagged": false },
-          { "cmd": "pvesh create /nodes/<NODE>/qemu/<VMID>/status/start", "desc": "Start a VM via API", "type": "config", "flagged": false },
-          { "cmd": "pvesh set /nodes/<NODE>/qemu/<VMID>/config --memory 8192 --cores 4", "desc": "Update VM config via API", "type": "config", "flagged": false },
-          { "cmd": "pvesh create /access/ticket --username root@pam --password '...'", "desc": "Get a CSRF/auth ticket for scripted API use", "type": "config", "flagged": false },
-          { "cmd": "pvesh get /cluster/resources --output-format json | jq '.[] | select(.type==\"vm\")'", "desc": "Machine-readable VM list with jq filtering", "type": "show", "flagged": false }
+          {
+            "cmd": "pvesh get /version",
+            "desc": "API version",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /cluster/status",
+            "desc": "Cluster nodes + quorum from API",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /nodes/<NODE>/qemu",
+            "desc": "All VMs on a node (machine-readable)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /nodes/<NODE>/qemu/<VMID>/status/current",
+            "desc": "Live runtime state of a VM (CPU, memory, balloon, IOPS)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh create /nodes/<NODE>/qemu/<VMID>/status/start",
+            "desc": "Start a VM via API",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh set /nodes/<NODE>/qemu/<VMID>/config --memory 8192 --cores 4",
+            "desc": "Update VM config via API",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh create /access/ticket --username root@pam --password '...'",
+            "desc": "Get a CSRF/auth ticket for scripted API use",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesh get /cluster/resources --output-format json | jq '.[] | select(.type==\"vm\")'",
+            "desc": "Machine-readable VM list with jq filtering",
+            "type": "show",
+            "flagged": false
+          }
         ],
         "Firewall (pve-firewall)": [
-          { "cmd": "pve-firewall status", "desc": "Cluster + node firewall enable/state", "type": "show", "flagged": false },
-          { "cmd": "pve-firewall start", "desc": "Start firewall service", "type": "config", "flagged": false },
-          { "cmd": "pve-firewall stop", "desc": "Stop (disable) firewall on this node", "type": "config", "flagged": true },
-          { "cmd": "pve-firewall compile", "desc": "Compile rules to nftables — useful to dry-run config changes", "type": "show", "flagged": false },
-          { "cmd": "pve-firewall localnet", "desc": "Show what is considered local (cluster) network", "type": "show", "flagged": false },
-          { "cmd": "iptables -L -nv", "desc": "Underlying ipt rules (PVE pre-8.x) for diagnosis", "type": "show", "flagged": false },
-          { "cmd": "nft list ruleset", "desc": "Underlying nftables ruleset (PVE 8+)", "type": "show", "flagged": false }
+          {
+            "cmd": "pve-firewall status",
+            "desc": "Cluster + node firewall enable/state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pve-firewall start",
+            "desc": "Start firewall service",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pve-firewall stop",
+            "desc": "Stop (disable) firewall on this node",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "pve-firewall compile",
+            "desc": "Compile rules to nftables — useful to dry-run config changes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pve-firewall localnet",
+            "desc": "Show what is considered local (cluster) network",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iptables -L -nv",
+            "desc": "Underlying ipt rules (PVE pre-8.x) for diagnosis",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nft list ruleset",
+            "desc": "Underlying nftables ruleset (PVE 8+)",
+            "type": "show",
+            "flagged": false
+          }
         ],
         "Updates & Maintenance": [
-          { "cmd": "apt update", "desc": "Refresh APT cache (uses configured pve-no-subscription / enterprise repos)", "type": "config", "flagged": false },
-          { "cmd": "apt list --upgradable", "desc": "Preview pending upgrades", "type": "show", "flagged": false },
-          { "cmd": "apt dist-upgrade -y", "desc": "Apply Proxmox/Debian package upgrades (use dist-upgrade, not upgrade)", "type": "config", "flagged": false },
-          { "cmd": "pveupgrade", "desc": "Wrapper that nags about a reboot when needed", "type": "show", "flagged": false },
-          { "cmd": "pveam update", "desc": "Refresh available LXC template list", "type": "config", "flagged": false },
-          { "cmd": "pveam available --section system | grep debian-12", "desc": "Find a specific template", "type": "show", "flagged": false },
-          { "cmd": "pveam download <STORAGE> <TEMPLATE>", "desc": "Download a template into the named storage", "type": "config", "flagged": false },
-          { "cmd": "pvesubscription get", "desc": "Show current subscription level", "type": "show", "flagged": false }
+          {
+            "cmd": "apt update",
+            "desc": "Refresh APT cache (uses configured pve-no-subscription / enterprise repos)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "apt list --upgradable",
+            "desc": "Preview pending upgrades",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt dist-upgrade -y",
+            "desc": "Apply Proxmox/Debian package upgrades (use dist-upgrade, not upgrade)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveupgrade",
+            "desc": "Wrapper that nags about a reboot when needed",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveam update",
+            "desc": "Refresh available LXC template list",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pveam available --section system | grep debian-12",
+            "desc": "Find a specific template",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pveam download <STORAGE> <TEMPLATE>",
+            "desc": "Download a template into the named storage",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "pvesubscription get",
+            "desc": "Show current subscription level",
+            "type": "show",
+            "flagged": false
+          }
         ],
         "Logs & Diagnostics": [
-          { "cmd": "journalctl -u pve-cluster -f", "desc": "Tail the cluster filesystem (pmxcfs) log", "type": "troubleshooting", "flagged": false },
-          { "cmd": "journalctl -u pveproxy -u pvedaemon -u pvestatd --since today", "desc": "PVE daemon logs since midnight", "type": "troubleshooting", "flagged": false },
-          { "cmd": "journalctl -u corosync -f", "desc": "Watch Corosync ring and membership events", "type": "troubleshooting", "flagged": false },
-          { "cmd": "journalctl _COMM=qemu-system-x86_64 --since '-1h'", "desc": "Recent QEMU process logs (per-VM crash diagnosis)", "type": "troubleshooting", "flagged": false },
-          { "cmd": "tail -f /var/log/pveproxy/access.log", "desc": "Live web-UI/API access log", "type": "troubleshooting", "flagged": false },
-          { "cmd": "tail -f /var/log/pve/tasks/active", "desc": "Currently running PVE tasks", "type": "troubleshooting", "flagged": false },
-          { "cmd": "ls /var/log/pve/tasks/index", "desc": "Task index (then cat the UPID file for full output)", "type": "troubleshooting", "flagged": false },
-          { "cmd": "dmesg -T | tail -100", "desc": "Recent kernel messages (timestamped)", "type": "troubleshooting", "flagged": false },
-          { "cmd": "pvereport > /tmp/pvereport.txt", "desc": "Generate full diagnostic bundle for support", "type": "troubleshooting", "flagged": false }
+          {
+            "cmd": "journalctl -u pve-cluster -f",
+            "desc": "Tail the cluster filesystem (pmxcfs) log",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl -u pveproxy -u pvedaemon -u pvestatd --since today",
+            "desc": "PVE daemon logs since midnight",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl -u corosync -f",
+            "desc": "Watch Corosync ring and membership events",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl _COMM=qemu-system-x86_64 --since '-1h'",
+            "desc": "Recent QEMU process logs (per-VM crash diagnosis)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/pveproxy/access.log",
+            "desc": "Live web-UI/API access log",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/pve/tasks/active",
+            "desc": "Currently running PVE tasks",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "ls /var/log/pve/tasks/index",
+            "desc": "Task index (then cat the UPID file for full output)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "dmesg -T | tail -100",
+            "desc": "Recent kernel messages (timestamped)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pvereport > /tmp/pvereport.txt",
+            "desc": "Generate full diagnostic bundle for support",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "cisco_nexus": {
+      "label": "Cisco Nexus",
+      "badge": "badge-sw",
+      "short": "Nexus",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display software version and hardware information for Cisco devices.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration of a Cisco device.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode on Cisco devices to apply configuration changes.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show ip interface brief",
+            "desc": "Display a summary of interface IP addresses and status.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging of IP packets for troubleshooting connectivity issues.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging",
+            "desc": "Display system logs to help diagnose issues on Cisco devices.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "interface": [
+          {
+            "cmd": "interface GigabitEthernet0/1",
+            "desc": "Enter interface configuration mode for a specific GigabitEthernet port.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "performance": [
+          {
+            "cmd": "show controllers cpu",
+            "desc": "Display CPU utilization and performance statistics.",
+            "type": "show",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "palo_alto_pan_os": {
+      "label": "Palo Alto PAN-OS",
+      "badge": "badge-sw",
+      "short": "PAN-OS",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system information and software version for Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system info",
+            "desc": "Display detailed system information including serial number, model, and uptime.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request system software install ftp://<user>:<password>@<server>/<file>",
+            "desc": "Install a new software image on the Palo Alto Networks firewall via FTP.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show network interface",
+            "desc": "Display network interface status and configuration on Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration of the Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure",
+            "desc": "Enter configuration mode on Palo Alto Networks firewall to modify settings.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set deviceconfig system hostname <hostname>",
+            "desc": "Set the hostname of the Palo Alto Networks firewall.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show log threat",
+            "desc": "Display threat logs to identify malicious activities detected by the firewall.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show log traffic",
+            "desc": "Display traffic logs to monitor allowed and denied network traffic.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "debug": [
+          {
+            "cmd": "debug dataplane packet-trace basic",
+            "desc": "Trace a specific packet through the dataplane for troubleshooting connectivity issues.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
         ]
       }
     }
