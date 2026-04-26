@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-25T05:04:32.923Z",
+  "updatedAt": "2026-04-26T05:29:26.147Z",
   "items": [
     {
       "id": "CVE-2024-3400",
@@ -228,6 +228,39 @@
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20358",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "Cisco Nexus Dashboard Fabric Manager allows unauthenticated remote code execution due to improper input validation.",
+      "affected": "Cisco Nexus Dashboard Fabric Manager versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20359",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Improper access control in Cisco Nexus Dashboard allows elevated privileges via crafted API requests.",
+      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20360",
+      "cvss": 7.5,
+      "severity": "Medium",
+      "summary": "Information disclosure vulnerability in Cisco Nexus Dashboard due to verbose error messages.",
+      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
     }
   ]
 }
