@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- monochrome variant for OS theming (Android adaptive icons, etc.) -->
+  <g stroke="#fff" stroke-width="14" stroke-linecap="round" fill="none">
+    <line x1="128" y1="128" x2="256" y2="256"/>
+    <line x1="384" y1="128" x2="256" y2="256"/>
+    <line x1="128" y1="384" x2="256" y2="256"/>
+    <line x1="384" y1="384" x2="256" y2="256"/>
+    <line x1="128" y1="128" x2="384" y2="128"/>
+    <line x1="128" y1="384" x2="384" y2="384"/>
+    <line x1="128" y1="128" x2="128" y2="384"/>
+    <line x1="384" y1="128" x2="384" y2="384"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="128" cy="128" r="26"/>
+    <circle cx="384" cy="128" r="26"/>
+    <circle cx="128" cy="384" r="26"/>
+    <circle cx="384" cy="384" r="26"/>
+    <circle cx="256" cy="256" r="44"/>
+  </g>
+</svg>
