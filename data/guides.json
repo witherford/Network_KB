@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-26T05:29:14.355Z",
+  "updatedAt": "2026-04-27T05:43:32.842Z",
   "items": [
     {
       "title": "IOS-XE Basic Troubleshooting and Configuration Guide",
@@ -115,93 +115,90 @@
         {
           "n": 1,
           "action": "Verify Nexus service status and basic connectivity.",
-          "expected": "Service is active and listening on expected ports; network reachability to the node is confirmed.",
+          "expected": "Nexus is running and reachable on expected ports.",
           "commands": [
             "systemctl status nexus",
-            "ss -tlnp | grep <nexus-port>",
-            "curl -s -o /dev/null -w \"%{http_code}\" http://localhost:<nexus-port>/service/rest/v1/status"
+            "curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8081"
           ]
         },
         {
           "n": 2,
-          "action": "Check Nexus logs for errors and warnings.",
-          "expected": "No critical errors; warnings are investigated and contextualized.",
+          "action": "Check Nexus logs for errors or warnings.",
+          "expected": "No critical errors; logs show normal startup.",
           "commands": [
-            "tail -n 200 /opt/nexus-data/log/nexus.log",
-            "grep -i \"error\\|warn\" /opt/nexus-data/log/nexus.log | tail -n 20"
+            "tail -n 200 /nexus-data/log/nexus.log",
+            "grep -i \"error\\|warn\" /nexus-data/log/nexus.log"
           ]
         },
         {
           "n": 3,
-          "action": "Validate repository configuration and connectivity to upstream.",
-          "expected": "Repositories are correctly defined and can reach remote indexes; proxy settings (if any) are valid.",
+          "action": "Validate repository configuration and connectivity to remote repositories.",
+          "expected": "Repositories are correctly configured and reachable.",
           "commands": [
-            "curl -s http://localhost:<nexus-port>/service/rest/v1/repositories",
-            "curl -sv https://<upstream-repo-host> 2>&1 | head -20"
+            "curl -s http://localhost:8081/service/rest/v1/repositories",
+            "curl -s -o /dev/null -w \"%{http_code}\" https://repo1.maven.org/maven2"
           ]
         },
         {
           "n": 4,
-          "action": "Inspect blob store integrity and disk usage.",
-          "expected": "Blob store is healthy; disk usage is within acceptable thresholds.",
+          "action": "Inspect blob store health and storage usage.",
+          "expected": "Blob store is healthy with adequate free space.",
           "commands": [
-            "curl -u admin:<password> -X GET http://localhost:<nexus-port>/service/rest/v1/blobstores",
-            "df -h /opt/nexus-data/blobs"
+            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/blobs",
+            "df -h /nexus-data/blobs"
           ]
         },
         {
           "n": 5,
           "action": "Review and adjust JVM and Nexus heap settings if needed.",
-          "expected": "Heap settings are appropriate for workload; no frequent GC pauses.",
+          "expected": "Heap settings are within recommended limits for available RAM.",
           "commands": [
-            "cat /opt/nexus-data/etc/nexus.properties | grep jetty",
-            "grep -i \"Xmx\\|Xms\" /opt/nexus-data/etc/jvm.options"
+            "cat /nexus-data/etc/nexus.properties | grep jetty",
+            "grep -i \"Xmx\\|Xms\" /nexus-data/etc/jvm.options"
           ]
         },
         {
           "n": 6,
-          "action": "Verify user roles, privileges, and authentication mechanisms.",
-          "expected": "Users/groups have correct roles; authentication (LDAP/Active Directory/OAuth) responds as expected.",
+          "action": "Test artifact deployment and retrieval end-to-end.",
+          "expected": "Artifact can be deployed and downloaded successfully.",
           "commands": [
-            "curl -u admin:<password> -X GET http://localhost:<nexus-port>/service/rest/v1/security/users",
-            "curl -u admin:<password> -X GET http://localhost:<nexus-port>/service/rest/v1/security/roles"
+            "curl -u admin:$(cat /nexus-data/admin.password) -T /tmp/test.jar \"http://localhost:8081/repository/maven-hosted/test/1.0.0/test-1.0.0.jar\"",
+            "curl -u admin:$(cat /nexus-data/admin.password) -I \"http://localhost:8081/repository/maven-hosted/test/1.0.0/test-1.0.0.jar\""
           ]
         },
         {
           "n": 7,
-          "action": "Test artifact upload/download to confirm repository operations.",
-          "expected": "Upload and download succeed; checksums and metadata are intact.",
+          "action": "Verify security and access policies (roles, privileges, tokens).",
+          "expected": "Roles and privileges align with intended access controls.",
           "commands": [
-            "curl -u admin:<password> -X POST http://localhost:<nexus-port>/repository/<repo-key>/test.txt -T /tmp/test.txt",
-            "curl -u admin:<password> -O http://localhost:<nexus-port>/repository/<repo-key>/test.txt && sha256sum /tmp/test.txt"
+            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/security/roles",
+            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/tokens"
           ]
         },
         {
           "n": 8,
-          "action": "Check and configure network/proxy settings if external resolution fails.",
-          "expected": "Outbound connections succeed via configured proxy or direct routing.",
+          "action": "Check scheduled tasks and maintenance settings.",
+          "expected": "Tasks such as blob store cleanup and repair are scheduled appropriately.",
           "commands": [
-            "cat /opt/nexus-data/etc/nexus.properties | grep -i proxy",
-            "curl -v https://repo1.maven.org/maven2/org/apache/maven/maven-model/3.8.6/maven-model-3.8.6.pom 2>&1 | head -30"
+            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/scheduled-tasks"
           ]
         },
         {
           "n": 9,
-          "action": "Perform a controlled restart and monitor startup sequence.",
-          "expected": "Nexus starts without errors and becomes ready within expected time.",
+          "action": "Validate network/firewall and proxy settings if external access fails.",
+          "expected": "Outbound connections succeed; proxy settings are correct.",
           "commands": [
-            "systemctl restart nexus",
-            "systemctl status nexus",
-            "tail -n 50 /opt/nexus-data/log/nexus.log | grep -i \"started\\|ready\\|error\""
+            "curl -v --connect-timeout 5 https://repo1.maven.org/maven2",
+            "cat /nexus-data/etc/nexus.properties | grep -i proxy"
           ]
         },
         {
           "n": 10,
-          "action": "Schedule and verify regular backups of configuration and blob store.",
-          "expected": "Backup completes successfully and restore tests validate integrity.",
+          "action": "Rotate and archive logs if needed, then restart Nexus to apply changes.",
+          "expected": "Logs rotated, configuration changes active, Nexus stable.",
           "commands": [
-            "curl -u admin:<password> -X POST http://localhost:<nexus-port>/service/rest/v1/backup",
-            "ls -lh /opt/nexus-data/backups/ && tar -tzf /opt/nexus-data/backups/nexus-backup-*.zip 2>/dev/null | head -10"
+            "mv /nexus-data/log/nexus.log /nexus-data/log/nexus-$(date +%F).log",
+            "systemctl restart nexus"
           ]
         }
       ],
@@ -225,81 +222,75 @@
           "commands": [
             "ssh admin@<WLC_IP>",
             "enable",
-            "show boot"
+            "configure terminal"
           ]
         },
         {
           "n": 3,
-          "action": "Check system status and health",
-          "expected": "No critical alarms; system uptime and resources (CPU, memory) within normal ranges.",
+          "action": "Check system status and logs",
+          "expected": "No critical alarms; system uptime and resources are normal.",
           "commands": [
             "show system status",
-            "show hardware",
-            "show module"
+            "show logging last 50"
           ]
         },
         {
           "n": 4,
-          "action": "Verify network configuration (IP, gateway, VLANs)",
-          "expected": "Management interface has correct IP, subnet, and default gateway; VLANs are configured if needed.",
+          "action": "Verify interface configurations",
+          "expected": "Management interface has correct IP, gateway, and VLAN settings.",
           "commands": [
-            "show ip interface",
-            "show network summary"
+            "show interface summary",
+            "show ip interface brief"
           ]
         },
         {
           "n": 5,
-          "action": "Check controller reachability and AP connectivity",
-          "expected": "WLC can reach other network devices; APs are joining and in RUN state.",
+          "action": "Validate AP connectivity and join status",
+          "expected": "APs are in 'RUN' state and associated with the WLC.",
           "commands": [
-            "ping <gateway_or_dns>",
             "show ap summary",
-            "debug ap enable"
+            "show ap config general all"
           ]
         },
         {
           "n": 6,
-          "action": "Review logs for errors or warnings",
-          "expected": "No critical or repeated errors; logs show normal operation.",
+          "action": "Check RF and client configurations",
+          "expected": "Radio profiles, WLANs, and client settings are correctly configured.",
           "commands": [
-            "show log msg",
-            "show log bootstrap"
+            "show wlan summary",
+            "show client summary",
+            "show rf-profile name default"
           ]
         },
         {
           "n": 7,
-          "action": "Validate wireless configuration (SSID, security, VLAN mapping)",
-          "expected": "SSID profiles are correctly configured and mapped to proper VLANs and policies.",
+          "action": "Test client association and connectivity",
+          "expected": "Client can associate to WLAN and obtain IP via DHCP with full connectivity.",
           "commands": [
-            "show wlan summary",
-            "show wlan <wlan_id>"
+            "ping <client_ip>",
+            "traceroute <external_ip>"
           ]
         },
         {
           "n": 8,
-          "action": "Check RF and channel configuration",
-          "expected": "Channels and power settings are optimal and non-conflicting.",
+          "action": "Review and apply firmware/software updates if needed",
+          "expected": "WLC runs recommended firmware version with no known bugs.",
           "commands": [
-            "show rf-config",
-            "show channel-list"
+            "show version",
+            "show archive install status",
+            "transfer download mode tftp",
+            "transfer download datatype firmware",
+            "transfer download path <tftp_path>",
+            "transfer download primary"
           ]
         },
         {
           "n": 9,
-          "action": "Verify Layer 3 roaming and mobility settings",
-          "expected": "Mobility groups and IP helpers are correctly set for inter-controller roaming.",
-          "commands": [
-            "show mobility group",
-            "show capwap tunnels"
-          ]
-        },
-        {
-          "n": 10,
           "action": "Save configuration and document changes",
-          "expected": "Running configuration saved to startup configuration; changes recorded.",
+          "expected": "Running config saved to startup-config and change log updated.",
           "commands": [
-            "save config",
-            "show config-running"
+            "copy running-config startup-config",
+            "show config config-file"
           ]
         }
       ],
@@ -313,7 +304,7 @@
         {
           "n": 1,
           "action": "Check device connectivity and management access.",
-          "expected": "Management interface is reachable and admin can log in.",
+          "expected": "Management interface is reachable and you can log in via SSH/HTTPS.",
           "commands": [
             "ping <management-ip>",
             "ssh admin@<management-ip>"
@@ -321,67 +312,84 @@
         },
         {
           "n": 2,
-          "action": "Verify PAN-OS software version and availability of updates.",
-          "expected": "Device is running a supported PAN-OS version.",
+          "action": "Verify PAN-OS software version and license status.",
+          "expected": "Device runs a supported PAN-OS version and license is valid.",
           "commands": [
-            "show system info"
+            "show system info",
+            "show license"
           ]
         },
         {
           "n": 3,
           "action": "Check interface status and IP configuration.",
-          "expected": "Interfaces are operational (up/up) with correct IP addressing.",
+          "expected": "Interfaces are administratively up/up with correct IP/subnet.",
           "commands": [
-            "show network interface"
+            "show network interface",
+            "show interface ethernet1/1"
           ]
         },
         {
           "n": 4,
-          "action": "Review system logs for critical events.",
-          "expected": "No critical or repeated error entries.",
+          "action": "Validate routing and default gateway.",
+          "expected": "Routing table contains correct next-hop/default route.",
           "commands": [
-            "show log system"
+            "show routing-table",
+            "show ip route"
           ]
         },
         {
           "n": 5,
-          "action": "Validate security policies and rule hits.",
-          "expected": "Policies reflect intended allow/deny logic with expected hit counts.",
+          "action": "Test reachability to external resources.",
+          "expected": "Ping/traceroute to external IP/DNS succeeds.",
           "commands": [
-            "show rulebase security"
+            "ping google-ip",
+            "traceroute google-ip",
+            "test route src-ip <interface-ip> google-ip"
           ]
         },
         {
           "n": 6,
-          "action": "Check routing tables and next-hop reachability.",
-          "expected": "Preferred route is active and next-hop is reachable.",
+          "action": "Check security policies and allow traffic.",
+          "expected": "Policy rules permit intended traffic between zones.",
           "commands": [
-            "show routing table"
+            "show rulebase security",
+            "show rulebase security rules <rule-name>"
           ]
         },
         {
           "n": 7,
-          "action": "Confirm NAT rules and translation behavior.",
-          "expected": "NAT rules match traffic intent and show expected translated addresses.",
+          "action": "Enable logging and verify traffic logs.",
+          "expected": "Logs show allowed/blocked sessions as expected.",
           "commands": [
-            "show rulebase nat"
+            "show log system",
+            "show log traffic forwarded",
+            "set logging setting filter rule <rule-name> any any any any any no-log disable"
           ]
         },
         {
           "n": 8,
-          "action": "Test end-to-end connectivity and application flow.",
-          "expected": "Traffic flows as expected; no drops due to security rules or NAT.",
+          "action": "Check HA status if High Availability is configured.",
+          "expected": "HA state is active/passive or active/active as configured.",
           "commands": [
-            "ping <destination>",
-            "traceroute <destination>"
+            "show high-availability state",
+            "show high-availability all"
           ]
         },
         {
           "n": 9,
-          "action": "Commit changes and verify configuration synchronization in HA pairs.",
-          "expected": "Commit succeeds and devices are synchronized in HA passive/active mode.",
+          "action": "Commit configuration and verify deployment.",
+          "expected": "Commit succeeds and changes are active on device(s).",
           "commands": [
-            "request high-availability state-sync commit"
+            "commit",
+            "show jobs id <job-id>"
+          ]
+        },
+        {
+          "n": 10,
+          "action": "Save configuration to ensure persistence across reboot.",
+          "expected": "Configuration is saved and will survive reboot.",
+          "commands": [
+            "save config"
           ]
         }
       ],
@@ -511,6 +519,108 @@
       "refs": [],
       "vendor": "Palo Alto",
       "product": "PAN-OS"
+    },
+    {
+      "title": "IOS-XE Basic Connectivity Troubleshooting and Configuration Guide",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Check device status and interfaces",
+          "expected": "Verify device is powered, fans and LEDs are normal; interfaces show appropriate link status.",
+          "commands": [
+            "show version",
+            "show hardware",
+            "show interfaces status",
+            "show ip interface brief"
+          ]
+        },
+        {
+          "n": 2,
+          "action": "Verify physical connectivity and cable integrity",
+          "expected": "Link/up on both ends for the relevant interface.",
+          "commands": [
+            "show interfaces <interface> counters errors",
+            "show interfaces <interface> physical",
+            "test cable-diagnostics tdr interface <interface>"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Check Layer 3 configuration and reachability",
+          "expected": "Correct IP addressing, subnet, and default gateway; reachable next-hop.",
+          "commands": [
+            "show ip interface <interface>",
+            "show ip route",
+            "ping <next-hop-ip>",
+            "traceroute <destination-ip>"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Validate ARP and MAC learning",
+          "expected": "ARP entry present; MAC learned on the correct interface.",
+          "commands": [
+            "show ip arp",
+            "show mac address-table interface <interface>"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Confirm DHCP or static IP assignment",
+          "expected": "Host receives correct IP configuration via DHCP or static config.",
+          "commands": [
+            "show ip dhcp binding",
+            "show ip dhcp pool",
+            "show running-config interface <interface>"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Check for access-lists / firewall filtering",
+          "expected": "No deny ACEs blocking required traffic; inspection policies as intended.",
+          "commands": [
+            "show access-lists",
+            "show running-config | section ip access-list",
+            "show zone-pair session"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Verify routing protocol state (if used)",
+          "expected": "Neighbors established; routes installed.",
+          "commands": [
+            "show ip ospf neighbor",
+            "show ip bgp summary",
+            "show ip route <prefix>"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Review logging and diagnostics",
+          "expected": "No critical/emergency errors; relevant informational messages present.",
+          "commands": [
+            "show logging | include error",
+            "show monitor",
+            "show tech-support | redirect flash:/diagnostic.txt"
+          ]
+        },
+        {
+          "n": 9,
+          "action": "Apply minimal config to restore connectivity (if needed)",
+          "expected": "Interface is administratively up/up with correct IP; traffic flows.",
+          "commands": [
+            "configure terminal",
+            "interface <interface>",
+            "no shutdown",
+            "ip address <ip> <mask>",
+            "exit",
+            "write memory"
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Cisco",
+      "product": "IOS-XE"
     }
   ]
 }

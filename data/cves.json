@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-26T05:29:26.147Z",
+  "updatedAt": "2026-04-27T05:43:37.060Z",
   "items": [
     {
       "id": "CVE-2024-3400",
@@ -166,13 +166,13 @@
     },
     {
       "id": "CVE-2024-20306",
-      "cvss": 9.8,
+      "cvss": 9.1,
       "severity": "Critical",
-      "summary": "A vulnerability in the Cisco Catalyst 9800 Wireless LAN Controller could allow an unauthenticated, adjacent attacker to cause a reload of the affected system or to cause the affected system to reload, resulting in a denial of service (DoS) condition. The vulnerability is due to insufficient validation of incoming packets. An attacker could exploit this vulnerability by sending specially crafted packets to the affected system.",
-      "affected": "Cisco Catalyst 9800 Series Wireless LAN Controllers running software versions prior to 17.12.0",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Path Traversal Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
       "fixed": "17.12.0",
       "references": [
-        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-DoS-cve-2024-20306"
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20306"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
@@ -181,11 +181,11 @@
       "id": "CVE-2024-20307",
       "cvss": 9.8,
       "severity": "Critical",
-      "summary": "A vulnerability in the Cisco Catalyst 9800 Wireless LAN Controller could allow an unauthenticated, adjacent attacker to execute arbitrary code on the affected system. The vulnerability is due to improper handling of memory. An attacker could exploit this vulnerability by sending a specially crafted packet to the affected system.",
-      "affected": "Cisco Catalyst 9800 Series Wireless LAN Controllers running software versions prior to 17.12.0",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Command Injection Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
       "fixed": "17.12.0",
       "references": [
-        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-RCE-cve-2024-20307"
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20307"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
@@ -258,6 +258,30 @@
       "summary": "Information disclosure vulnerability in Cisco Nexus Dashboard due to verbose error messages.",
       "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
       "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20305",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Improper Input Validation Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20305"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20383",
+      "cvss": 9.1,
+      "severity": "Critical",
+      "summary": "Cisco Nexus 9000 Series Fabric Switches suffers from a vulnerability that could allow an unauthenticated, remote attacker to execute arbitrary code.",
+      "affected": "Cisco Nexus 9000 Series Fabric Switches software versions prior to 10.3(1)",
+      "fixed": "10.3(1)",
       "references": [],
       "vendor": "Cisco",
       "product": "Nexus"

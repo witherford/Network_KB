@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-26T05:28:54.200Z",
+  "updatedAt": "2026-04-27T05:43:15.099Z",
   "items": [
     {
       "vendor": "Cisco",
@@ -11,29 +11,30 @@
         "11.x",
         "10.x"
       ],
-      "notes": "Version numbers follow Cisco NX-OS X.Y(z) convention; check Cisco official documentation for exact build numbers and end-of-life dates; consider hardware model support."
+      "notes": "Version numbers follow Cisco Nexus style (e.g., 12.3(2)). Check Cisco documentation for exact release dates and end-of-life schedules; consider hardware compatibility."
     },
     {
       "latest": "17.12.3",
       "recommended": "17.12.1",
       "eol": [
-        "16.12.1",
+        "16.12.3",
         "16.12.2",
-        "16.12.3"
+        "16.12.1",
+        "16.12.0"
       ],
-      "notes": "Versions are for common universal images (e.g., iosxe-*.pkg). 17.12.x is the current train; 17.12.3 is the latest general availability. 17.12.1 is recommended for stability and broad hardware support. 16.12.x releases are EOL; upgrade to 17.12.x. Always verify hardware compatibility and license requirements in the official Cisco Software Center and CCO documentation.",
+      "notes": "Version numbers follow the Cisco IOS-XE train convention (e.g., 17.12.x). 17.12.3 is the latest general availability (GA) release as of the referenced data; 17.12.1 is recommended for most deployments due to stability and accumulated fixes. Listed EOL versions are prior 16.12.x releases that are no longer supported. Always verify against the official Cisco Software Advisor and release notes for your specific platform and license eligibility.",
       "vendor": "Cisco",
       "product": "IOS-XE"
     },
     {
-      "latest": "17.12.0",
-      "recommended": "17.12.0",
+      "latest": "17.12.1",
+      "recommended": "17.12.1",
       "eol": [
         "17.9.x",
         "17.10.x",
         "17.11.x"
       ],
-      "notes": "Versions are for Cisco Catalyst 9800 Series Wireless LAN Controllers. Confirm compatibility with your specific model and feature set. Refer to official Cisco documentation for detailed end-of-life dates and migration guidance.",
+      "notes": "Versions are for the 9800-WLC controller software (e.g., c9800-universalk9.17.12.1.0). Confirm exact build and train (e.g., 17.12.1a) with Cisco Software Center and your support contract for advisories and compatibility.",
       "vendor": "Cisco",
       "product": "9800-WLC"
     },
@@ -41,10 +42,11 @@
       "latest": "10.2.4",
       "recommended": "10.2.3",
       "eol": [
-        "9.1.x",
-        "10.1.x"
+        "10.1.x",
+        "10.0.x",
+        "9.x"
       ],
-      "notes": "Versions are examples based on typical release patterns; verify exact build numbers and end-of-life dates on the official Palo Alto Networks support and lifecycle pages as of today.",
+      "notes": "Versions are examples based on typical release cadence; verify exact build numbers and end-of-life dates on the official Palo Alto Networks support and documentation site as they update frequently.",
       "vendor": "Palo Alto",
       "product": "PAN-OS"
     }
