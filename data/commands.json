@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-26T05:29:44.550Z",
+  "updatedAt": "2026-04-27T05:43:57.766Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5903,6 +5903,18 @@
             "desc": "Enable an interface.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show interfaces",
+            "desc": "Display interface status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure network ip 192.168.1.1 255.255.255.0 192.168.1.254",
+            "desc": "Configure network IP address, subnet mask, and gateway.",
+            "type": "config",
+            "flagged": false
           }
         ],
         "config": [
@@ -5915,6 +5927,18 @@
           {
             "cmd": "configure terminal",
             "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ns config",
+            "desc": "Show current NetScaler configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set ns config -rsn DISABLED",
+            "desc": "Disable remote SNMP trap notifications.",
             "type": "config",
             "flagged": false
           }
@@ -5945,6 +5969,20 @@
           {
             "cmd": "clear ns tcp",
             "desc": "Reset TCP connections on NetScaler.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "troubleshoot": [
+          {
+            "cmd": "show tech-support",
+            "desc": "Collect diagnostic information for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging for IP packets to troubleshoot connectivity.",
             "type": "troubleshooting",
             "flagged": false
           }
@@ -21664,6 +21702,24 @@
             "desc": "Install a new software image on the Palo Alto Networks firewall via FTP.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "set deviceconfig system hostname",
+            "desc": "Set the hostname of the Palo Alto Networks firewall.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request system software install ftp://user:password@server/panos-version.tgz",
+            "desc": "Install a new PAN-OS software image via FTP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show system disk-space",
+            "desc": "Display disk space usage on the device.",
+            "type": "show",
+            "flagged": false
           }
         ],
         "network": [
@@ -21671,6 +21727,18 @@
             "cmd": "show network interface",
             "desc": "Display network interface status and configuration on Palo Alto Networks firewall.",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set network interface ethernet ethernet1/1 layer3",
+            "desc": "Configure an Ethernet interface as a Layer 3 interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "test connectivity ping 8.8.8.8",
+            "desc": "Test connectivity by pinging an external IP address.",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -21706,6 +21774,12 @@
             "desc": "Display traffic logs to monitor allowed and denied network traffic.",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show log system",
+            "desc": "Display system logs for troubleshooting and monitoring events.",
+            "type": "troubleshooting",
+            "flagged": false
           }
         ],
         "debug": [
@@ -21713,6 +21787,163 @@
             "cmd": "debug dataplane packet-trace basic",
             "desc": "Trace a specific packet through the dataplane for troubleshooting connectivity issues.",
             "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "configuration": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration of the Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure",
+            "desc": "Enter configuration mode to modify system settings on Palo Alto Networks devices.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "monitoring": [
+          {
+            "cmd": "show session all",
+            "desc": "Display all active sessions to monitor traffic flows and connection states.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "policy": [
+          {
+            "cmd": "set rulebase security rules allow-internet source any destination any application any service any action allow",
+            "desc": "Create a security rule to allow traffic from any source to any destination.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "security": [
+          {
+            "cmd": "show threat prevention status",
+            "desc": "Display the status of threat prevention features such as antivirus and anti-spyware.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "operations": [
+          {
+            "cmd": "show jobs all",
+            "desc": "Display all ongoing and completed jobs on the device.",
+            "type": "show",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "cisco_9800_wlc": {
+      "label": "Cisco 9800-WLC",
+      "badge": "badge-sw",
+      "short": "9800-W",
+      "sections": {
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display software version and hardware information.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "configuration": [
+          {
+            "cmd": "show ns config",
+            "desc": "Display current NetScaler configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "config ns setting",
+            "desc": "Configure global NetScaler settings.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show log",
+            "desc": "Display system logs for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear log",
+            "desc": "Clear system logs.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable debugging for IP packets to troubleshoot network issues.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show interface",
+            "desc": "Display interface status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure terminal; interface",
+            "desc": "Enter interface configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "Display the IP routing table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show arp",
+            "desc": "Display ARP table entries.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "security": [
+          {
+            "cmd": "show security policy",
+            "desc": "Display configured security policies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set security policy",
+            "desc": "Create or modify a security policy.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "vpn": [
+          {
+            "cmd": "show vpn ipsec sa",
+            "desc": "Display IPsec security associations.",
+            "type": "show",
             "flagged": false
           }
         ]
