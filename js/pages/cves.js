@@ -6,6 +6,7 @@ import { esc, fmtDateTime, toast } from '../utils.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 import { confirmModal } from '../components/modal.js';
 import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
+import { openImportModal } from '../components/import-modal.js';
 
 const SEV_COLOR = { critical: '#991b1b', high: '#b45309', medium: '#0369a1', low: '#6b7280' };
 const SEV_RANK  = { critical: 0, high: 1, medium: 2, low: 3, informational: 4, '': 5 };
@@ -36,6 +37,7 @@ export async function mount(root) {
       ${state.editMode ? `
         <button class="btn" id="cvFetch">Fetch now</button>
         <button class="btn" id="cvImport" title="Upload one or more HTML advisories / vendor bulletins">Import HTML</button>
+        <button class="btn" id="cvImportCsv" title="Bulk import CVE rows from a CSV or XLSX file">Import CSV / XLSX</button>
       ` : ''}
       <span style="font-size:11px;color:var(--text-3);margin-left:12px">Updated: ${fmtDateTime(data?.updatedAt)}</span>
     </div>
@@ -63,6 +65,50 @@ export async function mount(root) {
             draft.items.push({ ...f, vendor: f.topic || 'HTML advisory' });
           }
           emit('pending:changed');
+        }
+      });
+    });
+    root.querySelector('#cvImportCsv').addEventListener('click', () => {
+      const COLUMNS = ['id','vendor','product','severity','cvss','summary','published','references','source'];
+      openImportModal({
+        title: 'Import CVEs',
+        columns: COLUMNS,
+        exampleFilename: 'cves-example.csv',
+        sampleRows: [
+          { id: 'CVE-2024-3400', vendor: 'Palo Alto', product: 'PAN-OS (GlobalProtect)', severity: 'critical', cvss: 10.0, summary: 'Command injection — pre-auth RCE as root', published: '2024-04-12', references: 'https://security.paloaltonetworks.com/CVE-2024-3400', source: 'curated' },
+          { id: 'CVE-2024-20399', vendor: 'Cisco', product: 'NX-OS', severity: 'medium', cvss: 6.0, summary: 'CLI command injection in some Nexus switches', published: '2024-07-01', references: 'https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nxos-cmd-injection-xD9OhyOP', source: 'curated' },
+          { id: 'CVE-2024-21887', vendor: 'Ivanti', product: 'Connect Secure', severity: 'critical', cvss: 9.1, summary: 'Command injection in admin endpoints', published: '2024-01-10', references: 'https://forums.ivanti.com/s/article/CVE-2024-21887|https://www.cisa.gov/news-events/cybersecurity-advisories', source: 'curated' }
+        ],
+        normalize: rows => rows.map(r => {
+          const out = {
+            id: (r.id || '').trim().toUpperCase(),
+            vendor: (r.vendor || '').trim(),
+            product: (r.product || '').trim(),
+            severity: (r.severity || '').trim().toLowerCase() || 'informational',
+            cvss: r.cvss === '' || r.cvss == null ? null : Number(r.cvss),
+            summary: (r.summary || '').trim(),
+            published: (r.published || '').trim(),
+            source: (r.source || 'imported').trim()
+          };
+          // Normalise references — pipe- or semicolon- or comma-separated.
+          const refs = String(r.references || '')
+            .split(/[|;]+/)
+            .map(s => s.trim())
+            .filter(Boolean);
+          if (refs.length) out.references = refs;
+          if (!Number.isFinite(out.cvss)) delete out.cvss;
+          return out;
+        }).filter(r => r.id),
+        onConfirm: rows => {
+          const draft = ensureDraft();
+          // De-dupe by CVE ID.
+          const existing = new Set((draft.items || []).map(it => (it.id || '').toUpperCase()));
+          const fresh = rows.filter(r => !existing.has(r.id));
+          const dupes = rows.length - fresh.length;
+          draft.items.push(...fresh);
+          draft.updatedAt = new Date().toISOString();
+          emit('pending:changed');
+          toast(`Imported ${fresh.length}${dupes ? ` (${dupes} duplicates skipped)` : ''}`, 'success');
         }
       });
     });

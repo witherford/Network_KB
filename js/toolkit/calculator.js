@@ -1,12 +1,17 @@
 // Scientific calculator. Safe expression evaluator using the Function constructor
 // with a restricted symbol surface (no globals reachable from the sandbox scope).
 
+import { copyToClipboard, toast } from '../utils.js';
+
 export async function mount(root) {
   root.innerHTML = `
     <h2 style="font-size:15px;margin-bottom:12px">Calculator</h2>
     <div style="max-width:380px">
       <input type="text" id="calcExpr" class="search-input" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:15px;padding:10px" placeholder="e.g. sin(pi/4)*sqrt(2)">
-      <div id="calcOut" style="text-align:right;font-family:'SF Mono',Consolas,monospace;font-size:20px;font-weight:600;color:var(--code);padding:14px 4px;min-height:48px"></div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:6px">
+        <div id="calcOut" style="flex:1;text-align:right;font-family:'SF Mono',Consolas,monospace;font-size:20px;font-weight:600;color:var(--code);padding:8px 4px;min-height:32px"></div>
+        <button class="btn sm ghost" id="calcCopy" title="Copy result">Copy</button>
+      </div>
       <div id="calcKeys" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px"></div>
       <div style="margin-top:10px;font-size:11px;color:var(--text-3);line-height:1.6">
         Supported: + − × ÷ % , parentheses, pi, e, sin, cos, tan, asin, acos, atan, atan2, log (base e), log10, log2, sqrt, cbrt, pow, exp, abs, floor, ceil, round, min, max, factorial, sinh, cosh, tanh.
@@ -43,6 +48,12 @@ export async function mount(root) {
   });
   expr.addEventListener('input', () => evalExpr(true));
   expr.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); evalExpr(); } });
+  root.querySelector('#calcCopy').addEventListener('click', async () => {
+    const txt = out.textContent.trim();
+    if (!txt) { toast('No result to copy', 'error'); return; }
+    const ok = await copyToClipboard(txt);
+    toast(ok ? 'Copied ' + txt : 'Copy failed', ok ? 'success' : 'error');
+  });
 
   function evalExpr(preview = false) {
     const raw = expr.value.trim();

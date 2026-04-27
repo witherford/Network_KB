@@ -5,6 +5,7 @@
 //   3. MTU / MSS / payload calculator with overhead presets
 
 import { copyToClipboard, toast } from '../utils.js';
+import { mountCopyButton } from '../components/io.js';
 
 const OVERHEADS = {
   'eth-untagged':   { name: 'Ethernet (no VLAN)',                   sub: 38,  notes: '14 hdr + 4 FCS + 12 IFG + 8 preamble = 38 B per frame' },
@@ -49,6 +50,7 @@ export async function mount(root) {
       </div>
     </div>
     <pre class="script-out" id="bwOut" style="margin-top:8px"></pre>
+    <div style="margin-top:6px"><button class="btn sm ghost" data-copy="bwOut">Copy result</button></div>
 
     <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">2. File transfer time</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
@@ -92,6 +94,7 @@ export async function mount(root) {
       </div>
     </div>
     <pre class="script-out" id="ftOut" style="margin-top:8px"></pre>
+    <div style="margin-top:6px"><button class="btn sm ghost" data-copy="ftOut">Copy result</button></div>
 
     <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">3. MTU / MSS / overhead</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
@@ -129,7 +132,8 @@ export async function mount(root) {
         <input type="number" id="mtuCustom" value="0" min="0" max="200">
       </div>
     </div>
-    <pre class="script-out" id="mtuOut" style="margin-top:8px"></pre>`;
+    <pre class="script-out" id="mtuOut" style="margin-top:8px"></pre>
+    <div style="margin-top:6px"><button class="btn sm ghost" data-copy="mtuOut">Copy result</button></div>`;
 
   const $ = sel => root.querySelector(sel);
 
@@ -203,6 +207,19 @@ export async function mount(root) {
     inp.addEventListener('input', () => { bwCalc(); ftCalc(); mtuCalc(); });
     inp.addEventListener('change', () => { bwCalc(); ftCalc(); mtuCalc(); });
   }
+
+  // Copy-result buttons.
+  root.addEventListener('click', e => {
+    const b = e.target.closest('button[data-copy]');
+    if (!b) return;
+    const target = root.querySelector('#' + b.dataset.copy);
+    if (!target) return;
+    copyToClipboard(target.textContent).then(ok => {
+      const orig = b.textContent;
+      b.textContent = ok ? 'Copied ✓' : 'Failed';
+      setTimeout(() => { b.textContent = orig; }, 1000);
+    });
+  });
 
   bwCalc(); ftCalc(); mtuCalc();
 }

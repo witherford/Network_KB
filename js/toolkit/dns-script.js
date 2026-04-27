@@ -1,14 +1,30 @@
-// DNS bulk-resolve script builder. Output is CSV — each target is resolved
-// and printed as one row per record, with columns appropriate to the type:
+// DNS bulk-resolve script builder. Output is CSV with columns:
 //   FQDN, Type, Value, Extra
-// Extra holds priority for MX/SRV, TTL fall-back, or remains blank for A/AAAA.
+// Extra holds priority for MX/SRV, TTL for others.
+//
+// Modes:
+//   - Hostnames / IPs : one per line.
+//   - CIDR sweep      : expands ranges, emits PTR (reverse-DNS) lookups
+//                       for every host IP. Auto-switches Type to PTR.
+//
+// Includes a "paste output → export CSV" pane so the user can run the
+// generated script externally and turn its terminal output into a CSV.
 
 import { copyToClipboard, toast } from '../utils.js';
+import { expandCidr, ipToArpa } from '../utils.js';
+import { pasteAndExport, mountCopyButton } from '../components/io.js';
 
 export async function mount(root) {
   root.innerHTML = `
     <h2 style="font-size:15px;margin-bottom:12px">DNS script builder</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+      <div class="form-row">
+        <label>Mode</label>
+        <select id="dMode">
+          <option value="hosts">Hostnames / single IPs</option>
+          <option value="cidr">CIDR reverse-DNS sweep (forces PTR)</option>
+        </select>
+      </div>
       <div class="form-row">
         <label>Target OS</label>
         <select id="dOs">
@@ -35,63 +51,105 @@ export async function mount(root) {
         <input type="text" id="dServer" placeholder="e.g. 8.8.8.8">
       </div>
       <div class="form-row" style="grid-column:1/-1">
-        <label>Input (one hostname or IP per line)</label>
+        <label id="dInputLabel">Input (one hostname or IP per line)</label>
         <textarea id="dInput" placeholder="example.com&#10;google.com&#10;8.8.8.8"></textarea>
+        <div class="hint" id="dStats"></div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;align-items:center">
       <button class="btn primary" id="dBuild">Build script</button>
       <button class="btn" id="dCopy">Copy script</button>
       <span class="spacer" style="flex:1"></span>
-      <button class="btn" id="dCsv" title="Export targets as a CSV stub matching the script's output columns">Export CSV</button>
+      <button class="btn" id="dCsv" title="Export targets as a CSV stub matching the script's output columns">Export targets as CSV stub</button>
     </div>
-    <pre class="script-out" id="dOut"></pre>`;
+    <pre class="script-out" id="dOut"></pre>
+    <div id="dPaste"></div>`;
 
-  const targets = () => root.querySelector('#dInput').value
-    .split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  // Mount the paste-output → export-CSV pane.
+  pasteAndExport({
+    root: root.querySelector('#dPaste'),
+    title: 'Paste terminal output → export as CSV',
+    filename: 'dns-results.csv',
+    columns: ['FQDN', 'Type', 'Value', 'Extra'],
+    hint: `After running the script externally, copy its console output and paste it below. The exporter auto-detects CSV / tab / multi-space output formats.`
+  });
 
-  const build = () => {
-    const os = root.querySelector('#dOs').value;
-    const type = root.querySelector('#dType').value;
-    const server = root.querySelector('#dServer').value.trim();
-    const items = targets();
-    if (!items.length) { root.querySelector('#dOut').textContent = '# No hostnames'; return; }
-    root.querySelector('#dOut').textContent = render(os, type, server, items);
+  const $ = sel => root.querySelector(sel);
+
+  const targets = () => {
+    const mode = $('#dMode').value;
+    const raw = $('#dInput').value;
+    if (mode === 'cidr') {
+      // expandCidr returns hostnames/IPs/CIDR-expansion as a flat list.
+      // For the CIDR mode, hostnames pass through too (rare but harmless).
+      return expandCidr(raw, { includeNet: false }).filter(x => !x.startsWith('#'));
+    }
+    return raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
   };
 
-  root.querySelector('#dBuild').addEventListener('click', build);
-  root.querySelector('#dOs').addEventListener('change', build);
-  root.querySelector('#dType').addEventListener('change', build);
-  root.querySelector('#dServer').addEventListener('input', build);
-  root.querySelector('#dInput').addEventListener('input', build);
-  root.querySelector('#dCopy').addEventListener('click', () => {
-    const out = root.querySelector('#dOut').textContent;
+  function refreshLabel() {
+    const mode = $('#dMode').value;
+    if (mode === 'cidr') {
+      $('#dInputLabel').textContent = 'Input (one CIDR per line — e.g. 10.0.0.0/24, 192.168.1.0/29)';
+      $('#dInput').placeholder = '10.0.0.0/24\n192.168.1.0/29\n203.0.113.0/28';
+      // PTR is the meaningful query for a CIDR sweep.
+      $('#dType').value = 'PTR';
+      $('#dType').disabled = true;
+    } else {
+      $('#dInputLabel').textContent = 'Input (one hostname or IP per line)';
+      $('#dInput').placeholder = 'example.com\ngoogle.com\n8.8.8.8';
+      $('#dType').disabled = false;
+    }
+  }
+
+  const build = () => {
+    refreshLabel();
+    const os = $('#dOs').value;
+    const type = $('#dType').value;
+    const server = $('#dServer').value.trim();
+    const items = targets();
+    const stats = $('#dStats');
+    stats.textContent = items.length ? `${items.length} target${items.length === 1 ? '' : 's'}` : '';
+    if (!items.length) { $('#dOut').textContent = '# No targets'; return; }
+    $('#dOut').textContent = render(os, type, server, items, $('#dMode').value);
+  };
+
+  $('#dMode').addEventListener('change', build);
+  $('#dOs').addEventListener('change', build);
+  $('#dType').addEventListener('change', build);
+  $('#dServer').addEventListener('input', build);
+  $('#dInput').addEventListener('input', build);
+  $('#dBuild').addEventListener('click', build);
+  $('#dCopy').addEventListener('click', () => {
+    const out = $('#dOut').textContent;
     if (out) copyToClipboard(out).then(ok => toast(ok ? 'Script copied' : 'Copy failed', ok ? 'success' : 'error'));
   });
-  root.querySelector('#dCsv').addEventListener('click', () => {
+  $('#dCsv').addEventListener('click', () => {
     const items = targets();
-    const type = root.querySelector('#dType').value;
+    const type = $('#dType').value;
     if (!items.length) { toast('No targets to export', 'error'); return; }
     const csv = 'FQDN,Type,Value,Extra\r\n' +
       items.map(t => `${csvEscape(t)},${type},,`).join('\r\n') + '\r\n';
-    downloadCsv('dns-targets.csv', csv);
+    download('dns-targets.csv', csv);
   });
+
+  refreshLabel();
   build();
 }
 
-function render(os, type, server, items) {
-  if (os === 'ps') return renderPS(type, server, items);
-  return renderBash(type, server, items);
+function render(os, type, server, items, mode) {
+  if (os === 'ps') return renderPS(type, server, items, mode);
+  return renderBash(type, server, items, mode);
 }
 
-// PowerShell — handles every record type by mapping each Resolve-DnsName
-// answer object to the right fields.
-function renderPS(type, server, items) {
+// PowerShell — full type-aware extraction.
+function renderPS(type, server, items, mode) {
   const list = items.map(h => `"${h.replace(/"/g, '`"')}"`).join(', ');
   const serverArg = server ? ` -Server ${server}` : '';
   return [
     '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
     '# Also written to dns-results.csv',
+    mode === 'cidr' ? '# Mode: CIDR reverse-DNS sweep (PTR queries)' : null,
     `$targets = @(${list})`,
     `$type    = '${type}'`,
     '"FQDN,Type,Value,Extra" | Tee-Object -FilePath dns-results.csv',
@@ -124,23 +182,35 @@ function renderPS(type, server, items) {
     '    "$t,$type,UNRESOLVED,$($_.Exception.Message -replace \',\',\';\')" | Tee-Object -FilePath dns-results.csv -Append',
     '  }',
     '}'
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
-// bash — uses dig +short with field-aware parsing per record type so the
-// CSV columns line up. Falls back to host(1) if dig is missing.
-function renderBash(type, server, items) {
+// bash — type-aware parsing of dig +short.
+function renderBash(type, server, items, mode) {
   const serverArg = server ? `@${server} ` : '';
   const list = items.map(h => `"${h.replace(/"/g, '\\"')}"`).join(' ');
   return [
     '#!/usr/bin/env bash',
     '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
     '# Also written to dns-results.csv',
+    mode === 'cidr' ? '# Mode: CIDR reverse-DNS sweep (PTR queries)' : null,
     `targets=(${list})`,
     `TYPE='${type}'`,
     'csv_escape() { local v=$1; if [[ $v == *,* || $v == *\\"* || $v == *$\'\\n\'* ]]; then v=${v//\\"/\\"\\"}; printf \'"%s"\' "$v"; else printf \'%s\' "$v"; fi; }',
     'resolve_one() {',
     '  local t=$1',
+    // For PTR we transform the input from an IP to a -x query.
+    '  local query="$t"',
+    '  if [ "$TYPE" = "PTR" ] && [[ "$t" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$ ]]; then',
+    `    local raw; raw=$(dig +short ${serverArg}-x "$t" 2>/dev/null)`,
+    '    if [ -z "$raw" ]; then echo "$t,PTR,UNRESOLVED,"; return; fi',
+    '    while IFS= read -r line; do',
+    '      [ -z "$line" ] && continue',
+    '      val=${line%.}',
+    '      printf \'%s,PTR,%s,\\n\' "$t" "$(csv_escape "$val")"',
+    '    done <<< "$raw"',
+    '    return',
+    '  fi',
     '  if ! command -v dig >/dev/null; then',
     `    host -t "$TYPE" "$t" ${server || ''} 2>/dev/null | awk -v t="$t" -v ty="$TYPE" '/has address|has IPv6 address|domain name pointer|is an alias for|name server|mail is handled by|text/ { v=$NF; print t","ty","v"," }'`,
     '    return',
@@ -168,7 +238,7 @@ function renderBash(type, server, items) {
     '  echo "FQDN,Type,Value,Extra"',
     '  for t in "${targets[@]}"; do resolve_one "$t"; done',
     '} | tee dns-results.csv'
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 function csvEscape(v) {
@@ -176,7 +246,7 @@ function csvEscape(v) {
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-function downloadCsv(name, text) {
+function download(name, text) {
   const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

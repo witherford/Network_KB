@@ -6,6 +6,7 @@ import { esc, fmtDateTime, toast } from '../utils.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 import { confirmModal } from '../components/modal.js';
 import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
+import { openImportModal } from '../components/import-modal.js';
 
 function workingData() {
   return state.editMode && state.pending.software ? state.pending.software : state.data.software;
@@ -31,6 +32,7 @@ export async function mount(root) {
       ${state.editMode ? `
         <button class="btn" id="swFetch">Fetch now</button>
         <button class="btn" id="swImport" title="Upload one or more HTML files as release notes / vendor guides">Import HTML</button>
+        <button class="btn" id="swImportCsv" title="Bulk import rows from a CSV or XLSX file">Import CSV / XLSX</button>
       ` : ''}
       <span style="font-size:11px;color:var(--text-3);margin-left:12px">Updated: ${fmtDateTime(data?.updatedAt)}</span>
     </div>
@@ -56,6 +58,37 @@ export async function mount(root) {
             draft.items.push({ ...f, vendor: f.topic || 'HTML docs' });
           }
           emit('pending:changed');
+        }
+      });
+    });
+    root.querySelector('#swImportCsv').addEventListener('click', () => {
+      const COLUMNS = ['vendor','product','pid','recommended','latest','lifecycle','releaseDate','notes','source'];
+      openImportModal({
+        title: 'Import software releases',
+        columns: COLUMNS,
+        exampleFilename: 'software-releases-example.csv',
+        sampleRows: [
+          { vendor: 'Cisco', product: 'IOS XE Catalyst 9300', pid: 'C9300-48P', recommended: '17.12.04', latest: '17.15.02', lifecycle: 'Active', releaseDate: '2025-09-12', notes: 'See release notes', source: 'curated' },
+          { vendor: 'Palo Alto', product: 'PAN-OS', pid: 'PA-440', recommended: '11.1.6-h2', latest: '11.2.4', lifecycle: 'Active', releaseDate: '2025-08-30', notes: '', source: 'curated' },
+          { vendor: 'Microsoft', product: 'Windows Server', pid: 'Server 2025', recommended: '24H2 LTSC', latest: '24H2 LTSC', lifecycle: 'GA', releaseDate: '2025-11-04', notes: 'Mainstream support to 2030', source: 'curated' }
+        ],
+        normalize: rows => rows.map(r => ({
+          vendor: (r.vendor || '').trim(),
+          product: (r.product || '').trim(),
+          pid: (r.pid || '').trim(),
+          recommended: (r.recommended || '').trim(),
+          latest: (r.latest || '').trim(),
+          lifecycle: (r.lifecycle || '').trim(),
+          releaseDate: (r.releaseDate || '').trim(),
+          notes: (r.notes || '').trim(),
+          source: (r.source || 'imported').trim()
+        })).filter(r => r.vendor || r.product),
+        onConfirm: rows => {
+          const draft = ensureDraft();
+          draft.items.push(...rows);
+          draft.updatedAt = new Date().toISOString();
+          emit('pending:changed');
+          toast(`Imported ${rows.length} row${rows.length === 1 ? '' : 's'}`, 'success');
         }
       });
     });

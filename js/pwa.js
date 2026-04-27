@@ -1,28 +1,38 @@
 // PWA glue:
 //   - Registers the service worker with proper update handling.
+//   - Auto-checks for updates on every app load + every 30 minutes thereafter.
+//   - Exposes a global window.checkForAppUpdate() so the in-app button can call it.
 //   - Shows the in-header "⤓ Install" button when the browser exposes
 //     beforeinstallprompt (Chrome/Edge/Brave on desktop + Android).
 //   - Shows an "update available" banner when a new SW is waiting.
 //   - On iOS Safari (where there's no install prompt event), shows a
 //     one-time hint with the manual "Add to Home Screen" instruction.
 
+let _registration = null;
+
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js', { scope: './' })
-      .then(reg => {
-        // If there's already an updated SW waiting (page reopened mid-update).
-        if (reg.waiting) showUpdateBanner(reg);
-        reg.addEventListener('updatefound', () => {
-          const sw = reg.installing;
-          if (!sw) return;
-          sw.addEventListener('statechange', () => {
-            if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-              showUpdateBanner(reg);
-            }
-          });
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
+      _registration = reg;
+      // If there's already an updated SW waiting (page reopened mid-update).
+      if (reg.waiting) showUpdateBanner(reg);
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing;
+        if (!sw) return;
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner(reg);
+          }
         });
-      })
-      .catch(err => console.warn('[pwa] SW registration failed:', err));
+      });
+      // Auto-check on startup (after a short delay so the page renders first).
+      setTimeout(() => { try { reg.update(); } catch {} }, 2000);
+      // Periodic check while the app stays open.
+      setInterval(() => { try { reg.update(); } catch {} }, 30 * 60 * 1000);
+    } catch (err) {
+      console.warn('[pwa] SW registration failed:', err);
+    }
 
     // Reload once the new SW takes over (after the user clicks Reload).
     let reloading = false;
@@ -33,6 +43,29 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+/**
+ * Public API exposed to the rest of the app (e.g. the Settings page).
+ * Resolves with one of: 'updating' | 'up-to-date' | 'unsupported' | 'error: …'.
+ * If a new version is found, the in-app banner is shown automatically.
+ */
+window.checkForAppUpdate = async function () {
+  if (!('serviceWorker' in navigator) || !_registration) return 'unsupported';
+  try {
+    // Re-fetch sw.js bypassing cache. The browser will compare it byte-for-byte
+    // and trigger an updatefound event if it differs.
+    await _registration.update();
+    // After update() returns we have a snapshot of state.
+    if (_registration.waiting) {
+      showUpdateBanner(_registration);
+      return 'updating';
+    }
+    if (_registration.installing) return 'updating';
+    return 'up-to-date';
+  } catch (e) {
+    return 'error: ' + (e?.message || String(e));
+  }
+};
 
 // Capture the install prompt + show the install button.
 let deferredPrompt = null;
