@@ -1,0 +1,53 @@
+{
+  "name": "Network Knowledge Base",
+  "short_name": "Network KB",
+  "description": "IT engineer toolkit and command reference — commands, learning centres, CVEs, subnet/MAC/throughput utilities. Works offline.",
+  "id": "/Network_KB/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "theme_color": "#0c4a6e",
+  "background_color": "#0f172a",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "education", "developer"],
+  "icons": [
+    { "src": "icon.svg",            "sizes": "any",       "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg",            "sizes": "any",       "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "icon-monochrome.svg", "sizes": "any",       "type": "image/svg+xml", "purpose": "monochrome" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Commands",
+      "short_name": "Commands",
+      "description": "Jump to the command reference",
+      "url": "./#/commands",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Toolkit",
+      "short_name": "Toolkit",
+      "description": "Subnet, MAC, throughput, capture filters",
+      "url": "./#/toolkit",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Learning Hub",
+      "short_name": "Learning",
+      "description": "Open the learning centres",
+      "url": "./#/guides",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "CVEs",
+      "short_name": "CVEs",
+      "description": "Browse vulnerability advisories",
+      "url": "./#/cves",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": { "preferred_width": 480 }
+}

@@ -114,3 +114,62 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   .header-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
   .page-root { padding: 0; }
 }
+
+/* ----- PWA: install button, update banner, standalone & safe-area ----- */
+
+/* Respect iOS notches and Android navigation bars when installed. */
+.app-header {
+  padding-left:  max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  padding-top:   max(12px, env(safe-area-inset-top));
+}
+.page-root {
+  padding-left:  env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Install button — same look as other icon-btns but accented to draw attention. */
+.pwa-install-btn {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,.5) !important;
+  font-weight: 600 !important;
+}
+.pwa-install-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Update-available banner — pinned bottom-right, subtle. */
+.pwa-update-banner {
+  position: fixed;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right:  max(16px, env(safe-area-inset-right));
+  z-index: 1000;
+  background: var(--card, #1e293b);
+  color: var(--text, #e2e8f0);
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-left: 3px solid #0ea5e9;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  max-width: 92vw;
+}
+.pwa-update-banner[hidden] { display: none; }
+
+/* When the app is installed and running standalone, hide the install
+   button (it's already installed) and tighten the header for a more
+   "app" feel. */
+.pwa-standalone .pwa-install-btn { display: none !important; }
+.pwa-standalone .brand-sub { display: none; }
+@media (display-mode: standalone) {
+  body { overscroll-behavior-y: none; }
+}
+
+/* iOS hint toast — slightly taller than a normal toast. */
+.pwa-ios-hint { max-width: 320px; }
+
