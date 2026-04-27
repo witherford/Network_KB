@@ -1,7 +1,8 @@
 // Cheat sheets — each sheet is a small static JSON file under data/cheatsheets/.
 
 import { loadCheatsheet } from '../dataloader.js';
-import { esc, debounce } from '../utils.js';
+import { esc, debounce, copyToClipboard, toast } from '../utils.js';
+import { toCSV } from '../components/io.js';
 
 const SHEETS = [
   { key: 'tcp-udp-ports',     label: 'TCP / UDP ports',  cols: ['port', 'protocol', 'service', 'notes'] },
@@ -20,10 +21,12 @@ export async function mount(root) {
     <div class="sub-nav" id="csNav" style="margin:0 -20px 14px -20px">
       ${SHEETS.map(s => `<button class="ftab" data-k="${s.key}">${esc(s.label)}</button>`).join('')}
     </div>
-    <div class="form-row" style="max-width:420px">
-      <input type="text" id="csSearch" class="search-input" style="width:100%" placeholder="Filter rows…">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="text" id="csSearch" class="search-input" style="flex:1;min-width:220px;max-width:420px" placeholder="Filter rows…">
+      <button class="btn sm" id="csCopy">Copy table as CSV</button>
+      <button class="btn sm" id="csExport">Export CSV</button>
     </div>
-    <div id="csBody"></div>`;
+    <div id="csBody" style="margin-top:12px"></div>`;
 
   let active = SHEETS[0];
   async function showSheet(key) {
@@ -44,21 +47,53 @@ export async function mount(root) {
       return;
     }
     body.innerHTML = `<table class="tbl">
-      <thead><tr>${active.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+      <thead><tr>${active.cols.map(c => `<th>${esc(c)}</th>`).join('')}<th style="width:40px"></th></tr></thead>
       <tbody>
-        ${rows.map(r => `<tr>${active.cols.map(c => {
+        ${rows.map((r, i) => `<tr>${active.cols.map(c => {
           const v = r[c] ?? '';
           const mono = (c === 'port' || c === 'number' || c === 'range' || c === 'address' || c === 'distance');
           return `<td class="${mono ? 'mono' : ''}">${esc(String(v))}</td>`;
-        }).join('')}</tr>`).join('')}
+        }).join('')}<td><button class="btn sm ghost" data-row="${i}" title="Copy row">⧉</button></td></tr>`).join('')}
       </tbody>
     </table>`;
+    body.querySelectorAll('button[data-row]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const r = rows[+btn.dataset.row];
+        if (!r) return;
+        const text = active.cols.map(c => `${c}: ${r[c] ?? ''}`).join(' | ');
+        const ok = await copyToClipboard(text);
+        const orig = btn.textContent;
+        btn.textContent = ok ? '✓' : '✗';
+        setTimeout(() => { btn.textContent = orig; }, 900);
+      });
+    });
+    // Stash currently visible rows for the table-level Copy/Export buttons.
+    _visibleRows = rows;
+    _visibleCols = active.cols;
   }
+  let _visibleRows = []; let _visibleCols = [];
 
   root.querySelector('#csNav').addEventListener('click', e => {
     const btn = e.target.closest('.ftab');
     if (btn) showSheet(btn.dataset.k);
   });
   root.querySelector('#csSearch').addEventListener('input', debounce(e => renderSheet(e.target.value), 100));
+  root.querySelector('#csCopy').addEventListener('click', async () => {
+    if (!_visibleRows.length) { toast('No rows', 'error'); return; }
+    const csv = toCSV(_visibleRows, _visibleCols);
+    const ok = await copyToClipboard(csv);
+    toast(ok ? 'Table copied as CSV' : 'Copy failed', ok ? 'success' : 'error');
+  });
+  root.querySelector('#csExport').addEventListener('click', () => {
+    if (!_visibleRows.length) { toast('No rows', 'error'); return; }
+    const csv = toCSV(_visibleRows, _visibleCols);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = active.key + '.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
   showSheet(SHEETS[0].key);
 }
