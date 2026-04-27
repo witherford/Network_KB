@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-27T05:43:57.766Z",
+  "updatedAt": "2026-04-27T19:54:54.586Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -1035,12 +1035,13 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Citrix"
     },
     "paloalto": {
-      "label": "Palo Alto Firewall",
+      "label": "Palo Alto PAN-OS",
       "badge": "badge-pa",
-      "short": "Palo Alto",
+      "short": "PAN-OS",
       "sections": {
         "System & Status": [
           {
@@ -1120,6 +1121,48 @@
             "desc": "Detail for one job including warnings",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show jobs id <n>",
+            "desc": "Detail for a specific job ID (incl. commit warnings)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock",
+            "desc": "System date/time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ntp",
+            "desc": "NTP servers and sync state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show config running",
+            "desc": "Active running config (XML)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show config candidate",
+            "desc": "Pending config — will be applied on commit",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show config diff",
+            "desc": "Diff between candidate and running",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug system maintenance-mode",
+            "desc": "Enter maintenance mode (TAC use)",
+            "type": "troubleshooting",
+            "flagged": true
           }
         ],
         "Interfaces": [
@@ -1760,6 +1803,12 @@
             "desc": "HA flap history",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show high-availability state-synchronization",
+            "desc": "HA1/HA2 sync counters and last sync time",
+            "type": "show",
+            "flagged": false
           }
         ],
         "App-ID & Content-ID": [
@@ -2222,6 +2271,150 @@
             "desc": "Fetches updated licences from the Panorama licence server",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show devicegroups",
+            "desc": "List all device groups + their members",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show devicegroups name <dg>",
+            "desc": "Detail for one device group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show template-stack",
+            "desc": "Template stacks + template order",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show devices all",
+            "desc": "All managed firewalls — connection state, version, last commit",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show devices connected",
+            "desc": "Currently-connected managed devices",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show devices disconnected",
+            "desc": "Disconnected managed devices",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show devices summary",
+            "desc": "Device counts by HA + sync state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log-collector all",
+            "desc": "Log-Collector pool — disk, log rate, status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log-collector connected",
+            "desc": "Online Log Collectors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log-collector-group",
+            "desc": "Log-Collector groups + members",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log-collector preference-list",
+            "desc": "Log-forwarding preference list per device",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "commit",
+            "desc": "Commit pending Panorama config",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit-all shared-policy",
+            "desc": "Push policy to all device groups + their devices",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit-all shared-policy device-group <dg>",
+            "desc": "Push policy to a single device group",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit-all template <tpl>",
+            "desc": "Push template config to its devices",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit-all template-stack <ts>",
+            "desc": "Push a template stack",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request commit-status",
+            "desc": "Status of latest commit-all jobs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show jobs id <n>",
+            "desc": "Per-job commit details + warnings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request batch software upgrade install file <pkg> devices ALL",
+            "desc": "Push and install a PAN-OS image across managed devices",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "request system software check",
+            "desc": "Check for available PAN-OS upgrades",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request system software download version <ver>",
+            "desc": "Download a PAN-OS version to Panorama",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request system software install version <ver>",
+            "desc": "Install on Panorama itself",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "show config pushed-shared-policy",
+            "desc": "Last shared-policy push received from Panorama (run on FW)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show config pushed-template",
+            "desc": "Last template push received from Panorama (run on FW)",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Sessions & Flows": [
@@ -2317,8 +2510,155 @@
             "type": "troubleshooting",
             "flagged": false
           }
+        ],
+        "GlobalProtect": [
+          {
+            "cmd": "show global-protect-portal current-portal",
+            "desc": "Active GlobalProtect Portal config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show global-protect-gateway current-gateway",
+            "desc": "Active GlobalProtect Gateway config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show global-protect-gateway current-user",
+            "desc": "Connected GP users list",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show global-protect-gateway statistics",
+            "desc": "GP gateway statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show global-protect-gateway flow tunnel-id <n>",
+            "desc": "GP tunnel detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request global-protect-gateway client-logout user <user>",
+            "desc": "Force-logout a single GP user",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "SSL Decryption": [
+          {
+            "cmd": "show system setting ssl-decrypt setting",
+            "desc": "Decryption global config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system setting ssl-decrypt certificate",
+            "desc": "Decryption forward-trust / forward-untrust certs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system setting ssl-decrypt session-cache",
+            "desc": "Decryption session cache stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane show ssl-decrypt session-summary",
+            "desc": "Per-session decryption state",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug dataplane show ssl-decrypt ssl-stats",
+            "desc": "Decryption error counters",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "URL & Threat Updates": [
+          {
+            "cmd": "request content upgrade check",
+            "desc": "Check for new content (App-ID / Threat) updates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "request content upgrade download latest",
+            "desc": "Download latest content",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request content upgrade install version latest",
+            "desc": "Install latest content",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request anti-virus upgrade install version latest",
+            "desc": "Install latest AV signatures",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request wildfire upgrade install version latest",
+            "desc": "Install latest WildFire signatures",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request url-filtering download status",
+            "desc": "PAN-DB seed download status",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Logging & Reports": [
+          {
+            "cmd": "show log traffic last-n 50",
+            "desc": "Last 50 traffic-log entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log threat last-n 50",
+            "desc": "Last 50 threat-log entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log system last-n 50",
+            "desc": "System log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log config last-n 50",
+            "desc": "Config-change log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show counter global filter delta yes",
+            "desc": "Live global counter deltas (firewall internals)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show counter global filter packet-filter yes",
+            "desc": "Counters limited to active packet-filter",
+            "type": "show",
+            "flagged": false
+          }
         ]
-      }
+      },
+      "group": "Palo Alto"
     },
     "openssl": {
       "label": "OpenSSL",
@@ -3845,7 +4185,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Linux / Unix"
     },
     "cisco": {
       "label": "Cisco IOS Switch",
@@ -4678,12 +5019,13 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Cisco"
     },
     "wlc": {
-      "label": "Cisco IOS-XE WLC",
+      "label": "Cisco Catalyst 9800 WLC (IOS-XE)",
       "badge": "badge-wlc",
-      "short": "WLC",
+      "short": "C9800 WLC",
       "sections": {
         "Show & Status": [
           {
@@ -4908,6 +5250,198 @@
             "cmd": "ap name <ap-name> priority <1-4>",
             "desc": "Sets the AP join priority — lower number means higher priority",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap summary",
+            "desc": "Lists all APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> summary",
+            "desc": "Shows AP summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> config general",
+            "desc": "Shows AP general config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> config slot <slot>",
+            "desc": "Shows AP radio config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> config dot11 24ghz",
+            "desc": "Shows 2.4GHz config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> config dot11 5ghz",
+            "desc": "Shows 5GHz config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> config dot11 6ghz",
+            "desc": "Shows 6GHz config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> join stats",
+            "desc": "Shows AP join statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> join detail",
+            "desc": "Shows AP join details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> packet-capture status",
+            "desc": "Shows AP packet capture status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> packet-capture config",
+            "desc": "Shows AP capture config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats",
+            "desc": "Shows AP statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats dot11 24ghz",
+            "desc": "Shows 2.4GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats dot11 5ghz",
+            "desc": "Shows 5GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats dot11 6ghz",
+            "desc": "Shows 6GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats client",
+            "desc": "Shows client stats per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats packet",
+            "desc": "Shows packet counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats error",
+            "desc": "Shows AP error counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats cpu",
+            "desc": "Shows AP CPU usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats memory",
+            "desc": "Shows AP memory usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats temperature",
+            "desc": "Shows AP temperature",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats power",
+            "desc": "Shows AP power draw",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats poe",
+            "desc": "Shows PoE status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats uptime",
+            "desc": "Shows AP uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats crash",
+            "desc": "Shows AP crash logs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap name <ap> stats reboot-history",
+            "desc": "Shows AP reboot history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap join stats summary",
+            "desc": "Join-phase counters per AP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap join stats detailed <ap>",
+            "desc": "Detailed join statistics for one AP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap cdp neighbors",
+            "desc": "What each AP sees on its switchport via CDP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap config general <ap>",
+            "desc": "AP general config: tags, primary/secondary/tertiary WLC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap image",
+            "desc": "Image pre-download status per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ap name <ap> reset",
+            "desc": "Reload a single AP",
+            "type": "troubleshooting",
             "flagged": false
           }
         ],
@@ -5845,149 +6379,1336 @@
             "flagged": false
           }
         ],
-        "system": [
+        "System": [
           {
             "cmd": "show version",
-            "desc": "Display software version and hardware information.",
+            "desc": "Shows WLC software version",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "show license",
-            "desc": "Display license information.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "performance": [
-          {
-            "cmd": "show ns cpu",
-            "desc": "Display CPU usage statistics on NetScaler.",
+            "cmd": "show platform",
+            "desc": "Shows platform details",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "show system performance",
-            "desc": "Display system performance metrics.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show interface",
-            "desc": "Display interface status and statistics.",
+            "cmd": "show inventory",
+            "desc": "Shows hardware inventory",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "show ip interface brief",
-            "desc": "Display brief IP interface status.",
+            "cmd": "show environment all",
+            "desc": "Shows fans",
+            "type": "PSU",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu sorted",
+            "desc": "Shows CPU usage sorted",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "interface",
-            "desc": "Enter interface configuration mode.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip address",
-            "desc": "Set IP address and subnet on an interface.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "no shutdown",
-            "desc": "Enable an interface.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "show interfaces",
-            "desc": "Display interface status and statistics.",
+            "cmd": "show processes memory sorted",
+            "desc": "Shows memory usage sorted",
             "type": "show",
             "flagged": false
           },
-          {
-            "cmd": "configure network ip 192.168.1.1 255.255.255.0 192.168.1.254",
-            "desc": "Configure network IP address, subnet mask, and gateway.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "config": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display current running configuration.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "configure terminal",
-            "desc": "Enter global configuration mode.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "show ns config",
-            "desc": "Show current NetScaler configuration.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "set ns config -rsn DISABLED",
-            "desc": "Disable remote SNMP trap notifications.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "logs": [
           {
             "cmd": "show logging",
-            "desc": "Display system logs.",
+            "desc": "Shows system logs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging onboard",
+            "desc": "Shows onboard logging",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support",
+            "desc": "Generates full tech support output",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show redundancy",
+            "desc": "Shows redundancy state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show redundancy status",
+            "desc": "Shows HA status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show redundancy switchover history",
+            "desc": "Shows HA switchover history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless management trustpoint",
+            "desc": "Shows trustpoint configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless country",
+            "desc": "Shows configured regulatory domain",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy summary",
+            "desc": "Shows policy profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile flex summary",
+            "desc": "Shows FlexConnect profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile qos summary",
+            "desc": "Shows QoS profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile avc summary",
+            "desc": "Shows AVC profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile wips summary",
+            "desc": "Shows WIPS profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless summary",
+            "desc": "One-page summary: APs joined, clients, tags, controller role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show boot",
+            "desc": "Boot variable and pending software image",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show redundancy states",
+            "desc": "HA Active/Standby state and role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show chassis",
+            "desc": "SSO/HA chassis summary",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "RF": [
+          {
+            "cmd": "show wireless rf-summary",
+            "desc": "Shows RF summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rf-stats",
+            "desc": "Shows RF statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rf-stats dot11 24ghz",
+            "desc": "Shows 2.4GHz RF stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rf-stats dot11 5ghz",
+            "desc": "Shows 5GHz RF stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rf-stats dot11 6ghz",
+            "desc": "Shows 6GHz RF stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm summary",
+            "desc": "Shows RRM summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 24ghz summary",
+            "desc": "Shows 2.4GHz RRM summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 5ghz summary",
+            "desc": "Shows 5GHz RRM summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 6ghz summary",
+            "desc": "Shows 6GHz RRM summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 24ghz channel",
+            "desc": "Shows 2.4GHz channel plan",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 5ghz channel",
+            "desc": "Shows 5GHz channel plan",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 6ghz channel",
+            "desc": "Shows 6GHz channel plan",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 24ghz txpower",
+            "desc": "Shows 2.4GHz power levels",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 5ghz txpower",
+            "desc": "Shows 5GHz power levels",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm dot11 6ghz txpower",
+            "desc": "Shows 6GHz power levels",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm neighbor summary",
+            "desc": "Shows RRM neighbor list",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm stats",
+            "desc": "Shows RRM stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless rrm measurements",
+            "desc": "Shows RRM measurements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap rf-profile summary",
+            "desc": "RF-profile list + linked RF tag",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap rf-profile detailed <name>",
+            "desc": "RF profile parameters (channels, power, DCA)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 5ghz summary",
+            "desc": "5GHz radio state per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 24ghz summary",
+            "desc": "2.4GHz radio state per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap dot11 dual-band summary",
+            "desc": "6GHz (Wi-Fi 6E) radio state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap auto-rf dot11 5ghz",
+            "desc": "DCA / TPC / coverage-hole data for 5GHz",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "WLANs": [
+          {
+            "cmd": "show wlan summary",
+            "desc": "Lists WLANs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan id <id>",
+            "desc": "Shows WLAN details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan name <name>",
+            "desc": "Shows WLAN details by name",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan security <id>",
+            "desc": "Shows WLAN security settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan qos <id>",
+            "desc": "Shows WLAN QoS settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan aaa <id>",
+            "desc": "Shows WLAN AAA settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan timers <id>",
+            "desc": "Shows WLAN timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats <id>",
+            "desc": "Shows WLAN statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats client <id>",
+            "desc": "Shows WLAN client stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats traffic <id>",
+            "desc": "Shows WLAN traffic stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats qos <id>",
+            "desc": "Shows WLAN QoS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats security <id>",
+            "desc": "Shows WLAN security stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats dot11 24ghz <id>",
+            "desc": "Shows WLAN 2.4GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats dot11 5ghz <id>",
+            "desc": "Shows WLAN 5GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats dot11 6ghz <id>",
+            "desc": "Shows WLAN 6GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan mobility <id>",
+            "desc": "Shows WLAN mobility settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan wips <id>",
+            "desc": "Shows WLAN WIPS settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan avc <id>",
+            "desc": "Shows WLAN AVC settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan policy <id>",
+            "desc": "Shows WLAN policy profile",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan flex <id>",
+            "desc": "Shows WLAN FlexConnect settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats multicast <id>",
+            "desc": "Shows WLAN multicast stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats mcast <id>",
+            "desc": "Shows WLAN multicast counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats roam <id>",
+            "desc": "Shows WLAN roaming stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats auth <id>",
+            "desc": "Shows WLAN authentication stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats assoc <id>",
+            "desc": "Shows WLAN association stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats dhcp <id>",
+            "desc": "Shows WLAN DHCP stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats radius <id>",
+            "desc": "Shows WLAN RADIUS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats eap <id>",
+            "desc": "Shows WLAN EAP stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats pmkid <id>",
+            "desc": "Shows WLAN PMKID stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats keymgmt <id>",
+            "desc": "Shows WLAN key management stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan stats dot1x <id>",
+            "desc": "Shows WLAN 802.1X stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy summary",
+            "desc": "Policy-profile names and state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy detailed <name>",
+            "desc": "Policy profile: VLAN, AAA, QoS, session timeout",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag policy summary",
+            "desc": "Policy-tag list (WLAN ↔ profile bindings)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag site summary",
+            "desc": "Site tags and AP mapping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless tag rf summary",
+            "desc": "RF tags (radio profiles bound by band)",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Clients": [
+          {
+            "cmd": "show wireless client summary",
+            "desc": "Shows all wireless clients",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac>",
+            "desc": "Shows client details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> detail",
+            "desc": "Shows detailed client info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> statistics",
+            "desc": "Shows client statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> mobility",
+            "desc": "Shows client mobility info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> security",
+            "desc": "Shows client security info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> dot11 24ghz",
+            "desc": "Shows 2.4GHz client stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> dot11 5ghz",
+            "desc": "Shows 5GHz client stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> dot11 6ghz",
+            "desc": "Shows 6GHz client stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> traffic",
+            "desc": "Shows client traffic counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> dhcp",
+            "desc": "Shows DHCP state for client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> dot1x",
+            "desc": "Shows 802.1X state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> eap",
+            "desc": "Shows EAP authentication state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> timers",
+            "desc": "Shows client timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats roam",
+            "desc": "Shows roaming stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats auth",
+            "desc": "Shows authentication stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats assoc",
+            "desc": "Shows association stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats qos",
+            "desc": "Shows QoS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats avc",
+            "desc": "Shows AVC stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> stats wips",
+            "desc": "Shows WIPS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client ap <ap>",
+            "desc": "Shows clients on AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client vlan <vlan>",
+            "desc": "Shows clients on VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client username <user>",
+            "desc": "Shows client by username",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client summary | include <ssid>",
+            "desc": "Filters clients by SSID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client summary | include <mac>",
+            "desc": "Filters clients by MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> detail",
+            "desc": "Full detail: AP, VLAN, policy, encryption, IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> mobility",
+            "desc": "Roaming/mobility history for one client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac-address <mac> stats",
+            "desc": "RSSI / SNR / Rx/Tx counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear wireless client mac-address <mac>",
+            "desc": "Disconnect a single client",
             "type": "troubleshooting",
             "flagged": false
           }
         ],
-        "diagnostics": [
+        "Mobility": [
           {
-            "cmd": "show tech-support",
-            "desc": "Collect diagnostic information for troubleshooting.",
+            "cmd": "show wireless mobility summary",
+            "desc": "Shows mobility summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility peers",
+            "desc": "Shows mobility peers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility statistics",
+            "desc": "Shows mobility statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility timers",
+            "desc": "Shows mobility timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility ap-list",
+            "desc": "Shows AP mobility list",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility client <mac>",
+            "desc": "Shows mobility info for client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility roam-history <mac>",
+            "desc": "Shows client roam history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility statistics detail",
+            "desc": "Shows detailed mobility stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility anchor",
+            "desc": "Shows anchor WLCs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility foreign",
+            "desc": "Shows foreign WLCs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless mobility peer ip <ip>",
+            "desc": "Detail of a specific mobility peer (CAPWAP state, MTU)",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Security": [
+          {
+            "cmd": "show wireless security summary",
+            "desc": "Shows security summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security wpa",
+            "desc": "Shows WPA settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security wpa akm",
+            "desc": "Shows AKM settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security wpa pmf",
+            "desc": "Shows PMF settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security dot1x",
+            "desc": "Shows 802.1X settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security eap",
+            "desc": "Shows EAP settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security macfilter",
+            "desc": "Shows MAC filtering settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security wips",
+            "desc": "Shows WIPS settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security wpa keymgmt",
+            "desc": "Shows key management settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security timers",
+            "desc": "Shows security timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security stats",
+            "desc": "Shows security statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security stats dot1x",
+            "desc": "Shows 802.1X stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security stats eap",
+            "desc": "Shows EAP stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security stats pmf",
+            "desc": "Shows PMF stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security stats wpa",
+            "desc": "Shows WPA stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security rogue ap summary",
+            "desc": "Detected rogue APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security rogue client summary",
+            "desc": "Rogue/ad-hoc clients seen on-air",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wps summary",
+            "desc": "Wireless IPS configuration summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless security psk summary",
+            "desc": "PSK profile summary",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "AAA": [
+          {
+            "cmd": "show aaa servers",
+            "desc": "Shows AAA servers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa authentication",
+            "desc": "Shows authentication config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa authorization",
+            "desc": "Shows authorization config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa accounting",
+            "desc": "Shows accounting config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show radius statistics",
+            "desc": "Shows RADIUS statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show radius server-group",
+            "desc": "Shows RADIUS server groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tacacs server-group",
+            "desc": "Shows TACACS server groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless aaa summary",
+            "desc": "Shows AAA summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless aaa timers",
+            "desc": "Shows AAA timers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless aaa stats",
+            "desc": "Shows AAA statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config | section radius server",
+            "desc": "All RADIUS server stanzas",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test aaa group <group> <user> <pass> legacy",
+            "desc": "Test AAA auth end-to-end against configured servers",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "WIPS": [
+          {
+            "cmd": "show wireless wips summary",
+            "desc": "Shows WIPS summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips rogue-summary",
+            "desc": "Shows rogue summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips rogue ap",
+            "desc": "Shows rogue APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips rogue client",
+            "desc": "Shows rogue clients",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips containment",
+            "desc": "Shows containment settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips stats",
+            "desc": "Shows WIPS statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips alarms",
+            "desc": "Shows WIPS alarms",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips events",
+            "desc": "Shows WIPS events",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips signatures",
+            "desc": "Shows WIPS signatures",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless wips signature-stats",
+            "desc": "Shows signature statistics",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "AVC": [
+          {
+            "cmd": "show wireless avc summary",
+            "desc": "Shows AVC summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc statistics",
+            "desc": "Shows AVC statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc applications",
+            "desc": "Shows AVC applications",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc profile summary",
+            "desc": "Shows AVC profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc profile <name>",
+            "desc": "Shows AVC profile details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc client <mac>",
+            "desc": "Shows AVC stats for client",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc wlan <id>",
+            "desc": "Shows AVC stats for WLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless avc ap <ap>",
+            "desc": "Shows AVC stats for AP",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Policy": [
+          {
+            "cmd": "show wireless profile policy summary",
+            "desc": "Shows policy profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name>",
+            "desc": "Shows policy profile details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name> qos",
+            "desc": "Shows QoS settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name> vlan",
+            "desc": "Shows VLAN settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name> acl",
+            "desc": "Shows ACL settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name> timers",
+            "desc": "Shows timer settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile policy <name> stats",
+            "desc": "Shows policy stats",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "FlexConnect": [
+          {
+            "cmd": "show wireless flexconnect summary",
+            "desc": "Shows FlexConnect summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect group summary",
+            "desc": "Shows FlexConnect groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect group <name>",
+            "desc": "Shows group details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect ap summary",
+            "desc": "Shows AP FlexConnect status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect ap <ap>",
+            "desc": "Shows AP FlexConnect config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect vlan summary",
+            "desc": "Shows VLAN mappings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless flexconnect vlan <ap>",
+            "desc": "Shows VLAN mapping for AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless profile flex summary",
+            "desc": "Flex profiles configured",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap config general <ap> | include mode|Flex",
+            "desc": "Verify AP is in FlexConnect mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless client mac <mac> detail | include switching",
+            "desc": "Per-client local/central switching state",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "RF Diagnostics": [
+          {
+            "cmd": "show wireless interference summary",
+            "desc": "Shows interference summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless interference device",
+            "desc": "Shows interference devices",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless interference stats",
+            "desc": "Shows interference stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless noise summary",
+            "desc": "Shows noise summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless noise stats",
+            "desc": "Shows noise stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless coverage summary",
+            "desc": "Shows coverage summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless coverage hole",
+            "desc": "Shows coverage hole detection",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless coverage hole stats",
+            "desc": "Shows CHD stats",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Troubleshooting": [
+          {
+            "cmd": "show wireless stats summary",
+            "desc": "Shows wireless stats summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats dot11 24ghz",
+            "desc": "Shows 2.4GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats dot11 5ghz",
+            "desc": "Shows 5GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats dot11 6ghz",
+            "desc": "Shows 6GHz stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats mobility",
+            "desc": "Shows mobility stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats auth",
+            "desc": "Shows authentication stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats assoc",
+            "desc": "Shows association stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats roam",
+            "desc": "Shows roaming stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats dhcp",
+            "desc": "Shows DHCP stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats radius",
+            "desc": "Shows RADIUS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats eap",
+            "desc": "Shows EAP stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats qos",
+            "desc": "Shows QoS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats avc",
+            "desc": "Shows AVC stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless stats wips",
+            "desc": "Shows WIPS stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support wireless",
+            "desc": "Wireless-only tech-support bundle for TAC",
             "type": "troubleshooting",
             "flagged": false
           },
           {
-            "cmd": "show tech-support file",
-            "desc": "Save diagnostic output to a file.",
-            "type": "troubleshooting",
+            "cmd": "show wireless stats client detail",
+            "desc": "Aggregate client connection stats (joins, excl., deauth)",
+            "type": "show",
             "flagged": false
-          }
-        ],
-        "connections": [
+          },
           {
-            "cmd": "clear ns tcp",
-            "desc": "Reset TCP connections on NetScaler.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "troubleshoot": [
-          {
-            "cmd": "show tech-support",
-            "desc": "Collect diagnostic information for troubleshooting.",
+            "cmd": "debug wireless mac <mac>",
+            "desc": "Enable client-centric RA trace",
             "type": "troubleshooting",
             "flagged": false
           },
           {
-            "cmd": "debug ip packet",
-            "desc": "Enable debugging for IP packets to troubleshoot connectivity.",
+            "cmd": "show logging profile wireless internal to-file bootflash:wlc-log.txt",
+            "desc": "Collect internal wireless logs to flash",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "set trace wncd-filter add mac <mac>",
+            "desc": "Filter always-on traces for a specific client",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show wireless trace-on-failure summary",
+            "desc": "Last-join-failure traces collected automatically",
             "type": "troubleshooting",
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Cisco"
     },
     "linux": {
       "label": "Linux",
@@ -8686,7 +10407,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Linux / Unix"
     },
     "wireshark": {
       "label": "Wireshark",
@@ -10413,7 +12135,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Tools"
     },
     "ciscoios": {
       "label": "Cisco IOS",
@@ -10570,6 +12293,96 @@
             "desc": "CDP neighbors with platform, address, capabilities",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ip interface brief | exclude unassigned",
+            "desc": "L3 interfaces with addresses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show controllers Te0/0/0 phy detail",
+            "desc": "PHY-level link diagnostics on a 10GE port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface range Gi1/0/1-24",
+            "desc": "Configure a contiguous range of interfaces",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Gi1/0/1\n description UPLINK\n switchport mode access\n switchport access vlan 10\n no shutdown",
+            "desc": "Access port template",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Gi1/0/24\n description TRUNK\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\n switchport trunk native vlan 99",
+            "desc": "Trunk port template",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Po1\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30",
+            "desc": "Port-channel logical interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Gi1/0/1\n channel-group 1 mode active\n channel-protocol lacp",
+            "desc": "Add interface to a LACP port-channel",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown",
+            "desc": "Disable an interface administratively",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Re-enable an interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "speed 1000",
+            "desc": "Force 1G speed",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "duplex full",
+            "desc": "Force full duplex",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "mtu 9216",
+            "desc": "Set jumbo MTU on an L3 interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery cause all",
+            "desc": "Auto-recover all err-disabled causes",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery interval 60",
+            "desc": "Recovery interval in seconds",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show errdisable recovery",
+            "desc": "Which causes are auto-recovering and the timer",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -10710,6 +12523,54 @@
             "desc": "IP multicast routing table",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ip route 8.8.8.8",
+            "desc": "Best route lookup for a single destination",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf",
+            "desc": "OSPF process state, router-id, areas",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef",
+            "desc": "CEF FIB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef <prefix> internal",
+            "desc": "CEF entry internals (rewrite, adjacency)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route 0.0.0.0 0.0.0.0 1.1.1.1 name DEFAULT_TO_ISP",
+            "desc": "Static default route",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route 192.168.99.0 255.255.255.0 10.10.10.1 100",
+            "desc": "Static route with admin distance 100 (floating)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf 1\n router-id 1.1.1.1\n network 10.0.0.0 0.255.255.255 area 0",
+            "desc": "Single-area OSPF process",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp 65001\n bgp router-id 1.1.1.1\n neighbor 1.2.3.4 remote-as 65002\n address-family ipv4 unicast\n  neighbor 1.2.3.4 activate",
+            "desc": "eBGP peer baseline",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Security": [
@@ -10837,6 +12698,90 @@
             "cmd": "show ip access-lists <name>",
             "desc": "Single named/numbered ACL with per-line hits",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip access-lists EXAMPLE",
+            "desc": "Single named ACL detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-security interface Gi1/0/1",
+            "desc": "Per-interface port-security state and learned MACs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp snooping",
+            "desc": "DHCP snooping global state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show authentication sessions interface Gi1/0/1 details",
+            "desc": "802.1X / MAB session detail per port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa servers",
+            "desc": "TACACS+/RADIUS server reachability + counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show login",
+            "desc": "Login enhancements / quiet-mode state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa new-model",
+            "desc": "Enable AAA framework",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authentication login default group radius local",
+            "desc": "Login auth: RADIUS first, fall back to local",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authorization commands 15 default group tacacs+ none",
+            "desc": "Per-command authz at priv 15",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa accounting commands 15 default start-stop group tacacs+",
+            "desc": "Command accounting",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "username admin privilege 15 secret <pwd>",
+            "desc": "Local fallback admin",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "enable secret <pwd>",
+            "desc": "Set the enable password (irreversible hash)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "service password-encryption",
+            "desc": "Type-7 encrypt all plaintext passwords (legacy obfuscation)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ssh version 2\nip ssh time-out 60\nip ssh authentication-retries 3",
+            "desc": "Harden SSH server",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -11023,8 +12968,667 @@
             "type": "show",
             "flagged": false
           }
+        ],
+        "Show & Status": [
+          {
+            "cmd": "show version",
+            "desc": "Software version, image, uptime, last reload, register",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Active in-memory configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show startup-config",
+            "desc": "Saved configuration loaded at boot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Hardware inventory: chassis, modules, transceivers, serials",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment all",
+            "desc": "Power supplies, fans, temperature",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform",
+            "desc": "Modules / supervisors / line cards detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu sorted | exclude 0.00",
+            "desc": "CPU usage by process, ignore idle",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes cpu history",
+            "desc": "5-second / 1-minute / 60-minute CPU history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show processes memory sorted",
+            "desc": "Memory usage per process, descending",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show memory statistics",
+            "desc": "Detailed memory pool statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show file systems",
+            "desc": "Available file systems and free space",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock detail",
+            "desc": "Current time + source (manual / NTP / hardware)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active console / VTY sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show line vty 0 4",
+            "desc": "VTY line configuration and state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support | redirect flash:tech.txt",
+            "desc": "Full diagnostic dump for TAC, redirected to flash",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show stack-power",
+            "desc": "StackPower budget and member detail",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "VLANs": [
+          {
+            "cmd": "show vlan brief",
+            "desc": "VLAN ID/name and member ports",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan id 10",
+            "desc": "Single-VLAN detail incl. member ports + status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vtp status",
+            "desc": "VTP mode, version, domain, revision, last modifier",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vtp counters",
+            "desc": "VTP advertisement / pruning counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan 10\n name DATA",
+            "desc": "Create a VLAN",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp mode transparent",
+            "desc": "Disable participation in VTP (recommended modern default)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp domain CORP\n vtp mode server",
+            "desc": "Configure VTP server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport access vlan 10",
+            "desc": "Assign access port to VLAN",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport voice vlan 200",
+            "desc": "Add voice VLAN on the same access port",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Switching & STP": [
+          {
+            "cmd": "show spanning-tree",
+            "desc": "STP topology per VLAN: root, port states, costs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree summary",
+            "desc": "Per-VLAN STP root + protect/loopguard counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree blockedports",
+            "desc": "STP-blocked ports across all VLANs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree mst",
+            "desc": "MST instances + member VLANs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show etherchannel summary",
+            "desc": "Port-channels: status, members, protocol",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show etherchannel load-balance",
+            "desc": "Active EtherChannel hash algorithm",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table",
+            "desc": "Full MAC table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table address 0050.5612.3456",
+            "desc": "Find which port a MAC is on",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table dynamic vlan 10",
+            "desc": "MAC table for one VLAN, dynamic only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table count",
+            "desc": "Total / dynamic / static MAC counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mode rapid-pvst",
+            "desc": "Use RPVST+ (modern default)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree portfast bpduguard default",
+            "desc": "Globally enable PortFast BPDU Guard on access ports",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree extend system-id",
+            "desc": "Use 12-bit MAC reduction (default on modern IOS)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree vlan 1 root primary",
+            "desc": "Become STP root for VLAN 1",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "udld aggressive",
+            "desc": "Enable UDLD aggressive mode globally",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "QoS": [
+          {
+            "cmd": "show policy-map interface Gi1/0/1",
+            "desc": "Per-interface QoS policy counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show class-map",
+            "desc": "Configured class-maps",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy-map",
+            "desc": "Configured policy-maps",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mls qos",
+            "desc": "Global MLS QoS state and per-port trust",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mls qos interface Gi1/0/1",
+            "desc": "Per-interface QoS trust + DSCP/CoS maps",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mls qos",
+            "desc": "Globally enable MLS QoS",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "class-map match-any VOICE\n match dscp ef\n match cos 5",
+            "desc": "Match voice traffic by DSCP EF or CoS 5",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "policy-map MARK\n class VOICE\n  set dscp ef\n class class-default\n  set dscp default",
+            "desc": "Re-mark policy",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Multicast": [
+          {
+            "cmd": "show ip mroute",
+            "desc": "Multicast routing table (full)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip mroute summary",
+            "desc": "Multicast routing summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip pim neighbor",
+            "desc": "PIM neighbours and uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip pim interface",
+            "desc": "PIM-enabled interfaces, mode, DR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip pim rp",
+            "desc": "PIM rendezvous-point assignments",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip igmp groups",
+            "desc": "IGMP joined groups per interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip igmp snooping",
+            "desc": "L2 IGMP snooping state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip multicast-routing distributed",
+            "desc": "Enable multicast routing globally",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim sparse-mode",
+            "desc": "Enable PIM sparse-mode on an interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim rp-address 10.0.0.1",
+            "desc": "Static PIM RP",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "NAT": [
+          {
+            "cmd": "show ip nat translations",
+            "desc": "Active NAT translations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip nat statistics",
+            "desc": "NAT counters: hits, misses, translations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip nat translation *",
+            "desc": "Clear all NAT entries (testing)",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip nat inside source list 1 interface Gi0/0/1 overload",
+            "desc": "PAT overload to outside interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip nat inside source static 10.0.0.10 198.51.100.10",
+            "desc": "1:1 static NAT",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "DHCP / Services": [
+          {
+            "cmd": "show ip dhcp binding",
+            "desc": "DHCP server leases",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp server statistics",
+            "desc": "DHCP server packet counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp pool",
+            "desc": "Configured DHCP pools",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp pool DATA\n network 10.0.0.0 255.255.255.0\n default-router 10.0.0.1\n dns-server 8.8.8.8",
+            "desc": "Basic IOS DHCP pool",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp excluded-address 10.0.0.1 10.0.0.10",
+            "desc": "Reserve range from being handed out",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip helper-address 10.99.0.10",
+            "desc": "Forward broadcast DHCP to a server on another subnet",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "NTP / SNMP / Logging": [
+          {
+            "cmd": "show ntp status",
+            "desc": "NTP sync state, stratum, reference",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ntp associations",
+            "desc": "NTP peers / servers + offset",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp",
+            "desc": "SNMP agent counters and uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp engineID",
+            "desc": "SNMPv3 engine ID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging",
+            "desc": "Logging buffer + destinations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp server 10.10.10.10 prefer",
+            "desc": "Primary NTP server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp authenticate\nntp authentication-key 1 md5 <key>\nntp trusted-key 1",
+            "desc": "Authenticated NTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "snmp-server community READONLY RO",
+            "desc": "SNMPv2c read-only community (avoid in modern networks)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "snmp-server group V3GROUP v3 priv read V3VIEW write V3VIEW\nsnmp-server view V3VIEW iso included\nsnmp-server user admin V3GROUP v3 auth sha <auth> priv aes 128 <priv>",
+            "desc": "SNMPv3 read-write user",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "logging host 10.50.50.50 transport tcp port 1514",
+            "desc": "Send syslog to remote collector over TCP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "logging buffered 65536 informational",
+            "desc": "64K log buffer at informational severity",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Embedded Event Manager / Automation": [
+          {
+            "cmd": "show event manager policy registered",
+            "desc": "List EEM applets and TCL policies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show event manager statistics",
+            "desc": "EEM counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "event manager applet LOG-LINK-DOWN\n event syslog pattern \"%LINK-3-UPDOWN\"\n action 1.0 syslog msg \"Link state changed\"",
+            "desc": "EEM applet that fires on syslog match",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "event manager applet AUTO-SAVE\n event timer cron name daily cron-entry \"0 4 * * *\"\n action 1.0 cli command \"enable\"\n action 2.0 cli command \"write memory\"",
+            "desc": "Daily auto-save at 04:00",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "ping 8.8.8.8 source loopback0",
+            "desc": "Sourced ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping 8.8.8.8 size 1500 df-bit count 5",
+            "desc": "Path-MTU test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 8.8.8.8 source loopback0",
+            "desc": "Sourced traceroute",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp",
+            "desc": "ARP cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp <ip>",
+            "desc": "ARP entry for one IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cdp neighbors detail",
+            "desc": "CDP neighbours with full info (IP, software, capabilities)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp neighbors detail",
+            "desc": "LLDP neighbours with full info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP interface Gi1/0/1 both match any buffer size 10 limit pps 1000",
+            "desc": "EPC capture on an interface",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP start",
+            "desc": "Start the capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP stop",
+            "desc": "Stop the capture",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP export flash:cap.pcap",
+            "desc": "Export capture to flash",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform hardware fed switch active fwd-asic resource tcam utilization",
+            "desc": "TCAM utilisation on Cat 9k IOS-XE",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip ospf adj",
+            "desc": "OSPF adjacency events (use sparingly)",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "undebug all",
+            "desc": "Disable all debugs",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Config Management": [
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running to startup",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "write memory",
+            "desc": "Alias for copy run start",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg",
+            "desc": "Backup config to TFTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "archive\n path flash:archive-\n maximum 14\n write-memory\n time-period 1440",
+            "desc": "Auto-archive config every 24h, keep 14",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show archive",
+            "desc": "Archived configurations available",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure replace flash:archive-1",
+            "desc": "Atomic rollback to a saved config",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload in 5",
+            "desc": "Schedule a reload in 5 minutes",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload cancel",
+            "desc": "Cancel a scheduled reload",
+            "type": "config",
+            "flagged": false
+          }
         ]
-      }
+      },
+      "group": "Cisco"
     },
     "esxi": {
       "label": "VMware ESXi",
@@ -11533,7 +14137,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Virtualisation"
     },
     "ciscoasa": {
       "label": "Cisco ASA",
@@ -12184,7 +14789,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Cisco"
     },
     "windows": {
       "label": "Windows",
@@ -12693,7 +15299,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Microsoft"
     },
     "aws": {
       "label": "AWS CLI",
@@ -13106,7 +15713,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Cloud"
     },
     "netscalersdx": {
       "label": "NetScaler SDX",
@@ -16499,1536 +19107,8 @@
             "flagged": false
           }
         ]
-      }
-    },
-    "ciscoiosxe_wlc": {
-      "label": "Cisco IOS XE WLC",
-      "badge": "badge-wlc",
-      "short": "IOS-XE WLC",
-      "sections": {
-        "System": [
-          {
-            "cmd": "show version",
-            "desc": "Shows WLC software version",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show platform",
-            "desc": "Shows platform details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show inventory",
-            "desc": "Shows hardware inventory",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show environment all",
-            "desc": "Shows fans",
-            "type": "PSU",
-            "flagged": false
-          },
-          {
-            "cmd": "show processes cpu sorted",
-            "desc": "Shows CPU usage sorted",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show processes memory sorted",
-            "desc": "Shows memory usage sorted",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show logging",
-            "desc": "Shows system logs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show logging onboard",
-            "desc": "Shows onboard logging",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show tech-support",
-            "desc": "Generates full tech support output",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show redundancy",
-            "desc": "Shows redundancy state",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show redundancy status",
-            "desc": "Shows HA status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show redundancy switchover history",
-            "desc": "Shows HA switchover history",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless management trustpoint",
-            "desc": "Shows trustpoint configuration",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless country",
-            "desc": "Shows configured regulatory domain",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy summary",
-            "desc": "Shows policy profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile flex summary",
-            "desc": "Shows FlexConnect profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile qos summary",
-            "desc": "Shows QoS profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile avc summary",
-            "desc": "Shows AVC profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile wips summary",
-            "desc": "Shows WIPS profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless summary",
-            "desc": "One-page summary: APs joined, clients, tags, controller role",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show boot",
-            "desc": "Boot variable and pending software image",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show redundancy states",
-            "desc": "HA Active/Standby state and role",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show chassis",
-            "desc": "SSO/HA chassis summary",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "AP Management": [
-          {
-            "cmd": "show ap summary",
-            "desc": "Lists all APs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> summary",
-            "desc": "Shows AP summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> config general",
-            "desc": "Shows AP general config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> config slot <slot>",
-            "desc": "Shows AP radio config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> config dot11 24ghz",
-            "desc": "Shows 2.4GHz config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> config dot11 5ghz",
-            "desc": "Shows 5GHz config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> config dot11 6ghz",
-            "desc": "Shows 6GHz config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> join stats",
-            "desc": "Shows AP join statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> join detail",
-            "desc": "Shows AP join details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> packet-capture status",
-            "desc": "Shows AP packet capture status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> packet-capture config",
-            "desc": "Shows AP capture config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats",
-            "desc": "Shows AP statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats dot11 24ghz",
-            "desc": "Shows 2.4GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats dot11 5ghz",
-            "desc": "Shows 5GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats dot11 6ghz",
-            "desc": "Shows 6GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats client",
-            "desc": "Shows client stats per AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats packet",
-            "desc": "Shows packet counters",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats error",
-            "desc": "Shows AP error counters",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats cpu",
-            "desc": "Shows AP CPU usage",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats memory",
-            "desc": "Shows AP memory usage",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats temperature",
-            "desc": "Shows AP temperature",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats power",
-            "desc": "Shows AP power draw",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats poe",
-            "desc": "Shows PoE status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats uptime",
-            "desc": "Shows AP uptime",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats crash",
-            "desc": "Shows AP crash logs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap name <ap> stats reboot-history",
-            "desc": "Shows AP reboot history",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap join stats summary",
-            "desc": "Join-phase counters per AP",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap join stats detailed <ap>",
-            "desc": "Detailed join statistics for one AP",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap cdp neighbors",
-            "desc": "What each AP sees on its switchport via CDP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap config general <ap>",
-            "desc": "AP general config: tags, primary/secondary/tertiary WLC",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap image",
-            "desc": "Image pre-download status per AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ap name <ap> reset",
-            "desc": "Reload a single AP",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "RF": [
-          {
-            "cmd": "show wireless rf-summary",
-            "desc": "Shows RF summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rf-stats",
-            "desc": "Shows RF statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rf-stats dot11 24ghz",
-            "desc": "Shows 2.4GHz RF stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rf-stats dot11 5ghz",
-            "desc": "Shows 5GHz RF stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rf-stats dot11 6ghz",
-            "desc": "Shows 6GHz RF stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm summary",
-            "desc": "Shows RRM summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 24ghz summary",
-            "desc": "Shows 2.4GHz RRM summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 5ghz summary",
-            "desc": "Shows 5GHz RRM summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 6ghz summary",
-            "desc": "Shows 6GHz RRM summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 24ghz channel",
-            "desc": "Shows 2.4GHz channel plan",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 5ghz channel",
-            "desc": "Shows 5GHz channel plan",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 6ghz channel",
-            "desc": "Shows 6GHz channel plan",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 24ghz txpower",
-            "desc": "Shows 2.4GHz power levels",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 5ghz txpower",
-            "desc": "Shows 5GHz power levels",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm dot11 6ghz txpower",
-            "desc": "Shows 6GHz power levels",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm neighbor summary",
-            "desc": "Shows RRM neighbor list",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm stats",
-            "desc": "Shows RRM stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless rrm measurements",
-            "desc": "Shows RRM measurements",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap rf-profile summary",
-            "desc": "RF-profile list + linked RF tag",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap rf-profile detailed <name>",
-            "desc": "RF profile parameters (channels, power, DCA)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap dot11 5ghz summary",
-            "desc": "5GHz radio state per AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap dot11 24ghz summary",
-            "desc": "2.4GHz radio state per AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap dot11 dual-band summary",
-            "desc": "6GHz (Wi-Fi 6E) radio state",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap auto-rf dot11 5ghz",
-            "desc": "DCA / TPC / coverage-hole data for 5GHz",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "WLANs": [
-          {
-            "cmd": "show wlan summary",
-            "desc": "Lists WLANs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan id <id>",
-            "desc": "Shows WLAN details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan name <name>",
-            "desc": "Shows WLAN details by name",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan security <id>",
-            "desc": "Shows WLAN security settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan qos <id>",
-            "desc": "Shows WLAN QoS settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan aaa <id>",
-            "desc": "Shows WLAN AAA settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan timers <id>",
-            "desc": "Shows WLAN timers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats <id>",
-            "desc": "Shows WLAN statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats client <id>",
-            "desc": "Shows WLAN client stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats traffic <id>",
-            "desc": "Shows WLAN traffic stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats qos <id>",
-            "desc": "Shows WLAN QoS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats security <id>",
-            "desc": "Shows WLAN security stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats dot11 24ghz <id>",
-            "desc": "Shows WLAN 2.4GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats dot11 5ghz <id>",
-            "desc": "Shows WLAN 5GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats dot11 6ghz <id>",
-            "desc": "Shows WLAN 6GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan mobility <id>",
-            "desc": "Shows WLAN mobility settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan wips <id>",
-            "desc": "Shows WLAN WIPS settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan avc <id>",
-            "desc": "Shows WLAN AVC settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan policy <id>",
-            "desc": "Shows WLAN policy profile",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan flex <id>",
-            "desc": "Shows WLAN FlexConnect settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats multicast <id>",
-            "desc": "Shows WLAN multicast stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats mcast <id>",
-            "desc": "Shows WLAN multicast counters",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats roam <id>",
-            "desc": "Shows WLAN roaming stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats auth <id>",
-            "desc": "Shows WLAN authentication stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats assoc <id>",
-            "desc": "Shows WLAN association stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats dhcp <id>",
-            "desc": "Shows WLAN DHCP stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats radius <id>",
-            "desc": "Shows WLAN RADIUS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats eap <id>",
-            "desc": "Shows WLAN EAP stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats pmkid <id>",
-            "desc": "Shows WLAN PMKID stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats keymgmt <id>",
-            "desc": "Shows WLAN key management stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wlan stats dot1x <id>",
-            "desc": "Shows WLAN 802.1X stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy summary",
-            "desc": "Policy-profile names and state",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy detailed <name>",
-            "desc": "Policy profile: VLAN, AAA, QoS, session timeout",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless tag policy summary",
-            "desc": "Policy-tag list (WLAN ↔ profile bindings)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless tag site summary",
-            "desc": "Site tags and AP mapping",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless tag rf summary",
-            "desc": "RF tags (radio profiles bound by band)",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Clients": [
-          {
-            "cmd": "show wireless client summary",
-            "desc": "Shows all wireless clients",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac>",
-            "desc": "Shows client details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> detail",
-            "desc": "Shows detailed client info",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> statistics",
-            "desc": "Shows client statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> mobility",
-            "desc": "Shows client mobility info",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> security",
-            "desc": "Shows client security info",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> dot11 24ghz",
-            "desc": "Shows 2.4GHz client stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> dot11 5ghz",
-            "desc": "Shows 5GHz client stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> dot11 6ghz",
-            "desc": "Shows 6GHz client stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> traffic",
-            "desc": "Shows client traffic counters",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> dhcp",
-            "desc": "Shows DHCP state for client",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> dot1x",
-            "desc": "Shows 802.1X state",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> eap",
-            "desc": "Shows EAP authentication state",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> timers",
-            "desc": "Shows client timers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats roam",
-            "desc": "Shows roaming stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats auth",
-            "desc": "Shows authentication stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats assoc",
-            "desc": "Shows association stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats qos",
-            "desc": "Shows QoS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats avc",
-            "desc": "Shows AVC stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> stats wips",
-            "desc": "Shows WIPS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client ap <ap>",
-            "desc": "Shows clients on AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client vlan <vlan>",
-            "desc": "Shows clients on VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client username <user>",
-            "desc": "Shows client by username",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client summary | include <ssid>",
-            "desc": "Filters clients by SSID",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client summary | include <mac>",
-            "desc": "Filters clients by MAC",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac-address <mac> detail",
-            "desc": "Full detail: AP, VLAN, policy, encryption, IP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac-address <mac> mobility",
-            "desc": "Roaming/mobility history for one client",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac-address <mac> stats",
-            "desc": "RSSI / SNR / Rx/Tx counters",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clear wireless client mac-address <mac>",
-            "desc": "Disconnect a single client",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "Mobility": [
-          {
-            "cmd": "show wireless mobility summary",
-            "desc": "Shows mobility summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility peers",
-            "desc": "Shows mobility peers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility statistics",
-            "desc": "Shows mobility statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility timers",
-            "desc": "Shows mobility timers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility ap-list",
-            "desc": "Shows AP mobility list",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility client <mac>",
-            "desc": "Shows mobility info for client",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility roam-history <mac>",
-            "desc": "Shows client roam history",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility statistics detail",
-            "desc": "Shows detailed mobility stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility anchor",
-            "desc": "Shows anchor WLCs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility foreign",
-            "desc": "Shows foreign WLCs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless mobility peer ip <ip>",
-            "desc": "Detail of a specific mobility peer (CAPWAP state, MTU)",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Security": [
-          {
-            "cmd": "show wireless security summary",
-            "desc": "Shows security summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security wpa",
-            "desc": "Shows WPA settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security wpa akm",
-            "desc": "Shows AKM settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security wpa pmf",
-            "desc": "Shows PMF settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security dot1x",
-            "desc": "Shows 802.1X settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security eap",
-            "desc": "Shows EAP settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security macfilter",
-            "desc": "Shows MAC filtering settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security wips",
-            "desc": "Shows WIPS settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security wpa keymgmt",
-            "desc": "Shows key management settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security timers",
-            "desc": "Shows security timers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security stats",
-            "desc": "Shows security statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security stats dot1x",
-            "desc": "Shows 802.1X stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security stats eap",
-            "desc": "Shows EAP stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security stats pmf",
-            "desc": "Shows PMF stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security stats wpa",
-            "desc": "Shows WPA stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security rogue ap summary",
-            "desc": "Detected rogue APs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security rogue client summary",
-            "desc": "Rogue/ad-hoc clients seen on-air",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wps summary",
-            "desc": "Wireless IPS configuration summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless security psk summary",
-            "desc": "PSK profile summary",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "AAA": [
-          {
-            "cmd": "show aaa servers",
-            "desc": "Shows AAA servers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show aaa authentication",
-            "desc": "Shows authentication config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show aaa authorization",
-            "desc": "Shows authorization config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show aaa accounting",
-            "desc": "Shows accounting config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show radius statistics",
-            "desc": "Shows RADIUS statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show radius server-group",
-            "desc": "Shows RADIUS server groups",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show tacacs server-group",
-            "desc": "Shows TACACS server groups",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless aaa summary",
-            "desc": "Shows AAA summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless aaa timers",
-            "desc": "Shows AAA timers",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless aaa stats",
-            "desc": "Shows AAA statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show running-config | section radius server",
-            "desc": "All RADIUS server stanzas",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "test aaa group <group> <user> <pass> legacy",
-            "desc": "Test AAA auth end-to-end against configured servers",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "WIPS": [
-          {
-            "cmd": "show wireless wips summary",
-            "desc": "Shows WIPS summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips rogue-summary",
-            "desc": "Shows rogue summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips rogue ap",
-            "desc": "Shows rogue APs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips rogue client",
-            "desc": "Shows rogue clients",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips containment",
-            "desc": "Shows containment settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips stats",
-            "desc": "Shows WIPS statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips alarms",
-            "desc": "Shows WIPS alarms",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips events",
-            "desc": "Shows WIPS events",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips signatures",
-            "desc": "Shows WIPS signatures",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless wips signature-stats",
-            "desc": "Shows signature statistics",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "AVC": [
-          {
-            "cmd": "show wireless avc summary",
-            "desc": "Shows AVC summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc statistics",
-            "desc": "Shows AVC statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc applications",
-            "desc": "Shows AVC applications",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc profile summary",
-            "desc": "Shows AVC profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc profile <name>",
-            "desc": "Shows AVC profile details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc client <mac>",
-            "desc": "Shows AVC stats for client",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc wlan <id>",
-            "desc": "Shows AVC stats for WLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless avc ap <ap>",
-            "desc": "Shows AVC stats for AP",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Policy": [
-          {
-            "cmd": "show wireless profile policy summary",
-            "desc": "Shows policy profiles",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name>",
-            "desc": "Shows policy profile details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name> qos",
-            "desc": "Shows QoS settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name> vlan",
-            "desc": "Shows VLAN settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name> acl",
-            "desc": "Shows ACL settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name> timers",
-            "desc": "Shows timer settings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile policy <name> stats",
-            "desc": "Shows policy stats",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "FlexConnect": [
-          {
-            "cmd": "show wireless flexconnect summary",
-            "desc": "Shows FlexConnect summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect group summary",
-            "desc": "Shows FlexConnect groups",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect group <name>",
-            "desc": "Shows group details",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect ap summary",
-            "desc": "Shows AP FlexConnect status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect ap <ap>",
-            "desc": "Shows AP FlexConnect config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect vlan summary",
-            "desc": "Shows VLAN mappings",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless flexconnect vlan <ap>",
-            "desc": "Shows VLAN mapping for AP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless profile flex summary",
-            "desc": "Flex profiles configured",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ap config general <ap> | include mode|Flex",
-            "desc": "Verify AP is in FlexConnect mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless client mac <mac> detail | include switching",
-            "desc": "Per-client local/central switching state",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "RF Diagnostics": [
-          {
-            "cmd": "show wireless interference summary",
-            "desc": "Shows interference summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless interference device",
-            "desc": "Shows interference devices",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless interference stats",
-            "desc": "Shows interference stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless noise summary",
-            "desc": "Shows noise summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless noise stats",
-            "desc": "Shows noise stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless coverage summary",
-            "desc": "Shows coverage summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless coverage hole",
-            "desc": "Shows coverage hole detection",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless coverage hole stats",
-            "desc": "Shows CHD stats",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Troubleshooting": [
-          {
-            "cmd": "show wireless stats summary",
-            "desc": "Shows wireless stats summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats dot11 24ghz",
-            "desc": "Shows 2.4GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats dot11 5ghz",
-            "desc": "Shows 5GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats dot11 6ghz",
-            "desc": "Shows 6GHz stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats mobility",
-            "desc": "Shows mobility stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats auth",
-            "desc": "Shows authentication stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats assoc",
-            "desc": "Shows association stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats roam",
-            "desc": "Shows roaming stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats dhcp",
-            "desc": "Shows DHCP stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats radius",
-            "desc": "Shows RADIUS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats eap",
-            "desc": "Shows EAP stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats qos",
-            "desc": "Shows QoS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats avc",
-            "desc": "Shows AVC stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats wips",
-            "desc": "Shows WIPS stats",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show tech-support wireless",
-            "desc": "Wireless-only tech-support bundle for TAC",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless stats client detail",
-            "desc": "Aggregate client connection stats (joins, excl., deauth)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "debug wireless mac <mac>",
-            "desc": "Enable client-centric RA trace",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show logging profile wireless internal to-file bootflash:wlc-log.txt",
-            "desc": "Collect internal wireless logs to flash",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "set trace wncd-filter add mac <mac>",
-            "desc": "Filter always-on traces for a specific client",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show wireless trace-on-failure summary",
-            "desc": "Last-join-failure traces collected automatically",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ]
-      }
+      },
+      "group": "Citrix"
     },
     "ciscoiosxe_sw": {
       "label": "Cisco IOS XE Switch",
@@ -20603,7 +21683,8 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Cisco"
     },
     "proxmox": {
       "label": "Proxmox VE",
@@ -21610,341 +22691,679 @@
             "flagged": false
           }
         ]
-      }
+      },
+      "group": "Virtualisation"
     },
-    "cisco_nexus": {
-      "label": "Cisco Nexus",
+    "nexus": {
+      "label": "Cisco Nexus NX-OS",
       "badge": "badge-sw",
       "short": "Nexus",
+      "group": "Cisco",
       "sections": {
-        "system": [
+        "System & Status": [
           {
             "cmd": "show version",
-            "desc": "Display software version and hardware information for Cisco devices.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "config": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current running configuration of a Cisco device.",
+            "desc": "Software version, hardware, uptime",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "configure terminal",
-            "desc": "Enter global configuration mode on Cisco devices to apply configuration changes.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show ip interface brief",
-            "desc": "Display a summary of interface IP addresses and status.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "troubleshooting": [
-          {
-            "cmd": "debug ip packet",
-            "desc": "Enable debugging of IP packets for troubleshooting connectivity issues.",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show logging",
-            "desc": "Display system logs to help diagnose issues on Cisco devices.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "interface": [
-          {
-            "cmd": "interface GigabitEthernet0/1",
-            "desc": "Enter interface configuration mode for a specific GigabitEthernet port.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "performance": [
-          {
-            "cmd": "show controllers cpu",
-            "desc": "Display CPU utilization and performance statistics.",
-            "type": "show",
-            "flagged": false
-          }
-        ]
-      }
-    },
-    "palo_alto_pan_os": {
-      "label": "Palo Alto PAN-OS",
-      "badge": "badge-sw",
-      "short": "PAN-OS",
-      "sections": {
-        "system": [
-          {
-            "cmd": "show version",
-            "desc": "Display system information and software version for Palo Alto Networks firewall.",
+            "cmd": "show inventory",
+            "desc": "Hardware inventory: chassis, modules, transceivers, serials",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "show system info",
-            "desc": "Display detailed system information including serial number, model, and uptime.",
+            "cmd": "show module",
+            "desc": "Line cards / supervisors / fabric modules with status",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "request system software install ftp://<user>:<password>@<server>/<file>",
-            "desc": "Install a new software image on the Palo Alto Networks firewall via FTP.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "set deviceconfig system hostname",
-            "desc": "Set the hostname of the Palo Alto Networks firewall.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "request system software install ftp://user:password@server/panos-version.tgz",
-            "desc": "Install a new PAN-OS software image via FTP.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "show system disk-space",
-            "desc": "Display disk space usage on the device.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show network interface",
-            "desc": "Display network interface status and configuration on Palo Alto Networks firewall.",
+            "cmd": "show environment",
+            "desc": "Power, fans, temperature",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "set network interface ethernet ethernet1/1 layer3",
-            "desc": "Configure an Ethernet interface as a Layer 3 interface.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "test connectivity ping 8.8.8.8",
-            "desc": "Test connectivity by pinging an external IP address.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "config": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current running configuration of the Palo Alto Networks firewall.",
+            "cmd": "show environment power",
+            "desc": "PSU detail and budget",
             "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "configure",
-            "desc": "Enter configuration mode on Palo Alto Networks firewall to modify settings.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "set deviceconfig system hostname <hostname>",
-            "desc": "Set the hostname of the Palo Alto Networks firewall.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "logs": [
-          {
-            "cmd": "show log threat",
-            "desc": "Display threat logs to identify malicious activities detected by the firewall.",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show log traffic",
-            "desc": "Display traffic logs to monitor allowed and denied network traffic.",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "show log system",
-            "desc": "Display system logs for troubleshooting and monitoring events.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "debug": [
-          {
-            "cmd": "debug dataplane packet-trace basic",
-            "desc": "Trace a specific packet through the dataplane for troubleshooting connectivity issues.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "configuration": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current running configuration of the Palo Alto Networks firewall.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "configure",
-            "desc": "Enter configuration mode to modify system settings on Palo Alto Networks devices.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "monitoring": [
-          {
-            "cmd": "show session all",
-            "desc": "Display all active sessions to monitor traffic flows and connection states.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "policy": [
-          {
-            "cmd": "set rulebase security rules allow-internet source any destination any application any service any action allow",
-            "desc": "Create a security rule to allow traffic from any source to any destination.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "security": [
-          {
-            "cmd": "show threat prevention status",
-            "desc": "Display the status of threat prevention features such as antivirus and anti-spyware.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "operations": [
-          {
-            "cmd": "show jobs all",
-            "desc": "Display all ongoing and completed jobs on the device.",
-            "type": "show",
-            "flagged": false
-          }
-        ]
-      }
-    },
-    "cisco_9800_wlc": {
-      "label": "Cisco 9800-WLC",
-      "badge": "badge-sw",
-      "short": "9800-W",
-      "sections": {
-        "system": [
-          {
-            "cmd": "show version",
-            "desc": "Display software version and hardware information.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "configuration": [
-          {
-            "cmd": "show ns config",
-            "desc": "Display current NetScaler configuration.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "config ns setting",
-            "desc": "Configure global NetScaler settings.",
-            "type": "config",
             "flagged": false
           },
           {
             "cmd": "show running-config",
-            "desc": "Display the current running configuration.",
+            "desc": "Active configuration",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "configure terminal",
-            "desc": "Enter global configuration mode.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "logs": [
-          {
-            "cmd": "show log",
-            "desc": "Display system logs for troubleshooting.",
-            "type": "troubleshooting",
+            "cmd": "show startup-config",
+            "desc": "Saved configuration",
+            "type": "show",
             "flagged": false
           },
           {
-            "cmd": "clear log",
-            "desc": "Clear system logs.",
-            "type": "troubleshooting",
+            "cmd": "show feature",
+            "desc": "NX-OS features installed/enabled",
+            "type": "show",
             "flagged": false
-          }
-        ],
-        "troubleshooting": [
+          },
           {
-            "cmd": "debug ip packet",
-            "desc": "Enable debugging for IP packets to troubleshoot network issues.",
-            "type": "troubleshooting",
+            "cmd": "show feature-set",
+            "desc": "Optional feature-sets (FCoE, FabricPath, MPLS)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license host-id",
+            "desc": "License host ID required for activation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license usage",
+            "desc": "Smart Licence current usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show install all status",
+            "desc": "Install / upgrade history and status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show system internal flash",
+            "desc": "Bootflash usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock detail",
+            "desc": "Current time + NTP source",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active sessions",
+            "type": "show",
             "flagged": false
           }
         ],
-        "network": [
+        "Interfaces": [
           {
             "cmd": "show interface",
-            "desc": "Display interface status and statistics.",
+            "desc": "Detailed interface status + counters",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "configure terminal; interface",
-            "desc": "Enter interface configuration mode.",
+            "cmd": "show interface brief",
+            "desc": "Short status table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface description",
+            "desc": "Per-interface description column",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface status",
+            "desc": "Up/down, VLAN, duplex, speed, type",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface counters errors",
+            "desc": "Per-interface error counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface transceiver details",
+            "desc": "SFP DOM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface trunk",
+            "desc": "Active trunks + allowed VLANs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config interface Ethernet1/1",
+            "desc": "Per-interface running-config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/1\n description ACCESS\n switchport\n switchport mode access\n switchport access vlan 10\n no shutdown",
+            "desc": "Access-port baseline",
             "type": "config",
             "flagged": false
           },
+          {
+            "cmd": "interface Ethernet1/1\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\n switchport trunk native vlan 99",
+            "desc": "Trunk-port baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface port-channel1\n switchport\n switchport mode trunk",
+            "desc": "Logical port-channel",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/1\n channel-group 1 mode active",
+            "desc": "Add interface to LACP port-channel",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/49\n no switchport\n mtu 9216\n ip address 10.0.0.1/31\n no shutdown",
+            "desc": "L3 routed point-to-point uplink",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "VLANs / VPC": [
+          {
+            "cmd": "show vlan",
+            "desc": "VLANs + member ports",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan brief",
+            "desc": "Short VLAN table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpc",
+            "desc": "vPC peer-link, peer-keepalive, vPCs, role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpc consistency-parameters global",
+            "desc": "vPC global consistency check",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpc consistency-parameters interface port-channel 10",
+            "desc": "Per-vPC consistency check",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vpc role",
+            "desc": "vPC role (primary / secondary)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-channel summary",
+            "desc": "Port-channels: protocol, status, members",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show fex",
+            "desc": "Connected FEXs and link state (legacy)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "feature vpc",
+            "desc": "Enable vPC feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature lacp",
+            "desc": "Enable LACP feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vpc domain 1\n peer-switch\n peer-keepalive destination 10.99.99.2 source 10.99.99.1\n peer-gateway\n delay restore 150\n auto-recovery",
+            "desc": "vPC domain baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Routing": [
           {
             "cmd": "show ip route",
-            "desc": "Display the IP routing table.",
+            "desc": "IPv4 routing table",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "show arp",
-            "desc": "Display ARP table entries.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "security": [
-          {
-            "cmd": "show security policy",
-            "desc": "Display configured security policies.",
+            "cmd": "show ip route vrf <name>",
+            "desc": "Per-VRF routing table",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "set security policy",
-            "desc": "Create or modify a security policy.",
+            "cmd": "show ip route summary",
+            "desc": "Route count summary by protocol",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbors",
+            "desc": "OSPF adjacencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "OSPF on each interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database",
+            "desc": "OSPF LSDB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp summary",
+            "desc": "BGP peers, state, prefix counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp",
+            "desc": "BGP RIB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors <ip>",
+            "desc": "Per-peer detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip pim neighbor",
+            "desc": "PIM neighbours",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip pim interface",
+            "desc": "PIM-enabled interfaces",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "feature ospf",
+            "desc": "Enable OSPF feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature bgp",
+            "desc": "Enable BGP feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature pim",
+            "desc": "Enable PIM feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf UNDERLAY\n router-id 1.1.1.1\n log-adjacency-changes detail\n bfd",
+            "desc": "OSPF process baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp 65001\n router-id 1.1.1.1\n log-neighbor-changes\n address-family ipv4 unicast\n neighbor 1.2.3.4\n  remote-as 65002\n  address-family ipv4 unicast\n   send-community both",
+            "desc": "eBGP peer baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vrf context TENANT_A\n description Tenant A\n rd auto\n address-family ipv4 unicast\n  route-target both auto",
+            "desc": "New VRF",
             "type": "config",
             "flagged": false
           }
         ],
-        "vpn": [
+        "VXLAN / EVPN": [
           {
-            "cmd": "show vpn ipsec sa",
-            "desc": "Display IPsec security associations.",
+            "cmd": "show nve interface nve1 detail",
+            "desc": "NVE interface state + source loopback",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show nve peers",
+            "desc": "VTEP peers + uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show nve vni",
+            "desc": "Per-VNI state + ingress-replication peers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show nve vni interface",
+            "desc": "NVE per-VNI binding",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn summary",
+            "desc": "BGP EVPN sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn",
+            "desc": "BGP EVPN routes (all)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn route-type 2",
+            "desc": "Type-2 MAC/IP advertisements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn route-type 5",
+            "desc": "Type-5 IP-prefix advertisements",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show l2route evpn mac all",
+            "desc": "Local EVPN MAC table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show l2route evpn mac-ip all",
+            "desc": "Local EVPN MAC + IP bindings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp suppression-cache detail",
+            "desc": "ARP-suppression cache state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "feature nv overlay",
+            "desc": "Enable VXLAN overlay feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature vn-segment-vlan-based",
+            "desc": "Enable VLAN→VNI mapping",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "fabric forwarding anycast-gateway-mac 0001.0001.0001",
+            "desc": "Set fabric anycast gateway MAC",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface nve1\n no shutdown\n host-reachability protocol bgp\n source-interface loopback0\n member vni 10100\n  suppress-arp\n  ingress-replication protocol bgp\n member vni 50001 associate-vrf",
+            "desc": "NVE interface baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Security & AAA": [
+          {
+            "cmd": "show access-lists",
+            "desc": "All ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip access-lists EXAMPLE",
+            "desc": "Single ACL detail with hit counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa authentication",
+            "desc": "AAA authentication methods configured",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa server-groups",
+            "desc": "TACACS+/RADIUS server groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show role",
+            "desc": "NX-OS RBAC roles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-account",
+            "desc": "Configured user accounts + roles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "feature tacacs+",
+            "desc": "Enable TACACS+ feature",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "tacacs-server host 10.10.10.50 key <shared-key>\naaa group server tacacs+ TAC\n server 10.10.10.50\n use-vrf management",
+            "desc": "TACACS+ server group",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authentication login default group TAC local",
+            "desc": "Login auth via TACACS+ then local fallback",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Logging / Monitoring": [
+          {
+            "cmd": "show logging logfile",
+            "desc": "Persistent local log file contents",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging last 100",
+            "desc": "Last 100 log lines from buffer",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging server",
+            "desc": "Configured syslog destinations",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp community",
+            "desc": "SNMP communities",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp host",
+            "desc": "SNMP trap receivers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "logging server 10.50.50.50 6 use-vrf management",
+            "desc": "Send syslog at severity 6 over mgmt VRF",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "snmp-server host 10.50.50.50 traps version 3 priv <user>",
+            "desc": "SNMPv3 trap host",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature telemetry\ntelemetry\n destination-group DG1\n  ip address 10.50.50.50 port 57500 protocol gRPC encoding GPB\n sensor-group SG1\n  data-source DME\n  path \"Cisco-NX-OS-device-yang:sys/intf\"\n subscription 1\n  dst-grp DG1\n  snsr-grp SG1 sample-interval 30000",
+            "desc": "Streaming telemetry baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "ping 1.1.1.1 vrf management",
+            "desc": "Ping via management VRF",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping 1.1.1.1 source 10.0.0.1",
+            "desc": "Sourced ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 1.1.1.1 vrf management",
+            "desc": "Traceroute via management VRF",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp",
+            "desc": "ARP cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table",
+            "desc": "MAC address table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table address 0050.5612.3456",
+            "desc": "Find a single MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cdp neighbors detail",
+            "desc": "CDP neighbours",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp neighbors detail",
+            "desc": "LLDP neighbours",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bfd neighbors",
+            "desc": "BFD sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show forwarding adjacency",
+            "desc": "Hardware adjacency table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethanalyzer local interface inband decode-internal",
+            "desc": "On-box packet capture (use sparingly)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support detail | redirect bootflash:tech.txt",
+            "desc": "Full diagnostic dump for TAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show system internal sysmgr service all",
+            "desc": "NX-OS service-manager state",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Config Management": [
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running to startup",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config bootflash:running.cfg",
+            "desc": "Save running to bootflash file",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg vrf management",
+            "desc": "Backup config via TFTP over mgmt VRF",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config diff",
+            "desc": "Diff between saved + current candidate (NX-OS commit-mode)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure dual-stage\n!! enter changes\nshow configuration\ncommit",
+            "desc": "Two-stage commit (preview → apply)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "rollback running-config last 1",
+            "desc": "Roll back to the previous commit",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload",
+            "desc": "Reboot the device",
+            "type": "config",
+            "flagged": true
           }
         ]
       }

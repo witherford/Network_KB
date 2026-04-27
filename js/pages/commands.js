@@ -4,7 +4,7 @@
 
 import { loadData } from '../dataloader.js';
 import { esc, hlText, debounce, copyToClipboard, toast, download } from '../utils.js';
-import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, cmdKey } from '../prefs.js';
+import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
@@ -12,7 +12,7 @@ import { fetchForKind } from '../components/ai-fetch.js';
 
 const TYPE_LABELS = { all: 'All', show: 'Show', config: 'Configuration', troubleshooting: 'Troubleshooting' };
 
-let ui = { platform: 'all', type: 'all', query: '', selected: new Set() };
+let ui = { group: 'all', platform: 'all', type: 'all', query: '', selected: new Set() };
 let rootEl = null;
 
 function workingData() {
@@ -64,8 +64,15 @@ function shellHtml() {
       </span>
     </div>
     <div id="cmdBulkBar" class="bulk-toolbar" style="display:none"></div>
+    <div class="filter-tabs" id="cmdGroupTabs"></div>
     <div class="filter-tabs" id="cmdPlatTabs"></div>
-    <div class="filter-tabs type-row" id="cmdTypeTabs"></div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <div class="filter-tabs type-row" id="cmdTypeTabs" style="flex:1"></div>
+      <span style="display:flex;gap:6px;align-items:center;padding:0 8px">
+        <button class="btn sm ghost" id="cmdExpandAll" title="Expand every section">▾ Expand all</button>
+        <button class="btn sm ghost" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all</button>
+      </span>
+    </div>
     <div class="page ${p.descVisible ? 'with-desc' : ''}" id="cmdListRoot"></div>`;
 }
 
@@ -73,10 +80,59 @@ function renderAll() {
   const editActions = document.getElementById('cmdEditActions');
   if (editActions) editActions.style.display = state.editMode ? 'inline-flex' : 'none';
   renderStatsBar();
+  renderGroupTabs();
   renderPlatformTabs();
   renderTypeTabs();
   renderList();
   renderBulkBar();
+}
+
+function platformsInGroup(group) {
+  const d = workingData();
+  const p = d?.platforms || {};
+  if (!group || group === 'all') return Object.keys(p);
+  return Object.keys(p).filter(k => (p[k].group || 'Other') === group);
+}
+
+function renderGroupTabs() {
+  const root = document.getElementById('cmdGroupTabs');
+  if (!root) return;
+  const d = workingData();
+  const platforms = d?.platforms || {};
+  // Collect group → command count.
+  const groupCounts = new Map();
+  let total = 0;
+  for (const [k, p] of Object.entries(platforms)) {
+    const n = Object.values(p.sections || {}).reduce((a, s) => a + s.length, 0);
+    total += n;
+    const g = p.group || 'Other';
+    groupCounts.set(g, (groupCounts.get(g) || 0) + n);
+  }
+  // Stable order: All first, then Cisco, Palo Alto, Citrix, Microsoft, Cloud, Virtualisation, Linux/Unix, Tools, then any others alphabetically.
+  const order = ['Cisco', 'Palo Alto', 'Citrix', 'Microsoft', 'Cloud', 'Virtualisation', 'Linux / Unix', 'Tools'];
+  const seen = new Set(order);
+  const extras = [...groupCounts.keys()].filter(g => !seen.has(g)).sort();
+  const ordered = ['all', ...order.filter(g => groupCounts.has(g)), ...extras];
+  root.innerHTML = ordered.map(g => {
+    const label = g === 'all' ? 'All groups' : g;
+    const cnt = g === 'all' ? total : (groupCounts.get(g) || 0);
+    if (g !== 'all' && !cnt) return '';
+    const active = ui.group === g ? ' active' : '';
+    return `<button class="ftab grp${active}" data-grp="${esc(g)}">${esc(label)}<span class="cnt">${cnt}</span></button>`;
+  }).join('');
+  root.onclick = e => {
+    const btn = e.target.closest('[data-grp]');
+    if (!btn) return;
+    ui.group = btn.dataset.grp;
+    // Reset platform to 'all' when switching groups so we don't end up
+    // on a hidden platform.
+    ui.platform = 'all';
+    ui.selected.clear();
+    renderGroupTabs();
+    renderPlatformTabs();
+    renderList();
+    renderBulkBar();
+  };
 }
 
 function renderStatsBar() {
@@ -97,15 +153,17 @@ function renderPlatformTabs() {
   const root = document.getElementById('cmdPlatTabs');
   const d = workingData();
   const platforms = d?.platforms || {};
-  const pKeys = Object.keys(platforms);
+  const groupKeys = platformsInGroup(ui.group);
+  // Counts cover only the platforms shown in the active group; "All" sums those.
   const counts = { all: 0, favourites: getPrefs().favourites.length, recent: getPrefs().recent.length };
-  for (const k of pKeys) {
+  for (const k of groupKeys) {
     counts[k] = Object.values(platforms[k].sections || {}).reduce((a, s) => a + s.length, 0);
     counts.all += counts[k];
   }
+  const groupLabel = ui.group === 'all' ? 'All' : ui.group;
   const tabs = [
-    { key: 'all', label: 'All' },
-    ...pKeys.map(k => ({ key: k, label: platforms[k].short || platforms[k].label || k })),
+    { key: 'all', label: 'All ' + groupLabel },
+    ...groupKeys.map(k => ({ key: k, label: platforms[k].short || platforms[k].label || k })),
     { key: 'favourites', label: '★ Favourites' },
     { key: 'recent', label: 'Recent' }
   ];
@@ -186,6 +244,20 @@ function wireToolbar(root) {
     catch (err) { toast(err.message, 'error'); }
     finally { e.target.disabled = false; e.target.textContent = 'Fetch now'; renderAll(); }
   });
+  // Expand all / Collapse all — operates on whatever sections the
+  // current filter is showing.
+  root.querySelector('#cmdCollapseAll').addEventListener('click', () => bulkCollapse(true));
+  root.querySelector('#cmdExpandAll').addEventListener('click', () => bulkCollapse(false));
+}
+
+function bulkCollapse(collapsed) {
+  // Gather every (platform:section) key currently in the rendered list.
+  const keys = new Set();
+  for (const row of filtered()) keys.add(row.pk + ':' + row.section);
+  if (!keys.size) { toast('Nothing to ' + (collapsed ? 'collapse' : 'expand'), 'info'); return; }
+  collapseAll([...keys], collapsed);
+  renderList();
+  toast((collapsed ? 'Collapsed ' : 'Expanded ') + keys.size + ' section' + (keys.size === 1 ? '' : 's'), 'success');
 }
 
 function* iterAll() {
@@ -201,12 +273,14 @@ function filtered() {
   const prefs = getPrefs();
   const favSet = new Set(prefs.favourites);
   const recArr = prefs.recent;
+  const groupKeys = new Set(platformsInGroup(ui.group));
   const out = [];
   for (const row of iterAll()) {
     if (ui.type !== 'all' && (row.cmd.type || 'show') !== ui.type) continue;
     if (ui.platform === 'favourites') { if (!favSet.has(cmdKey(row.pk, row.section, row.cmd.cmd))) continue; }
     else if (ui.platform === 'recent') { if (!recArr.includes(cmdKey(row.pk, row.section, row.cmd.cmd))) continue; }
-    else if (ui.platform !== 'all' && row.pk !== ui.platform) continue;
+    else if (ui.platform !== 'all') { if (row.pk !== ui.platform) continue; }
+    else if (ui.group !== 'all' && !groupKeys.has(row.pk)) continue;
     if (q) {
       const hay = (row.cmd.cmd + ' ' + (row.cmd.desc || '')).toLowerCase();
       if (!hay.includes(q)) continue;

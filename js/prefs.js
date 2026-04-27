@@ -84,6 +84,23 @@ export function isCollapsed(key) {
   return load().collapsed.includes(key);
 }
 
+/**
+ * Bulk set collapse state for many section keys at once.
+ *  collapseAll(['plat:Sec1', 'plat:Sec2', ...], true)  // collapse all
+ *  collapseAll(['plat:Sec1', 'plat:Sec2', ...], false) // expand all
+ */
+export function collapseAll(keys, collapsed) {
+  const p = load();
+  if (collapsed) {
+    const set = new Set([...p.collapsed, ...keys]);
+    p.collapsed = [...set];
+  } else {
+    const drop = new Set(keys);
+    p.collapsed = p.collapsed.filter(k => !drop.has(k));
+  }
+  persist();
+}
+
 export function cmdKey(platformKey, section, cmd) {
   return platformKey + '|' + section + '|' + cmd;
 }
