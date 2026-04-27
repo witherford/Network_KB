@@ -8,7 +8,7 @@
 // Bump CACHE_VERSION when shipping a release that changes the app shell.
 // Old caches are pruned in the activate step.
 
-const CACHE_VERSION = 'nkb-v7-2026-04-27';
+const CACHE_VERSION = 'nkb-v8-2026-04-27';
 const SHELL_CACHE = `shell-${CACHE_VERSION}`;
 const DATA_CACHE  = `data-${CACHE_VERSION}`;
 
@@ -28,6 +28,7 @@ const PRECACHE_URLS = [
   './js/pwa.js',
   './js/components/io.js',
   './js/components/import-modal.js',
+  './js/components/ai-free.js',
   './js/toolkit/tz-data.js',
   './data/oui.json',
   './vendor/xlsx.mini.min.js'
