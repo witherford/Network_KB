@@ -10,6 +10,7 @@ const SUBS = {
   throughput:   { label: 'Throughput / MTU', load: () => import('../toolkit/throughput.js') },
   dscp:         { label: 'DSCP / ToS',       load: () => import('../toolkit/dscp.js') },
   encoding:     { label: 'Encoding & hash',  load: () => import('../toolkit/encoding.js') },
+  password:     { label: 'Password gen',     load: () => import('../toolkit/password.js') },
   jsonyaml:     { label: 'JSON / YAML',      load: () => import('../toolkit/json-yaml.js') },
   regex:        { label: 'Regex builder',    load: () => import('../toolkit/regex-builder.js') },
   calculator:   { label: 'Calculator',       load: () => import('../toolkit/calculator.js') },
