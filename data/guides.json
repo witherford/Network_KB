@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-27T05:43:32.842Z",
+  "updatedAt": "2026-04-28T05:48:31.697Z",
   "items": [
     {
       "title": "IOS-XE Basic Troubleshooting and Configuration Guide",
@@ -8,44 +8,46 @@
         {
           "n": 1,
           "action": "Check device reachability and basic connectivity.",
-          "expected": "Successful ping to the device and/or gateway; interface shows line protocol up.",
+          "expected": "Device responds to ping and show commands; interfaces show line protocol up.",
           "commands": [
-            "ping <gateway_ip>",
-            "ping <destination_ip>",
-            "show ip interface brief"
+            "ping <IP_ADDRESS>",
+            "show ip interface brief",
+            "show version"
           ]
         },
         {
           "n": 2,
           "action": "Verify interface status and configuration.",
-          "expected": "Interface is administratively up/line protocol up with correct IP assignment.",
+          "expected": "Interface is administratively up/line protocol up with correct IP addressing.",
           "commands": [
-            "show ip interface <interface>",
-            "show running-config interface <interface>"
+            "show ip interface <INTERFACE>",
+            "show running-config interface <INTERFACE>"
           ]
         },
         {
           "n": 3,
-          "action": "Check routing table and next-hop reachability.",
-          "expected": "Correct route present with active next-hop and outgoing interface.",
+          "action": "Check routing table and static/default routes.",
+          "expected": "Host routes and/or default route present; next-hop reachable.",
           "commands": [
             "show ip route",
-            "show ip route <network>"
+            "show ip route static",
+            "show ip route connected"
           ]
         },
         {
           "n": 4,
-          "action": "Validate static route if configured.",
-          "expected": "Static route appears in routing table with correct next-hop or exit interface.",
+          "action": "Verify dynamic routing neighbor adjacencies (if used).",
+          "expected": "Established neighbor relationships (OSPF/IS-IS/BGP) with correct peer IPs.",
           "commands": [
-            "show running-config | section ip route",
-            "ping <next_hop_ip>"
+            "show ip ospf neighbor",
+            "show ip bgp summary",
+            "show isis adjacency"
           ]
         },
         {
           "n": 5,
-          "action": "Inspect control-plane and management plane health.",
-          "expected": "CPU/memory within normal ranges; no critical alarms.",
+          "action": "Check control-plane and management plane health.",
+          "expected": "CPU/memory within normal ranges; no critical syslog errors.",
           "commands": [
             "show processes cpu",
             "show memory statistics",
@@ -54,54 +56,21 @@
         },
         {
           "n": 6,
-          "action": "Verify SSH/HTTPS management access and users.",
-          "expected": "SSH/HTTPS sessions established; authorized users present.",
+          "action": "Validate NAT, ACLs, and policy-maps if applied.",
+          "expected": "NAT translations present/empty as expected; ACL hit counts incrementing correctly.",
           "commands": [
-            "show ip ssh",
-            "show users",
-            "show running-config | section line vty"
+            "show ip nat translations",
+            "show access-lists",
+            "show policy-map interface <INTERFACE>"
           ]
         },
         {
           "n": 7,
-          "action": "Confirm system time and NTP sync.",
-          "expected": "Clock is synchronized; stratum reasonable.",
+          "action": "Save configuration and document changes.",
+          "expected": "Running config saved to startup-config; change log updated.",
           "commands": [
-            "show clock",
-            "show ntp associations",
-            "show ntp status"
-          ]
-        },
-        {
-          "n": 8,
-          "action": "Check platform-specific features (FlexVPN/GETVPN/IoT).",
-          "expected": "Feature adjacencies formed; SA/Policy established as expected.",
-          "commands": [
-            "show crypto isakmp sa",
-            "show crypto ipsec sa",
-            "show platform pm-engine status"
-          ]
-        },
-        {
-          "n": 9,
-          "action": "Review diagnostics and health for hardware/software issues.",
-          "expected": "No critical hardware faults; software version matches expected image.",
-          "commands": [
-            "show version",
-            "show diagnostic result module all"
-          ]
-        },
-        {
-          "n": 10,
-          "action": "Apply minimal config change and verify impact.",
-          "expected": "Change applied without disruption; desired reachability/behavior restored.",
-          "commands": [
-            "configure terminal",
-            "interface <interface>",
-            "ip address <ip> <mask>",
-            "no shutdown",
-            "end",
-            "write memory"
+            "write memory",
+            "show running-config | section <SECTION>"
           ]
         }
       ],
@@ -132,73 +101,58 @@
         },
         {
           "n": 3,
-          "action": "Validate repository configuration and connectivity to remote repositories.",
-          "expected": "Repositories are correctly configured and reachable.",
+          "action": "Validate network and firewall settings.",
+          "expected": "Required ports (e.g., 8081, 8443) are open and not blocked.",
           "commands": [
-            "curl -s http://localhost:8081/service/rest/v1/repositories",
-            "curl -s -o /dev/null -w \"%{http_code}\" https://repo1.maven.org/maven2"
+            "ss -tlnp | grep -E '8081|8443'",
+            "iptables -L -n | grep -E '8081|8443'"
           ]
         },
         {
           "n": 4,
-          "action": "Inspect blob store health and storage usage.",
-          "expected": "Blob store is healthy with adequate free space.",
+          "action": "Confirm repository configuration and connectivity.",
+          "expected": "Repositories are in service and proxying correctly.",
           "commands": [
-            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/blobs",
-            "df -h /nexus-data/blobs"
+            "curl -s http://localhost:8081/service/rest/v1/repositories",
+            "nexus-cli repository list"
           ]
         },
         {
           "n": 5,
-          "action": "Review and adjust JVM and Nexus heap settings if needed.",
-          "expected": "Heap settings are within recommended limits for available RAM.",
+          "action": "Check storage and disk space for blob stores.",
+          "expected": "Sufficient disk space; blob stores are in service.",
           "commands": [
-            "cat /nexus-data/etc/nexus.properties | grep jetty",
-            "grep -i \"Xmx\\|Xms\" /nexus-data/etc/jvm.options"
+            "df -h /nexus-data",
+            "nexus-cli blobstore list"
           ]
         },
         {
           "n": 6,
-          "action": "Test artifact deployment and retrieval end-to-end.",
-          "expected": "Artifact can be deployed and downloaded successfully.",
+          "action": "Validate and repair database if needed.",
+          "expected": "Database is healthy; no corruption detected.",
           "commands": [
-            "curl -u admin:$(cat /nexus-data/admin.password) -T /tmp/test.jar \"http://localhost:8081/repository/maven-hosted/test/1.0.0/test-1.0.0.jar\"",
-            "curl -u admin:$(cat /nexus-data/admin.password) -I \"http://localhost:8081/repository/maven-hosted/test/1.0.0/test-1.0.0.jar\""
+            "nexus-cli database status",
+            "nexus-cli database repair --confirm"
           ]
         },
         {
           "n": 7,
-          "action": "Verify security and access policies (roles, privileges, tokens).",
-          "expected": "Roles and privileges align with intended access controls.",
+          "action": "Review and update Nexus configuration (security, users, roles).",
+          "expected": "Security settings align with policy; admin user is accessible.",
           "commands": [
-            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/security/roles",
-            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/tokens"
+            "cat /nexus-data/etc/nexus.properties",
+            "nexus-cli user list",
+            "nexus-cli role list"
           ]
         },
         {
           "n": 8,
-          "action": "Check scheduled tasks and maintenance settings.",
-          "expected": "Tasks such as blob store cleanup and repair are scheduled appropriately.",
+          "action": "Restart Nexus and verify recovery.",
+          "expected": "Nexus restarts cleanly and returns to expected state.",
           "commands": [
-            "curl -s -u admin:$(cat /nexus-data/admin.password) http://localhost:8081/service/rest/v1/scheduled-tasks"
-          ]
-        },
-        {
-          "n": 9,
-          "action": "Validate network/firewall and proxy settings if external access fails.",
-          "expected": "Outbound connections succeed; proxy settings are correct.",
-          "commands": [
-            "curl -v --connect-timeout 5 https://repo1.maven.org/maven2",
-            "cat /nexus-data/etc/nexus.properties | grep -i proxy"
-          ]
-        },
-        {
-          "n": 10,
-          "action": "Rotate and archive logs if needed, then restart Nexus to apply changes.",
-          "expected": "Logs rotated, configuration changes active, Nexus stable.",
-          "commands": [
-            "mv /nexus-data/log/nexus.log /nexus-data/log/nexus-$(date +%F).log",
-            "systemctl restart nexus"
+            "systemctl restart nexus",
+            "sleep 30",
+            "curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8081"
           ]
         }
       ],
@@ -408,111 +362,87 @@
         },
         {
           "n": 2,
-          "action": "Check interface status and IP configuration.",
-          "expected": "Management interface has correct IP, netmask, gateway, and is administratively up.",
-          "commands": [
-            "show interface management1/1"
-          ]
-        },
-        {
-          "n": 3,
-          "action": "Test reachability of the device.",
-          "expected": "Ping to management IP from a host succeeds.",
+          "action": "Ping the management interface from a known host.",
+          "expected": "Successful ping responses (latency < 50 ms) confirming IP reachability.",
           "commands": [
             "ping <management-ip>"
           ]
         },
         {
-          "n": 4,
-          "action": "Confirm Panorama connectivity (if applicable).",
-          "expected": "Device shows connected to Panorama with accepted template stack.",
+          "n": 3,
+          "action": "Check interface status and IP configuration.",
+          "expected": "Interfaces are administratively up/up with correct IP/subnet.",
           "commands": [
-            "show panorama-status"
+            "show network interface"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Verify default route and routing table.",
+          "expected": "Default route present and active; remote networks appear in routing table.",
+          "commands": [
+            "show routing-table"
           ]
         },
         {
           "n": 5,
-          "action": "Check software version and availability of updates.",
-          "expected": "Running a supported, non-EOL PAN-OS version with latest updates applied.",
+          "action": "Confirm DNS resolution.",
+          "expected": "DNS queries resolve to expected IPs; 'show system dns setting' shows valid servers.",
           "commands": [
-            "show system info"
+            "show system dns setting",
+            "test dns <hostname>"
           ]
         },
         {
           "n": 6,
-          "action": "Review system logs for errors.",
-          "expected": "No critical or repeated errors; traffic and threat logs reflect expected activity.",
+          "action": "Check Panorama connectivity (if applicable).",
+          "expected": "Device shows connected to Panorama with correct group and template stack.",
           "commands": [
-            "show log system"
+            "show panorama status",
+            "show jobs status"
           ]
         },
         {
           "n": 7,
-          "action": "Validate virtual router and routing table.",
-          "expected": "Default route or expected next-hop present; virtual router shows correct interface zones.",
+          "action": "Review system logs for errors.",
+          "expected": "No critical/err entries; security logs show expected traffic.",
           "commands": [
-            "show routing-table",
-            "show virtual-router"
+            "show log system",
+            "show log config"
           ]
         },
         {
           "n": 8,
-          "action": "Check security policies and rule hits.",
-          "expected": "Policies reflect intended allow/deny logic; hit counts increase with matching traffic.",
+          "action": "Validate security policy hit counts.",
+          "expected": "Policies show incremental hit counts for allowed/blocked traffic.",
           "commands": [
-            "show rulebase security"
+            "show counter policy"
           ]
         },
         {
           "n": 9,
-          "action": "Verify NAT rules and address objects.",
-          "expected": "Source/destination NAT rules translate addresses as designed; no overlapping IPs.",
+          "action": "Check threat prevention and decryption settings.",
+          "expected": "Decryption policies and anti-virus profiles are correctly applied; no unexpected bypass.",
           "commands": [
-            "show rulebase nat"
+            "show decryption policy",
+            "show profile anti-virus all"
           ]
         },
         {
           "n": 10,
-          "action": "Confirm decryption and SSL/TLS settings.",
-          "expected": "Decryption policies, SSL Forward Proxy, or SSL Inbound Inspection are correctly configured with valid certificates.",
+          "action": "Commit and push configuration.",
+          "expected": "Commit succeeds without errors; devices report 'success' post-push.",
           "commands": [
-            "show decryption",
-            "show ssl decryption"
+            "commit"
           ]
         },
         {
           "n": 11,
-          "action": "Check HA status (if HA is enabled).",
-          "expected": "Active/Passive or Active/Active state is stable with sync in progress or completed.",
+          "action": "Monitor session and traffic post-change.",
+          "expected": "New/updated policies reflected in 'show session all' and counters increase as expected.",
           "commands": [
-            "show high-availability state",
-            "show high-availability all"
-          ]
-        },
-        {
-          "n": 12,
-          "action": "Validate threat prevention and URL filtering.",
-          "expected": "Threat prevention profiles and URL filtering are applied to policies; signatures and categories are up to date.",
-          "commands": [
-            "show threat-prevention profile",
-            "show url-filtering profile"
-          ]
-        },
-        {
-          "n": 13,
-          "action": "Run diagnostics and capture traffic if needed.",
-          "expected": "Diagnostics complete; packet captures show expected traffic flows and issues.",
-          "commands": [
-            "debug dataplane packet-diag basic -f <filter>",
-            "show dpconfig"
-          ]
-        },
-        {
-          "n": 14,
-          "action": "Commit changes and monitor post-commit stability.",
-          "expected": "Commit succeeds without errors; device remains responsive and policies take effect.",
-          "commands": [
-            "commit"
+            "show session all",
+            "show counter traffic"
           ]
         }
       ],
@@ -621,6 +551,111 @@
       "refs": [],
       "vendor": "Cisco",
       "product": "IOS-XE"
+    },
+    {
+      "title": "Step-by-Step Troubleshooting/Config Guide for Topic 9800-WLC",
+      "steps": [
+        {
+          "n": 1,
+          "action": "Verify physical connectivity and power",
+          "expected": "WLC power LED steady, fans running, management interface link up.",
+          "commands": []
+        },
+        {
+          "n": 2,
+          "action": "Access the WLC CLI via console or SSH",
+          "expected": "Login prompt or command-line interface available.",
+          "commands": [
+            "ssh admin@<WLC_IP>",
+            "configure terminal"
+          ]
+        },
+        {
+          "n": 3,
+          "action": "Check WLC software version and health",
+          "expected": "Version output matches expected release; system status shows healthy.",
+          "commands": [
+            "show version",
+            "show system health"
+          ]
+        },
+        {
+          "n": 4,
+          "action": "Verify interface configurations and VLANs",
+          "expected": "Management interface has correct IP/subnet; VLANs are defined and active.",
+          "commands": [
+            "show interface summary",
+            "show vlan"
+          ]
+        },
+        {
+          "n": 5,
+          "action": "Check AP reachability and join status",
+          "expected": "APs are in joined/running state with correct model and config.",
+          "commands": [
+            "show ap summary",
+            "show ap config general"
+          ]
+        },
+        {
+          "n": 6,
+          "action": "Validate WLAN/service set configurations",
+          "expected": "WLANs are enabled with correct SSID, security, and VLAN mapping.",
+          "commands": [
+            "show wlan summary",
+            "show wlan <wlan_id>"
+          ]
+        },
+        {
+          "n": 7,
+          "action": "Inspect RADIUS and authentication settings",
+          "expected": "RADIUS servers reachable; shared secret matches; auth policies applied.",
+          "commands": [
+            "show radius",
+            "show aaa servers"
+          ]
+        },
+        {
+          "n": 8,
+          "action": "Review client connectivity and DHCP",
+          "expected": "Clients associated; DHCP pools active; IP assignment working.",
+          "commands": [
+            "show client summary",
+            "show dhcp scope",
+            "show dhcp binding"
+          ]
+        },
+        {
+          "n": 9,
+          "action": "Check RF and channel plans",
+          "expected": "Channels non-overlapping; power levels within regulatory domain.",
+          "commands": [
+            "show rf-config",
+            "show channel-plan"
+          ]
+        },
+        {
+          "n": 10,
+          "action": "Inspect logs for errors and warnings",
+          "expected": "No critical errors; relevant warnings investigated.",
+          "commands": [
+            "show logging last 100",
+            "show ap debug log last 50"
+          ]
+        },
+        {
+          "n": 11,
+          "action": "Save configuration and document changes",
+          "expected": "Configuration saved to startup; change record updated.",
+          "commands": [
+            "write memory",
+            "show running-config"
+          ]
+        }
+      ],
+      "refs": [],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
     }
   ]
 }

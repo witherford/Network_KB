@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-27T19:54:54.586Z",
+  "updatedAt": "2026-04-28T05:48:53.812Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2653,6 +2653,78 @@
           {
             "cmd": "show counter global filter packet-filter yes",
             "desc": "Counters limited to active packet-filter",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system information and software version for Palo Alto Networks firewall.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set deviceconfig system hostname <new-hostname>",
+            "desc": "Set the hostname of the Palo Alto device.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "request system software install <package-url>",
+            "desc": "Install a software package on Palo Alto device for upgrades or patches.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "configuration": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration of the Palo Alto Networks device.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "configure",
+            "desc": "Enter configuration mode on Palo Alto device to modify settings.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "commit",
+            "desc": "Commit the staged configuration changes on Palo Alto device.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show network interface",
+            "desc": "Display network interface status and configuration on Palo Alto device.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "security": [
+          {
+            "cmd": "show security policy",
+            "desc": "Display configured security policies on Palo Alto firewall.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "troubleshooting": [
+          {
+            "cmd": "debug dataplane packet-trace advanced <source-ip> <destination-ip>",
+            "desc": "Troubleshoot packet flow and policy matches on Palo Alto firewall.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show log threat",
+            "desc": "Display threat-related logs on Palo Alto device.",
             "type": "show",
             "flagged": false
           }
@@ -7704,6 +7776,92 @@
             "cmd": "show wireless trace-on-failure summary",
             "desc": "Last-join-failure traces collected automatically",
             "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display system hardware and software version information.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show ns ip",
+            "desc": "Display NetScaler IP address configurations.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set ns ip <ip_addr> <netmask>",
+            "desc": "Configure a NetScaler IP address.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface",
+            "desc": "Display interface status and statistics.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "loadbalancing": [
+          {
+            "cmd": "show lb vserver",
+            "desc": "Display load balancing virtual server status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set lb vserver <name> <serviceType> <IP> <port>",
+            "desc": "Create or modify a load balancing virtual server.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "global": [
+          {
+            "cmd": "config t",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ns config -full",
+            "desc": "Clear the entire NetScaler configuration (use with caution).",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "logs": [
+          {
+            "cmd": "show logging",
+            "desc": "Display system log messages.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "cmd": "show techsupport",
+            "desc": "Generate and display technical support information.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug lb vserver <name>",
+            "desc": "Enable debugging for a specific load balancing virtual server.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "config": [
+          {
+            "cmd": "show running-config",
+            "desc": "Display the current running configuration.",
+            "type": "show",
             "flagged": false
           }
         ]
@@ -23364,6 +23522,76 @@
             "desc": "Reboot the device",
             "type": "config",
             "flagged": true
+          }
+        ],
+        "system": [
+          {
+            "cmd": "show version",
+            "desc": "Display software version and hardware information.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "config ns param",
+            "desc": "Configure NetScaler system parameters.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "configuration": [
+          {
+            "cmd": "show ns config",
+            "desc": "Show current NetScaler configuration.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Display current running configuration.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "global": [
+          {
+            "cmd": "configure terminal",
+            "desc": "Enter global configuration mode.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "diagnostics": [
+          {
+            "cmd": "show tech-support",
+            "desc": "Collect diagnostic information for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "debug ip packet",
+            "desc": "Enable IP packet debugging for troubleshooting.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "network": [
+          {
+            "cmd": "show interfaces",
+            "desc": "Display interface status and statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/1",
+            "desc": "Enter interface configuration mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "Display IP routing table.",
+            "type": "show",
+            "flagged": false
           }
         ]
       }
