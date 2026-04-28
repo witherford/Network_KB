@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-27T05:43:37.060Z",
+  "updatedAt": "2026-04-28T05:48:34.907Z",
   "items": [
     {
       "id": "CVE-2024-3400",
@@ -166,26 +166,26 @@
     },
     {
       "id": "CVE-2024-20306",
-      "cvss": 9.1,
+      "cvss": 9.8,
       "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Path Traversal Vulnerability",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Command Injection Vulnerability",
       "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
       "fixed": "17.12.0",
       "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20306"
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-cmd-inj-RkA58i0a"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
     },
     {
       "id": "CVE-2024-20307",
-      "cvss": 9.8,
+      "cvss": 9.1,
       "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Command Injection Vulnerability",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Path Traversal Vulnerability",
       "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
       "fixed": "17.12.0",
       "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20307"
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-path-trav-ur5FB99m"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
@@ -266,11 +266,11 @@
       "id": "CVE-2024-20305",
       "cvss": 8.8,
       "severity": "High",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Improper Input Validation Vulnerability",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Improper Input Validation Vulnerability",
       "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
       "fixed": "17.12.0",
       "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20305"
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-imp-input-val-60F0vAkT"
       ],
       "vendor": "Cisco",
       "product": "9800-WLC"
