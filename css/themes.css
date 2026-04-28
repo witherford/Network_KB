@@ -78,6 +78,7 @@
 .badge-mcast{ background:#fdf4ff; color:#86198f; }
 .badge-storage{ background:#f1f5f9; color:#334155; }
 .badge-pve  { background:#fff1f2; color:#9f1239; }
+.badge-aruba{ background:#fff7ed; color:#9a3412; }
 .badge-vxlan{ background:#eef2ff; color:#312e81; }
 .badge-ise  { background:#ecfeff; color:#155e75; }
 
@@ -105,6 +106,7 @@
 .theme-dark .badge-mcast{ background:#2d1a3a; color:#e879f9; }
 .theme-dark .badge-storage{ background:#1f2937; color:#cbd5e1; }
 .theme-dark .badge-pve  { background:#3f0a17; color:#fda4af; }
+.theme-dark .badge-aruba{ background:#3a2800; color:#fdba74; }
 .theme-dark .badge-vxlan{ background:#1e1b4b; color:#a5b4fc; }
 .theme-dark .badge-ise  { background:#083344; color:#67e8f9; }
 
