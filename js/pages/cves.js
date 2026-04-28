@@ -34,8 +34,8 @@ export async function mount(root) {
     <div class="page-toolbar">
       <strong style="font-size:13px">CVE's and bugs</strong>
       <input id="cveSearch" class="search-input" placeholder="Search CVE ID, vendor, product…">
-      <button class="btn sm ghost" id="cveExpandAll" title="Expand every vendor section">▾ Expand all</button>
-      <button class="btn sm ghost" id="cveCollapseAll" title="Collapse every vendor section">▸ Collapse all</button>
+      <button class="btn collapse-all-btn" id="cveExpandAll" title="Expand every vendor section">▾ Expand all vendors</button>
+      <button class="btn collapse-all-btn" id="cveCollapseAll" title="Collapse every vendor section">▸ Collapse all vendors</button>
       <span class="spacer"></span>
       ${state.editMode ? `
         <button class="btn" id="cvFetch">Fetch now</button>
@@ -206,19 +206,17 @@ function renderCves(c, items, filter) {
 
   const tableSections = vendorOrder.map(vendor => {
     const rows = byVendor[vendor];
-    const critical = rows.filter(r => (r.it.severity || '').toLowerCase() === 'critical').length;
-    const high     = rows.filter(r => (r.it.severity || '').toLowerCase() === 'high').length;
     const collapsed = isCveVendorCollapsed(vendor);
+    // v1.3.1 — graphical severity-count chips removed per user request.
+    // The per-row Severity column still indicates severity for each CVE.
     return `
     <section class="platform-section cve-vendor-section${collapsed ? ' cve-collapsed' : ''}" data-vendor="${esc(vendor)}">
       <div class="platform-header">
+        <button class="btn collapse-vendor-btn" data-act="cve-toggle" data-vendor="${esc(vendor)}" title="${collapsed ? 'Expand' : 'Collapse'} ${esc(vendor)}">
+          ${collapsed ? '▸ Expand' : '▾ Collapse'}
+        </button>
         <h2 class="ptitle">${esc(vendor)}</h2>
         <span class="pcnt">${rows.length}</span>
-        ${critical ? `<span class="sev-chip sev-chip-critical">${critical} critical</span>` : ''}
-        ${high ? `<span class="sev-chip sev-chip-high">${high} high</span>` : ''}
-        <span style="margin-left:auto">
-          <button class="btn sm ghost" data-act="cve-toggle" data-vendor="${esc(vendor)}" title="${collapsed ? 'Expand' : 'Collapse'} ${esc(vendor)} section">${collapsed ? '▸' : '▾'}</button>
-        </span>
       </div>
       <div class="cve-section-body" ${collapsed ? 'hidden' : ''}>
       <table class="tbl">

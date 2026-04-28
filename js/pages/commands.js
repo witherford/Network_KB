@@ -80,10 +80,10 @@ function shellHtml() {
     <div class="filter-tabs" id="cmdPlatTabs"></div>
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <div class="filter-tabs type-row" id="cmdTypeTabs" style="flex:1"></div>
-      <span style="display:flex;gap:10px;align-items:center;padding:0 8px">
-        <button class="btn sm ghost" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
-        <button class="btn sm ghost" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);white-space:nowrap">
+      <span style="display:flex;gap:10px;align-items:center;padding:0 8px;flex-wrap:wrap">
+        <button class="btn collapse-all-btn" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
+        <button class="btn collapse-all-btn" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);white-space:nowrap;font-weight:500">
           <input type="checkbox" id="cmdDescTog" ${p.cmdVisible ? 'checked' : ''}> Show commands
         </label>
       </span>
