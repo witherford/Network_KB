@@ -9,6 +9,7 @@ const DEFAULTS = {
   favourites: [],             // array of "platform|section|cmd"
   recent: [],                 // array of "platform|section|cmd"
   collapsed: [],              // array of "platform:section"
+  flags: {},                  // map of "platform|section|cmd" → { reason, ts }
   clockZones: [
     'UTC',
     'America/New_York',
@@ -103,4 +104,36 @@ export function collapseAll(keys, collapsed) {
 
 export function cmdKey(platformKey, section, cmd) {
   return platformKey + '|' + section + '|' + cmd;
+}
+
+/* ---------- Flag / Quarantine ---------- */
+
+export function setFlag(key, reason) {
+  const p = load();
+  p.flags ||= {};
+  p.flags[key] = { reason: String(reason || ''), ts: Date.now() };
+  persist();
+  return p.flags[key];
+}
+
+export function unsetFlag(key) {
+  const p = load();
+  if (!p.flags) return;
+  delete p.flags[key];
+  persist();
+}
+
+export function isFlagged(key) {
+  const p = load();
+  return !!(p.flags && p.flags[key]);
+}
+
+export function getFlag(key) {
+  const p = load();
+  return p.flags ? p.flags[key] : undefined;
+}
+
+export function getAllFlags() {
+  const p = load();
+  return p.flags || {};
 }

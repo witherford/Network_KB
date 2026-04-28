@@ -7,6 +7,7 @@ import { confirmModal } from '../components/modal.js';
 import { loadPool, status as keyStatus } from '../api/keyring.js';
 import { chat } from '../api/ai.js';
 import { getBruteForceConfig, saveBruteForceConfig, clearBruteForceFailures } from '../auth/edit-mode.js';
+import { saveBlockedTerms, getBlockedTerms, DEFAULT_BLOCKED_TERMS, getFlagRateConfig, saveFlagRateConfig, getFlagRateHistory, clearFlagRateHistory } from '../components/flag-validator.js';
 
 const AI_PROVIDERS = [
   { id: 'openrouter', label: 'OpenRouter' },
@@ -47,6 +48,8 @@ export async function mount(root) {
     </div>
     <div class="settings-wrap">
       ${renderSection('Edit-mode security (brute-force defence)', renderBruteForce(s))}
+      ${renderSection('Command flagging — rate-limit & master toggle', renderFlagRate(s))}
+      ${renderSection('Flag-report — blocked phrases', renderFlagBlocked(s))}
       ${renderSection('Repository', renderRepo(s))}
       ${renderSection('AI providers (keyring)', renderProviders(s))}
       ${renderSection('Vendor APIs (Cisco / NVD / MSRC)', renderVendorApis(s))}
@@ -58,6 +61,8 @@ export async function mount(root) {
     </div>`;
 
   wireBruteForce(root, s);
+  wireFlagRate(root, s);
+  wireFlagBlocked(root, s);
   wireRepo(root, s);
   wireProviders(root, s);
   wireVendorApis(root, s);
@@ -137,6 +142,136 @@ function wireBruteForce(root, s) {
     status.style.color = 'var(--success)';
     setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 4000);
   });
+}
+
+/* ---------- Flag rate-limit + master toggle ---------- */
+function renderFlagRate(s) {
+  s.flagRate ||= getFlagRateConfig();
+  const cfg = s.flagRate;
+  const used = getFlagRateHistory().length;
+  return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
+      The 🚩 Flag button on each command can be misused. The rate limit caps how many flags a single browser can submit per hour, and the master toggle lets you turn the feature off completely (useful during incidents or rollouts where you don't want to be flooded with reports).
+    </p>
+
+    <div class="form-row" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <label class="switch-row" style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600">
+        <span style="position:relative;display:inline-block;width:44px;height:22px">
+          <input type="checkbox" id="frEnabled" ${cfg.enabled ? 'checked' : ''} style="opacity:0;width:0;height:0">
+          <span class="switch-slider" id="frSwitch" style="position:absolute;cursor:pointer;inset:0;background:${cfg.enabled ? '#22c55e' : '#475569'};border-radius:22px;transition:background .15s">
+            <span style="position:absolute;left:${cfg.enabled ? '24' : '2'}px;top:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>
+          </span>
+        </span>
+        <span id="frEnabledLabel">Command flagging is <strong>${cfg.enabled ? 'enabled' : 'disabled'}</strong></span>
+      </label>
+    </div>
+
+    <div class="form-row" style="margin-top:14px" id="frRateRow">
+      <label>Maximum flags per hour per browser: <strong id="frMaxV">${cfg.maxPerHour}</strong></label>
+      <input type="range" id="frMax" min="1" max="50" step="1" value="${cfg.maxPerHour}" style="width:100%">
+      <div class="hint">Range 1–50. Default 10. Counting is per-browser localStorage on a rolling 60-minute window.</div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap">
+      <span class="hint" style="font-size:11px"><strong id="frUsed">${used}</strong> flag${used === 1 ? '' : 's'} used in the current hour window.</span>
+      <button class="btn sm" id="frClear" type="button">Reset hourly counter</button>
+      <span class="spacer" style="flex:1"></span>
+      <span class="hint" id="frStatus" style="font-size:11px"></span>
+    </div>`;
+}
+
+function wireFlagRate(root, s) {
+  s.flagRate ||= getFlagRateConfig();
+  const enabled = root.querySelector('#frEnabled');
+  const switchEl = root.querySelector('#frSwitch');
+  const enabledLabel = root.querySelector('#frEnabledLabel');
+  const max = root.querySelector('#frMax');
+  const maxV = root.querySelector('#frMaxV');
+  const rateRow = root.querySelector('#frRateRow');
+  const used = root.querySelector('#frUsed');
+  const reset = root.querySelector('#frClear');
+  const status = root.querySelector('#frStatus');
+
+  function syncSwitchUi() {
+    switchEl.style.background = enabled.checked ? '#22c55e' : '#475569';
+    switchEl.querySelector('span').style.left = (enabled.checked ? 24 : 2) + 'px';
+    enabledLabel.innerHTML = `Command flagging is <strong>${enabled.checked ? 'enabled' : 'disabled'}</strong>`;
+    rateRow.style.opacity = enabled.checked ? '1' : '0.45';
+    rateRow.style.pointerEvents = enabled.checked ? '' : 'none';
+  }
+
+  function persist() {
+    s.flagRate = {
+      enabled: enabled.checked,
+      maxPerHour: +max.value
+    };
+    saveFlagRateConfig(s.flagRate);
+    markDirty();
+  }
+
+  // Make the visual slider clickable too (since the checkbox itself is hidden).
+  switchEl.addEventListener('click', () => { enabled.checked = !enabled.checked; syncSwitchUi(); persist(); });
+
+  enabled.addEventListener('change', () => { syncSwitchUi(); persist(); });
+  max.addEventListener('input', () => {
+    maxV.textContent = max.value;
+    persist();
+  });
+
+  reset.addEventListener('click', () => {
+    clearFlagRateHistory();
+    used.textContent = '0';
+    status.textContent = 'Hourly counter cleared.';
+    status.style.color = 'var(--success)';
+    setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 4000);
+  });
+
+  syncSwitchUi();
+}
+
+/* ---------- Flag-report blocked phrases ---------- */
+function renderFlagBlocked(s) {
+  // Always read the current persisted extras (admin-added) to seed the
+  // textarea — falls back to whatever's in settings if mirror is empty.
+  if (!Array.isArray(s.flagBlockedTerms)) s.flagBlockedTerms = [];
+  const extra = s.flagBlockedTerms;
+  const defaults = DEFAULT_BLOCKED_TERMS;
+  return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
+      When a user clicks <strong>🚩 Flag</strong> on a command, their description is rejected if it matches one of these "low-effort" phrases. The phrases below are <strong>added on top of</strong> the built-in defaults — you can't remove the defaults, but you can extend the list with whatever else you want filtered.
+    </p>
+    <div class="form-row">
+      <label>Additional blocked phrases — one per line (case-insensitive)</label>
+      <textarea id="fbExtra" rows="6" class="search-input" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:12px;resize:vertical" placeholder="garbage&#10;junk&#10;not great">${esc(extra.join('\n'))}</textarea>
+      <div class="hint" style="margin-top:6px;font-size:11px">
+        Saved to localStorage immediately so the flag dialog picks them up without needing to push settings to GitHub.
+      </div>
+    </div>
+    <details style="margin-top:10px">
+      <summary style="cursor:pointer;font-size:12px;color:var(--text-2)">Built-in defaults (${defaults.length} phrases — always active, not editable)</summary>
+      <pre style="font-size:11px;color:var(--text-3);background:var(--surface-2,#1e293b);padding:8px;border-radius:4px;margin-top:6px;line-height:1.6;white-space:pre-wrap">${esc(defaults.join('\n'))}</pre>
+    </details>
+    <div style="margin-top:10px">
+      <span class="hint" id="fbStatus" style="font-size:11px"></span>
+    </div>`;
+}
+
+function wireFlagBlocked(root, s) {
+  const ta = root.querySelector('#fbExtra');
+  const status = root.querySelector('#fbStatus');
+  if (!ta) return;
+  ta.addEventListener('input', () => {
+    const arr = ta.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+    s.flagBlockedTerms = arr;
+    saveBlockedTerms(arr);
+    markDirty();
+    status.textContent = `${arr.length} additional phrase${arr.length === 1 ? '' : 's'} blocked. Live for the next flag attempt.`;
+    status.style.color = 'var(--text-3)';
+    clearTimeout(status._t);
+    status._t = setTimeout(() => { status.textContent = ''; }, 3000);
+  });
+  // Mirror once on render so the localStorage cache is always current.
+  saveBlockedTerms(s.flagBlockedTerms || []);
 }
 
 function renderSection(title, body) {
