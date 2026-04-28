@@ -1075,3 +1075,39 @@ tr.cve-recent td {
   color: #b45309;
   border: 1px solid rgba(180, 83, 9, 0.3);
 }
+
+/* User-flag / quarantine styling (separate from admin-side .flagged class). */
+.cmd-item.user-flagged {
+  background: rgba(220, 38, 38, 0.04);
+  border-left: 3px solid #dc2626;
+}
+.theme-dark .cmd-item.user-flagged {
+  background: rgba(220, 38, 38, 0.10);
+}
+.cmd-flag-reason {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1.4;
+  font-style: italic;
+}
+.cmd-flag-pill {
+  display: inline-block;
+  background: rgba(220, 38, 38, 0.15);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.theme-dark .cmd-flag-pill {
+  color: #fca5a5;
+}
+.cmd-flag-btn:hover {
+  background: rgba(220, 38, 38, 0.12) !important;
+  color: #b91c1c !important;
+}

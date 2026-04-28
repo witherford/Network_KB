@@ -4,9 +4,10 @@
 
 import { loadData } from '../dataloader.js';
 import { esc, hlText, debounce, copyToClipboard, toast, download } from '../utils.js';
-import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey } from '../prefs.js';
+import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
+import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig } from '../components/flag-validator.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 
@@ -161,12 +162,16 @@ function renderPlatformTabs() {
     counts.all += counts[k];
   }
   const groupLabel = ui.group === 'all' ? 'All' : ui.group;
+  const flagCount = Object.keys(getAllFlags()).length;
   const tabs = [
     { key: 'all', label: 'All ' + groupLabel },
     ...groupKeys.map(k => ({ key: k, label: platforms[k].short || platforms[k].label || k })),
     { key: 'favourites', label: '★ Favourites' },
-    { key: 'recent', label: 'Recent' }
+    { key: 'recent', label: 'Recent' },
+    { key: 'quarantine', label: '🚩 Quarantine' }
   ];
+  // Override the count for quarantine.
+  counts.quarantine = flagCount;
   root.innerHTML = tabs.map(t => `
     <button class="ftab ${ui.platform === t.key ? 'active' : ''}" data-plat="${esc(t.key)}">
       ${esc(t.label)}<span class="cnt">${counts[t.key] || 0}</span>
@@ -273,14 +278,29 @@ function filtered() {
   const prefs = getPrefs();
   const favSet = new Set(prefs.favourites);
   const recArr = prefs.recent;
+  const flags = getAllFlags();
+  const flagSet = new Set(Object.keys(flags));
   const groupKeys = new Set(platformsInGroup(ui.group));
   const out = [];
   for (const row of iterAll()) {
+    const key = cmdKey(row.pk, row.section, row.cmd.cmd);
+    const isInQuarantine = flagSet.has(key);
+
     if (ui.type !== 'all' && (row.cmd.type || 'show') !== ui.type) continue;
-    if (ui.platform === 'favourites') { if (!favSet.has(cmdKey(row.pk, row.section, row.cmd.cmd))) continue; }
-    else if (ui.platform === 'recent') { if (!recArr.includes(cmdKey(row.pk, row.section, row.cmd.cmd))) continue; }
-    else if (ui.platform !== 'all') { if (row.pk !== ui.platform) continue; }
-    else if (ui.group !== 'all' && !groupKeys.has(row.pk)) continue;
+
+    if (ui.platform === 'quarantine') {
+      // Quarantine view: show ONLY flagged commands.
+      if (!isInQuarantine) continue;
+    } else {
+      // All other views: hide flagged commands so they live exclusively
+      // in the quarantine bucket.
+      if (isInQuarantine) continue;
+      if (ui.platform === 'favourites') { if (!favSet.has(key)) continue; }
+      else if (ui.platform === 'recent') { if (!recArr.includes(key)) continue; }
+      else if (ui.platform !== 'all') { if (row.pk !== ui.platform) continue; }
+      else if (ui.group !== 'all' && !groupKeys.has(row.pk)) continue;
+    }
+
     if (q) {
       const hay = (row.cmd.cmd + ' ' + (row.cmd.desc || '')).toLowerCase();
       if (!hay.includes(q)) continue;
@@ -356,18 +376,26 @@ function renderList() {
 function cmdItemHtml(row, query) {
   const key = cmdKey(row.pk, row.section, row.cmd.cmd);
   const fav = isFavourite(key);
+  const flagged = isFlagged(key);
+  const flagInfo = flagged ? getFlag(key) : null;
   const t = row.cmd.type || 'show';
   const sel = ui.selected.has(key);
-  return `<div class="cmd-item${fav ? ' favourite' : ''}${row.cmd.flagged ? ' flagged' : ''}${sel ? ' selected' : ''}" data-key="${esc(key)}" data-cmd="${esc(row.cmd.cmd)}" data-pk="${esc(row.pk)}" data-section="${esc(row.section)}" data-idx="${row.idx}">
+  return `<div class="cmd-item${fav ? ' favourite' : ''}${row.cmd.flagged ? ' flagged' : ''}${flagged ? ' user-flagged' : ''}${sel ? ' selected' : ''}" data-key="${esc(key)}" data-cmd="${esc(row.cmd.cmd)}" data-pk="${esc(row.pk)}" data-section="${esc(row.section)}" data-idx="${row.idx}">
     <div class="cmd-row">
       ${state.editMode ? `<input type="checkbox" class="cmd-sel" ${sel ? 'checked' : ''} title="Select">` : ''}
       <div class="cmd-body">
         <div class="cmd-code">${hlText(row.cmd.cmd, query)}<span class="type-badge tb-${t}">${t.toUpperCase()}</span></div>
         <div class="cmd-desc">${hlText(row.cmd.desc || '', query)}</div>
+        ${flagged ? `<div class="cmd-flag-reason" title="Flagged ${new Date(flagInfo.ts).toLocaleString()}"><span class="cmd-flag-pill">🚩 Flagged</span> ${esc(flagInfo.reason)}</div>` : ''}
       </div>
       <div class="cmd-actions">
         ${state.editMode ? '<button class="btn sm ghost" data-act="edit" title="Edit">✎</button>' : ''}
         <button class="btn sm ghost" data-act="fav" title="${fav ? 'Unfavourite' : 'Favourite'}">${fav ? '★' : '☆'}</button>
+        ${flagged
+          ? '<button class="btn sm ghost" data-act="unflag" title="Restore from quarantine — admin or reporter only">↺</button>'
+          : (flaggingEnabled()
+              ? '<button class="btn sm ghost cmd-flag-btn" data-act="flag" title="Flag this command as not working">🚩</button>'
+              : '')}
         <button class="cpy-btn" data-act="copy" title="Copy command">Copy</button>
       </div>
     </div>
@@ -423,7 +451,94 @@ function onListClick(e) {
   }
   if (act === 'edit') {
     openCommandModal({ pk: item.dataset.pk, section: item.dataset.section, idx: Number(item.dataset.idx) });
+    return;
   }
+  if (act === 'flag') return openFlagModal(item.dataset.key, item.dataset.cmd);
+  if (act === 'unflag') return openUnflagConfirm(item.dataset.key, item.dataset.cmd);
+}
+
+function openFlagModal(key, cmd) {
+  // Hard-stop checks — flagging disabled by admin, or rate limit hit
+  // before we even render the modal.
+  const cfg = getFlagRateConfig();
+  if (!cfg.enabled) {
+    toast('Command flagging is currently disabled by the app admin.', 'warn', 6000);
+    return;
+  }
+  const used = getFlagRateHistory().length;
+  const remaining = Math.max(0, cfg.maxPerHour - used);
+  if (remaining === 0) {
+    const oldest = Math.min(...getFlagRateHistory());
+    const resetMin = Math.ceil(((oldest + 3_600_000) - Date.now()) / 60_000);
+    toast(`Flag-rate limit reached: ${cfg.maxPerHour}/hour. Try again in ${resetMin} minute${resetMin === 1 ? '' : 's'}.`, 'warn', 8000);
+    return;
+  }
+
+  openModal((el, close) => {
+    el.innerHTML = `
+      <h3>Flag this command</h3>
+      <p style="font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:8px">
+        You're flagging <code>${esc(cmd)}</code>. Once flagged it moves to the <strong>🚩 Quarantine</strong> tab and disappears from normal browse views — its platform / group / section assignment is preserved.
+      </p>
+      <div class="form-row">
+        <label>Why isn't this working?</label>
+        <textarea id="flagDesc" rows="5" class="search-input" style="width:100%;font-family:inherit;resize:vertical" placeholder="Flag reports must be at least two sentences long. Describe what failed (error message, expected vs actual, firmware/version), and why you believe the command is broken rather than user error."></textarea>
+        <div class="hint" id="flagDescHint" style="margin-top:6px;font-size:11px;line-height:1.5">
+          Flag reports must be at least two sentences long. Generic descriptions ("not working", "bad command", etc.) are rejected — be specific.
+        </div>
+        <div class="hint" style="margin-top:4px;font-size:11px;color:var(--text-3)">
+          Rate limit: ${cfg.maxPerHour}/hour. <strong>${remaining} flag${remaining === 1 ? '' : 's'} remaining</strong> in your current hour window.
+        </div>
+      </div>
+      <div id="flagError" style="display:none;margin-top:8px;color:var(--danger,#dc2626);font-size:12px;line-height:1.5"></div>
+      <div class="modal-footer">
+        <button class="btn" data-act="cancel">Cancel</button>
+        <button class="btn primary" data-act="ok">Send to quarantine</button>
+      </div>`;
+    const ta = el.querySelector('#flagDesc');
+    const errEl = el.querySelector('#flagError');
+    setTimeout(() => ta.focus(), 0);
+
+    const submit = () => {
+      const text = ta.value;
+      const result = validateFlagDescription(text);
+      if (!result.ok) {
+        errEl.style.display = '';
+        errEl.textContent = result.reason;
+        return;
+      }
+      // Description passed → now consume a rate-limit slot.
+      const rate = recordFlagAttempt();
+      if (!rate.allowed) {
+        errEl.style.display = '';
+        errEl.textContent = rate.reason;
+        return;
+      }
+      setFlag(key, text.trim());
+      close();
+      toast(`Command moved to quarantine. ${rate.remaining} flag${rate.remaining === 1 ? '' : 's'} left this hour.`, 'success', 4500);
+      renderStatsBar();
+      renderPlatformTabs();
+      renderList();
+    };
+
+    el.querySelector('[data-act=ok]').addEventListener('click', submit);
+    el.querySelector('[data-act=cancel]').addEventListener('click', close);
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit();
+      if (e.key === 'Escape') close();
+    });
+  });
+}
+
+async function openUnflagConfirm(key, cmd) {
+  const ok = await confirmModal(`Restore "${cmd}" from quarantine? It will be visible in normal browse views again.`);
+  if (!ok) return;
+  unsetFlag(key);
+  toast('Command restored', 'success');
+  renderStatsBar();
+  renderPlatformTabs();
+  renderList();
 }
 
 function onPlatformAction(btn) {
