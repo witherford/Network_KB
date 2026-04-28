@@ -157,11 +157,9 @@ async function wireEditBtn() {
   });
 }
 
-function wireSettingsBtn() {
-  const btn = document.getElementById('settingsBtn');
-  if (!btn) return;
-  btn.addEventListener('click', () => { location.hash = '#/settings'; });
-}
+// Settings page is still reachable directly via #/settings; the gear
+// header button was removed in v1.3.0 because the page is admin-only and
+// the "Check for updates" + version display moved to the header cluster.
 
 function wireVersionUI() {
   const cur = document.getElementById('verCurrent');
@@ -238,7 +236,6 @@ function boot() {
   wireThemeBtn();
   wirePrefsBtn();
   wireEditBtn();
-  wireSettingsBtn();
   wireVersionUI();
   mountVisitsCounter();
   mountBanner();
