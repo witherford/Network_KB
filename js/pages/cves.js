@@ -31,7 +31,7 @@ export async function mount(root) {
 
   root.innerHTML = `
     <div class="page-toolbar">
-      <strong style="font-size:13px">CVEs</strong>
+      <strong style="font-size:13px">CVE's and bugs</strong>
       <input id="cveSearch" class="search-input" placeholder="Search CVE ID, vendor, product…">
       <span class="spacer"></span>
       ${state.editMode ? `

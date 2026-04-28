@@ -42,5 +42,5 @@ export async function mountVisitsCounter() {
   }
   if (count == null) return;
   el.hidden = false;
-  el.textContent = `Visits: ${count.toLocaleString()}`;
+  el.textContent = `This site has had ${count.toLocaleString()} visit${count === 1 ? '' : 's'}`;
 }

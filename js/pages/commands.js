@@ -7,7 +7,7 @@ import { esc, hlText, debounce, copyToClipboard, toast, download } from '../util
 import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
-import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig } from '../components/flag-validator.js';
+import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig, getGlobalFlagCount, incrementGlobalFlagCount } from '../components/flag-validator.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 
@@ -38,6 +38,9 @@ export async function mount(root) {
   wireToolbar(root);
   document.getElementById('cmdListRoot').addEventListener('click', onListClick);
   document.getElementById('cmdListRoot').addEventListener('change', onListChange);
+  // Pull the global flag counter in the background; updates the stats bar
+  // when the value arrives. Fails silently if abacus is unreachable.
+  fetchGlobalFlagCount();
 
   on('editmode:changed', () => { if (state.currentPage === 'commands') renderAll(); });
   window.addEventListener('nkb:reload', () => {
@@ -143,11 +146,24 @@ function renderStatsBar() {
   const pKeys = Object.keys(platforms);
   let total = 0;
   for (const k of pKeys) for (const sec of Object.values(platforms[k].sections || {})) total += sec.length;
+  // Cached global flag count (refreshed via fetchGlobalFlagCount()).
+  const gf = (typeof globalFlagCountCache === 'number') ? globalFlagCountCache : null;
   bar.innerHTML =
     `<span><strong>${total}</strong> commands</span>` +
     `<span><strong>${pKeys.length}</strong> platforms</span>` +
     `<span><strong>${getPrefs().favourites.length}</strong> favourites</span>` +
-    `<span><strong>${getPrefs().recent.length}</strong> recent</span>`;
+    `<span><strong>${getPrefs().recent.length}</strong> recent</span>` +
+    `<span title="Total flag reports raised across every visitor (synced)"><strong>${gf == null ? '—' : gf.toLocaleString()}</strong> globally flagged</span>`;
+}
+
+// Global flag count is fetched async; cache + re-render when it lands.
+let globalFlagCountCache = null;
+async function fetchGlobalFlagCount() {
+  const v = await getGlobalFlagCount();
+  if (v != null && v !== globalFlagCountCache) {
+    globalFlagCountCache = v;
+    if (state.currentPage === 'commands') renderStatsBar();
+  }
 }
 
 function renderPlatformTabs() {
@@ -520,6 +536,13 @@ function openFlagModal(key, cmd) {
       renderStatsBar();
       renderPlatformTabs();
       renderList();
+      // Bump the global counter (cross-visitor) — fire-and-forget.
+      incrementGlobalFlagCount().then(v => {
+        if (v != null) {
+          globalFlagCountCache = v;
+          if (state.currentPage === 'commands') renderStatsBar();
+        }
+      });
     };
 
     el.querySelector('[data-act=ok]').addEventListener('click', submit);
