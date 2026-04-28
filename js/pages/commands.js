@@ -4,10 +4,11 @@
 
 import { loadData } from '../dataloader.js';
 import { esc, hlText, debounce, copyToClipboard, toast, download } from '../utils.js';
-import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags, getSectionDescriptions, setSectionDescriptions, getSectionTypes, setSectionType } from '../prefs.js';
+import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags, getSectionCommands, setSectionCommands, getSectionTypes, setSectionType } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig, getGlobalFlagCount, incrementGlobalFlagCount } from '../components/flag-validator.js';
+import { groupByTopic, shouldGroup } from '../components/topic-detect.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
 import { fetchForKind } from '../components/ai-fetch.js';
 
@@ -80,14 +81,14 @@ function shellHtml() {
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <div class="filter-tabs type-row" id="cmdTypeTabs" style="flex:1"></div>
       <span style="display:flex;gap:10px;align-items:center;padding:0 8px">
-        <button class="btn sm ghost" id="cmdExpandAll" title="Expand every section">▾ Expand all</button>
-        <button class="btn sm ghost" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all</button>
+        <button class="btn sm ghost" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
+        <button class="btn sm ghost" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
         <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);white-space:nowrap">
-          <input type="checkbox" id="cmdDescTog" ${p.descVisible ? 'checked' : ''}> Descriptions
+          <input type="checkbox" id="cmdDescTog" ${p.cmdVisible ? 'checked' : ''}> Show commands
         </label>
       </span>
     </div>
-    <div class="page ${p.descVisible ? 'with-desc' : ''}" id="cmdListRoot"></div>`;
+    <div class="page ${p.cmdVisible ? 'with-cmd' : ''}" id="cmdListRoot"></div>`;
 }
 
 function renderAll() {
@@ -284,8 +285,8 @@ function wireToolbar(root) {
     if (e.key === 'Escape') { search.value = ''; ui.query = ''; renderList(); }
   });
   desc.addEventListener('change', () => {
-    setPref('descVisible', desc.checked);
-    document.getElementById('cmdListRoot').classList.toggle('with-desc', desc.checked);
+    setPref('cmdVisible', desc.checked);
+    document.getElementById('cmdListRoot').classList.toggle('with-cmd', desc.checked);
   });
   document.addEventListener('keydown', e => {
     if (e.key === '/' && document.activeElement !== search && !e.target.closest('input, textarea')) {
@@ -409,29 +410,32 @@ function renderList() {
     for (const [secName, items] of secs) {
       const collapseKey = pk + ':' + secName;
       const collapsed = isCollapsed(collapseKey);
-      const secDescOverride = getSectionDescriptions(collapseKey);   // bool | undefined
-      const pageDesc = getPrefs().descVisible;
-      const effDesc = (secDescOverride === undefined) ? pageDesc : secDescOverride;
+      const secCmdOverride = getSectionCommands(collapseKey);   // bool | undefined
+      const pageCmd = getPrefs().cmdVisible;
+      const effCmdShown = (secCmdOverride === undefined) ? pageCmd : secCmdOverride;
       const types = getSectionTypes(collapseKey);
       // Filter items by per-section type toggles.
       const visible = items.filter(r => {
         const t = r.cmd.type || 'show';
         return !!types[t === 'show' || t === 'config' || t === 'troubleshooting' ? t : 'show'];
       });
-      const descClass = (secDescOverride === true) ? ' with-desc-section'
-                      : (secDescOverride === false) ? ' no-desc-section' : '';
-      html += `<article class="section-card${descClass}" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
+      const cmdClass = (secCmdOverride === true) ? ' with-cmd-section'
+                     : (secCmdOverride === false) ? ' no-cmd-section' : '';
+      // Topic-grouping: if the section is large + diverse enough, render
+      // topic sub-headers (BGP / OSPF / STP / VLAN / etc.); otherwise flat.
+      const itemsHtml = renderItemsBody(visible, q);
+      html += `<article class="section-card${cmdClass}" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
         <header class="section-title">
           <span class="section-title-text">${esc(secName)}</span>
           <span class="sec-cnt">${visible.length}${visible.length !== items.length ? `<span class="sec-cnt-total" title="${items.length} total in this section">/${items.length}</span>` : ''}</span>
           <span class="sec-controls" role="group" aria-label="Section controls">
-            <button class="btn sm ghost sec-ctl" data-act="sec-expand" title="Expand this section">▾</button>
-            <button class="btn sm ghost sec-ctl" data-act="sec-collapse" title="Collapse this section">▸</button>
-            <button class="btn sm ghost sec-ctl ${effDesc ? 'on' : ''}" data-act="sec-desc" title="Toggle command descriptions for this section">📝</button>
+            <button class="btn sm ghost sec-ctl" data-act="sec-expand" title="Show every command in this section">▾ Expand</button>
+            <button class="btn sm ghost sec-ctl" data-act="sec-collapse" title="Hide every command in this section">▸ Collapse</button>
+            <button class="btn sm ghost sec-ctl ${effCmdShown ? 'on' : ''}" data-act="sec-desc" title="Toggle whether the underlying command text is shown next to its description">${effCmdShown ? '✓ Showing commands' : 'Show commands'}</button>
             <span class="sec-type-filters" role="group" aria-label="Type filters">
-              <button class="btn sm ghost type-chip ${types.show ? 'on' : ''} tt-show" data-act="sec-type" data-type="show" title="Show 'show' commands in this section">SHOW</button>
-              <button class="btn sm ghost type-chip ${types.config ? 'on' : ''} tt-config" data-act="sec-type" data-type="config" title="Show 'config' commands in this section">CONFIG</button>
-              <button class="btn sm ghost type-chip ${types.troubleshooting ? 'on' : ''} tt-troubleshooting" data-act="sec-type" data-type="troubleshooting" title="Show 'troubleshooting' commands in this section">TRBL</button>
+              <button class="btn sm ghost type-chip ${types.show ? 'on' : ''} tt-show" data-act="sec-type" data-type="show" title="Toggle 'show' commands">SHOW</button>
+              <button class="btn sm ghost type-chip ${types.config ? 'on' : ''} tt-config" data-act="sec-type" data-type="config" title="Toggle 'config' commands">CONFIG</button>
+              <button class="btn sm ghost type-chip ${types.troubleshooting ? 'on' : ''} tt-troubleshooting" data-act="sec-type" data-type="troubleshooting" title="Toggle 'troubleshooting' commands">TRBL</button>
             </span>
             ${state.editMode ? `<button class="btn sm ghost" data-act="ren-sec" title="Rename section">✎</button>
                <button class="btn sm ghost" data-act="del-sec" title="Delete section">🗑</button>` : ''}
@@ -439,7 +443,7 @@ function renderList() {
         </header>
         <div class="cmd-list" ${collapsed ? 'hidden' : ''}>
           ${visible.length
-            ? visible.map(r => cmdItemHtml(r, q)).join('')
+            ? itemsHtml
             : '<div class="page-empty" style="padding:8px 12px;font-size:12px">No commands match the current type filter for this section.</div>'}
         </div>
       </article>`;
@@ -449,6 +453,31 @@ function renderList() {
   el.innerHTML = html;
 }
 
+// Render the BODY of a section (everything inside .cmd-list). When the
+// section has enough variety + volume, group items by inferred topic
+// (BGP / OSPF / STP / VLAN / etc.) with a small topic header above each
+// cluster. Otherwise render the items flat.
+function renderItemsBody(items, query) {
+  if (!items.length) return '';
+  if (!shouldGroup(items)) return items.map(r => cmdItemHtml(r, query)).join('');
+  const grouped = groupByTopic(items);
+  const out = [];
+  // Sort topics by descending count so the biggest cluster is at the top.
+  const ordered = [...grouped.entries()].sort((a, b) => b[1].length - a[1].length);
+  for (const [topic, rows] of ordered) {
+    out.push(`<div class="topic-group" data-topic="${esc(topic)}">
+      <div class="topic-header">
+        <span class="topic-name">${esc(topic)}</span>
+        <span class="topic-cnt">${rows.length}</span>
+      </div>
+      <div class="topic-items">
+        ${rows.map(r => cmdItemHtml(r, query)).join('')}
+      </div>
+    </div>`);
+  }
+  return out.join('');
+}
+
 function cmdItemHtml(row, query) {
   const key = cmdKey(row.pk, row.section, row.cmd.cmd);
   const fav = isFavourite(key);
@@ -456,12 +485,16 @@ function cmdItemHtml(row, query) {
   const flagInfo = flagged ? getFlag(key) : null;
   const t = row.cmd.type || 'show';
   const sel = ui.selected.has(key);
+  // Labelled-row layout: a "Description: …" line is always visible, and a
+  // "Command: …" line appears when the page-level or per-section "Show
+  // commands" toggle is on. The CSS classes .with-cmd-section /
+  // .no-cmd-section on the section-card override the page-level default.
   return `<div class="cmd-item${fav ? ' favourite' : ''}${row.cmd.flagged ? ' flagged' : ''}${flagged ? ' user-flagged' : ''}${sel ? ' selected' : ''}" data-key="${esc(key)}" data-cmd="${esc(row.cmd.cmd)}" data-pk="${esc(row.pk)}" data-section="${esc(row.section)}" data-idx="${row.idx}">
     <div class="cmd-row">
       ${state.editMode ? `<input type="checkbox" class="cmd-sel" ${sel ? 'checked' : ''} title="Select">` : ''}
       <div class="cmd-body">
-        <div class="cmd-code">${hlText(row.cmd.cmd, query)}<span class="type-badge tb-${t}">${t.toUpperCase()}</span></div>
-        <div class="cmd-desc">${hlText(row.cmd.desc || '', query)}</div>
+        <div class="cmd-line cmd-desc-line"><span class="cmd-lbl">Description:</span> <span class="cmd-desc-text">${hlText(row.cmd.desc || '(no description)', query)}</span></div>
+        <div class="cmd-line cmd-cmd-line"><span class="cmd-lbl">Command:</span> <code class="cmd-cmd-text">${hlText(row.cmd.cmd, query)}</code></div>
         ${flagged ? `<div class="cmd-flag-reason" title="Flagged ${new Date(flagInfo.ts).toLocaleString()}"><span class="cmd-flag-pill">🚩 Flagged</span> ${esc(flagInfo.reason)}</div>` : ''}
       </div>
       <div class="cmd-actions">
@@ -473,6 +506,7 @@ function cmdItemHtml(row, query) {
               ? '<button class="btn sm ghost cmd-flag-btn" data-act="flag" title="Flag this command as not working">🚩</button>'
               : '')}
         <button class="cpy-btn" data-act="copy" title="Copy command">Copy</button>
+        <span class="type-badge tb-${t}" title="Command category">${t.toUpperCase()}</span>
       </div>
     </div>
   </div>`;
@@ -508,12 +542,13 @@ function onListClick(e) {
     if (!isCollapsed(card.dataset.sec)) toggleCollapsed(card.dataset.sec);
     renderList(); return;
   }
-  // Per-section descriptions toggle — three-state cycle: inherit → on → off → inherit.
+  // Per-section "Show commands" toggle — three-state cycle:
+  // inherit → forced on → forced off → inherit.
   if (act === 'sec-desc' && card) {
-    const cur = getSectionDescriptions(card.dataset.sec);
-    if (cur === undefined) setSectionDescriptions(card.dataset.sec, true);
-    else if (cur === true) setSectionDescriptions(card.dataset.sec, false);
-    else setSectionDescriptions(card.dataset.sec, undefined);
+    const cur = getSectionCommands(card.dataset.sec);
+    if (cur === undefined) setSectionCommands(card.dataset.sec, true);
+    else if (cur === true) setSectionCommands(card.dataset.sec, false);
+    else setSectionCommands(card.dataset.sec, undefined);
     renderList(); return;
   }
   // Per-section type filter chip — toggle one type on/off in this section.

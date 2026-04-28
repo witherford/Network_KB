@@ -1161,10 +1161,82 @@ tr.cve-recent td {
 .theme-dark .type-chip.tt-config.on     { color: #fbbf24 !important; }
 .theme-dark .type-chip.tt-troubleshooting.on { color: #fca5a5 !important; }
 
-/* Per-section descriptions overrides take precedence over the page-level
-   .with-desc class on #cmdListRoot. */
-.section-card.with-desc-section .cmd-item .cmd-desc { display: block !important; }
-.section-card.no-desc-section   .cmd-item .cmd-desc { display: none  !important; }
+/* ----- Labelled command rows (v1.3.0) -----
+ * Default: show "Description:" line only.
+ * Page-level "Show commands" → adds .with-cmd to #cmdListRoot, which reveals
+ * the "Command:" line.
+ * Per-section override: .section-card.with-cmd-section forces show; .no-cmd-section forces hide.
+ */
+.cmd-line {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+.cmd-line + .cmd-line { margin-top: 2px; }
+.cmd-lbl {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--text-3, #94a3b8);
+  margin-right: 6px;
+}
+.cmd-cmd-text {
+  font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-size: 12.5px;
+  background: rgba(0,0,0,.04);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.theme-dark .cmd-cmd-text { background: rgba(255,255,255,.05); }
+.cmd-desc-text { color: var(--text, inherit); }
+
+/* Default: command line hidden. Toggle classes turn it on. */
+.cmd-cmd-line { display: none; }
+.with-cmd .cmd-cmd-line { display: block; }
+.section-card.with-cmd-section .cmd-cmd-line { display: block !important; }
+.section-card.no-cmd-section   .cmd-cmd-line { display: none  !important; }
+
+/* Type-badge moved into the actions column, beneath the Copy button. */
+.cmd-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.cmd-actions .type-badge {
+  margin-top: 2px;
+  font-size: 9.5px;
+  padding: 1px 7px;
+}
+
+/* Topic sub-group headers inside a section. */
+.topic-group + .topic-group {
+  margin-top: 8px;
+  border-top: 1px dashed var(--border, rgba(255,255,255,.08));
+  padding-top: 6px;
+}
+.topic-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--accent, #2563eb);
+}
+.theme-dark .topic-header { color: #38bdf8; }
+.topic-header .topic-cnt {
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--accent, #2563eb);
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.theme-dark .topic-header .topic-cnt { color: #38bdf8; }
 
 .sec-cnt-total {
   margin-left: 2px;

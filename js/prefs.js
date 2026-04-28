@@ -5,12 +5,17 @@ const DEFAULTS = {
   theme: 'light',             // 'light' | 'dark'
   fontSize: 14,               // px
   accent: '#2563eb',
-  descVisible: false,
+  // Legacy pref: now repurposed — when true, command text is shown alongside
+  // its description. Default flipped to false (descriptions only) per v1.3.0.
+  cmdVisible: false,
+  // Kept for backward compatibility with old localStorage records that may
+  // still hold this; nothing reads it any more.
+  descVisible: true,
   favourites: [],             // array of "platform|section|cmd"
   recent: [],                 // array of "platform|section|cmd"
   collapsed: [],              // array of "platform:section"
   cveCollapsed: [],           // array of CVE vendor names that are collapsed
-  sectionDescriptions: {},    // section-key → bool override (undefined = inherit page-level)
+  sectionCommands: {},        // section-key → bool override (undefined = inherit page-level cmdVisible)
   sectionTypes: {},           // section-key → { show, config, troubleshooting } (default: all true)
   flags: {},                  // map of "platform|section|cmd" → { reason, ts }
   clockZones: [
@@ -88,18 +93,20 @@ export function isCollapsed(key) {
   return load().collapsed.includes(key);
 }
 
-/* ---------- Per-section descriptions toggle ---------- */
-export function getSectionDescriptions(sectionKey) {
+/* ---------- Per-section "Show commands" toggle ----------
+ * tri-state: undefined = inherit page-level, true = force show, false = force hide.
+ */
+export function getSectionCommands(sectionKey) {
   const p = load();
-  return (p.sectionDescriptions && Object.prototype.hasOwnProperty.call(p.sectionDescriptions, sectionKey))
-    ? p.sectionDescriptions[sectionKey]
+  return (p.sectionCommands && Object.prototype.hasOwnProperty.call(p.sectionCommands, sectionKey))
+    ? p.sectionCommands[sectionKey]
     : undefined;
 }
-export function setSectionDescriptions(sectionKey, val) {
+export function setSectionCommands(sectionKey, val) {
   const p = load();
-  p.sectionDescriptions ||= {};
-  if (val === undefined || val === null) delete p.sectionDescriptions[sectionKey];
-  else p.sectionDescriptions[sectionKey] = !!val;
+  p.sectionCommands ||= {};
+  if (val === undefined || val === null) delete p.sectionCommands[sectionKey];
+  else p.sectionCommands[sectionKey] = !!val;
   persist();
 }
 
