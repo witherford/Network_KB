@@ -38,11 +38,18 @@
     <button class="nav-tab" data-page="guides" role="tab">Guides</button>
     <button class="nav-tab" data-page="cves" role="tab">CVEs</button>
     <button class="nav-tab" data-page="toolkit" role="tab">Toolkit</button>
-    <button class="nav-tab" data-page="settings" role="tab">Settings</button>
   </nav>
   <div class="header-actions">
+    <div class="ver-cluster" id="verCluster" title="App version">
+      <div class="ver-row">
+        <span class="ver-current" id="verCurrent">v…</span>
+        <button class="icon-btn ver-check" id="verCheckBtn" title="Check for updates">⟳ Check for updates</button>
+      </div>
+      <div class="ver-latest" id="verLatest" hidden></div>
+    </div>
     <button class="icon-btn pwa-install-btn" id="pwaInstallBtn" hidden title="Install as an app">⤓ Install</button>
     <button class="icon-btn" id="editModeBtn" title="Enter edit mode">Edit</button>
+    <button class="icon-btn" id="settingsBtn" title="Settings (edit-mode required for most options)" aria-label="Settings">⚙</button>
     <button class="icon-btn" id="themeBtn" title="Toggle theme">Theme</button>
     <button class="icon-btn" id="prefsBtn" title="Display preferences">Aa</button>
   </div>

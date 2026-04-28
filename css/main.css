@@ -173,3 +173,51 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 /* iOS hint toast — slightly taller than a normal toast. */
 .pwa-ios-hint { max-width: 320px; }
 
+/* Header version cluster (replaces the Settings page "Check for updates"). */
+.ver-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-right: 6px;
+  line-height: 1.1;
+}
+.ver-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ver-current {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.55);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+}
+.ver-check {
+  font-size: 10.5px !important;
+  padding: 3px 8px !important;
+}
+.ver-latest {
+  font-size: 10px;
+  color: rgba(255,255,255,.5);
+  white-space: nowrap;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ver-latest.ver-behind {
+  color: #fde68a;
+}
+.ver-latest.ver-current-ok {
+  color: rgba(74,222,128,.85);
+}
+.ver-latest.ver-err {
+  color: #fecaca;
+}
+
+/* Compact the version cluster on small screens to keep the header tidy. */
+@media (max-width: 760px) {
+  .ver-cluster { margin-right: 2px; }
+  .ver-latest { display: none; }
+}
+

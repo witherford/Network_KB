@@ -50,9 +50,6 @@ function shellHtml() {
     <div class="stats-bar" id="cmdStats"></div>
     <div class="page-toolbar">
       <input id="cmdSearch" class="search-input" placeholder="Search commands…   (press /)">
-      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)">
-        <input type="checkbox" id="cmdDescTog" ${p.descVisible ? 'checked' : ''}> Descriptions
-      </label>
       <span class="spacer"></span>
       <span id="cmdMatch" style="font-size:11px;color:var(--text-3);margin-right:10px"></span>
       <button class="btn" id="cmdExport" title="Export CSV">Export</button>
@@ -68,9 +65,12 @@ function shellHtml() {
     <div class="filter-tabs" id="cmdPlatTabs"></div>
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <div class="filter-tabs type-row" id="cmdTypeTabs" style="flex:1"></div>
-      <span style="display:flex;gap:6px;align-items:center;padding:0 8px">
+      <span style="display:flex;gap:10px;align-items:center;padding:0 8px">
         <button class="btn sm ghost" id="cmdExpandAll" title="Expand every section">▾ Expand all</button>
         <button class="btn sm ghost" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);white-space:nowrap">
+          <input type="checkbox" id="cmdDescTog" ${p.descVisible ? 'checked' : ''}> Descriptions
+        </label>
       </span>
     </div>
     <div class="page ${p.descVisible ? 'with-desc' : ''}" id="cmdListRoot"></div>`;
