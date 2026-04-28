@@ -15,6 +15,7 @@ const DEFAULTS = {
   recent: [],                 // array of "platform|section|cmd"
   collapsed: [],              // array of "platform:section"
   cveCollapsed: [],           // array of CVE vendor names that are collapsed
+  swCollapsed: [],            // array of Software vendor names that are collapsed
   sectionCommands: {},        // section-key → bool override (undefined = inherit page-level cmdVisible)
   sectionTypes: {},           // section-key → { show, config, troubleshooting } (default: all true)
   flags: {},                  // map of "platform|section|cmd" → { reason, ts }
@@ -146,6 +147,30 @@ export function setCveVendorsCollapsed(vendors, collapsed) {
   } else {
     const drop = new Set(vendors);
     p.cveCollapsed = (p.cveCollapsed || []).filter(v => !drop.has(v));
+  }
+  persist();
+}
+
+/* ---------- Software-page vendor collapse ---------- */
+export function isSwVendorCollapsed(vendor) {
+  return load().swCollapsed.includes(vendor);
+}
+export function toggleSwVendor(vendor) {
+  const p = load();
+  p.swCollapsed ||= [];
+  const i = p.swCollapsed.indexOf(vendor);
+  if (i >= 0) p.swCollapsed.splice(i, 1);
+  else p.swCollapsed.push(vendor);
+  persist();
+}
+export function setSwVendorsCollapsed(vendors, collapsed) {
+  const p = load();
+  if (collapsed) {
+    const set = new Set([...(p.swCollapsed || []), ...vendors]);
+    p.swCollapsed = [...set];
+  } else {
+    const drop = new Set(vendors);
+    p.swCollapsed = (p.swCollapsed || []).filter(v => !drop.has(v));
   }
   persist();
 }
