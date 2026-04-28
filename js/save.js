@@ -7,16 +7,17 @@ import { encryptJson } from './crypto.js';
 import { toast } from './utils.js';
 
 const DATA_PATHS = {
-  commands: 'data/commands.json',
-  software: 'data/software.json',
-  guides:   'data/guides.json',
-  cves:     'data/cves.json'
+  commands:   'data/commands.json',
+  software:   'data/software.json',
+  guides:     'data/guides.json',
+  cves:       'data/cves.json',
+  quarantine: 'data/quarantine.json'
 };
 
 export function describePending() {
   const p = state.pending;
   const bits = [];
-  for (const k of ['commands', 'software', 'guides', 'cves']) {
+  for (const k of ['commands', 'software', 'guides', 'cves', 'quarantine']) {
     if (p[k]) bits.push(k);
   }
   const cs = Object.keys(p.cheatsheets || {});
@@ -90,7 +91,7 @@ export async function saveAll(message) {
     changes
   });
 
-   if (state.pending.settings) {
+  if (state.pending.settings) {
     state.settings = state.pending.settings;
   }
   // Seed in-memory data cache with what we just committed. Without this, the

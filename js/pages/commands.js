@@ -4,7 +4,7 @@
 
 import { loadData } from '../dataloader.js';
 import { esc, hlText, debounce, copyToClipboard, toast, download } from '../utils.js';
-import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags } from '../prefs.js';
+import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags, getSectionDescriptions, setSectionDescriptions, getSectionTypes, setSectionType } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig, getGlobalFlagCount, incrementGlobalFlagCount } from '../components/flag-validator.js';
@@ -32,6 +32,16 @@ export async function mount(root) {
   rootEl = root;
   const disk = await loadData('commands');
   state.data.commands = disk;
+  // Load the deployed quarantine (data/quarantine.json) — represents the
+  // admin-approved global flag list, "baked into the app". Merged into
+  // the local view via mergeQuarantineFlagsIntoLocal() below.
+  try {
+    const q = await loadData('quarantine');
+    state.data.quarantine = q;
+    mergeQuarantineFlagsIntoLocal(q);
+  } catch (err) {
+    console.warn('[commands] quarantine load failed:', err);
+  }
 
   root.innerHTML = shellHtml();
   renderAll();
@@ -154,6 +164,37 @@ function renderStatsBar() {
     `<span><strong>${getPrefs().favourites.length}</strong> favourites</span>` +
     `<span><strong>${getPrefs().recent.length}</strong> recent</span>` +
     `<span title="Total flag reports raised across every visitor (synced)"><strong>${gf == null ? '—' : gf.toLocaleString()}</strong> globally flagged</span>`;
+}
+
+// Merge the deployed quarantine.json's flags into the user's local prefs so
+// they show up immediately, even on a fresh device. Existing local flags
+// take precedence (the user's own reasons / timestamps trump the deployed
+// snapshot). Conversely, if the local cache has flags that the deployed
+// file does NOT, we keep them — they may be pending admin review.
+function mergeQuarantineFlagsIntoLocal(quarantine) {
+  const remote = (quarantine && quarantine.flags) || {};
+  for (const [key, info] of Object.entries(remote)) {
+    if (!isFlagged(key)) {
+      setFlag(key, info.reason || '');
+      // Preserve original ts if provided.
+      try {
+        const p = JSON.parse(localStorage.getItem('nkb.prefs.v1') || '{}');
+        if (p.flags && p.flags[key] && info.ts) p.flags[key].ts = info.ts;
+        localStorage.setItem('nkb.prefs.v1', JSON.stringify(p));
+      } catch {}
+    }
+  }
+}
+
+// Build the full flag map (local view) and stage it as a pending
+// quarantine.json mutation so the next admin save pushes it.
+function stageQuarantineForSave() {
+  state.pending.quarantine = {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    flags: getAllFlags()
+  };
+  emit('pending:changed');
 }
 
 // Global flag count is fetched async; cache + re-render when it lands.
@@ -368,19 +409,38 @@ function renderList() {
     for (const [secName, items] of secs) {
       const collapseKey = pk + ':' + secName;
       const collapsed = isCollapsed(collapseKey);
-      html += `<article class="section-card" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
+      const secDescOverride = getSectionDescriptions(collapseKey);   // bool | undefined
+      const pageDesc = getPrefs().descVisible;
+      const effDesc = (secDescOverride === undefined) ? pageDesc : secDescOverride;
+      const types = getSectionTypes(collapseKey);
+      // Filter items by per-section type toggles.
+      const visible = items.filter(r => {
+        const t = r.cmd.type || 'show';
+        return !!types[t === 'show' || t === 'config' || t === 'troubleshooting' ? t : 'show'];
+      });
+      const descClass = (secDescOverride === true) ? ' with-desc-section'
+                      : (secDescOverride === false) ? ' no-desc-section' : '';
+      html += `<article class="section-card${descClass}" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
         <header class="section-title">
-          <span>${esc(secName)}</span>
-          <span class="sec-actions">
-            <span class="sec-cnt">${items.length}</span>
-            <button class="btn sm ghost" data-act="copy-all" title="Copy all">Copy all</button>
+          <span class="section-title-text">${esc(secName)}</span>
+          <span class="sec-cnt">${visible.length}${visible.length !== items.length ? `<span class="sec-cnt-total" title="${items.length} total in this section">/${items.length}</span>` : ''}</span>
+          <span class="sec-controls" role="group" aria-label="Section controls">
+            <button class="btn sm ghost sec-ctl" data-act="sec-expand" title="Expand this section">▾</button>
+            <button class="btn sm ghost sec-ctl" data-act="sec-collapse" title="Collapse this section">▸</button>
+            <button class="btn sm ghost sec-ctl ${effDesc ? 'on' : ''}" data-act="sec-desc" title="Toggle command descriptions for this section">📝</button>
+            <span class="sec-type-filters" role="group" aria-label="Type filters">
+              <button class="btn sm ghost type-chip ${types.show ? 'on' : ''} tt-show" data-act="sec-type" data-type="show" title="Show 'show' commands in this section">SHOW</button>
+              <button class="btn sm ghost type-chip ${types.config ? 'on' : ''} tt-config" data-act="sec-type" data-type="config" title="Show 'config' commands in this section">CONFIG</button>
+              <button class="btn sm ghost type-chip ${types.troubleshooting ? 'on' : ''} tt-troubleshooting" data-act="sec-type" data-type="troubleshooting" title="Show 'troubleshooting' commands in this section">TRBL</button>
+            </span>
             ${state.editMode ? `<button class="btn sm ghost" data-act="ren-sec" title="Rename section">✎</button>
                <button class="btn sm ghost" data-act="del-sec" title="Delete section">🗑</button>` : ''}
-            <button class="btn sm ghost" data-act="toggle" title="Collapse">${collapsed ? '▸' : '▾'}</button>
           </span>
         </header>
         <div class="cmd-list" ${collapsed ? 'hidden' : ''}>
-          ${items.map(r => cmdItemHtml(r, q)).join('')}
+          ${visible.length
+            ? visible.map(r => cmdItemHtml(r, q)).join('')
+            : '<div class="page-empty" style="padding:8px 12px;font-size:12px">No commands match the current type filter for this section.</div>'}
         </div>
       </article>`;
     }
@@ -438,10 +498,31 @@ function onListClick(e) {
   const item = btn.closest('.cmd-item');
 
   if (act === 'toggle' && card) { toggleCollapsed(card.dataset.sec); renderList(); return; }
-  if (act === 'copy-all' && card) {
-    const cmds = [...card.querySelectorAll('.cmd-item')].map(el => el.dataset.cmd);
-    copyToClipboard(cmds.join('\n')).then(ok => toast(ok ? `Copied ${cmds.length} commands` : 'Copy failed', ok ? 'success' : 'error'));
-    return;
+  // Per-section "Expand all" — uncollapse this section.
+  if (act === 'sec-expand' && card) {
+    if (isCollapsed(card.dataset.sec)) toggleCollapsed(card.dataset.sec);
+    renderList(); return;
+  }
+  // Per-section "Collapse all" — collapse this section.
+  if (act === 'sec-collapse' && card) {
+    if (!isCollapsed(card.dataset.sec)) toggleCollapsed(card.dataset.sec);
+    renderList(); return;
+  }
+  // Per-section descriptions toggle — three-state cycle: inherit → on → off → inherit.
+  if (act === 'sec-desc' && card) {
+    const cur = getSectionDescriptions(card.dataset.sec);
+    if (cur === undefined) setSectionDescriptions(card.dataset.sec, true);
+    else if (cur === true) setSectionDescriptions(card.dataset.sec, false);
+    else setSectionDescriptions(card.dataset.sec, undefined);
+    renderList(); return;
+  }
+  // Per-section type filter chip — toggle one type on/off in this section.
+  if (act === 'sec-type' && card) {
+    const sectionKey = card.dataset.sec;
+    const t = btn.dataset.type;
+    const cur = getSectionTypes(sectionKey);
+    setSectionType(sectionKey, t, !cur[t]);
+    renderList(); return;
   }
   if (act === 'ren-sec' && card) return renameSection(card.dataset.pk, card.dataset.sname);
   if (act === 'del-sec' && card) return deleteSection(card.dataset.pk, card.dataset.sname);
@@ -531,6 +612,7 @@ function openFlagModal(key, cmd) {
         return;
       }
       setFlag(key, text.trim());
+      stageQuarantineForSave();
       close();
       toast(`Command moved to quarantine. ${rate.remaining} flag${rate.remaining === 1 ? '' : 's'} left this hour.`, 'success', 4500);
       renderStatsBar();
@@ -558,6 +640,7 @@ async function openUnflagConfirm(key, cmd) {
   const ok = await confirmModal(`Restore "${cmd}" from quarantine? It will be visible in normal browse views again.`);
   if (!ok) return;
   unsetFlag(key);
+  stageQuarantineForSave();
   toast('Command restored', 'success');
   renderStatsBar();
   renderPlatformTabs();
