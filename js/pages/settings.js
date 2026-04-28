@@ -6,6 +6,7 @@ import { esc, toast, uid } from '../utils.js';
 import { confirmModal } from '../components/modal.js';
 import { loadPool, status as keyStatus } from '../api/keyring.js';
 import { chat } from '../api/ai.js';
+import { getBruteForceConfig, saveBruteForceConfig, clearBruteForceFailures } from '../auth/edit-mode.js';
 
 const AI_PROVIDERS = [
   { id: 'openrouter', label: 'OpenRouter' },
@@ -20,22 +21,13 @@ export async function mount(root) {
       <div class="page-toolbar"><strong style="font-size:13px">Settings</strong><span class="spacer"></span></div>
       <div class="settings-wrap">
         <section class="settings-section">
-          <h3>App / PWA</h3>
-          <div class="form-row" style="max-width:520px">
-            <label>Installable progressive web app — works offline.</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
-              <button class="btn primary" id="pwaCheckBtn">Check for updates</button>
-              <span class="hint" id="pwaCheckStatus">Idle.</span>
-            </div>
-            <div class="hint" style="margin-top:6px">The app also auto-checks at startup and every 30 minutes while open. Updates download in the background; you'll get a banner asking to reload when ready.</div>
-          </div>
-        </section>
-        <section class="settings-section">
           <h3>Admin access</h3>
-          <p style="font-size:12px;color:var(--text-3)">The rest of Settings is password-protected. Click <strong>Edit</strong> in the header and enter the admin password to unlock.</p>
+          <p style="font-size:12px;color:var(--text-3);line-height:1.5">
+            All Settings options are password-protected. Click <strong>Edit</strong> in the header and enter the admin password to unlock.
+            Update checks are now handled in the header — click <strong>⟳ Check for updates</strong> next to the version number.
+          </p>
         </section>
       </div>`;
-    wirePwaCheck(root);
     return;
   }
 
@@ -54,17 +46,7 @@ export async function mount(root) {
       <span style="font-size:11px;color:var(--text-3)">Use the floating banner to Save or Discard.</span>
     </div>
     <div class="settings-wrap">
-      <section class="settings-section">
-        <h3>App / PWA</h3>
-        <div class="form-row" style="max-width:520px">
-          <label>Check for, and apply, app updates</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
-            <button class="btn primary" id="pwaCheckBtn">Check for updates</button>
-            <span class="hint" id="pwaCheckStatus">Idle.</span>
-          </div>
-          <div class="hint" style="margin-top:6px">Auto-runs at startup and every 30 minutes. Updates pre-cache in the background; an in-page banner appears when a new version is ready.</div>
-        </div>
-      </section>
+      ${renderSection('Edit-mode security (brute-force defence)', renderBruteForce(s))}
       ${renderSection('Repository', renderRepo(s))}
       ${renderSection('AI providers (keyring)', renderProviders(s))}
       ${renderSection('Vendor APIs (Cisco / NVD / MSRC)', renderVendorApis(s))}
@@ -75,6 +57,7 @@ export async function mount(root) {
       ${renderSection('Session', renderSession(s))}
     </div>`;
 
+  wireBruteForce(root, s);
   wireRepo(root, s);
   wireProviders(root, s);
   wireVendorApis(root, s);
@@ -83,25 +66,76 @@ export async function mount(root) {
   wireWatchlist(root, s);
   wireCron(root, s);
   wireSession(root, s);
-  wirePwaCheck(root);
 }
 
-function wirePwaCheck(root) {
-  const btn = root.querySelector('#pwaCheckBtn');
-  const status = root.querySelector('#pwaCheckStatus');
-  if (!btn) return;
-  btn.addEventListener('click', async () => {
-    if (typeof window.checkForAppUpdate !== 'function') {
-      status.textContent = 'Service worker not available in this browser.'; return;
-    }
-    btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Checking…';
-    status.textContent = 'Contacting source…';
-    const r = await window.checkForAppUpdate();
-    btn.disabled = false; btn.textContent = orig;
-    if (r === 'updating') status.textContent = 'Update found — downloading. Reload prompt will appear when ready.';
-    else if (r === 'up-to-date') status.textContent = 'Already up to date.';
-    else if (r === 'unsupported') status.textContent = 'Service worker not supported.';
-    else status.textContent = 'Check failed: ' + r;
+/* ---------- Edit-mode security (brute-force defence) ---------- */
+function renderBruteForce(s) {
+  // Source of truth: settings (saved + encrypted). Fall back to the
+  // localStorage cache so the slider has a sensible starting position
+  // even on a brand-new envelope.
+  s.bruteForce ||= getBruteForceConfig();
+  const bf = s.bruteForce;
+  return `
+    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
+      If someone enters the wrong admin password too many times in a short window, edit mode is locked out for a configurable cool-off period. The thresholds are mirrored to your browser's local storage so they're enforced even before settings are decrypted.
+    </p>
+
+    <div class="form-row" style="margin-top:8px">
+      <label>Maximum failed attempts before lockout: <strong id="bfMaxV">${bf.maxAttempts}</strong></label>
+      <input type="range" id="bfMax" min="3" max="15" step="1" value="${bf.maxAttempts}" style="width:100%">
+      <div class="hint">Range 3–15. Default 5.</div>
+    </div>
+
+    <div class="form-row" style="margin-top:14px">
+      <label>Sliding window for counting failures: <strong id="bfWinV">${bf.windowMinutes}</strong> min</label>
+      <input type="range" id="bfWin" min="1" max="60" step="1" value="${bf.windowMinutes}" style="width:100%">
+      <div class="hint">Range 1–60 minutes. Default 10 — failures older than this drop off and don't count.</div>
+    </div>
+
+    <div class="form-row" style="margin-top:14px">
+      <label>Lockout duration once tripped: <strong id="bfLockV">${bf.lockoutMinutes}</strong> min</label>
+      <input type="range" id="bfLock" min="5" max="240" step="5" value="${bf.lockoutMinutes}" style="width:100%">
+      <div class="hint">Range 5–240 minutes. Default 30 — must satisfy the user's "over 30 minutes" requirement.</div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap">
+      <button class="btn" id="bfReset" type="button" title="Clear any active lockout + failure counters">Reset failures / clear active lockout</button>
+      <span class="hint" id="bfStatus"></span>
+    </div>`;
+}
+
+function wireBruteForce(root, s) {
+  s.bruteForce ||= getBruteForceConfig();
+  const max  = root.querySelector('#bfMax');
+  const win  = root.querySelector('#bfWin');
+  const lock = root.querySelector('#bfLock');
+  const maxV = root.querySelector('#bfMaxV');
+  const winV = root.querySelector('#bfWinV');
+  const lockV= root.querySelector('#bfLockV');
+  const reset= root.querySelector('#bfReset');
+  const status = root.querySelector('#bfStatus');
+
+  function syncOut() {
+    s.bruteForce.maxAttempts    = +max.value;
+    s.bruteForce.windowMinutes  = +win.value;
+    s.bruteForce.lockoutMinutes = +lock.value;
+    maxV.textContent = max.value;
+    winV.textContent = win.value;
+    lockV.textContent = lock.value;
+    // Mirror to localStorage right away so the next failed-unlock attempt
+    // already enforces the new thresholds without waiting for Save.
+    saveBruteForceConfig(s.bruteForce);
+    markDirty();
+  }
+  max.addEventListener('input', syncOut);
+  win.addEventListener('input', syncOut);
+  lock.addEventListener('input', syncOut);
+
+  reset.addEventListener('click', () => {
+    clearBruteForceFailures();
+    status.textContent = 'Cleared — no active lockout, attempt counter reset.';
+    status.style.color = 'var(--success)';
+    setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 4000);
   });
 }
 

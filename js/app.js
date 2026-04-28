@@ -5,6 +5,7 @@ import { getPrefs, setPref, apply as applyPrefs } from './prefs.js';
 import { openModal } from './components/modal.js';
 import { mountBanner } from './components/edit-banner.js';
 import { toast } from './utils.js';
+import { APP_VERSION } from './version.js';
 
 const PAGES = {
   commands: () => import('./pages/commands.js'),
@@ -155,12 +156,89 @@ async function wireEditBtn() {
   });
 }
 
+function wireSettingsBtn() {
+  const btn = document.getElementById('settingsBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => { location.hash = '#/settings'; });
+}
+
+function wireVersionUI() {
+  const cur = document.getElementById('verCurrent');
+  const checkBtn = document.getElementById('verCheckBtn');
+  const latestEl = document.getElementById('verLatest');
+  if (!cur) return;
+  cur.textContent = 'v' + APP_VERSION;
+
+  // Quietly fetch the deployed latest version on first load.
+  refreshLatest({ silent: true });
+
+  checkBtn?.addEventListener('click', async () => {
+    checkBtn.disabled = true;
+    const orig = checkBtn.textContent;
+    checkBtn.textContent = 'Checking…';
+    try {
+      // Trigger SW update + refresh "latest version" line.
+      if (typeof window.checkForAppUpdate === 'function') {
+        const r = await window.checkForAppUpdate();
+        if (r === 'updating') latestEl.textContent = 'Update found — downloading. Reload prompt will appear when ready.';
+      }
+      await refreshLatest({ silent: false });
+    } catch (err) {
+      latestEl.hidden = false;
+      latestEl.textContent = 'Check failed: ' + err.message;
+      latestEl.classList.add('ver-err');
+    } finally {
+      checkBtn.disabled = false;
+      checkBtn.textContent = orig;
+    }
+  });
+
+  async function refreshLatest({ silent }) {
+    try {
+      const url = 'data/version.json?t=' + Date.now();
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const j = await res.json();
+      const latest = j.version || '?';
+      const behind = compareVersions(APP_VERSION, latest) < 0;
+      latestEl.hidden = false;
+      latestEl.classList.remove('ver-err');
+      latestEl.classList.toggle('ver-behind', behind);
+      latestEl.classList.toggle('ver-current-ok', !behind);
+      latestEl.textContent = `The latest version is ${latest}` + (behind ? '  ·  you are behind — click to update' : '  ·  you are up to date');
+    } catch (err) {
+      if (!silent) {
+        latestEl.hidden = false;
+        latestEl.textContent = 'Could not fetch latest version (' + err.message + ')';
+        latestEl.classList.add('ver-err');
+      }
+    }
+  }
+}
+
+// Simple semver-ish comparator (numeric-then-string fallback). Returns
+// -1 if a < b, 0 if equal, 1 if a > b.
+function compareVersions(a, b) {
+  const pa = String(a).split(/[.\-+]/).map(s => isNaN(+s) ? s : +s);
+  const pb = String(b).split(/[.\-+]/).map(s => isNaN(+s) ? s : +s);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const x = pa[i] ?? 0, y = pb[i] ?? 0;
+    if (x === y) continue;
+    if (typeof x === 'number' && typeof y === 'number') return x < y ? -1 : 1;
+    return String(x) < String(y) ? -1 : 1;
+  }
+  return 0;
+}
+
 function boot() {
   applyPrefs();
   wireNav();
   wireThemeBtn();
   wirePrefsBtn();
   wireEditBtn();
+  wireSettingsBtn();
+  wireVersionUI();
   mountBanner();
   mountPage(pageFromHash());
 
