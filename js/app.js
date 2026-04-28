@@ -6,6 +6,7 @@ import { openModal } from './components/modal.js';
 import { mountBanner } from './components/edit-banner.js';
 import { toast } from './utils.js';
 import { APP_VERSION } from './version.js';
+import { mountVisitsCounter } from './components/visits.js';
 
 const PAGES = {
   commands: () => import('./pages/commands.js'),
@@ -239,6 +240,7 @@ function boot() {
   wireEditBtn();
   wireSettingsBtn();
   wireVersionUI();
+  mountVisitsCounter();
   mountBanner();
   mountPage(pageFromHash());
 
