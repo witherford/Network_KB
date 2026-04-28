@@ -185,3 +185,53 @@ export function clearFlagRateHistory() {
 }
 
 function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+
+/* ---------- Global flag count (cross-visitor) ----------
+ *
+ * Backed by abacus.jasoncameron.dev (the same free counter service used for
+ * site visits). Two endpoints:
+ *   GET https://abacus.jasoncameron.dev/hit/<ns>/<key>     → +1, returns {value}
+ *   GET https://abacus.jasoncameron.dev/get/<ns>/<key>     → returns {value}
+ *
+ * The COUNT is global (visible to every visitor). The actual list of which
+ * commands are flagged remains per-browser (localStorage) — abacus stores
+ * only numeric counters, not arbitrary JSON, so we can't sync the full list
+ * without a different backend. The user explicitly asked for the COUNT to be
+ * global, which this satisfies.
+ */
+
+const ABACUS = 'https://abacus.jasoncameron.dev';
+const FLAG_NS = 'nkb-witherford';
+const FLAG_KEY = 'flags';
+
+// Read the current global count without incrementing.
+// If the key doesn't exist yet (404 — nobody has flagged anything), treat
+// it as zero rather than null so the stats bar shows "0 globally flagged"
+// instead of "— globally flagged".
+export async function getGlobalFlagCount() {
+  try {
+    const res = await fetch(`${ABACUS}/get/${FLAG_NS}/${FLAG_KEY}`, { cache: 'no-store' });
+    if (res.status === 404) return 0;
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    if (typeof j.value === 'number') return j.value;
+    if (typeof j.total === 'number') return j.total;
+  } catch (e) {
+    console.warn('[flag-counter] get failed:', e);
+  }
+  return null;
+}
+
+// Atomic +1.
+export async function incrementGlobalFlagCount() {
+  try {
+    const res = await fetch(`${ABACUS}/hit/${FLAG_NS}/${FLAG_KEY}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    if (typeof j.value === 'number') return j.value;
+    if (typeof j.total === 'number') return j.total;
+  } catch (e) {
+    console.warn('[flag-counter] increment failed:', e);
+  }
+  return null;
+}

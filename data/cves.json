@@ -1,7 +1,1358 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-28T05:48:34.907Z",
+  "updatedAt": "2026-04-28T15:41:32.311Z",
   "items": [
+    {
+      "id": "CVE-2026-0234",
+      "vendor": "Palo Alto",
+      "product": "Cortex XSOAR Microsoft Teams Marketplace,Cortex XSIAM Microsoft Teams Marketplace",
+      "severity": "high",
+      "cvss": 9.2,
+      "summary": "Cortex XSOAR: Improper Verification of Cryptographic Signature in Microsoft Teams integration — An improper verification of cryptographic signature vulnerability exists in Cortex XSOAR and Cortex XSIAM platforms during integration of Microsoft Teams that enables an unauthenticated user to access and modify protected resources. — Fixed: >= 1.5.52 / >= 1.5.52",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0234"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0233",
+      "vendor": "Palo Alto",
+      "product": "Autonomous Digital Experience Manager",
+      "severity": "medium",
+      "cvss": 7.7,
+      "summary": "Autonomous Digital Experience Manager: Improper validation of ADEM certificate — A certificate validation vulnerability in Palo Alto Networks Autonomous Digital Experience Manager on Windows allows an unauthenticated attacker with adjacent network access to execute arbitrary code with NT AUTHORITY\\SYSTEM privileges. — Fixed: >= 5.10.14 on Windows",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0233"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0232",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Agent,Cortex XDR Agent",
+      "severity": "medium",
+      "cvss": 6.7,
+      "summary": "Cortex XDR Agent: Local Administrator can disable the agent on Windows — A problem with a protection mechanism in the Palo Alto Networks Cortex XDR agent on Windows allows a local Windows administrator to disable the agent. This issue may be leveraged by malware to perform malicious activity without detection. — Fixed: All on Windows / 9.0 with CU-2120, >= 9.0.1 on Windows / 8.9 with CU-2120, >= 8.9.1 on Windows / 8.7-CE with CU-2120, >= 8.7.101-CE on Windows / All with CU-2120 on Windows / All with CU-2120 on Windows",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0232"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0231",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "medium",
+      "cvss": 8.4,
+      "summary": "Cortex XDR Broker VM: Sensitive Information Disclosure Vulnerability — An information disclosure vulnerability in Palo Alto Networks Cortex XDR® Broker VM allows an authenticated user to obtain and modify sensitive information by triggering live terminal session via Cortex UI and modifying any configuration setting. The attacker must have network access to the Broker VM to exploit this issue. — Fixed: >= 30.0.49",
+      "published": "2026-03-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0231"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0230",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Agent",
+      "severity": "medium",
+      "cvss": 6.7,
+      "summary": "Cortex XDR Agent: Local Administrator can disable the agent on macOS — A problem with a protection mechanism in the Palo Alto Networks Cortex XDR agent on macOS allows a local administrator to disable the agent. This issue could be leveraged by malware to perform malicious activity without detection. — Fixed: All on macOS / All on macOS / All on macOS / >= 8.7.101-CE on macOS / >= 8.3.102-CE on macOS",
+      "published": "2026-03-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0230"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0229",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW ,PAN-OS Firewall,Panorama,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Denial of Service in Advanced DNS Security Feature — A denial-of-service (DoS) vulnerability in the Advanced DNS Security (ADNS) feature of Palo Alto Networks PAN-OS® software enables an unauthenticated attacker to initiate system reboots using a maliciously crafted packet. Repeated attempts to initiate a reboot causes the firewall to enter maintenance mode. Panorama, Cloud NGFW, and Prisma Access® are not impacted by this vulnerability. — Fixed: All / >= 12.1.4 / >= 11.2.10 / 11.1.0 / 10.2.0 / All / All",
+      "published": "2026-02-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0229"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0228",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.3,
+      "summary": "PAN-OS: Improper Validation of Terminal Server Agent Certificate — An improper certificate validation vulnerability in PAN-OS allows users to connect Terminal Server Agents on Windows to PAN-OS using expired certificates even if the PAN-OS configuration would not normally permit them to do so. — Fixed: All / All / >= 11.2.8 / >= 11.1.11 / >= 10.2.17 / >= 10.2.10-h28 on PAN-OS, >= 11.2.7-h10 on PAN-OS",
+      "published": "2026-02-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0228"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2026-0227",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "high",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) in GlobalProtect Gateway and Portal — A vulnerability in Palo Alto Networks PAN-OS software enables an unauthenticated attacker to cause a denial of service (DoS) to the firewall. Repeated attempts to trigger this issue results in the firewall entering into maintenance mode. — Fixed: All / >= 12.1.3-h3, >= 12.1.4 / >= 11.2.4-h15, >= 11.2.7-h8, >= 11.2.10-h2 / >= 11.1.4-h27, >= 11.1.6-h23, >= 11.1.10-h9, >= 11.1.13 / >= 10.2.7-h32, >= 10.2.10-h31, >= 10.2.13-h18, >= 10.2.16-h6, >= 10.2.18-h1 / >= 10.1.14-h20 / >= 11.2.7-h8* / >= 10.2.4-h43*, >= 10.2.10-h29*",
+      "published": "2026-01-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2026-0227"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0006",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Impact assessment of OSS CVEs in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS software. While PAN-OS software may include the affected OSS package, PAN-OS does not offer any scenarios required for an attacker to successfully exploit these vulnerabilities and is not impacted. — Fixed: All",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0006"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0005",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Precautionary Fixes for Non-Exploitable OSS CVEs in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS. These CVEs were determined to have no impact on PAN-OS, but they have been fixed out of an abundance of caution. — Fixed: All",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0005"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0004",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (April 2026) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/10/stable-channel-update-for-desktop_28.html — Fixed: >= 146.3.8.76",
+      "published": "2026-04-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0004"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0003",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (March 2026) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/10/stable-channel-update-for-desktop_28.html — Fixed: >= 145.7.9.76",
+      "published": "2026-03-11",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0003"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0002",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 9.3,
+      "summary": "Chromium: Monthly Vulnerability Update (February 2026) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/10/stable-channel-update-for-desktop_28.html — Fixed: >= 144.27.7.133",
+      "published": "2026-02-11",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0002"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2026-0001",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (January 2026) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/10/stable-channel-update-for-desktop_28.html — Fixed: >= 143.37.2.193",
+      "published": "2026-01-14",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2026-0001"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4619",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) Using Specially Crafted Packets — A denial-of-service (DoS) vulnerability in Palo Alto Networks PAN-OS software enables an unauthenticated attacker to reboot a firewall by sending a specially crafted packet through the dataplane. Repeated attempts to initiate a reboot causes the firewall to enter maintenance mode. This issue is applicable to the PAN-OS software versions listed below on PA-Series firewalls, VM-Series firewalls, and Prisma® Access software. This issue does not affect Cloud NGFW. We have successfully completed the Prisma Access upgrade for all customers, with the exception of those facing issues such as conflicting maintenance windows. Remaining customers will be promptly scheduled for an upgrade through our standard upgrade process…",
+      "published": "2025-11-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4619"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4615",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.9,
+      "summary": "PAN-OS: Improper Neutralization of Input in the Management Web Interface — An improper input neutralization vulnerability in the management web interface of the Palo Alto Networks PAN-OS® software enables an authenticated administrator to bypass system restrictions and execute arbitrary commands. The security risk posed by this issue is significantly minimized when CLI access is restricted to a limited group of administrators. Cloud NGFW and Prisma® Access are not affected by this vulnerability. — Fixed: All / All / >= 11.2.8 / >= 11.1.4-h27, >= 11.1.6-h21, >= 11.1.10-h7 / >= 10.2.17 / All",
+      "published": "2025-10-08",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4615"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4614",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 4.8,
+      "summary": "PAN-OS: Session Token Disclosure Vulnerability — An information disclosure vulnerability in Palo Alto Networks PAN-OS® software enables an authenticated administrator to view session tokens of users authenticated to the firewall web UI. This may allow impersonation of users whose session tokens are leaked. The security risk posed by this issue is significantly minimized when CLI access is restricted to a limited group of administrators. Cloud NGFW and Prisma® Access are not affected by this vulnerability. — Fixed: All / All / >= 11.2.8 / >= 11.1.6-h21 / >= 10.2.17 / All · Workaround: There are no known workarounds for this issue.",
+      "published": "2025-10-08",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4614"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4235",
+      "vendor": "Palo Alto",
+      "product": "User-ID Credential Agent",
+      "severity": "medium",
+      "cvss": 7.2,
+      "summary": "User-ID Credential Agent: Cleartext Exposure of Service Account password — An information exposure vulnerability in the Palo Alto Networks User-ID Credential Agent (Windows-based) can expose the service account password under specific non-default configurations. This allows an unprivileged Domain User to escalate privileges by exploiting the account’s permissions. The impact varies by configuration: * Minimally Privileged Accounts: Enable disruption of User-ID Credential Agent operations (e.g., uninstalling or disabling the agent service), weakening network security policies that leverage Credential Phishing Prevention (https://docs.paloaltonetworks.com/advanced-url-filtering/administration/url-filtering-features/credential-phishing-prevention) under a Domain Credential Filter (https://…",
+      "published": "2025-09-10",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4235"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4234",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Microsoft 365 Defender Pack",
+      "severity": "low",
+      "cvss": 2.4,
+      "summary": "Cortex XDR Microsoft 365 Defender Pack: Cleartext Exposure of Credentials — A problem with the Palo Alto Networks Cortex XDR Microsoft 365 Defender Pack can result in exposure of user credentials in application logs. Normally, these application logs are only viewable by local users and are included when generating logs for troubleshooting purposes. This means that these credentials are exposed to recipients of the application logs. — Fixed: >= 4.6.5 on Windows",
+      "published": "2025-09-10",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4234"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4232",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App",
+      "severity": "medium",
+      "cvss": 8.4,
+      "summary": "GlobalProtect: Authenticated Code Injection Through Wildcard on macOS — An improper neutralization of wildcards vulnerability in the log collection feature of Palo Alto Networks GlobalProtect™ app on macOS allows a non administrative user to escalate their privileges to root. — Fixed: >= 6.3.3 on macOS / >= 6.2.8-h2 [6.2.8-c243] on macOS / None on macOS / >= 6.0.12 on macOS / All on Windows, Linux, Android, iOS, Chrome OS · Workaround: No workaround or mitigation is available.",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4232"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4231",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "PAN-OS: Authenticated Admin Command Injection Vulnerability in the Management Web Interface — A command injection vulnerability in Palo Alto Networks PAN-OS® enables an authenticated administrative user to perform actions as the root user. The attacker must have network access to the management web interface and successfully authenticate to exploit this issue. Cloud NGFW and Prisma Access are not impacted by this vulnerability. — Fixed: All / All / All / >= 11.0.3 / >= 10.2.8 / None / All · Workaround: Recommended mitigation—The vast majority of firewalls already follow Palo Alto Networks and industry best practices. However, if you have not already, we strongly recommend that you secure access to y",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4231"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4230",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.4,
+      "summary": "PAN-OS: Authenticated Admin Command Injection Vulnerability Through CLI — A command injection vulnerability in Palo Alto Networks PAN-OS® software enables an authenticated administrator to bypass system restrictions and run arbitrary commands as a root user. To be able to exploit this issue, the user must have access to the PAN-OS CLI. The security risk posed by this issue is significantly minimized when CLI access is restricted to a limited group of administrators. Cloud NGFW and Prisma® Access are not affected by this vulnerability. — Fixed: All / >= 11.2.6 / >= 11.1.6-h14, >= 11.1.10 / >= 10.2.10-h27 / >= 10.1.14-h15 / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4230"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4229",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 6,
+      "summary": "PAN-OS: Traffic Information Disclosure Vulnerability — An information disclosure vulnerability in the SD-WAN feature of Palo Alto Networks PAN-OS® software enables an unauthorized user to view unencrypted data sent from the firewall through the SD-WAN interface. This requires the user to be able to intercept packets sent from the firewall. Cloud NGFW and Prisma® Access are not affected by this vulnerability. — Fixed: All / >= 11.2.7 / >= 11.1.10 / >= 10.2.16-h1, >= 10.2.17 [ETA: Aug 2025] / >= 10.1.14-h16 / All · Workaround: If you are not using the SD-WAN feature of PAN-OS, you can mitigate this issue by disabling the SD-WAN feature. To disable SD-WAN feature, see our documentation about uninstalling SD-WAN plugin (https",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4229"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4228",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "low",
+      "cvss": 4.6,
+      "summary": "Cortex XDR Broker VM: Privilege Escalation (PE) Vulnerability — An incorrect privilege assignment vulnerability in Palo Alto Networks Cortex® XDR Broker VM allows an authenticated administrative user to execute certain files available within the Broker VM and escalate their privileges to root. — Fixed: >= 27.0.26",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4228"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-4227",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App",
+      "severity": "low",
+      "cvss": 2,
+      "summary": "GlobalProtect App: Interception in Endpoint Traffic Policy Enforcement — An improper access control vulnerability in the Endpoint Traffic Policy Enforcement (https://docs.paloaltonetworks.com/globalprotect/6-0/globalprotect-app-new-features/new-features-released-in-gp-app/endpoint-traffic-policy-enforcement) feature of the Palo Alto Networks GlobalProtect™ app allows certain packets to remain unencrypted instead of being properly secured within the tunnel. An attacker with physical access to the network can inject rogue devices to intercept these packets. Under normal operating conditions, the GlobalProtect app automatically recovers from this interception within one minute. — Fixed: >= 6.3.3-h1 [6.3.3-c650] on Windows, macOS / >= 6.2.8-h2 [6.2.8-c243] on Windows, macOS / None on Window…",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-4227"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2184",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "medium",
+      "cvss": 7.6,
+      "summary": "Cortex XDR Broker VM: Secrets Shared Across Multiple Broker VM Images — A credential management flaw in Palo Alto Networks Cortex XDR® Broker VM causes different Broker VM images to share identical default credentials for internal services. Users knowing these default credentials could access internal services on other Broker VM installations. The attacker must have network access to the Broker VM to exploit this issue. — Fixed: >= 28.0.52",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2184"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2183",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect App,Global Protect UWP App",
+      "severity": "medium",
+      "cvss": 7.4,
+      "summary": "GlobalProtect App: Improper Certificate Validation Leads to Privilege Escalation — An insufficient certificate validation issue in the Palo Alto Networks GlobalProtect™ app enables attackers to connect the GlobalProtect app to arbitrary servers. This can enable a local non-administrative operating system user or an attacker on the same subnet to install malicious root certificates on the endpoint and subsequently install malicious software signed by the malicious root certificates on that endpoint. — Fixed: >= 6.3.3-h2 (6.3.3-c676) on Windows*, >= 6.3.3 on Linux / >= 6.2.8-h3 (6.2.8-c263) on Windows*, None on Linux / None on Windows, None on Linux / >= 6.0.12 on Windows*, None on Linux / All on Android, All on iOS, All on macOS / All",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2183"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2182",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 6.8,
+      "summary": "PAN-OS: Firewall Clusters using the MACsec Protocol Expose the Connectivity Association Key (CAK) — A problem with the implementation of the MACsec protocol in Palo Alto Networks PAN-OS® results in the cleartext exposure of the connectivity association key (CAK). This issue is only applicable to PA-7500 Series devices which are in an NGFW cluster. A user who possesses this key can read messages being sent between devices in a NGFW Cluster. There is no impact in non-clustered firewalls or clusters of firewalls that do not enable MACsec. — Fixed: All / >= 11.2.8 on PA-7500 / >= 11.1.10 on PA-7500 / All on PA-7500 / All on PA-7500 / All on devices other than PA-7500 / All",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2182"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2181",
+      "vendor": "Palo Alto",
+      "product": "Checkov by Prisma Cloud",
+      "severity": "low",
+      "cvss": 5.9,
+      "summary": "Checkov by Prisma Cloud: Cleartext Exposure of Credentials — A sensitive information disclosure vulnerability in Palo Alto Networks Checkov by Prisma® Cloud can result in the cleartext exposure of Prisma Cloud access keys in Checkov's output. — Fixed: >= 3.2.449",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2181"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2180",
+      "vendor": "Palo Alto",
+      "product": "Checkov by Prisma Cloud",
+      "severity": "low",
+      "cvss": 4.8,
+      "summary": "Checkov by Prisma Cloud: Unsafe Deserialization of Terraform Files Allows Code Execution — An unsafe deserialization vulnerability in Palo Alto Networks Checkov by Prisma® Cloud allows an authenticated user to execute arbitrary code as a non administrative user by scanning a malicious terraform file when using Checkov in Prisma® Cloud. This issue impacts Checkov 3.0 versions earlier than Checkov 3.2.415. — Fixed: >= 3.2.415 · Workaround: Do not run Checkov on terraform files from untrusted sources or pull requests.",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2180"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-2179",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "GlobalProtect App: Non Admin User Can Disable the GlobalProtect App — An incorrect privilege assignment vulnerability in the Palo Alto Networks GlobalProtect™ App on Linux devices enables a locally authenticated non administrative user to disable the app even if the GlobalProtect app configuration would not normally permit them to do so. The GlobalProtect app on Windows, macOS, iOS, Android, Chrome OS and GlobalProtect UWP app are not affected. — Fixed: >= 6.2.9 on Linux / None on Linux / None on Linux / All on Android, All on Chrome OS, All on iOS, All on Windows, All on macOS / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-07-28",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-2179"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0141",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App,GlobalProtect App",
+      "severity": "medium",
+      "cvss": 8.4,
+      "summary": "GlobalProtect App: Privilege Escalation (PE) Vulnerability — An incorrect privilege assignment vulnerability in the Palo Alto Networks GlobalProtect™ App on enables a locally authenticated non administrative user to escalate their privileges to root on macOS and Linux or NT AUTHORITY\\SYSTEM on Windows. The GlobalProtect app on iOS, Android, Chrome OS and GlobalProtect UWP app are not affected. — Fixed: >= 6.3.3-h1 (6.3.3-c650) on macOS, >= 6.3.3-h1 (6.3.3-c650) on Windows / >= 6.2.8-h2 (6.2.8-c243) on macOS, >= 6.2.8-h2 (6.2.8-c243) on Windows, >= 6.2.8 on Linux / None on macOS, None on Windows, None on Linux / >= 6.0.12 on macOS, >= 6.0.12 on Windows, None on Linux / All on Android, All on Chrome OS, All on iOS / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-07-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0141"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0140",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "GlobalProtect App: Non Admin User Can Disable the GlobalProtect App — An incorrect privilege assignment vulnerability in the Palo Alto Networks GlobalProtect™ App on macOS devices enables a locally authenticated non administrative user to disable the app even if the GlobalProtect app configuration would not normally permit them to do so. The GlobalProtect app on Windows, Linux, iOS, Android, Chrome OS and GlobalProtect UWP app are not affected. — Fixed: >= 6.3.3-h1 (6.3.3-c650) on macOS / >= 6.2.8-h2 (6.2.8-c243) on macOS / None on macOS / >= 6.0.12 on macOS / All on Android, All on Chrome OS, All on iOS, All on Windows, All on Linux / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-07-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0140"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0139",
+      "vendor": "Palo Alto",
+      "product": "Autonomous Digital Experience Manager",
+      "severity": "low",
+      "cvss": 6.3,
+      "summary": "Autonomous Digital Experience Manager: Privilege Escalation (PE) Vulnerability — An incorrect privilege assignment vulnerability in Palo Alto Networks Autonomous Digital Experience Manager allows a locally authenticated low privileged user on macOS endpoints to escalate their privileges to root. — Fixed: >= 5.6.7 on macOS · Workaround: There are no known workarounds or mitigations for this issue.",
+      "published": "2025-07-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0139"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0138",
+      "vendor": "Palo Alto",
+      "product": "Prisma Cloud Compute Edition,Compute in Prisma Cloud Enterprise Edition",
+      "severity": "low",
+      "cvss": 2,
+      "summary": "Prisma Cloud Compute Edition: Insufficient Session Expiration Vulnerability in the Web Interface — Web sessions in the web interface of Palo Alto Networks Prisma® Cloud Compute Edition do not expire when users are deleted, which makes Prisma Cloud Compute Edition susceptible to unauthorized access. Compute in Prisma Cloud Enterprise Edition is not affected by this issue. — Fixed: >= 34.01.129 / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0138"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0137",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 4.8,
+      "summary": "PAN-OS: Improper Neutralization of Input in the Management Web Interface — An improper input neutralization vulnerability in the management web interface of the Palo Alto Networks PAN-OS® software enables a malicious authenticated read-write administrator to impersonate another legitimate authenticated PAN-OS administrator. The attacker must have network access to the management web interface to exploit this issue. You greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431). — Fixed: All / >= 11.2.5 / >= 11.1.6-h14, >= 11.1.8…",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0137"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0136",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.3,
+      "summary": "PAN-OS: Unencrypted Data Transfer when using AES-128-CCM on Intel-based hardware devices — Using the AES-128-CCM algorithm for IPSec on certain Palo Alto Networks PAN-OS® firewalls (PA-7500, PA-5400, PA-5400f, PA-3400, PA-1400, and PA-400 Series) leads to unencrypted data transfer to devices that are connected to the PAN-OS firewall through IPSec. This issue does not affect Cloud NGFWs, Prisma® Access instances, or PAN-OS VM-Series firewalls. NOTE: The AES-128-CCM encryption algorithm is not recommended for use. — Fixed: All / All / >= 11.1.5 / >= 11.0.7 / >= 10.2.11 / >= 10.1.14-h14 / All · Workaround: Configure IPSec Crypto encryption to an algorithm that meets current security standards, such as AES-256-GCM or AES-256-CBC, on PA 7500, PA 5400, PA 5400f, PA 3400, PA 1400, and PA 400 s…",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0136"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0135",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "low",
+      "cvss": 5.7,
+      "summary": "GlobalProtect App on macOS: Non Admin User Can Disable the GlobalProtect App — An incorrect privilege assignment vulnerability in the Palo Alto Networks GlobalProtect™ app on macOS devices enables a locally authenticated non administrative user to disable the app even if the GlobalProtect app configuration would not normally permit them to do so. The GlobalProtect app on Windows, Linux, iOS, Android, Chrome OS and GlobalProtect UWP app are not affected. — Fixed: >= 6.3.3-h2 (6.3.3-c676) on macOS / >= 6.2.8-h3 (6.2.8-c263) on macOS / None on macOS / >= 6.0.12 on macOS / All on Android, All on Chrome OS, All on iOS, All on Windows, All on Linux / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0135"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0134",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "low",
+      "cvss": 6.5,
+      "summary": "Cortex XDR Broker VM: Authenticated Code Injection Vulnerability in Broker VM — A code injection vulnerability in the Palo Alto Networks Cortex XDR® Broker VM allows an authenticated user to execute arbitrary code with root privileges on the host operating system running Broker VM. — Fixed: >= 26.0.119 · Workaround: There are no known workarounds or mitigations for this issue.",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0134"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0133",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.1,
+      "summary": "PAN-OS: Reflected Cross-Site Scripting (XSS) Vulnerability in GlobalProtect Gateway and Portal — A reflected cross-site scripting (XSS) vulnerability in the GlobalProtect™ gateway and portal features of Palo Alto Networks PAN-OS® software enables execution of malicious JavaScript in the context of an authenticated Captive Portal user's browser when they click on a specially crafted link. The primary risk is phishing attacks that can lead to credential theft—particularly if you enabled Clientless VPN. There is no availability impact to GlobalProtect features or GlobalProtect users. Attackers cannot use this vulnerability to tamper with or modify contents or configurations of the GlobalProtect portal or gateways. The integrity impact of this vulnerability is limited to enabling an attacke…",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0133"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0132",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "low",
+      "cvss": 6.9,
+      "summary": "Cortex XDR Broker VM: Unauthenticated User Can Disable Internal Services — A missing authentication vulnerability in Palo Alto Networks Cortex XDR® Broker VM allows an unauthenticated user to disable certain internal services on the Broker VM. The attacker must have network access to the Broker VM to exploit this issue. — Fixed: >= 26.0.119",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0132"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0131",
+      "vendor": "Palo Alto",
+      "product": "MetaDefender Endpoint Security SDK",
+      "severity": "medium",
+      "cvss": 7.1,
+      "summary": "GlobalProtect App: Incorrect Privilege Management Vulnerability in OPSWAT MetaDefender Endpoint Security SDK — An incorrect privilege management vulnerability in the OPSWAT MetaDefender Endpoint Security SDK used by the Palo Alto Networks GlobalProtect™ app on Windows devices allows a locally authenticated non-administrative Windows user to escalate their privileges to NT AUTHORITY\\SYSTEM. However, execution requires that the local user also successfully exploits a race condition, which makes this vulnerability difficult to exploit. — Fixed: >= 4.3.4451 on Windows",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0131"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0130",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.2,
+      "summary": "PAN-OS: Firewall Denial-of-Service (DoS) in the Web-Proxy Feature via a Burst of Maliciously Crafted Packets — A missing exception check in Palo Alto Networks PAN-OS® software with the web proxy feature enabled allows an unauthenticated attacker to send a burst of maliciously crafted packets that causes the firewall to become unresponsive and eventually reboot. Repeated successful attempts to trigger this condition will cause the firewall to enter maintenance mode. This issue does not affect Cloud NGFW or Prisma Access. — Fixed: All / >= 11.2.5 / >= 11.1.6-h1, >= 11.1.7-h2, >= 11.1.8 / All / All / All · Workaround: If you are not using the web proxy feature, you can disable it to mitigate this issue. For more information regarding the web proxy feature, see our documentation regarding t…",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0130"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0128",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) Using a Specially Crafted Packet — A denial-of-service (DoS) vulnerability in the Simple Certificate Enrollment Protocol (SCEP) authentication feature of Palo Alto Networks PAN-OS® software enables an unauthenticated attacker to initiate system reboots using a maliciously crafted packet. Repeated attempts to initiate a reboot causes the firewall to enter maintenance mode. Cloud NGFW is not affected by this vulnerability. Prisma® Access software is proactively patched and protected from this issue. — Fixed: All on PAN-OS / >= 11.2.3 / >= 11.1.5 / >= 11.0.6 / >= 10.2.10-h17 / >= 10.1.14-h11 / >= 10.2.4-h36 on PAN-OS, >= 10.2.10-h16 on PAN-OS, >= 11.2.4-h5 on PAN-OS · Workaround: If you are not using SCEP, you can disable it to mitigate this risk by…",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0128"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0127",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 7.1,
+      "summary": "PAN-OS: Authenticated Admin Command Injection Vulnerability in PAN-OS VM-Series — A command injection vulnerability in Palo Alto Networks PAN-OS® software enables an authenticated administrator to bypass system restrictions and run arbitrary commands as a root user. This issue is only applicable to PAN-OS VM-Series. This issue does not affect firewalls that are already deployed. Cloud NGFW and Prisma® Access are not affected by this vulnerability. — Fixed: All / All on VM-Series / All on VM-Series / >= 11.0.4 on VM-Series / >= 10.2.9 on VM-Series / >= 10.1.14-h13 on VM-Series / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0127"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0126",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.3,
+      "summary": "PAN-OS: Session Fixation Vulnerability in GlobalProtect SAML Login — When configured using SAML, a session fixation vulnerability in the GlobalProtect™ login enables an attacker to impersonate a legitimate authorized user and perform actions as that GlobalProtect user. This requires the legitimate user to first click on a malicious link provided by the attacker. The SAML login for the PAN-OS® management interface is not affected. Additionally, this issue does not affect Cloud NGFW and all Prisma® Access instances are proactively patched. — Fixed: All / >= 11.2.3 / >= 11.1.5 / >= 11.0.6 / >= 10.2.4-h25, >= 10.2.9-h13, >= 10.2.10-h6, >= 10.2.11 / >= 10.1.14-h11 / >= 10.2.4-h36 on PAN-OS, >= 10.2.10-h16 on PAN-OS, >= 11.2.4-h5 on PAN-OS · Workaround: This issue can be mitigated using a dif…",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0126"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0125",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.9,
+      "summary": "PAN-OS: Improper Neutralization of Input in the Management Web Interface — An improper input neutralization vulnerability in the management web interface of the Palo Alto Networks PAN-OS® software enables a malicious authenticated read-write administrator to impersonate another legitimate authenticated PAN-OS administrator. The attacker must have network access to the management web interface to exploit this issue. You greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431). This issue does not affect Cloud NGFW and all Prism…",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0125"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0124",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.1,
+      "summary": "PAN-OS: Authenticated File Deletion Vulnerability on the Management Web Interface — An authenticated file deletion vulnerability in the Palo Alto Networks PAN-OS® software enables an authenticated attacker with network access to the management web interface to delete certain files as the “nobody” user; this includes limited logs and configuration files but does not include system files. The attacker must have network access to the management web interface to exploit this issue. You greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/b…",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0124"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0123",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.9,
+      "summary": "PAN-OS: Information Disclosure Vulnerability in HTTP/2 Packet Captures — A vulnerability in the Palo Alto Networks PAN-OS® software enables unlicensed administrators to view clear-text data captured using the packet capture feature (https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-admin/monitoring/take-packet-captures/take-a-custom-packet-capture) in decrypted HTTP/2 data streams traversing network interfaces on the firewall. HTTP/1.1 data streams are not impacted. In normal conditions, decrypted packet captures are available to firewall administrators after they obtain and install a free Decryption Port Mirror license. The license requirement ensures that this feature can only be used after approved personnel purposefully activate the license. For more information, review how to co…",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0123"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0122",
+      "vendor": "Palo Alto",
+      "product": "Prisma SD-WAN",
+      "severity": "medium",
+      "cvss": 7.1,
+      "summary": "Prisma SD-WAN: Denial of Service (DoS) Vulnerability Through Burst of Crafted Packets — A denial-of-service (DoS) vulnerability in Palo Alto Networks Prisma® SD-WAN ION devices enables an unauthenticated attacker in a network adjacent to a Prisma SD-WAN ION device to disrupt the packet processing capabilities of the device by sending a burst of crafted packets to that device. — Fixed: >= 6.5.1 / >= 6.4.2 / >= 6.3.4 / None / >= 6.1.10 / None · Workaround: There are no known workarounds for this issue.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0122"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0121",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Agent",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "Cortex XDR Agent: Local Windows User Can Crash the Agent — A null pointer dereference vulnerability in the Palo Alto Networks Cortex® XDR agent on Windows devices allows a low-privileged local Windows user to crash the agent. Additionally, malware can use this vulnerability to perform malicious activity without Cortex XDR being able to detect it. — Fixed: All on Windows / >= 8.6.1 on Windows / >= 8.5.2 on Windows / >= 8.3.101-CE HF on Windows / >= 7.9.103-CE HF on Windows · Workaround: There are no known workarounds for this issue.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0121"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0120",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "medium",
+      "cvss": 7.1,
+      "summary": "GlobalProtect App: Local Privilege Escalation (PE) Vulnerability — A vulnerability with a privilege management mechanism in the Palo Alto Networks GlobalProtect™ app on Windows devices allows a locally authenticated non-administrative Windows user to escalate their privileges to NT AUTHORITY\\SYSTEM. However, execution requires that the local user can also successfully exploit a race condition, which makes this vulnerability difficult to exploit. — Fixed: >= 6.3.3 on Windows / >= 6.2.7-1077 on Windows, >= 6.2.8 on Windows / None on Windows / >= 6.0.12 on Windows / All on macOS, All on Linux, All on iOS, All on Android, All on Chrome OS / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0120"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0119",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "low",
+      "cvss": 6.3,
+      "summary": "Cortex XDR Broker VM: Authenticated Command Injection Vulnerability in Broker VM — A command injection vulnerability in the Palo Alto Networks Cortex XDR® Broker VM allows an authenticated user to execute arbitrary OS commands with root privileges on the host operating system running Broker VM. — Fixed: >= 26.100.3 · Workaround: There are no known workarounds or mitigations for this issue.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0119"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0118",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "low",
+      "cvss": 6,
+      "summary": "GlobalProtect App: Execution of Unsafe ActiveX Control Vulnerability — A vulnerability in the Palo Alto Networks GlobalProtect app on Windows allows a remote attacker to run ActiveX controls within the context of an authenticated Windows user. This enables the attacker to run commands as if they are a legitimate authenticated user. However, to exploit this vulnerability, the authenticated user must navigate to a malicious page during the GlobalProtect SAML login process on a Windows device. This issue does not apply to the GlobalProtect app on other (non-Windows) platforms. — Fixed: >= 6.3.3 on Windows / >= 6.2.5 on Windows / >= 6.1.6 on Windows / >= 6.0.11 on Windows / All on macOS, Linux, iOS, Android, Chrome OS / All · Workaround: You can mitigate this issue by using a different form…",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0118"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0117",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect UWP App",
+      "severity": "medium",
+      "cvss": 7.1,
+      "summary": "GlobalProtect App: Local Privilege Escalation (PE) Vulnerability — A reliance on untrusted input for a security decision in the GlobalProtect app on Windows devices potentially enables a locally authenticated non-administrative Windows user to escalate their privileges to NT AUTHORITY\\SYSTEM. GlobalProtect App on macOS, Linux, iOS, Android, Chrome OS and GlobalProtect UWP App are not affected. — Fixed: >= 6.3.3 on Windows* / >= 6.2.6 on Windows* / None on Windows / >= 6.0.12 on Windows* / All on iOS, All on Android, All on Chrome OS, All on macOS / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0117"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0116",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS,Cloud NGFW,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) Using a Specially Crafted LLDP Frame — A Denial of Service (DoS) vulnerability in Palo Alto Networks PAN-OS software causes the firewall to unexpectedly reboot when processing a specially crafted LLDP frame sent by an unauthenticated adjacent attacker. Repeated attempts to initiate this condition causes the firewall to enter maintenance mode. This issue does not apply to Cloud NGFWs or Prisma Access software. — Fixed: >= 11.2.5 / >= 11.1.4-h17, >= 11.1.6-h6, >= 11.1.8 / >= 10.2.10-h17, >= 10.2.13-h5, >= 10.2.14 / >= 10.1.14-h11 / All / All · Workaround: Option 1: If you are not using LLDP, you should disable it to mitigate this issue by performing the following steps in your web interface: 1. Select Network > LLDP. 2. Open LLDP General settings.…",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0116"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0115",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS,Cloud NGFW,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "PAN-OS: Authenticated Admin File Read Vulnerability in PAN-OS CLI — A vulnerability in the Palo Alto Networks PAN-OS software enables an authenticated admin on the PAN-OS CLI to read arbitrary files. The attacker must have network access to the management interface (web, SSH, console, or telnet) and successfully authenticate to exploit this issue. You can greatly reduce the risk of this issue by restricting access to the management interface to only trusted users and internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431). This issue does not affect Cloud NGFW or Prisma Access. — Fixed: >= 11.2.3 / >= 11.1.4-h17, >= 11.1.5 / >= 11.…",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0115"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0114",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS,Cloud NGFW,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.2,
+      "summary": "PAN-OS: Denial of Service (DoS) in GlobalProtect — A Denial of Service (DoS) vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software enables an unauthenticated attacker to render the service unavailable by sending a large number of specially crafted packets over a period of time. This issue affects both the GlobalProtect portal and the GlobalProtect gateway. This issue does not apply to Cloud NGFWs or Prisma Access software. — Fixed: All / All / >= 11.0.2 / >= 10.2.5 / >= 10.1.14-h11 / All / All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0114"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0113",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "medium",
+      "cvss": 7.6,
+      "summary": "Cortex XDR Broker VM: Unauthorized Access to Broker VM Docker Containers — A problem with the network isolation mechanism of the Palo Alto Networks Cortex XDR Broker VM allows attackers unauthorized access to Docker containers from the host network used by Broker VM. This may allow access to read files sent for analysis and logs transmitted by the Cortex XDR Agent to the Cortex XDR server. — Fixed: >= 26.0.116 · Workaround: There are no known workarounds or mitigations for this issue.",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0113"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0112",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Agent",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "Cortex XDR Agent: Local Windows User Can Disable the Agent — A problem with a detection mechanism in the Palo Alto Networks Cortex XDR agent on Windows devices enables a user with Windows non-administrative privileges to disable the agent. This vulnerability can also be leveraged by malware to disable the Cortex XDR agent and then perform malicious activity. — Fixed: >= 8.3.101-CE on Windows / None on Windows * / >= 8.5.1 on Windows / All on Windows · Workaround: There are no known workarounds or mitigations for this issue.",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0112"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0111",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "high",
+      "cvss": 7.1,
+      "summary": "PAN-OS: Authenticated File Read Vulnerability in the Management Web Interface — An authenticated file read vulnerability in the management web interface of the Palo Alto Networks PAN-OS software enables an authenticated attacker with network access to the management web interface to read files on the PAN-OS filesystem that are readable by the “nobody” user. The attacker must have network access to the management web interface to exploit this issue. You can greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431). This issue do…",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0111"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0110",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS OpenConfig Plugin",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "PAN-OS OpenConfig Plugin: Command Injection Vulnerability in OpenConfig Plugin — A command injection vulnerability in the Palo Alto Networks PAN-OS OpenConfig plugin enables an authenticated administrator with the ability to make gNMI requests to the PAN-OS management web interface to bypass system restrictions and run arbitrary commands. The commands are run as the “root” user on the firewall. You can greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended best practices deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-management-access-of-your-palo/ba-p/464431). — Fixed: >= 2.1.2 · Workaround: Recommended mitigation—The vas…",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0110"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0109",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.9,
+      "summary": "PAN-OS: Unauthenticated File Deletion Vulnerability on the Management Web Interface — An unauthenticated file deletion vulnerability in the Palo Alto Networks PAN-OS management web interface enables an unauthenticated attacker with network access to the management web interface to delete certain files as the “nobody” user; this includes limited logs and configuration files but does not include system files. The attacker must have network access to the management web interface to exploit this issue. You can greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidelines (https://live.paloaltonetworks.com/t5/community-blogs/tips-amp-tricks-how-to-secure-the-managem…",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0109"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2025-0108",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "high",
+      "cvss": 8.8,
+      "summary": "PAN-OS: Authentication Bypass in the Management Web Interface — An authentication bypass in the in the management web interface of Palo Alto Networks PAN-OS software enables an unauthenticated attacker with network access to the management web interface to bypass the authentication otherwise required by the PAN-OS management web interface and invoke certain PHP scripts. While invoking these PHP scripts does not enable remote code execution, it can negatively impact integrity and confidentiality of PAN-OS. The attacker must have network access to the management web interface to exploit this issue. You can greatly reduce the risk of this issue by restricting access to the management web interface to only trusted internal IP addresses according to our recommended critical deployment guidel…",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2025-0108"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0018",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium and Prisma Browser: Monthly Vulnerability Update (November 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/10/stable-channel-update-for-desktop_28.html — Fixed: >= 142.15.6.60",
+      "published": "2025-11-12",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0018"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0017",
+      "vendor": "Palo Alto",
+      "product": "Prisma SD-WAN ION",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Impact of OSS CVEs in Prisma SD-WAN ION — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to Prisma SD-WAN ION. While Prisma SD-WAN ION may include the affected OSS package, Prisma SD-WAN ION does not offer any scenarios required for an attacker to successfully exploit these vulnerabilities and is not impacted. — Fixed: All",
+      "published": "2025-11-02",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0017"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0016",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (October 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/09/stable-channel-update-for-desktop_23.html * https://chromereleases.googleblog.com/2025/09/stable-channel-update-for-desktop_17.html * https://chromereleases.googleblog.com/2025/09/stable-channel-update-for-desktop_9.html — Fixed: >= 141.6.4.55 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-10-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0016"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0015",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (September 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.htmlhttps://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/05/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/05/stable-channel-update-for-desktop_27.html * https://chromereleases.googleblog…",
+      "published": "2025-09-10",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0015"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0014",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (August 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.htmlhttps://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/05/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/05/stable-channel-update-for-desktop_27.html * https://chromereleases.googleblog.co…",
+      "published": "2025-08-13",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0014"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0013",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (July 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.htmlhttps://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/05/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/05/stable-channel-update-for-desktop_27.html * https://chromereleases.googleblog.com/…",
+      "published": "2025-07-09",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0013"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0012",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: OSS CVEs Fixed in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS. While it was not determined that these CVEs have any significant impact on PAN-OS, they have been fixed out of an abundance of caution.",
+      "published": "2025-07-09",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0012"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0011",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "Chromium and Prisma Browser: Monthly Vulnerability Update (June 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.htmlhttps://chromereleases.googleblog.com/2025/06/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/06/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/05/extended-stable-updates-for-desktop.html * https://chromereleases.googleblog.com/2025/05/stable-channel-update-for-desktop_27.html * https://chromerelea…",
+      "published": "2025-06-11",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0011"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0010",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: No Impact of the Marvin Attack on PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the applicability of CVEs related to the Marvin attack on PAN-OS. While we did not determine that any of these CVEs have significant impact on our PAN-OS software, some were fixed anyway out of an abundance of caution. You can also review more details about the Marvin attack (https://people.redhat.com/~hkario/marvin/) if helpful. — Fixed: All · Workaround: No workaround or mitigation is available.",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0010"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0009",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 9.4,
+      "summary": "Chromium: Monthly Vulnerability Update (May 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/05/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/04/stable-channel-update-for-desktop_29.html * https://chromereleases.googleblog.com/2025/04/stable-channel-update-for-desktop_8.html * https://chromereleases.googleblog.com/2025/04/stable-channel-update-for-desktop.html — Fixed: >= 136.11.9.93 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-05-14",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0009"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0008",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 9.4,
+      "summary": "Chromium and Prisma Browser: Monthly Vulnerability Update (April 2025) — Palo Alto Networks incorporated the following security fixes into Prisma® Access Browser: * https://chromereleases.googleblog.com/2025/03/stable-channel-update-for-desktop_25.html * https://chromereleases.googleblog.com/2025/03/stable-channel-update-for-desktop_21.html * https://chromereleases.googleblog.com/2025/03/stable-channel-update-for-desktop_19.html * https://chromereleases.googleblog.com/2025/03/stable-channel-update-for-desktop_10.html * https://chromereleases.googleblog.com/2025/02/stable-channel-update-for-desktop_25.html In addition to the above, we also fixed a vulnerability in the Prisma Access browser. — Fixed: >= 134.29.5.178 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-04-09",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0008"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0007",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 9.4,
+      "summary": "Chromium: Monthly Vulnerability Update (March 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/03/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/02/stable-channel-update-for-desktop_25.html * https://chromereleases.googleblog.com/2025/02/stable-channel-update-for-desktop_18.html * https://chromereleases.googleblog.com/2025/02/stable-channel-update-for-desktop_12.html — Fixed: >= 134.7.4.44 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-03-12",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0007"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0006",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Impact of OSS CVEs in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS software. While PAN-OS software may include the affected OSS package, PAN-OS does not offer any scenarios required for an attacker to successfully exploit these vulnerabilities and is not impacted. — Fixed: All · Workaround: No workarounds or mitigations are needed.",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0006"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0005",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "GlobalProtect Clientless VPN: Clientless VPN Misconfiguration Allows Cross-Site Attacks — Palo Alto Networks GlobalProtect Clientless VPN is intended to provide secure remote access to trusted internal applications. It is not meant to provide access to the Internet, intranet or multiple websites. When the Clientless VPN is misconfigured to allow access to the Internet or any internal website, it allows malicious scripts on one site to obtain sensitive information or modify content of any application accessible through the VPN including Clientless VPN itself. For further details about the risks of Clientless VPNs please refer to https://www.kb.cert.org/vuls/id/261869 — Fixed: All / None / None · Workaround: The Clientless VPN feature only ensures secure remote access to a single trusted…",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0005"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0004",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Update (February 2025) — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2025/02/stable-channel-update-for-desktop.html * https://chromereleases.googleblog.com/2025/01/stable-channel-update-for-desktop_28.html * https://chromereleases.googleblog.com/2025/01/stable-channel-update-for-desktop_22.html * https://chromereleases.googleblog.com/2025/01/stable-channel-update-for-desktop_14.html * https://chromereleases.googleblog.com/2025/01/stable-channel-update-for-desktop.html — Fixed: >= 133.8.10.54 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0004"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0003",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational: PAN-OS BIOS and Bootloader Security Bulletin — Palo Alto Networks is aware of claims of multiple vulnerabilities in hardware device firmware and bootloaders included in our PA-Series (hardware) firewalls. It is not possible for malicious actors or PAN-OS administrators to exploit these vulnerabilities under normal conditions on PAN-OS versions with up-to-date, secured management interfaces deployed according to the best practices guidelines (https://docs.paloaltonetworks.com/best-practices/10-1/administrative-access-best-practices/administrative-access-best-practices/deploy-administrative-access-best-practices). Users and administrators do not have access to the BIOS firmware or permissions to modify it. An attacker would need to first compromise the system and then get t…",
+      "published": "2025-01-23",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0003"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0002",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Updates — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2024/12/stable-channel-update-for-desktop_10.html * https://chromereleases.googleblog.com/2024/12/stable-channel-update-for-desktop_18.html — Fixed: >= 131.205.2943.22 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-01-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0002"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2025-0001",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,Expedition,Panorama,PAN-OS,Prisma Access",
+      "severity": "high",
+      "cvss": 9.2,
+      "summary": "Expedition: Multiple Vulnerabilities in Expedition Migration Tool Lead to Exposure of Firewall Credentials — Multiple vulnerabilities in the Palo Alto Networks Expedition migration tool enable an attacker to read Expedition database contents and arbitrary files, as well as create and delete arbitrary files on the Expedition system. These files include information such as usernames, cleartext passwords, device configurations, and device API keys for firewalls running PAN-OS software. Expedition, previously known as the Migration Tool, is a free tool that facilitates migration to the Palo Alto Networks NGFW platform from other firewall vendors and provides a temporary workspace for optimizing Palo Alto Networks security policies. Expedition is designed to only be used temporarily for migr…",
+      "published": "2025-01-08",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2025-0001"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-49113",
+      "vendor": "Microsoft",
+      "product": "Windows (LDAP)",
+      "severity": "high",
+      "cvss": 7.5,
+      "summary": "\"LDAPNightmare\" — unauthenticated DoS / RCE pre-conditions via LDAP client path; crash domain controllers via crafted DSR referral. Patch from December 2024 cumulative update.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-43451",
+      "vendor": "Microsoft",
+      "product": "Windows (NTLM)",
+      "severity": "medium",
+      "cvss": 6.5,
+      "summary": "NTLM hash disclosure via crafted file — triggered by minimal user interaction (selecting/right-clicking a file). Exploited in the wild. Patched in the November 2024 cumulative update.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-38812",
+      "vendor": "VMware",
+      "product": "vCenter Server",
+      "severity": "critical",
+      "cvss": 9.8,
+      "summary": "Heap-overflow in DCERPC protocol implementation enabling remote code execution via crafted network packets. No auth required. Fixed in vCenter 8.0 U3b / 8.0 U2d / 7.0 U3t.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-38063",
+      "vendor": "Microsoft",
+      "product": "Windows (IPv6)",
+      "severity": "critical",
+      "cvss": 9.8,
+      "summary": "Zero-click remote code execution via crafted IPv6 packets processed by the Windows TCP/IP stack. Mitigate by disabling IPv6 on exposed hosts until patched; fix in August 2024 cumulative.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-37085",
+      "vendor": "VMware",
+      "product": "ESXi",
+      "severity": "high",
+      "cvss": 6.8,
+      "summary": "Authentication bypass allowing AD domain members belonging to an attacker-created 'ESX Admins' group to gain full ESXi admin access. Exploited by ransomware. Mitigation: remove AD integration if not used, or explicitly set the admin group; fix in ESXi 8.0 U3.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20383",
+      "cvss": 9.1,
+      "severity": "Critical",
+      "summary": "Cisco Nexus 9000 Series Fabric Switches suffers from a vulnerability that could allow an unauthenticated, remote attacker to execute arbitrary code.",
+      "affected": "Cisco Nexus 9000 Series Fabric Switches software versions prior to 10.3(1)",
+      "fixed": "10.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20360",
+      "cvss": 7.5,
+      "severity": "Medium",
+      "summary": "Information disclosure vulnerability in Cisco Nexus Dashboard due to verbose error messages.",
+      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20359",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Improper access control in Cisco Nexus Dashboard allows elevated privileges via crafted API requests.",
+      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20358",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "Cisco Nexus Dashboard Fabric Manager allows unauthenticated remote code execution due to improper input validation.",
+      "affected": "Cisco Nexus Dashboard Fabric Manager versions prior to 9.3(1)",
+      "fixed": "9.3(1)",
+      "references": [],
+      "vendor": "Cisco",
+      "product": "Nexus"
+    },
+    {
+      "id": "CVE-2024-20356",
+      "vendor": "Cisco",
+      "product": "IMC (UCS/ISE appliances)",
+      "severity": "high",
+      "cvss": 8.7,
+      "summary": "Authenticated command-injection in Cisco Integrated Management Controller web interface. Fix: upgrade IMC per hardware model's matrix; restrict IMC network reachability to management VLAN.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20353",
+      "vendor": "Cisco",
+      "product": "ASA / FTD",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "DoS via crafted HTTP request to the WebVPN service on ASA/FTD, causing device reload. Reported alongside ArcaneDoor campaign. Fixed in 9.16.4.60, 9.18.4.24, 9.20.2.6 and later.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-20316",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Improper Input Validation Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20316"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20315",
+      "cvss": 9.1,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Path Traversal Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20315"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20314",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Command Injection Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-20314"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20307",
+      "cvss": 9.1,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Path Traversal Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-path-trav-ur5FB99m"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20306",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Command Injection Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-cmd-inj-RkA58i0a"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-20305",
+      "cvss": 8.8,
+      "severity": "High",
+      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Improper Input Validation Vulnerability",
+      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
+      "fixed": "17.12.0",
+      "references": [
+        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-imp-input-val-60F0vAkT"
+      ],
+      "vendor": "Cisco",
+      "product": "9800-WLC"
+    },
+    {
+      "id": "CVE-2024-9474",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.9,
+      "summary": "PAN-OS: Privilege Escalation (PE) Vulnerability in the Web Management Interface — A privilege escalation vulnerability in Palo Alto Networks PAN-OS software allows a PAN-OS administrator with access to the management web interface to perform actions on the firewall with root privileges. This issue is applicable to PAN-OS 10.1, PAN-OS 10.2, PAN-OS 11.0, PAN-OS 11.1, and PAN-OS 11.2 software on PA-Series, VM-Series, and CN-Series firewalls and on Panorama (virtual and M-Series) and WildFire appliances. Cloud NGFW and Prisma Access are not impacted by this vulnerability. — Fixed: All / >= 11.2.0-h1, >= 11.2.1-h1, >= 11.2.2-h2, >= 11.2.3-h3, >= 11.2.4-h1 / >= 11.1.0-h4, >= 11.1.1-h2, >= 11.1.2-h15, >= 11.1.3-h11, >= 11.1.4-h7, >= 11.1.5-h1 / >= 11.0.0-h4, >= 11.0.1-h5, >= 11.0.2-h5, >= 11.0…",
+      "published": "2024-11-18",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-9474"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-9472",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) Using Specially Crafted Traffic — A null pointer dereference in Palo Alto Networks PAN-OS software on PA-800 Series, PA-3200 Series, PA-5200 Series, and PA-7000 Series hardware platforms when Decryption policy is enabled allows an unauthenticated attacker to crash PAN-OS by sending specific traffic through the data plane, resulting in a denial of service (DoS) condition. Repeated attempts to trigger this condition will result in PAN-OS entering maintenance mode. Palo Alto Networks VM-Series, Cloud NGFW, and Prisma Access are not affected. This issue only affects PA-800 Series, PA-3200 Series, PA-5200 Series, and PA-7000 Series running these specific versions of PAN-OS: * 10.2.7-h12 * 10.2.8-h10 * 10.2.9-h9 * 10.2.9-h11 * 10.2.10-h2 * 10.2.10-h3 *…",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-9472"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-6387",
+      "vendor": "OpenSSH",
+      "product": "OpenSSH Server",
+      "severity": "high",
+      "cvss": 8.1,
+      "summary": "\"regreSSHion\" — signal-handler race in sshd on glibc systems allowing unauthenticated RCE on 32-bit builds; difficult but feasible on 64-bit. Fixed in OpenSSH 9.8p1; mitigate with LoginGraceTime 0 until patched.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-5921",
+      "vendor": "Palo Alto",
+      "product": "GlobalProtect App,GlobalProtect App,GlobalProtect App,GlobalProtect App,GlobalProtect App,GlobalProtect App,GlobalProtect App",
+      "severity": "medium",
+      "cvss": 7.2,
+      "summary": "GlobalProtect App: Insufficient Certificate Validation Leads to Privilege Escalation — An insufficient certificate validation issue in the Palo Alto Networks GlobalProtect app enables attackers to connect the GlobalProtect app to arbitrary servers. This can enable a local non-administrative operating system user or an attacker on the same subnet to install malicious root certificates on the endpoint and subsequently install malicious software signed by the malicious root certificates on that endpoint. Please subscribe to our RSS feed (https://security.paloaltonetworks.com/rss.xml) to be alerted to new updates to this and other advisories. — Fixed: >= 6.3.2* on Windows, >= 6.3.2* on macOS / >= 6.2.6* on Windows, >= 6.2.6-c857* on macOS, >= 6.2.1-c31* on Linux, >= 6.2.6* on Windows UWP (E…",
+      "published": "2024-11-26",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-5921"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-5920",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 4.6,
+      "summary": "PAN-OS: Stored Cross-Site Scripting (XSS) Vulnerability in PAN-OS Enables Impersonation of a Legitimate Administrator — A cross-site scripting (XSS) vulnerability in Palo Alto Networks PAN-OS software enables an authenticated read-write Panorama administrator to push a specially crafted configuration to a PAN-OS node. This enables impersonation of a legitimate PAN-OS administrator who can perform restricted actions on the PAN-OS node after the execution of JavaScript in the legitimate PAN-OS administrator's browser. — Fixed: All / All / >= 11.1.4 / >= 11.0.6 / >= 10.2.7-h24, >= 10.2.10-h14, >= 10.2.11 / >= 10.1.14 / All",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-5920"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-5919",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.1,
+      "summary": "PAN-OS: Authenticated XML External Entities (XXE) Injection Vulnerability — A blind XML External Entities (XXE) injection vulnerability in the Palo Alto Networks PAN-OS software enables an authenticated attacker to exfiltrate arbitrary files from firewalls to an attacker controlled server. This attack requires network access to the firewall management interface. — Fixed: All / All / All / >= 11.0.2 / >= 10.2.5 / >= 10.1.10 / All · Workaround: TBD",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-5919"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-5918",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "low",
+      "cvss": 5.3,
+      "summary": "PAN-OS: Improper Certificate Validation Enables Impersonation of a Legitimate GlobalProtect User — An improper certificate validation vulnerability in Palo Alto Networks PAN-OS software enables an authorized user with a specially crafted client certificate to connect to an impacted GlobalProtect portal or GlobalProtect gateway as a different legitimate user. This attack is possible only if you \"Allow Authentication with User Credentials OR Client Certificate.\" — Fixed: All / All / All / >= 11.0.3 / >= 10.2.4-h5 / >= 10.1.11 / All · Workaround: You can mitigate this issue by setting the \"Allow Authentication with User Credentials OR Client Certificate\" option to \"No.\" Additional information is available here: https://docs.paloaltonetworks.co",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-5918"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-5917",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS",
+      "severity": "low",
+      "cvss": 2.1,
+      "summary": "PAN-OS: Server-Side Request Forgery in WildFire — A server-side request forgery in PAN-OS software enables an authenticated attacker to use the administrative web interface as a proxy, which enables the attacker to view internal network resources not otherwise accessible. — Fixed: All / All / All / All / >= 10.2.2 / >= 10.1.7 · Workaround: Recommended mitigation—The vast majority of firewalls already follow Palo Alto Networks and industry best practices. However, if you haven’t already, we strongly recommend that you secure access to yo",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-5917"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
     {
       "id": "CVE-2024-3400",
       "vendor": "Palo Alto",
@@ -12,30 +1363,173 @@
       "source": "curated"
     },
     {
+      "id": "CVE-2024-3393",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,PAN-OS,PAN-OS",
+      "severity": "high",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) in DNS Security Using a Specially Crafted Packet — A Denial of Service vulnerability in the DNS Security feature of Palo Alto Networks PAN-OS software allows an unauthenticated attacker to send a malicious packet through the data plane of the firewall that reboots the firewall. Repeated attempts to trigger this condition will cause the firewall to enter maintenance mode. This issue is applicable to the PAN-OS software versions listed below on PA-Series firewalls, VM-Series firewalls, CN-Series firewalls, and Prisma Access. — Fixed: All / >= 11.2.3 / >= 11.1.2-h16, >= 11.1.3-h13, >= 11.1.4-h7, >= 11.1.5 / < 10.2.8, >= 10.2.8-h19, >= 10.2.9-h19, >= 10.2.10-h12, >= 10.2.11-h10, >= 10.2.12-h4, >= 10.2.13-h2, >= 10.2.14 / < 10.1.14, >= 10.1.14-h8, >=…",
+      "published": "2024-12-27",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-3393"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-2552",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 6.8,
+      "summary": "PAN-OS: Arbitrary File Delete Vulnerability in the Command Line Interface (CLI) — A command injection vulnerability in Palo Alto Networks PAN-OS software enables an authenticated administrator to bypass system restrictions in the management plane and delete files on the firewall. — Fixed: All / >= 11.2.4 / >= 11.1.4-h9, >= 11.1.5 / >= 11.0.6 / >= 10.2.7-h21, >= 10.2.8-h18, >= 10.2.9-h18, >= 10.2.10-h10, >= 10.2.11-h9, >= 10.2.12 / All / All · Workaround: We strongly recommend customers to ensure access to your management interface is configured correctly in accordance with our recommended best practice deployment guidelines. In particular, we recommen",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-2552"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-2551",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) Using a Specially Crafted Packet — A null pointer dereference vulnerability in Palo Alto Networks PAN-OS software enables an unauthenticated attacker to stop a core system service on the firewall by sending a crafted packet through the data plane that causes a denial of service (DoS) condition. Repeated attempts to trigger this condition result in the firewall entering maintenance mode. — Fixed: All / All / All / >= 11.0.5 / >= 10.2.4-h6, >= 10.2.5 / >= 10.1.14 / All · Workaround: No workaround or mitigation is available.",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-2551"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-2550",
+      "vendor": "Palo Alto",
+      "product": "Cloud NGFW,PAN-OS,Prisma Access",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "PAN-OS: Firewall Denial of Service (DoS) in GlobalProtect Gateway Using a Specially Crafted Packet — A null pointer dereference vulnerability in the GlobalProtect gateway in Palo Alto Networks PAN-OS software enables an unauthenticated attacker to stop the GlobalProtect service on the firewall by sending a specially crafted packet that causes a denial of service (DoS) condition. Repeated attempts to trigger this condition result in the firewall entering maintenance mode. — Fixed: All / All / >= 11.1.4-h9, >= 11.1.5 / >= 11.0.6 / >= 10.2.7-h21, >= 10.2.8-h18, >= 10.2.9-h18, >= 10.2.10-h10, >= 10.2.11 / All / All · Workaround: No workaround or mitigation is available.",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-2550"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-1135",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Broker VM",
+      "severity": "medium",
+      "cvss": 8.7,
+      "summary": "Impact of CVE-2024-1135 — The Palo Alto Networks Product Security Assurance team has evaluated CVE-2024-1135 as it applies to our products. The Broker VM used in following products is vulnerable to CVE-2024-1135: * Cortex XDR * Cortex XSIAM — Fixed: >= 25.105.6 · Workaround: No workaround or mitigation is available.",
+      "published": "2025-02-12",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-1135"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "CVE-2024-1086",
+      "vendor": "Linux",
+      "product": "Kernel (netfilter nf_tables)",
+      "severity": "high",
+      "cvss": 7.8,
+      "summary": "Use-after-free in nf_tables leading to local privilege escalation to root. Public exploit since early 2024. Patched across all stable trees; audit any host allowing unprivileged user namespaces.",
+      "source": "curated"
+    },
+    {
+      "id": "CVE-2024-0208",
+      "vendor": "Wireshark",
+      "product": "Wireshark",
+      "severity": "medium",
+      "cvss": 5.5,
+      "summary": "GVCP dissector infinite loop crashing Wireshark during capture analysis. Fix: upgrade to 4.0.12 / 4.2.2 or later. Impact limited to analyst workstations.",
+      "source": "curated"
+    },
+    {
+      "id": "PAN-SA-2024-0017",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "medium",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Updates — Palo Alto Networks incorporated the following Chromium security fixes into our products: * https://chromereleases.googleblog.com/2024/11/stable-channel-update-for-desktop_19.html * https://chromereleases.googleblog.com/2024/12/stable-channel-update-for-desktop.html — Fixed: >= 131.109.2968.0",
+      "published": "2024-12-11",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2024-0017"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2024-0016",
+      "vendor": "Palo Alto",
+      "product": "Prisma Browser",
+      "severity": "high",
+      "cvss": 8.6,
+      "summary": "Chromium: Monthly Vulnerability Updates — Palo Alto Networks incorporated the following Chromium security fixes into its products: * https://chromereleases.googleblog.com/2024/10/stable-channel-update-for-desktop_15.html * https://chromereleases.googleblog.com/2024/10/stable-channel-update-for-desktop_22.html * https://chromereleases.googleblog.com/2024/10/stable-channel-update-for-desktop_29.html * https://chromereleases.googleblog.com/2024/11/stable-channel-update-for-desktop.html — Fixed: >= 130.117.2920.13",
+      "published": "2024-11-13",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2024-0016"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2024-0014",
+      "vendor": "Palo Alto",
+      "product": "Cortex XDR Agent",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Impact of OSS CVEs in Cortex XDR Agent — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to Cortex XDR Agent. While Cortex XDR Agent may include the affected OSS package, Cortex XDR Agent does not offer any scenarios required for an attacker to successfully exploit these vulnerabilities and is not impacted. In addition, as part of our Secure Software Development Lifecycle, we regularly update the versions of open source software in the Cortex XDR agent. Version information regarding this open source software can be found here: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-OSS-Listings — Fixed: All · Workaround: TBD",
+      "published": "2024-11-07",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2024-0014"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
+      "id": "PAN-SA-2024-0013",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: Impact of OSS CVEs in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS software. While PAN-OS software may include the affected OSS package, PAN-OS does not offer any scenarios required for an attacker to successfully exploit these vulnerabilities and is not impacted. — Fixed: All · Workaround: TBD",
+      "published": "2024-11-01",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2024-0013"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
+    },
+    {
       "id": "CVE-2024-0012",
       "vendor": "Palo Alto",
       "product": "PAN-OS",
       "severity": "critical",
       "cvss": 9.3,
       "summary": "Authentication bypass in PAN-OS web management interface allowed unauthenticated network-attacker admin access. Mitigation: restrict mgmt-plane access to trusted hosts; upgrade to 10.2.12-h2 / 11.0.6-h1 / 11.1.5-h1 / 11.2.4-h1.",
-      "source": "curated"
+      "published": "2024-11-18",
+      "references": [
+        "https://security.paloaltonetworks.com/CVE-2024-0012"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
     },
     {
-      "id": "CVE-2023-4966",
-      "vendor": "Citrix",
-      "product": "NetScaler ADC / Gateway",
-      "severity": "critical",
-      "cvss": 9.4,
-      "summary": "\"Citrix Bleed\" — sensitive memory disclosure from NetScaler Gateway / AAA VIPs, including session cookies enabling session hijack. Active ransomware exploitation Q4 2023. Fixed in 13.1-49.15, 13.0-92.19, and later; revoke all active sessions after patching.",
-      "source": "curated"
+      "id": "PAN-SA-2024-0012",
+      "vendor": "Palo Alto",
+      "product": "PAN-OS",
+      "severity": "informational",
+      "cvss": 0,
+      "summary": "Informational Bulletin: OSS CVEs fixed in PAN-OS — The Palo Alto Networks Product Security Assurance team has evaluated the following open source software (OSS) CVEs as they relate to PAN-OS. While it was not determined that these CVEs have any significant impact on PAN-OS, they have been fixed out of an abundance of caution. — Workaround: TBD",
+      "published": "2024-10-29",
+      "references": [
+        "https://security.paloaltonetworks.com/PAN-SA-2024-0012"
+      ],
+      "source": "Palo Alto Security Advisories CSV"
     },
     {
-      "id": "CVE-2023-6548",
-      "vendor": "Citrix",
-      "product": "NetScaler ADC / Gateway",
-      "severity": "medium",
-      "cvss": 5.5,
-      "summary": "Authenticated remote code execution on NetScaler management interface when configured as Gateway/AAA vserver. Requires mgmt-plane access. Fixed in 14.1-12.35, 13.1-51.15, 13.0-92.21.",
+      "id": "CVE-2023-20273",
+      "vendor": "Cisco",
+      "product": "IOS XE",
+      "severity": "high",
+      "cvss": 7.2,
+      "summary": "Command injection in IOS XE web UI that lets an authenticated user (e.g. the account created via CVE-2023-20198) write files and gain root. Chained with 20198 for full device takeover.",
       "source": "curated"
     },
     {
@@ -57,66 +1551,21 @@
       "source": "curated"
     },
     {
-      "id": "CVE-2023-20273",
-      "vendor": "Cisco",
-      "product": "IOS XE",
-      "severity": "high",
-      "cvss": 7.2,
-      "summary": "Command injection in IOS XE web UI that lets an authenticated user (e.g. the account created via CVE-2023-20198) write files and gain root. Chained with 20198 for full device takeover.",
+      "id": "CVE-2023-6548",
+      "vendor": "Citrix",
+      "product": "NetScaler ADC / Gateway",
+      "severity": "medium",
+      "cvss": 5.5,
+      "summary": "Authenticated remote code execution on NetScaler management interface when configured as Gateway/AAA vserver. Requires mgmt-plane access. Fixed in 14.1-12.35, 13.1-51.15, 13.0-92.21.",
       "source": "curated"
     },
     {
-      "id": "CVE-2024-20353",
-      "vendor": "Cisco",
-      "product": "ASA / FTD",
-      "severity": "high",
-      "cvss": 8.6,
-      "summary": "DoS via crafted HTTP request to the WebVPN service on ASA/FTD, causing device reload. Reported alongside ArcaneDoor campaign. Fixed in 9.16.4.60, 9.18.4.24, 9.20.2.6 and later.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-20356",
-      "vendor": "Cisco",
-      "product": "IMC (UCS/ISE appliances)",
-      "severity": "high",
-      "cvss": 8.7,
-      "summary": "Authenticated command-injection in Cisco Integrated Management Controller web interface. Fix: upgrade IMC per hardware model's matrix; restrict IMC network reachability to management VLAN.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-37085",
-      "vendor": "VMware",
-      "product": "ESXi",
-      "severity": "high",
-      "cvss": 6.8,
-      "summary": "Authentication bypass allowing AD domain members belonging to an attacker-created 'ESX Admins' group to gain full ESXi admin access. Exploited by ransomware. Mitigation: remove AD integration if not used, or explicitly set the admin group; fix in ESXi 8.0 U3.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-38812",
-      "vendor": "VMware",
-      "product": "vCenter Server",
+      "id": "CVE-2023-4966",
+      "vendor": "Citrix",
+      "product": "NetScaler ADC / Gateway",
       "severity": "critical",
-      "cvss": 9.8,
-      "summary": "Heap-overflow in DCERPC protocol implementation enabling remote code execution via crafted network packets. No auth required. Fixed in vCenter 8.0 U3b / 8.0 U2d / 7.0 U3t.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-1086",
-      "vendor": "Linux",
-      "product": "Kernel (netfilter nf_tables)",
-      "severity": "high",
-      "cvss": 7.8,
-      "summary": "Use-after-free in nf_tables leading to local privilege escalation to root. Public exploit since early 2024. Patched across all stable trees; audit any host allowing unprivileged user namespaces.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-6387",
-      "vendor": "OpenSSH",
-      "product": "OpenSSH Server",
-      "severity": "high",
-      "cvss": 8.1,
-      "summary": "\"regreSSHion\" — signal-handler race in sshd on glibc systems allowing unauthenticated RCE on 32-bit builds; difficult but feasible on 64-bit. Fixed in OpenSSH 9.8p1; mitigate with LoginGraceTime 0 until patched.",
+      "cvss": 9.4,
+      "summary": "\"Citrix Bleed\" — sensitive memory disclosure from NetScaler Gateway / AAA VIPs, including session cookies enabling session hijack. Active ransomware exploitation Q4 2023. Fixed in 13.1-49.15, 13.0-92.19, and later; revoke all active sessions after patching.",
       "source": "curated"
     },
     {
@@ -127,164 +1576,6 @@
       "cvss": 7.5,
       "summary": "Denial of service via X.509 certificate policy constraints — malicious chain can cause exponential CPU use during verification. Fixed in 1.1.1t, 3.0.8, 3.1.0.",
       "source": "curated"
-    },
-    {
-      "id": "CVE-2024-43451",
-      "vendor": "Microsoft",
-      "product": "Windows (NTLM)",
-      "severity": "medium",
-      "cvss": 6.5,
-      "summary": "NTLM hash disclosure via crafted file — triggered by minimal user interaction (selecting/right-clicking a file). Exploited in the wild. Patched in the November 2024 cumulative update.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-49113",
-      "vendor": "Microsoft",
-      "product": "Windows (LDAP)",
-      "severity": "high",
-      "cvss": 7.5,
-      "summary": "\"LDAPNightmare\" — unauthenticated DoS / RCE pre-conditions via LDAP client path; crash domain controllers via crafted DSR referral. Patch from December 2024 cumulative update.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-38063",
-      "vendor": "Microsoft",
-      "product": "Windows (IPv6)",
-      "severity": "critical",
-      "cvss": 9.8,
-      "summary": "Zero-click remote code execution via crafted IPv6 packets processed by the Windows TCP/IP stack. Mitigate by disabling IPv6 on exposed hosts until patched; fix in August 2024 cumulative.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-0208",
-      "vendor": "Wireshark",
-      "product": "Wireshark",
-      "severity": "medium",
-      "cvss": 5.5,
-      "summary": "GVCP dissector infinite loop crashing Wireshark during capture analysis. Fix: upgrade to 4.0.12 / 4.2.2 or later. Impact limited to analyst workstations.",
-      "source": "curated"
-    },
-    {
-      "id": "CVE-2024-20306",
-      "cvss": 9.8,
-      "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Command Injection Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-cmd-inj-RkA58i0a"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20307",
-      "cvss": 9.1,
-      "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Path Traversal Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-path-trav-ur5FB99m"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20314",
-      "cvss": 9.8,
-      "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Command Injection Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20314"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20315",
-      "cvss": 9.1,
-      "severity": "Critical",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Path Traversal Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20315"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20316",
-      "cvss": 8.8,
-      "severity": "High",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controllers Software Improper Input Validation Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://nvd.nist.gov/vuln/detail/CVE-2024-20316"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20358",
-      "cvss": 9.8,
-      "severity": "Critical",
-      "summary": "Cisco Nexus Dashboard Fabric Manager allows unauthenticated remote code execution due to improper input validation.",
-      "affected": "Cisco Nexus Dashboard Fabric Manager versions prior to 9.3(1)",
-      "fixed": "9.3(1)",
-      "references": [],
-      "vendor": "Cisco",
-      "product": "Nexus"
-    },
-    {
-      "id": "CVE-2024-20359",
-      "cvss": 8.8,
-      "severity": "High",
-      "summary": "Improper access control in Cisco Nexus Dashboard allows elevated privileges via crafted API requests.",
-      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
-      "fixed": "9.3(1)",
-      "references": [],
-      "vendor": "Cisco",
-      "product": "Nexus"
-    },
-    {
-      "id": "CVE-2024-20360",
-      "cvss": 7.5,
-      "severity": "Medium",
-      "summary": "Information disclosure vulnerability in Cisco Nexus Dashboard due to verbose error messages.",
-      "affected": "Cisco Nexus Dashboard versions prior to 9.3(1)",
-      "fixed": "9.3(1)",
-      "references": [],
-      "vendor": "Cisco",
-      "product": "Nexus"
-    },
-    {
-      "id": "CVE-2024-20305",
-      "cvss": 8.8,
-      "severity": "High",
-      "summary": "Cisco Catalyst 9800 Series Wireless LAN Controller Software Improper Input Validation Vulnerability",
-      "affected": "Cisco Catalyst 9800-40, 9800-80, 9800-120",
-      "fixed": "17.12.0",
-      "references": [
-        "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20240207-wlc-imp-input-val-60F0vAkT"
-      ],
-      "vendor": "Cisco",
-      "product": "9800-WLC"
-    },
-    {
-      "id": "CVE-2024-20383",
-      "cvss": 9.1,
-      "severity": "Critical",
-      "summary": "Cisco Nexus 9000 Series Fabric Switches suffers from a vulnerability that could allow an unauthenticated, remote attacker to execute arbitrary code.",
-      "affected": "Cisco Nexus 9000 Series Fabric Switches software versions prior to 10.3(1)",
-      "fixed": "10.3(1)",
-      "references": [],
-      "vendor": "Cisco",
-      "product": "Nexus"
     }
   ]
 }
