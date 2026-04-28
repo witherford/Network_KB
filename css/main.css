@@ -214,6 +214,13 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 .ver-latest.ver-err {
   color: #fecaca;
 }
+.visits-pill {
+  font-size: 10px;
+  color: rgba(255,255,255,.45);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+  margin-top: 1px;
+}
 
 /* Compact the version cluster on small screens to keep the header tidy. */
 @media (max-width: 760px) {
