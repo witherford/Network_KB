@@ -182,8 +182,7 @@ export async function mount(root) {
   root.innerHTML = `
     <h2 style="font-size:15px;margin-bottom:12px">Cisco info scripts</h2>
     <div class="cis-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-      <button class="ftab active" data-cis="oui">OUI / ARP lookup</button>
-      <button class="ftab" data-cis="merge">MAC table merger</button>
+      <button class="ftab active" data-cis="oui">OUI / ARP lookup + MAC merger</button>
       <button class="ftab" data-cis="tcl">TCL script generator</button>
     </div>
     <div id="cisBody"></div>`;
@@ -194,20 +193,24 @@ export async function mount(root) {
   let db = FALLBACK_OUI;
   loadDb().then(loaded => { db = loaded; updateInfoLine(); });
 
+  // Workflow state shared with the merger (which now lives on the same page):
+  // every successful OUI/ARP lookup writes the rows here so the merger can
+  // pick them up without the user copy-pasting between two textareas.
+  let lastOuiRows = [];
+
   let currentTab = 'oui';
   function setTab(t) {
     currentTab = t;
     tabsEl.querySelectorAll('.ftab').forEach(b => b.classList.toggle('active', b.dataset.cis === t));
-    if (t === 'oui')   renderOui();
-    if (t === 'merge') renderMerge();
-    if (t === 'tcl')   renderTcl();
+    if (t === 'oui') renderOui();
+    if (t === 'tcl') renderTcl();
   }
   tabsEl.addEventListener('click', e => {
     const b = e.target.closest('[data-cis]');
     if (b) setTab(b.dataset.cis);
   });
 
-  // ---------- Sub-tab 1: OUI / ARP lookup ----------
+  // ---------- Sub-tab 1: OUI / ARP lookup + MAC merger (combined workflow) ----------
   function renderOui() {
     body.innerHTML = `
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;font-weight:600">
@@ -221,6 +224,26 @@ export async function mount(root) {
         <label id="mInputLabel">MAC address(es) — one per line, any format</label>
         <textarea id="mInput" placeholder="00:50:56:c0:00:01&#10;00-1c-58-ab-cd-ef&#10;0050.5612.3456&#10;001A4Aabcdef" style="min-height:100px"></textarea>
       </div>
+
+      <!--
+        Cisco show-commands box — moved to TOP of the workflow per v1.3.1.
+        Renders as soon as a lookup happens. Step 1 of the merge workflow:
+          paste MACs / ARP → see results → COPY these commands → run on switch.
+      -->
+      <section id="mCmds" style="margin:14px 0;padding:12px;border:2px solid var(--accent,#0ea5e9);border-radius:8px;display:none;background:rgba(14,165,233,0.05)">
+        <header style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+          <strong style="font-size:13px">Step 1 — Cisco <code>show mac address-table</code> commands</strong>
+          <span class="hint" style="font-size:11px">Paste these into your Cisco switch to find which port each MAC sits on. Then paste the switch output into Step 2 below.</span>
+        </header>
+        <pre class="script-out" id="mCmdsPre" style="margin:0 0 8px;max-height:240px;overflow:auto"></pre>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn sm primary" id="mCmdsCopy">⧉ Copy all commands</button>
+          <button class="btn sm" id="mCmdsCsv">Export commands as CSV</button>
+          <span class="spacer" style="flex:1"></span>
+          <span class="hint" id="mCmdsCount" style="font-size:11px"></span>
+        </div>
+      </section>
+
       <details style="margin-top:8px">
         <summary style="cursor:pointer;font-size:12px;font-weight:600">Visible columns (toggle to drop from table + CSV)</summary>
         <div id="mColumns" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;padding:8px;border:1px solid var(--border);border-radius:6px"></div>
@@ -232,20 +255,36 @@ export async function mount(root) {
         <span class="spacer" style="flex:1"></span>
         <span class="hint" id="mInfo">Loading IEEE OUI database…</span>
       </div>
+
+      <!-- OUI / ARP results table -->
       <div id="mOut"></div>
 
-      <section id="mCmds" style="margin-top:18px;padding:12px;border:1px solid var(--border);border-radius:8px;display:none">
+      <!--
+        Step 2 — MAC table merger. Lives directly below the OUI results so
+        the user doesn't need to switch tabs or copy results between
+        textareas. The OUI/ARP rows are already in memory — the merger just
+        joins them with the user-pasted "show mac address-table" output.
+      -->
+      <section id="mMerge" style="margin-top:24px;padding:12px;border:2px solid var(--accent,#0ea5e9);border-radius:8px;background:rgba(14,165,233,0.05)">
         <header style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-          <strong style="font-size:13px">Cisco show-commands for these MACs</strong>
-          <span class="hint" style="font-size:11px">Paste these into a Cisco device to find which port each MAC sits on.</span>
+          <strong style="font-size:13px">Step 2 — Paste <code>show mac address-table</code> output to merge</strong>
+          <span class="hint" id="mgStatus" style="font-size:11px">Awaiting OUI / ARP lookup data above.</span>
         </header>
-        <pre class="script-out" id="mCmdsPre" style="margin:0 0 8px"></pre>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn sm primary" id="mCmdsCopy">Copy all commands</button>
-          <button class="btn sm" id="mCmdsCsv">Export commands as CSV</button>
-          <span class="spacer" style="flex:1"></span>
-          <span class="hint" id="mCmdsCount" style="font-size:11px"></span>
+        <div class="form-row">
+          <label>Output from your Cisco switch</label>
+          <textarea id="mgRight" rows="8" placeholder="Vlan    Mac Address       Type        Ports&#10;----    -----------       --------    -----&#10;  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5&#10;  10    0050.5612.3456    DYNAMIC     Gi1/0/12" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
         </div>
+        <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;align-items:center">
+          <span style="font-size:12px;font-weight:600">MAC format:</span>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="radio" name="mgFmt" value="colon" checked> Colon (00:1a:b3:c4:56:78)</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="radio" name="mgFmt" value="dash"> Dash (00-1a-b3-c4-56-78)</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="radio" name="mgFmt" value="dotted"> Cisco dotted (001a.b3c4.5678)</label>
+          <span class="spacer" style="flex:1"></span>
+          <button class="btn primary" id="mgGo">Merge</button>
+          <button class="btn" id="mgCsv">Export CSV</button>
+          <button class="btn" id="mgCopy">Copy as CSV</button>
+        </div>
+        <div id="mgOut"></div>
       </section>`;
 
     const $ = sel => body.querySelector(sel);
@@ -300,18 +339,22 @@ export async function mount(root) {
         });
       });
       // Build the show-commands section for found MACs.
+      // (Per v1.3.1 the "show ip arp" lines were removed — only the MAC
+      // address-table lookups go into the output, since that's all the
+      // merger needs.)
       const valid = rows.filter(r => !r.error && r.dotted);
-      if (!valid.length) { $('#mCmds').style.display = 'none'; return; }
-      const cmds = [];
-      for (const r of valid) cmds.push(`show mac address-table address ${r.dotted}`);
-      if (arpMode()) {
-        cmds.push('!');
-        cmds.push('! ARP-side lookups (IP → ARP entry):');
-        for (const r of valid) if (r.ip) cmds.push(`show ip arp ${r.ip}`);
+      // Stash for the merger below.
+      lastOuiRows = valid;
+      if (!valid.length) {
+        $('#mCmds').style.display = 'none';
+        $('#mgStatus').textContent = 'Awaiting OUI / ARP lookup data above.';
+        return;
       }
+      const cmds = valid.map(r => `show mac address-table address ${r.dotted}`);
       $('#mCmds').style.display = '';
       $('#mCmdsPre').textContent = cmds.join('\n');
-      $('#mCmdsCount').textContent = `${valid.length} MAC${valid.length === 1 ? '' : 's'}` + (arpMode() ? ` · +${valid.filter(x => x.ip).length} ARP commands` : '');
+      $('#mCmdsCount').textContent = `${valid.length} MAC${valid.length === 1 ? '' : 's'}`;
+      $('#mgStatus').textContent = `Ready — ${valid.length} MAC${valid.length === 1 ? '' : 's'} from the lookup above will be auto-merged with the switch output you paste.`;
     }
 
     $('#mLookup').addEventListener('click', lookup);
@@ -348,11 +391,115 @@ export async function mount(root) {
       downloadCsv('cisco-show-commands.csv', csv);
     });
 
+    // ---------- Step 2 — embedded MAC table merger ----------
+    let mergedRows = [];
+
+    function runMerge() {
+      const right = $('#mgRight').value;
+      const fmt = body.querySelector('input[name="mgFmt"]:checked')?.value || 'colon';
+      const macTable = parseMacAddressTable(right);
+      const macTableMap = new Map();
+      for (const e of macTable) {
+        const k = normaliseMac(e.mac);
+        if (k) macTableMap.set(k, e);
+      }
+
+      // Live OUI/ARP rows from the lookup above — no copy-paste needed.
+      const merged = new Map();
+      for (const r of lastOuiRows) {
+        const k = r.bare;
+        if (!k) continue;
+        merged.set(k, {
+          mac: fmtMac(k, fmt), bare: k,
+          ip: r.ip || '', vendor: r.vendor || '',
+          vlan: '', interface: r.iface || '', type: ''
+        });
+      }
+      for (const [k, e] of macTableMap.entries()) {
+        let row = merged.get(k);
+        if (!row) {
+          const v = findVendor(db, k);
+          row = { mac: fmtMac(k, fmt), bare: k, ip: '', vendor: v?.vendor || 'Unknown', vlan: '', interface: '', type: '' };
+          merged.set(k, row);
+        }
+        if (e.vlan) row.vlan = e.vlan;
+        if (e.ports) row.interface = e.ports;     // mac-address-table interface wins
+        if (e.type) row.type = e.type;
+      }
+
+      mergedRows = [...merged.values()].sort((a, b) => {
+        const va = +a.vlan || 0, vb = +b.vlan || 0;
+        if (va !== vb) return va - vb;
+        return a.bare.localeCompare(b.bare);
+      });
+      paintMerge();
+    }
+
+    function paintMerge() {
+      if (!mergedRows.length) {
+        $('#mgOut').innerHTML = lastOuiRows.length
+          ? '<div class="page-empty" style="padding:12px;font-size:12px">Paste your switch output above and click <strong>Merge</strong>.</div>'
+          : '<div class="page-empty" style="padding:12px;font-size:12px">Run a lookup above first, then paste your switch output here.</div>';
+        return;
+      }
+      $('#mgOut').innerHTML = `
+        <table class="lc-table" style="margin-top:6px">
+          <thead><tr>
+            <th>VLAN</th><th>IP</th><th>MAC</th><th>Vendor</th><th>Interface / Port</th><th>Type</th><th style="width:80px">Copy</th>
+          </tr></thead>
+          <tbody>
+            ${mergedRows.map(r => `<tr>
+              <td>${esc(r.vlan)}</td>
+              <td><code>${esc(r.ip)}</code></td>
+              <td><code>${esc(r.mac)}</code></td>
+              <td>${esc(r.vendor)}</td>
+              <td>${esc(r.interface)}</td>
+              <td>${esc(r.type)}</td>
+              <td>
+                <button class="btn sm ghost" data-copy="${esc(r.mac)}" title="Copy MAC">⧉ M</button>
+                ${r.ip ? `<button class="btn sm ghost" data-copy="${esc(r.ip)}" title="Copy IP">⧉ IP</button>` : ''}
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+        <div class="hint" style="margin-top:6px">${mergedRows.length} merged rows · joined on MAC</div>`;
+      $('#mgOut').querySelectorAll('button[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const ok = await copyToClipboard(btn.dataset.copy);
+          const t = btn.textContent; btn.textContent = ok ? '✓' : '✗';
+          setTimeout(() => { btn.textContent = t; }, 900);
+        });
+      });
+    }
+
+    $('#mgGo').addEventListener('click', runMerge);
+    $('#mgRight').addEventListener('input', runMerge);
+    body.querySelectorAll('input[name="mgFmt"]').forEach(r => r.addEventListener('change', () => {
+      const fmt = body.querySelector('input[name="mgFmt"]:checked').value;
+      mergedRows = mergedRows.map(r => ({ ...r, mac: fmtMac(r.bare, fmt) }));
+      paintMerge();
+    }));
+    $('#mgCsv').addEventListener('click', () => {
+      if (!mergedRows.length) { toast('Nothing to export', 'error'); return; }
+      const csv = toCSV(mergedRows.map(r => ({ VLAN: r.vlan, IP: r.ip, MAC: r.mac, Vendor: r.vendor, Interface: r.interface, Type: r.type })), ['VLAN','IP','MAC','Vendor','Interface','Type']);
+      downloadCsv('mac-merge.csv', csv);
+    });
+    $('#mgCopy').addEventListener('click', async () => {
+      if (!mergedRows.length) { toast('Nothing to copy', 'error'); return; }
+      const csv = toCSV(mergedRows.map(r => ({ VLAN: r.vlan, IP: r.ip, MAC: r.mac, Vendor: r.vendor, Interface: r.interface, Type: r.type })), ['VLAN','IP','MAC','Vendor','Interface','Type']);
+      const ok = await copyToClipboard(csv);
+      toast(ok ? 'CSV copied' : 'Copy failed', ok ? 'success' : 'error');
+    });
+    paintMerge();
+
     refreshArpVisuals();
   }
 
-  // ---------- Sub-tab 2: MAC table merger ----------
-  function renderMerge() {
+  // ---------- Sub-tab 2: MAC table merger (DEPRECATED — folded into renderOui in v1.3.1) ----------
+  // Kept here as dead code only because the file structure is otherwise
+  // referenced by setTab('merge'). The setTab dispatcher no longer calls
+  // it. Safe to delete in a follow-up cleanup.
+  function renderMerge_DEPRECATED() {
     body.innerHTML = `
       <p class="hint" style="margin-bottom:10px">
         Paste your <strong>OUI / ARP lookup output</strong> on the left and your <strong>show mac address-table</strong> output on the right. The merger joins on MAC and produces unified rows: <code>IP · MAC · Vendor · VLAN · Interface · Type</code>.
