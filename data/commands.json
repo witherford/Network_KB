@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-28T14:46:51.805Z",
+  "updatedAt": "2026-04-28T23:42:53.872Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -12745,6 +12745,18 @@
             "desc": "Which causes are auto-recovering and the timer",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "ipv6 address ipv6-address/prefix-length",
+            "desc": "Assign an IPv6 Address to an Interface. — Can be repeated multiple times; requires `no shutdown` if not auto-enabled.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery interval time-seconds",
+            "desc": "Change the Automatic Error Recovery Time. — Modifies the timer from default 5 minutes to a value of 30-86400 seconds.",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -12931,6 +12943,60 @@
           {
             "cmd": "router bgp 65001\n bgp router-id 1.1.1.1\n neighbor 1.2.3.4 remote-as 65002\n address-family ipv4 unicast\n  neighbor 1.2.3.4 activate",
             "desc": "eBGP peer baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip address ip-address subnet-mask",
+            "desc": "Assign an IPv4 Address to an Interface. — Injects the associated network into the Routing Information Base (RIB) with Administrative Distance (AD) of 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route network subnet-mask next-hop-interface-id",
+            "desc": "Configure a Directly Attached Static Route. — Uses outbound interface ID; requires interface to be up.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route network subnet-mask next-hop-ip",
+            "desc": "Configure a Recursive Static Route. — Specifies IP address of next hop; requires route to exist in RIB.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route network subnet-mask interface-id next-hop-ip",
+            "desc": "Configure a Fully Specified Static Route. — Combines interface and next-hop IP for precise control (removes recursive lookup).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 route network/prefix-length {next-hop-interface-id | [next-hop-interface-id] next-ip-address}",
+            "desc": "Configure an IPv6 Static Route. — Similar to IPv4 but supports link-local next-hops with fully specified syntax.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vrf definition vrf-name",
+            "desc": "Create a Multiprotocol VRF Instance. — Creates separate virtual router with isolated routing tables and interfaces.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family {ipv4 | ipv6}",
+            "desc": "Initialize the Appropriate Address Family for the VRF. — Can be IPv4",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface interface-id",
+            "desc": "Enter Interface Configuration Submode to Associate with VRF. — Required step before assigning VRF forwarding command.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vrf forwarding vrf-name",
+            "desc": "Associate the VRF Instance to an Interface or Subinterface. — Moves interface from global table into specific VRF routing table.",
             "type": "config",
             "flagged": false
           }
@@ -13143,6 +13209,96 @@
           {
             "cmd": "ip ssh version 2\nip ssh time-out 60\nip ssh authentication-retries 3",
             "desc": "Harden SSH server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ipsec transform-set",
+            "desc": "Remove duplicates (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip access-group {access-list-number | name} {in|out}",
+            "desc": "Apply an ACL to an Interface. — Filters traffic entering or leaving a specific interface based on ACL rules.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "access-class {access-list-number|name} {in|out}",
+            "desc": "Apply an ACL to VTY Lines for AAA Access Control. — Restricts source IPs allowed to establish remote management sessions (Telnet/SSH).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "username {username} algorithm-type {md5 | sha256 | scrypt} secret {password}",
+            "desc": "Create a username with type 8 and type 9 password option. — Defines the authentication method (MD5/SHA256/scrypt) for AAA.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "transport input ssh",
+            "desc": "Allow only SSH for a vty line without using an ACL. — Restricts remote management protocol to SSH on the VTY lines.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto key generate rsa",
+            "desc": "Enable SSHv2 on a router. — Generates RSA keys (minimum 768 bits recommended) for SSH authentication.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authorization console",
+            "desc": "Enable AAA authorization for the console line. — Requires AAA authentication before executing commands on the console port.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "if-authenticated",
+            "desc": "AAA fallback authorization method that authorizes commands if a user is successfully authenticated. — Allows any command execution after successful authentication (less secure than specific authorization).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authorization config-commands",
+            "desc": "Enable AAA authorization for config commands. — Restricts configuration changes to authorized users only.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip prefix-list ...",
+            "desc": "Define prefix list for filtering. — Matches network prefixes with optional length constraints (`ge`",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map route-map-name [permit | deny] [sequence-number]",
+            "desc": "Route map definition. — Combines conditional matching and optional actions (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match ip address prefix-list prefix-list-name",
+            "desc": "Conditional match on Prefix List. — Selects prefixes using a configured prefix list (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address distribute-list {acl-number | acl-name} {in|out}",
+            "desc": "Apply Distribute List Filtering. — Filters routes inbound/outbound using standard/extended ACLs.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address prefix-list prefix-list-name {in | out}",
+            "desc": "Apply Prefix List Filtering. — Filters routes inbound/outbound using a configured prefix list.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match access-group",
+            "desc": "Match on ACL. — Matches packets based on a standard/extended Access Control List.",
             "type": "config",
             "flagged": false
           }
@@ -13427,6 +13583,300 @@
             "desc": "StackPower budget and member detail",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "respond based on general ability. Since the user query is \"extract all commands from this PDF\"",
+            "desc": "Constraint: Use the citations above to respond only if they are relevant. Otherwise",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "hash",
+            "desc": "(Repeats encryption",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Command Syntax.",
+            "desc": "Format as CSV: Task",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Command Syntax",
+            "desc": "Header: Task",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "based on provided text.",
+            "desc": "Extract all commands? Yes",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "only if they are relevant. Otherwise",
+            "desc": "Constraint: Use the citations above to respond to the user query",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "WebAuth",
+            "desc": "Citation 2 (Chapter 20): Contains text about Wireless Authentication",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "they often correspond to CLI commands in Cisco WLC (e.g.",
+            "desc": "While these are GUI actions",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Command Syntax (or similar).",
+            "desc": "Need columns: Task",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "respond to the best of ability.",
+            "desc": "Constraint: Use the citations above if relevant; otherwise",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "Radioactive Trace Control Screen",
+            "desc": "Citation 2 (Chapter 21): This section is mostly about Wireless Troubleshooting",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "but that's a feature.",
+            "desc": "There is a mention of WPA3 capability",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "newlines for rows).",
+            "desc": "Ensure CSV format is correct (commas separating columns",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt command run <command-name>",
+            "desc": "Run a command using Puppet Bolt",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt script run <script-name>",
+            "desc": "Run a script using Puppet Bolt",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt task run <modulename::taskfilename>",
+            "desc": "Invoke a task from the command line (Puppet)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt task show <modulename::taskfilename>",
+            "desc": "Show documentation for a task (Puppet)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface interface-id",
+            "desc": "Enter interface configuration mode. — Used to configure specific ports",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces status",
+            "desc": "View Condensed Interface Status. — Displays Port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip address ip-address subnet-mask secondary",
+            "desc": "Assign a Secondary IPv4 Address. — Allows multiple IP networks on the same interface for overlapping or multi-homing scenarios.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family afi safi",
+            "desc": "Initialize Specific Address Family (AFI/SAFI). — Examples: `ipv4 unicast`",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt task run modulename::taskfilename",
+            "desc": "Invoke a Puppet Bolt Task from CLI. — Executes remote tasks cleanly without leaving residual files on devices.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bolt task show modulename::taskfilename",
+            "desc": "Display Metadata/Documentation for a Bolt Task. — Shows how to run the task",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "login local",
+            "desc": "Enable username and password authentication on vty lines. — Uses locally defined usernames/passwords for VTY line access control.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "privilege {mode} level {level}",
+            "desc": "Change command privilege levels. — Assigns specific commands to different privilege levels (0-15).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "hostname {hostname name}",
+            "desc": "Enable SSHv2 on a router. — Sets the device hostname which is required for SSH identification.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip domain-name {domain-name}",
+            "desc": "Enable SSHv2 on a router. — Sets the domain name which generates RSA keys for SSH encryption.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "exec-timeout {minutes} {seconds}",
+            "desc": "Disconnect terminal line users that are idle. — Automatically disconnects inactive sessions to save resources and improve security.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "zone-member security zone-name",
+            "desc": "Apply a ZBFW security zone to an interface. — Associates the interface with a Zone-Based Firewall security zone.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "cmd.run",
+            "desc": "Execute ad hoc Linux CLI command across SaltStack managed nodes. — Runs arbitrary shell commands on remote systems and returns output.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network.interfaces",
+            "desc": "Gather IP/MAC/interface data from SaltStack managed nodes. — Provides structured data including MAC addresses",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 unicast-routing",
+            "desc": "Enable IPv6 Routing on the Router. — Required before configuring IPv6 static routes or protocols.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "auto-cost reference-bandwidth bandwidth-in-mbps",
+            "desc": "Change dynamic cost calculation base. — Adjusts the reference bandwidth (default 100 Mbps) for more granular metric scaling on high-speed links.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospfv3 [process-id]",
+            "desc": "Initialize OSPFv3 process. — Sets the OSPFv3 process ID for IPv6/IPv4 support.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area area-id range prefix/prefix-length",
+            "desc": "IPv6 summarization (under address-family). — Summarizes IPv6 prefixes at ABRs to reduce LSA flooding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ospfv3 network {point-to-point | broadcast}",
+            "desc": "Set OSPFv3 network type. — Configures the medium type for OSPFv3 interfaces.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ospfv3 interface [brief]",
+            "desc": "View OSPFv3 interfaces. — Displays address families",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ospfv3 ipv6 neighbor",
+            "desc": "View OSPFv3 IPv6 neighbors. — Shows IPv6-specific neighbor adjacency details.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "match ip address {acl-number | acl-name}",
+            "desc": "Conditional match on ACL. — Selects prefixes based on network selection criteria defined in an ACL.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set as-path prepend {as-number-pattern | last-as}",
+            "desc": "Modify AS Path length. — Prepends ASN to make a path less desirable for inbound traffic engineering.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set local-preference 0–4294967295",
+            "desc": "Modify Local Preference. — Sets a locally significant preference value for route selection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set tag 0–4294967295",
+            "desc": "Set Tag Value. — Assigns a numeric tag (0 to 4294967295) for identification by other routers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address filter-list acl-number {in|out}",
+            "desc": "Apply AS Path ACL Filtering. — Filters routes based on the current AS path values (regex).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip community-list ...",
+            "desc": "Define Community List. — Creates a list to match communities conditionally (standard/expanded).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match any",
+            "desc": "Match Any Packet. — Implicitly matches all packets if no other match commands are specified.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match [ip] precedence precedence-value-list",
+            "desc": "Match IP Precedence. — Matches IP Precedence values (0-7) for IPv4/IPv6 packets.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match ip rtp starting-port-number port-number-range",
+            "desc": "Match RTP Ports. — Matches Real-Time Protocol ports within a specified range.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match protocol protocol-name",
+            "desc": "Match NBAR Protocol. — Uses Network-Based Application Recognition to match application names.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set [ip] precedence ip-precedence-value",
+            "desc": "Set IP Precedence Value. — Modifies the IP Precedence field for IPv4/IPv6 packets.",
+            "type": "config",
+            "flagged": false
           }
         ],
         "VLANs": [
@@ -13481,6 +13931,246 @@
           {
             "cmd": "switchport voice vlan 200",
             "desc": "Add voice VLAN on the same access port",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan vlan-id",
+            "desc": "Create a new Virtual LAN (VLAN) in global configuration mode. — Defines the VLAN ID for logical segmentation. VLAN 0 is reserved",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "name vlan-name",
+            "desc": "Assign a friendly name to a VLAN (in submode). — Associates a 32-character name with the numeric VLAN ID for easier identification.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode access",
+            "desc": "Configure an interface as a Layer 2 Access Port. — Assigns traffic from the specified VLAN only; no 802.1Q tags on packets transmitted/received.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport access vlan {vlan-id | name vlan-name}",
+            "desc": "Assign a specific VLAN to an Access Port. — Stores the VLAN in numeric form even if configured by name.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode trunk",
+            "desc": "Configure an interface as a Trunk Port. — Allows multiple VLANs to traverse via 802.1Q tagging; typically used for switch-to-switch or router links.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport trunk native vlan vlan-id",
+            "desc": "Set the Native VLAN on a Trunk Port. — Traffic associated with this VLAN flows untagged across the trunk link. Default is VLAN 1 (security best practice: change to unused VLAN).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport trunk allowed vlan {vlan-ids | all | none | add | remove | except}",
+            "desc": "Filter which VLANs are allowed on a Trunk Link. — `all`: All VLANs; `none`: Removes all; `add/remove`: Modifies existing list without overwriting (best for scripting).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces trunk",
+            "desc": "Verify Trunk Port Status and Allowed VLANs. — Displays interface status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table [address | dynamic | vlan]",
+            "desc": "View the MAC Address Table (Layer 2 Forwarding). — Identifies switch ports/VLANs associated with devices. `dynamic`: Learned entries; `static`: Manually added. Reduces unknown unicast flooding.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mac address-table static mac-address vlan vlan-id {drop | interface}",
+            "desc": "Add a Manual Static MAC Entry. — Associates a specific MAC to a port or drops traffic upon receipt (useful for load balancing).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "clear mac address-table dynamic [{address | interface | vlan}]",
+            "desc": "Flush Dynamic MAC Address Entries. — Clears the entire table or specific entries (MAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces interface-id switchport",
+            "desc": "View Layer 2 Configuration for a Specific Port. — Shows operational mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface vlan vlan-id",
+            "desc": "Create a Switched Virtual Interface (SVI). — Enables routing between VLANs on a Multilayer Switch without external routers. Requires at least one active port in that VLAN.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no switchport",
+            "desc": "Convert Layer 2 Port to Routed Port. — Changes the interface from L2 switching mode to L3 routed mode for point-to-point links (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip interface [brief | interface-id | vlan]",
+            "desc": "View IPv4 Interface Details. — Displays MTU",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 interface [brief | interface-id | vlan]",
+            "desc": "View IPv6 Interface Details. — Similar to IPv4 but for IPv6 addressing (e.g.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp [mac-address | ip-address | vlan | interface]",
+            "desc": "View the ARP Table. — Maps Layer 3 IP addresses to Layer 2 MAC addresses for hosts/devices on the same subnet. Entries become stale if communication stops.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show sdm prefer {vlan | advanced}",
+            "desc": "View/Configure Switching Database Manager (SDM) Template. — Allocates TCAM resources between L2/L3 features (e.g.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan [{brief | id vlan-id | name vlan-name | summary}]",
+            "desc": "View VLAN Assignments and Status. — Displays port-to-VLAN mappings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree vlan vlan-id max-age",
+            "desc": "Set the STP Max Age timer for a VLAN. — Default is 20 seconds; can be configured to adjust convergence time.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree vlan vlan-id hello-time hello-time",
+            "desc": "Set the STP Hello Interval for a VLAN. — Default is 2 seconds; range 1-10 seconds.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree vlan vlan-id forward-time forward-time",
+            "desc": "Set the STP Forwarding Delay for a VLAN. — Default is 15 seconds; range 4-30 seconds.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree [vlan vlan-id]",
+            "desc": "Display STP Information for One or More VLANs. — Shows local bridge info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree [vlan vlan-id] detail",
+            "desc": "Identify When the Last TCN Occurred and Which Port Was the Reason. — Shows detailed STP state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree vlan vlan-id priority priority",
+            "desc": "Configure the STP Priority for a Switch so that it is a Root Bridge or Backup Root Bridge. — Priority is 0-61440 in increments of 4096. `root primary` sets to 24576",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree [vlan vlan-id] costcost",
+            "desc": "Configure the STP Port Cost for a Specific Interface. — Modifies the forwarding path by changing the metric (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree [vlan vlan-id] port-priority priority",
+            "desc": "Configure the STP Port Priority on the Downstream Port. — Impacts which port is an alternate port when multiple links are used between switches. Default 128",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree portfast trunk",
+            "desc": "Enable STP Portfast on Trunk Links. — Should be used only with ports connecting to a single host (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mode mst",
+            "desc": "Configure the Switch for a Basic MST Region that Includes All VLANs and Version Number 1. — Switches to Multiple Spanning Tree Protocol (MST) mode.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mst configuration / instance instance-number vlan vlan-id",
+            "desc": "Specify Additional VLANs to an MSTI. — Associates specific VLANs to different MST instances (IST is always Instance 0).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree mst [instance-number]",
+            "desc": "View the STP Topology for the MST. — Displays consolidated view of MST topology table with VLANs mapped to instances.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp version {1 | 2 | 3}",
+            "desc": "Configure the VTP Version. — Version 3 allows full range of VLANs (1-4094) and supports primary server role.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp domain domain-name",
+            "desc": "Configure the VTP Domain Name. — Changing resets local switch's VTP database revision to 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp mode {server | client | transparent | off}",
+            "desc": "Configure the VTP Mode for a Switch. — `Server`: Creates/modifies VLANs; `Client`: Receives updates; `Transparent`: Forwards but doesn't modify; `Off`: No participation.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vtp primary",
+            "desc": "Designate a VTP Server as Primary Server (VTP Version 3 only). — Only the primary server can add/remove VLANs in VTP v3.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode dynamic desirable / switchport mode dynamic auto",
+            "desc": "Configure a Switch Port to Actively Attempt or Respond to Establish a Trunk Link. — `Desirable`: Initiates negotiation; `Auto`: Responds to negotiation. Default is `dynamic auto`.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport nonegotiate",
+            "desc": "Disable DTP Communication on an Interface. — Prevents port from forming a trunk with dynamic desirable/auto neighbors (static trunk).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface [interface-id] trunk",
+            "desc": "Display the Switch Port DTP Settings — Native VLANs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode access/trunk/routed",
+            "desc": "Configure the Port-Channel Interface Mode. — Defines whether the EtherChannel operates at Layer 2 or Layer 3.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip igmp snooping vlan vlan-id",
+            "desc": "Enable IGMP Snooping on VLANs. — Optimizes forwarding by examining IGMP joins and maintaining interface-to-group tables.",
             "type": "config",
             "flagged": false
           }
@@ -13575,6 +14265,186 @@
             "desc": "Enable UDLD aggressive mode globally",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "standby instance-id ip vip-address",
+            "desc": "Configure the VIP for the HSRP instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "standby instance-id preempt",
+            "desc": "Enable preemption for the HSRP instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "standby instance-id mac-address mac-address",
+            "desc": "Specify the MAC address for the HSRP VIP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "standby instance-id ipv ip-address",
+            "desc": "Configure the VIP for the HSRP instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "standby instance-id ipv vip-address",
+            "desc": "Row 6: Configure the VIP for the HSRP instance",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree root",
+            "desc": "Display the STP Root Bridge and Cost. — Shows the current root bridge",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree pathcost method long",
+            "desc": "Configure Long-Mode Interface Cost. — Uses 32-bit value with reference speed of 20 Tbps. Requires audit to ensure consistency across environment.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree guard root",
+            "desc": "Enable Root Guard on an Interface. — Prevents a configured port from becoming a root port upon receipt of a superior BPDU (places in `root inconsistent` state).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree portfast default / spanning-tree portfast",
+            "desc": "Enable STP Portfast Globally or for a Specific Port. — Bypasses listening/learning states and disables TCN generation. Recommended for access ports connected to hosts.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree portfast bpduguard default / spanning-tree bpduguard {enable | disable}",
+            "desc": "Enable BPDU Guard Globally or for a Specific Switch Port. — Places port into `err-disabled` state upon receipt of a BPDU on a portfast-enabled interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree bpdufilter enable / spanning-tree portfast bpdufilter default",
+            "desc": "Enable BPDU Filter Globally or for a Specific Interface. — Blocks BPDUs from being transmitted out a port. Use with caution to avoid topology issues.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "errdisable recovery cause bpduguard",
+            "desc": "Enable Automatic Error Recovery for BPDU Guard. — Reactivates ports shut down by BPDU guard after the configured interval (default 300s).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree loopguard default / spanning-tree guard loop",
+            "desc": "Enable STP Loop Guard Globally or for a Specific Interface. — Prevents alternative/root ports from becoming designated ports due to loss of BPDUs on the root port (places in `loop inconsistent` state).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "udld enable [aggressive] / udld port [aggressive]",
+            "desc": "Enable UDLD Globally or for a Specific Port. — Allows bidirectional monitoring of fiber-optic cables. Aggressive mode places port in error state if not acknowledged after 8 retries.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show udld neighbors",
+            "desc": "Display the List of Neighbor Devices Running UDLD. — Verifies bidirectional link status and device IDs.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show udld interface-id",
+            "desc": "View More Detailed Information on UDLD Interface Status. — Includes current state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mst configuration revision version",
+            "desc": "Change the MST Version Number. — Must match for all switches in the same MST region.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree mst interface interface-id",
+            "desc": "View Interface-Specific MST Settings. — Shows detailed info including optional features like BPDU filter/guard",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mst instance-number cost cost / spanning-tree mst instance-number port-priority priority",
+            "desc": "Modify a Switch's MSTI Priority or Make it the Root Bridge for the MSTI / Change Port Cost/Priority. — Tuning commands specific to MST instances (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "channel-group etherchannel-id mode {on | active | passive | auto | desirable} [non-silent]",
+            "desc": "Configure the Member Ports for an EtherChannel. — `On`: Static; `Active/Passive`: LACP; `Auto/Desirable`: PAgP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface port-channel port-channel-id",
+            "desc": "Create a Port-Channel Interface. — Logical interface representing the bundle of physical links.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "lacp rate fast / lacp rate slow",
+            "desc": "Configure the LACP Packet Rate on Member Interfaces. — `Fast`: Advertises every 1 sec (vs default 30s). All interfaces must match.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "port-channel min-linksmin-links",
+            "desc": "Configure the Minimum Number of Member Links for the LACP EtherChannel to Become Active. — Ensures at least `min-links` are up before bundle activates.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "lacp max-bundlemax-links",
+            "desc": "Configure the Maximum Number of Member Interfaces in an LACP EtherChannel. — Limits active member interfaces (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "lacp system-prioritypriority / lacp port-prioritypriority",
+            "desc": "Configure a Switch's LACP System Priority or Port Priority. — System priority identifies primary switch; lower is preferred. Port priority selects specific interface when max links set.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface port-channel port-channel-id",
+            "desc": "View Detailed Information for the Local EtherChannel Interface. — Displays traditional interface stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lacp neighbor [detail] / show pagp neighbor",
+            "desc": "Display Information About LACP or PAgP Neighbors. — Includes neighbor system ID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lacp sys-id / show pagp sys-id",
+            "desc": "Display the Local LACP System Identifier and Priority. — Verifies local system ID for consistency checks.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lacp counters / show pagp counters",
+            "desc": "Display the LACP or PAgP Counters for Configured Interfaces. — Shows packets sent/received",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "port-channel load-balancehash",
+            "desc": "Configure the EtherChannel Load-Balancing Hash Algorithm. — Common options: `src-dst-mixed-ip-port`",
+            "type": "config",
+            "flagged": false
           }
         ],
         "QoS": [
@@ -13623,6 +14493,72 @@
           {
             "cmd": "policy-map MARK\n class VOICE\n  set dscp ef\n class class-default\n  set dscp default",
             "desc": "Re-mark policy",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "service-policy type inspect policy-name",
+            "desc": "Apply an inspection policy map to a zone pair. — Defines traffic inspection rules between source and destination zones.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "control plane service-policy {input|output} policy-name",
+            "desc": "Apply a CoPP policy map to the control plane (two commands). — Protects CPU from excessive traffic by rate-limiting specific protocols/flows.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "class-map [match-any | match-all] class-map-name",
+            "desc": "Define Traffic Class. — Creates a map to classify traffic based on criteria (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "policy-map policy-map-name",
+            "desc": "Define QoS Policy Map. — Groups traffic classes with specific actions (queuing",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "service-policy {input | output} policy-map-name",
+            "desc": "Apply Policy to Interface. — Attaches the policy map to an interface for inbound or outbound processing.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match cos cos-value-list",
+            "desc": "Match Layer 2 CoS. — Matches one or more Class of Service (CoS) values in the frame header.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match [ip] dscp dscp-value-list",
+            "desc": "Match DSCP Value. — Matches Differentiated Services Code Point (DSCP) values for IPv4/IPv6 packets.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set qos-group qos-group-id",
+            "desc": "Set Internal QoS Group ID. — Marks traffic with an internal router-specific group ID.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set cos cos-value",
+            "desc": "Set Layer 2 CoS Value. — Modifies the Class of Service (CoS) value in the frame header.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set [ip] dscp ip-dscp-value",
+            "desc": "Set DSCP Value. — Modifies the Differentiated Services Code Point (DSCP) value for IPv4/IPv6 packets.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "police [cir]cir-in-bps[bc]committed-burst-size-in-bytes [be]excess-burst-size-in-bytes[conform-action action] [exceed-actionaction] [violate-actionaction]",
+            "desc": "Configure Traffic Policing. — Rate-limits traffic and defines actions for conforming/exceeding/violating packets.",
             "type": "config",
             "flagged": false
           }
@@ -13686,6 +14622,54 @@
             "cmd": "ip pim rp-address 10.0.0.1",
             "desc": "Static PIM RP",
             "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim sparse-mode | ip pim dense-mode | ip pim bidirectional-mode | ip pim ssm",
+            "desc": "Enable PIM Mode. — Configures the Protocol Independent Multicast (PIM) mode for multicast routing.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip igmp version {2 | 3}",
+            "desc": "Set IGMP Version. — Defines whether to use IGMPv2 or IGMPv3 for group management.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip mroute multicast-address interface-id",
+            "desc": "Static MRoute Entry. — Manually programs a static multicast route entry (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip rpf-check interface-id",
+            "desc": "Configure RPF Check. — Enables Reverse Path Forwarding checks to prevent loops in multicast traffic.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim rp-address rp-address [group-list]",
+            "desc": "Static RP Configuration. — Defines the Rendezvous Point (RP) address for shared trees.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim bsr-candidate router-id",
+            "desc": "BSR Candidate Configuration. — Configures a router as a Bootstrap Router (BSR) candidate for dynamic RP discovery.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim candidate-rp group-list rp-address",
+            "desc": "Candidate RP Configuration. — Configures a router as a Candidate RP (C-RP) for specific group ranges.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip mroute multicast-address",
+            "desc": "View MRoute Table. — Displays the Multicast Routing Information Base (MRIB) entries.",
+            "type": "show",
             "flagged": false
           }
         ],
@@ -13825,6 +14809,36 @@
             "desc": "64K log buffer at informational severity",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "ntp server ip-address [prefer] [source interface-id]",
+            "desc": "Configure a device as an NTP client with the IP address of the NTP server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp master stratum-number",
+            "desc": "Configure a device so that it can respond authoritatively to NTP requests when it does not have access to an atomic clock or an upstream NTP server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp peer ip-address",
+            "desc": "Configure the peering with another device with NTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "tracking",
+            "desc": "Citation 1 (Chapter 15): Contains a section \"Use the Command Reference to Check Your Memory\" and specifically \"Table 15-5Command Reference\". This table lists tasks and command syntax for NTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp master",
+            "desc": "Commands found: ntp server",
+            "type": "config",
+            "flagged": false
           }
         ],
         "Embedded Event Manager / Automation": [
@@ -13936,6 +14950,18 @@
             "cmd": "undebug all",
             "desc": "Disable all debugs",
             "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "track object-number interface interface-id line-protocol",
+            "desc": "Configure the tracking of an interface’s line protocol state",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "track object-number ip route route/prefix-length reachability",
+            "desc": "Configure a device to track the installation of a route in the routing table",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -14283,6 +15309,78 @@
             "desc": "OSPFv3 network type.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "redistribute ospf <process-id> / redistribute connected",
+            "desc": "Redistribute IGP/Connected Routes into BGP. — Safe for IGP->BGP; metric carried over as MED. Caution needed for BGP->IGP due to scale.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface interface-id",
+            "desc": "Disable OSPF/EIGRP adjacency formation. — Prevents forming neighbor adjacencies on specific interfaces (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf process-id",
+            "desc": "Initialize OSPFv2 process. — Sets the OSPF process ID (locally significant).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network ip-address wildcard-mask area area-id",
+            "desc": "Enable OSPF on interfaces matching network/wildcard/area. — Selects and enables OSPF on specific interfaces for a given area.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "default-information originate [always] [metric metric-value] [metric-type type-value]",
+            "desc": "Advertise default route into OSPF domain. — Propagates a default route to other areas or ASes.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf cost 1–65535",
+            "desc": "Manually set interface cost. — Overrides automatic cost calculation with a specific value.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf priority 0–255",
+            "desc": "Set DR/BDR election priority. — Higher values are preferred for Designated Router (DR) elections.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network broadcast | point-to-point",
+            "desc": "Set OSPFv2 network type. — Defines the medium type (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf hello-interval",
+            "desc": "Configure Hello interval. — Sets the time between sending hello packets (default 10s for broadcast).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf dead-interval",
+            "desc": "Configure Dead interval. — Sets the time before declaring a neighbor unreachable (default 4x Hello).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface [brief]",
+            "desc": "View OSPF-enabled interfaces. — Displays IP addresses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor [detail]",
+            "desc": "View neighbor adjacency table. — Shows neighbor ID",
+            "type": "show",
+            "flagged": false
           }
         ],
         "EIGRP": [
@@ -14506,6 +15604,54 @@
             "cmd": "show ipv6 eigrp interfaces",
             "desc": "EIGRPv6 per-interface state.",
             "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp as-number",
+            "desc": "Initialize EIGRP process. — Sets the Autonomous System (AS) number for the local router.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network network [mask]",
+            "desc": "Enable EIGRP on interfaces matching network/mask. — Defines which networks participate in the EIGRP routing domain.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp router-id router-id",
+            "desc": "Statically set Router ID. — Ensures RID stability; best practice to assign a static IPv4 address.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp hello-interval seconds",
+            "desc": "Set Hello interval. — Configures the time interval for sending EIGRP hello packets.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp hold-time seconds",
+            "desc": "Set Hold time. — Configures the time to wait before declaring a neighbor unreachable.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp timers holdtime hello",
+            "desc": "Configure both timers together. — Sets both hello and hold times in one command (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp summary-address network mask [interface-id] next-hop-ip",
+            "desc": "Interface-specific summarization. — Summarizes routes on a per-interface basis to reduce table size.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp variance value",
+            "desc": "Configure unequal-cost load balancing (Variance). — Allows installation of multiple paths with different metrics into the RIB.",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -14844,6 +15990,168 @@
             "cmd": "address-family ipv4 vrf TENANT-A\n redistribute connected\n redistribute static",
             "desc": "Per-VRF BGP address-family for L3VPN.",
             "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address network subnet-mask [summary-only] [as-set]",
+            "desc": "Configure Dynamic Route Summarization (Aggregation). — Reduces BGP table size/hides link flaps (`summary-only`). Preserves path history with `as-set`.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp as-number",
+            "desc": "Initialize the BGP Routing Process. — Sets the Autonomous System (AS) number for the local router.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp router-id router-id",
+            "desc": "Statically Define the BGP Router ID (RID). — Ensures RID stability; best practice to assign a static IPv4 address.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no bgp default ipv4-unicast",
+            "desc": "Disable Automatic IPv4 AFI Activation. — Standardizes behavior when mixing IPv4/IPv6 families or for cleaner CLI structure on IOS XE.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address remote-as as-number",
+            "desc": "Identify a BGP Neighbor and AS Number. — Defines peer relationship; correlates source IP of received packets to this entry.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address activate",
+            "desc": "Activate AFI for a BGP Neighbor. — Required within the address-family context to initiate sessions.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network network-mask subnet-mask [route-map]",
+            "desc": "Advertise Specific Network Prefix into BGP. — Identifies prefixes to install in Loc-RIB; sets Path Attributes (Next Hop",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi summary",
+            "desc": "Display BGP Table and Neighbor Summary. — Shows Up/Down time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi neighbors ip-address",
+            "desc": "View Detailed BGP Neighbor Session Info. — Includes timers (Hold/Keepalive)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi network prefix/prefix-length",
+            "desc": "View All Paths for a Specific Prefix in Loc-RIB. — Shows Origin",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi neighbors ip-address advertised routes",
+            "desc": "View Adj-RIB-Out (Routes Sent to Peer). — Shows prefixes currently being advertised after outbound policies are applied.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tcp brief",
+            "desc": "Verify TCP Sessions Between Routers. — Checks BGP session establishment (Port 179) and connection initiation direction.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route bgp / show ipv6 route bgp",
+            "desc": "Display BGP-Learned Routes in Global Routing Table. — Shows Administrative Distance (AD: 20 for eBGP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip as-path access-list acl-number {deny | permit} regex-query",
+            "desc": "AS Path ACL definition. — Uses regular expressions to match ASNs in the BGP path attribute.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match as-path",
+            "desc": "Conditional match on AS Path. — Matches prefixes based on a regex query to isolate the ASN in the BGP path.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "match local-preference",
+            "desc": "Conditional match on Local Preference. — Matches prefixes based on the BGP attribute local preference.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set ip next-hop {ip-address | peer-address | self}",
+            "desc": "Set Next-Hop IP address. — Modifies the BGP next-hop attribute (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set metric {+value | -value | value}",
+            "desc": "Modify Metric. — Adds or sets the BGP path metric (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set origin {igp | incomplete}",
+            "desc": "Set Origin Attribute. — Sets the BGP PA origin (`i`",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set weight 0–65535",
+            "desc": "Set Weight Attribute. — Sets the locally significant BGP PA weight (Cisco-defined).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "set community bgp-community [additive]",
+            "desc": "Set Community Attribute. — Appends or modifies BGP communities (e.g.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor ip-address route-map route-map-name {in|out}",
+            "desc": "Apply Route Map to Neighbor. — Associates an inbound or outbound route map with a specific BGP neighbor.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip bgp-community new-format",
+            "desc": "Enable New Format for Communities. — Displays communities in `AS:NN` format instead of decimal (easier readability).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp ip-address [soft]",
+            "desc": "Hard Reset BGP Session. — Tears down the session and removes routes from the peer.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear bgp afi safi {ip-address|*} soft [in | out]",
+            "desc": "Soft Reset BGP Session. — Invaliates cache and requests full advertisement without tearing down the session.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi regexpregex-pattern",
+            "desc": "View Routes Matching Regex. — Displays routes matching a specified AS path regex pattern.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp afi safi community community",
+            "desc": "View Routes Matching Community. — Displays routes matching a specific BGP community value.",
+            "type": "show",
             "flagged": false
           }
         ]
