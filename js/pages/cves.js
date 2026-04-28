@@ -3,7 +3,8 @@
 import { loadData } from '../dataloader.js';
 import { state, emit, on } from '../state.js';
 import { esc, fmtDateTime, toast } from '../utils.js';
-import { fetchForKind } from '../components/ai-fetch.js';
+// Backend AI pull disabled per v1.3.3.
+// import { fetchForKind } from '../components/ai-fetch.js';
 import { confirmModal } from '../components/modal.js';
 import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
 import { openImportModal } from '../components/import-modal.js';
@@ -38,7 +39,6 @@ export async function mount(root) {
       <button class="btn collapse-all-btn" id="cveCollapseAll" title="Collapse every vendor section">▸ Collapse all vendors</button>
       <span class="spacer"></span>
       ${state.editMode ? `
-        <button class="btn" id="cvFetch">Fetch now</button>
         <button class="btn" id="cvImport" title="Upload one or more HTML advisories / vendor bulletins">Import HTML</button>
         <button class="btn" id="cvImportCsv" title="Bulk import CVE rows from a CSV or XLSX file">Import CSV / XLSX</button>
       ` : ''}
@@ -69,12 +69,6 @@ export async function mount(root) {
   render();
 
   if (state.editMode) {
-    root.querySelector('#cvFetch').addEventListener('click', async e => {
-      e.target.disabled = true; e.target.textContent = 'Fetching…';
-      try { await fetchForKind('cves', { promptKey: 'cves' }); }
-      catch (err) { toast(err.message, 'error'); }
-      finally { mount(root); }
-    });
     root.querySelector('#cvImport').addEventListener('click', () => {
       openHtmlImport({
         kind: 'cves',

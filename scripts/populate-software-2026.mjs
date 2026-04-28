@@ -1,14 +1,15 @@
-// One-shot script to populate data/software.json with current
-// "latest / recommended" versions for the major vendors covered by
-// this knowledge base.
+// Populate data/software.json with current `latest` / `recommended`
+// versions for the major vendors covered by this knowledge base.
 //
-// Each row carries an OFFICIAL VENDOR SOURCE URL in the `source` field —
-// anyone can audit by clicking through. Where a vendor's release-notes
-// page is open and machine-parseable, we attempt a live fetch + regex
-// extract first; otherwise we fall back to the most recently-released
-// version recorded on each vendor's public lifecycle / download page.
+// Schema (v1.3.3+):
+//   { vendor, category, product, pid, recommended, latest, lifecycle,
+//     releaseDate, notes, source }
 //
-// Run: node scripts/populate-software-2026.mjs
+// `category` groups products WITHIN a vendor on the page (e.g. Cisco →
+// Switching / Routing / Wireless / Data Center / Firewall).
+// `source` carries the OFFICIAL VENDOR URL — rendered as a clickable
+// link on every row, and the version values link back to it too.
+// `notes` is now URL-free (URLs live in `source`); reads as plain prose.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,24 +17,20 @@ import path from 'node:path';
 const DST = path.resolve('data/software.json');
 const MAN = path.resolve('data/manifest.json');
 
-// Curated vendor list. `latest` and `recommended` reflect each vendor's
-// publicly-available current GA / LTS release as of writing (April 2026).
-// Where vendors publish a TAC- or LTS-recommended train alongside the
-// newest train, both are recorded.
 const ENTRIES = [
   // ---------- Cisco ----------
   {
-    vendor: 'Cisco', product: 'IOS-XE — Catalyst 9300/9500',
+    vendor: 'Cisco', category: 'Switching', product: 'IOS-XE — Catalyst 9300/9500',
     pid: 'C9300-48P / C9500-40X',
-    recommended: '17.12.04 (Cupertino LTS)',
-    latest:      '17.18.01 (Bengaluru)',
-    lifecycle:   'Active — 17.12 in extended maintenance, 17.18 latest',
+    recommended: '17.12.04',
+    latest:      '17.18.01',
+    lifecycle:   'Active — 17.12 LTS, 17.18 STD',
     releaseDate: '2026-03-15',
-    notes: 'TAC-recommended for stability is 17.12.x; latest features in 17.18.x. Use Smart Licensing v2.',
+    notes: 'TAC-recommended train for stability is 17.12.x; latest features in 17.18.x. Use Smart Licensing v2.',
     source: 'https://www.cisco.com/c/en/us/support/switches/catalyst-9300-series-switches/products-release-notes-list.html'
   },
   {
-    vendor: 'Cisco', product: 'IOS-XE — Catalyst 9800 WLC',
+    vendor: 'Cisco', category: 'Wireless', product: 'IOS-XE — Catalyst 9800 WLC',
     pid: 'C9800-CL / C9800-40 / C9800-80',
     recommended: '17.12.04',
     latest:      '17.18.01',
@@ -43,27 +40,27 @@ const ENTRIES = [
     source: 'https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-release-notes-list.html'
   },
   {
-    vendor: 'Cisco', product: 'IOS-XE — Catalyst 8000 / ASR / CSR',
+    vendor: 'Cisco', category: 'Routing', product: 'IOS-XE — Catalyst 8000 / ASR / CSR',
     pid: 'C8500 / ASR1006-X / C8000V',
     recommended: '17.12.04',
     latest:      '17.18.01',
     lifecycle:   'Active',
     releaseDate: '2026-03-15',
-    notes: 'Same IOS-XE train as the switching family; SD-WAN cEdge images on the Cisco SD-WAN release schedule.',
+    notes: 'Same IOS-XE train as the switching family. SD-WAN cEdge images on the Cisco SD-WAN release schedule.',
     source: 'https://www.cisco.com/c/en/us/support/routers/catalyst-8000v-edge-software/products-release-notes-list.html'
   },
   {
-    vendor: 'Cisco', product: 'NX-OS — Nexus 9000',
+    vendor: 'Cisco', category: 'Data Center', product: 'NX-OS — Nexus 9000',
     pid: 'N9K-C9336C-FX2 / N9K-C93180YC-FX3',
     recommended: '10.3(6)M',
     latest:      '10.5(2)F',
-    lifecycle:   'Active — 10.3M is the LTS branch; 10.5F latest features',
+    lifecycle:   'Active — 10.3M LTS; 10.5F latest features',
     releaseDate: '2026-02-10',
     notes: 'Use 10.3(x)M trains for VXLAN-EVPN production fabrics; 10.5(x)F for Cloud Scale features.',
     source: 'https://www.cisco.com/c/en/us/support/switches/nexus-9000-series-switches/products-release-notes-list.html'
   },
   {
-    vendor: 'Cisco', product: 'ASA / FTD — Firepower / Secure Firewall',
+    vendor: 'Cisco', category: 'Firewall', product: 'ASA / FTD — Firepower / Secure Firewall',
     pid: 'FPR-3110 / FPR-1140',
     recommended: 'ASA 9.20.3 / FTD 7.4.2',
     latest:      'ASA 9.22.1 / FTD 7.7.0',
@@ -75,17 +72,17 @@ const ENTRIES = [
 
   // ---------- Palo Alto ----------
   {
-    vendor: 'Palo Alto', product: 'PAN-OS',
+    vendor: 'Palo Alto', category: 'Firewall', product: 'PAN-OS',
     pid: 'PA-440 / PA-3220 / PA-5450 / PA-7080',
     recommended: '11.1.6-h2',
     latest:      '12.0.1',
     lifecycle:   '11.1 = preferred; 11.2 = current; 12.0 = newest GA',
     releaseDate: '2026-04-08',
-    notes: 'Preferred releases listed at https://live.paloaltonetworks.com/t5/customer-resources/support-pan-os-software-release-guidance/ta-p/258304',
+    notes: 'Preferred-release guidance is published as a separate live community article.',
     source: 'https://docs.paloaltonetworks.com/pan-os/12-0/pan-os-release-notes'
   },
   {
-    vendor: 'Palo Alto', product: 'Panorama',
+    vendor: 'Palo Alto', category: 'Management', product: 'Panorama',
     pid: 'M-200 / M-700',
     recommended: '11.1.6-h2',
     latest:      '12.0.1',
@@ -95,7 +92,7 @@ const ENTRIES = [
     source: 'https://docs.paloaltonetworks.com/panorama/12-0/panorama-release-notes'
   },
   {
-    vendor: 'Palo Alto', product: 'GlobalProtect / Cisco Secure Client',
+    vendor: 'Palo Alto', category: 'Endpoint / VPN', product: 'GlobalProtect App',
     pid: 'GP App for Windows / macOS / iOS / Android',
     recommended: '6.2.5',
     latest:      '6.3.2',
@@ -107,7 +104,7 @@ const ENTRIES = [
 
   // ---------- Citrix / NetScaler ----------
   {
-    vendor: 'NetScaler / Citrix', product: 'NetScaler ADC / Gateway',
+    vendor: 'NetScaler / Citrix', category: 'ADC / Load balancer', product: 'NetScaler ADC / Gateway',
     pid: 'MPX-15000 / VPX-3000 / SDX-15000',
     recommended: '14.1-43.50',
     latest:      '14.1-50.13',
@@ -119,7 +116,7 @@ const ENTRIES = [
 
   // ---------- Fortinet ----------
   {
-    vendor: 'Fortinet', product: 'FortiOS — FortiGate',
+    vendor: 'Fortinet', category: 'Firewall', product: 'FortiOS — FortiGate',
     pid: 'FortiGate-60F / 100F / 200F / 600F / 1800F',
     recommended: '7.4.7',
     latest:      '7.6.3',
@@ -129,7 +126,7 @@ const ENTRIES = [
     source: 'https://docs.fortinet.com/document/fortigate/7.6.3/fortios-release-notes/'
   },
   {
-    vendor: 'Fortinet', product: 'FortiAnalyzer / FortiManager',
+    vendor: 'Fortinet', category: 'Management', product: 'FortiAnalyzer / FortiManager',
     pid: 'FAZ-200G / FMG-1000F',
     recommended: '7.4.6',
     latest:      '7.6.2',
@@ -141,7 +138,7 @@ const ENTRIES = [
 
   // ---------- Aruba (HPE) ----------
   {
-    vendor: 'Aruba (HPE)', product: 'AOS-CX — Switches',
+    vendor: 'Aruba (HPE)', category: 'Switching', product: 'AOS-CX',
     pid: 'CX 6300M-48G / CX 8325-48Y8C / CX 10000',
     recommended: '10.13.1050',
     latest:      '10.15.0010',
@@ -151,7 +148,7 @@ const ENTRIES = [
     source: 'https://www.arubanetworks.com/techdocs/AOS-CX/Consolidated_RNs/HTML-10100/Content/release-notes.htm'
   },
   {
-    vendor: 'Aruba (HPE)', product: 'ArubaOS — Mobility Controller',
+    vendor: 'Aruba (HPE)', category: 'Wireless', product: 'ArubaOS — Mobility Controller',
     pid: '7210 / 7280 / 9004 / 9012 / 9240',
     recommended: '8.11.2.3',
     latest:      '8.13.0.0',
@@ -161,7 +158,7 @@ const ENTRIES = [
     source: 'https://www.arubanetworks.com/techdocs/ArubaOS_8x/'
   },
   {
-    vendor: 'Aruba (HPE)', product: 'Aruba Instant / AP firmware',
+    vendor: 'Aruba (HPE)', category: 'Wireless', product: 'Aruba Instant / AP firmware',
     pid: 'AP-505 / AP-535 / AP-655 / AP-635',
     recommended: '8.11.2.3',
     latest:      '10.7.0.0',
@@ -173,17 +170,17 @@ const ENTRIES = [
 
   // ---------- VMware / Broadcom ----------
   {
-    vendor: 'VMware (Broadcom)', product: 'vSphere ESXi',
+    vendor: 'VMware (Broadcom)', category: 'Hypervisor', product: 'vSphere ESXi',
     pid: 'ESXi 8.0',
     recommended: '8.0 U3e',
     latest:      '8.0 U3f',
     lifecycle:   '8.0 active; 7.0 in extended support to Oct 2027',
     releaseDate: '2026-03-25',
     notes: 'ESXi 8.0 U3 is the long-term branch; pVRA / DRS Lens features require ≥ U3.',
-    source: 'https://docs.vmware.com/en/VMware-vSphere/8.0/rn/vsphere-vcenter-server-80-release-notes/index.html'
+    source: 'https://docs.vmware.com/en/VMware-vSphere/8.0/rn/vsphere-esxi-release-notes/index.html'
   },
   {
-    vendor: 'VMware (Broadcom)', product: 'vCenter Server',
+    vendor: 'VMware (Broadcom)', category: 'Management', product: 'vCenter Server',
     pid: 'VCSA 8.0',
     recommended: '8.0 U3e',
     latest:      '8.0 U3f',
@@ -195,7 +192,7 @@ const ENTRIES = [
 
   // ---------- Microsoft ----------
   {
-    vendor: 'Microsoft', product: 'Windows Server',
+    vendor: 'Microsoft', category: 'Server OS', product: 'Windows Server',
     pid: 'Server 2025 / 2022 LTSC',
     recommended: '2025 (24H2 LTSC)',
     latest:      '2025 (24H2 LTSC)',
@@ -205,7 +202,7 @@ const ENTRIES = [
     source: 'https://learn.microsoft.com/en-us/lifecycle/products/windows-server-2025'
   },
   {
-    vendor: 'Microsoft', product: 'Windows 11',
+    vendor: 'Microsoft', category: 'Client OS', product: 'Windows 11',
     pid: 'Windows 11 Enterprise IoT LTSC 2024',
     recommended: '24H2',
     latest:      '25H2',
@@ -217,7 +214,7 @@ const ENTRIES = [
 
   // ---------- Proxmox ----------
   {
-    vendor: 'Proxmox', product: 'Proxmox VE',
+    vendor: 'Proxmox', category: 'Hypervisor', product: 'Proxmox VE',
     pid: 'PVE 8.x',
     recommended: '8.4',
     latest:      '8.5',
@@ -229,7 +226,7 @@ const ENTRIES = [
 
   // ---------- F5 ----------
   {
-    vendor: 'F5', product: 'BIG-IP / TMOS',
+    vendor: 'F5', category: 'ADC / Load balancer', product: 'BIG-IP / TMOS',
     pid: 'i5800 / i7820-DF / VE',
     recommended: '17.1.2.1',
     latest:      '17.5.0',
@@ -241,7 +238,7 @@ const ENTRIES = [
 
   // ---------- Juniper ----------
   {
-    vendor: 'Juniper', product: 'Junos OS',
+    vendor: 'Juniper', category: 'Routing / Switching', product: 'Junos OS',
     pid: 'EX4400 / QFX5130 / MX204 / SRX4600',
     recommended: '23.4R2-S2',
     latest:      '24.4R1',
@@ -253,7 +250,7 @@ const ENTRIES = [
 
   // ---------- MikroTik ----------
   {
-    vendor: 'MikroTik', product: 'RouterOS',
+    vendor: 'MikroTik', category: 'Routing / Switching', product: 'RouterOS',
     pid: 'CCR2004 / CRS328 / CHR',
     recommended: '7.16.2',
     latest:      '7.18.1',
@@ -264,34 +261,10 @@ const ENTRIES = [
   }
 ];
 
-// ---------- Optional live-fetch enrichment ----------
-//
-// For vendor pages that we know expose a clean version string in HTML or
-// JSON, we can replace the hardcoded `latest` with whatever the page is
-// currently advertising. Failures are silent — we keep the curated default.
-
-async function enrich(entry) {
-  // Currently a no-op stub: every major vendor docs site we tested either
-  // CORS-blocks scripted access, lazy-loads version strings via JS, or
-  // requires authentication. The curated values above + source URL on
-  // each row are the pragmatic answer.
-  //
-  // Per-vendor enrichers can be added here later if/when a vendor exposes
-  // a stable JSON endpoint.
-  return entry;
-}
-
-// ---------- Build + write ----------
-
-const enriched = [];
-for (const e of ENTRIES) {
-  enriched.push(await enrich(e));
-}
-
 const out = {
   version: 1,
   updatedAt: new Date().toISOString(),
-  items: enriched
+  items: ENTRIES
 };
 fs.writeFileSync(DST, JSON.stringify(out, null, 2));
 
@@ -299,5 +272,12 @@ const manifest = JSON.parse(fs.readFileSync(MAN, 'utf8'));
 manifest.software = new Date().toISOString();
 fs.writeFileSync(MAN, JSON.stringify(manifest, null, 2));
 
-console.log('Software entries written:', enriched.length);
-console.log('Vendors:', new Set(enriched.map(e => e.vendor)).size);
+console.log('Software entries written:', ENTRIES.length);
+console.log('Vendors:', new Set(ENTRIES.map(e => e.vendor)).size);
+console.log('Categories per vendor:');
+const m = {};
+for (const e of ENTRIES) {
+  m[e.vendor] ||= new Set();
+  m[e.vendor].add(e.category);
+}
+for (const [v, set] of Object.entries(m)) console.log(' ', v, '→', [...set].join(', '));
