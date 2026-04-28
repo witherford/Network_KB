@@ -1111,3 +1111,63 @@ tr.cve-recent td {
   background: rgba(220, 38, 38, 0.12) !important;
   color: #b91c1c !important;
 }
+
+/* Per-section header controls (Expand / Collapse / Descriptions / type filters). */
+.section-card .section-title {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sec-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.sec-ctl {
+  font-size: 10px !important;
+  padding: 2px 7px !important;
+  line-height: 1.2 !important;
+}
+.sec-ctl.on {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #0369a1 !important;
+}
+.theme-dark .sec-ctl.on {
+  color: #38bdf8 !important;
+}
+.sec-type-filters {
+  display: inline-flex;
+  gap: 3px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border, rgba(255,255,255,.12));
+  margin-left: 4px;
+}
+.type-chip {
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  padding: 2px 6px !important;
+  line-height: 1.2 !important;
+  letter-spacing: .3px;
+  opacity: 0.45;
+}
+.type-chip.on {
+  opacity: 1;
+}
+.type-chip.tt-show.on       { background: rgba(14, 165, 233, 0.15) !important; color: #0369a1 !important; }
+.type-chip.tt-config.on     { background: rgba(217, 119, 6, 0.15) !important; color: #b45309 !important; }
+.type-chip.tt-troubleshooting.on { background: rgba(220, 38, 38, 0.15) !important; color: #b91c1c !important; }
+.theme-dark .type-chip.tt-show.on       { color: #38bdf8 !important; }
+.theme-dark .type-chip.tt-config.on     { color: #fbbf24 !important; }
+.theme-dark .type-chip.tt-troubleshooting.on { color: #fca5a5 !important; }
+
+/* Per-section descriptions overrides take precedence over the page-level
+   .with-desc class on #cmdListRoot. */
+.section-card.with-desc-section .cmd-item .cmd-desc { display: block !important; }
+.section-card.no-desc-section   .cmd-item .cmd-desc { display: none  !important; }
+
+.sec-cnt-total {
+  margin-left: 2px;
+  color: var(--text-3);
+  font-weight: 400;
+}

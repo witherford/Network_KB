@@ -9,6 +9,9 @@ const DEFAULTS = {
   favourites: [],             // array of "platform|section|cmd"
   recent: [],                 // array of "platform|section|cmd"
   collapsed: [],              // array of "platform:section"
+  cveCollapsed: [],           // array of CVE vendor names that are collapsed
+  sectionDescriptions: {},    // section-key → bool override (undefined = inherit page-level)
+  sectionTypes: {},           // section-key → { show, config, troubleshooting } (default: all true)
   flags: {},                  // map of "platform|section|cmd" → { reason, ts }
   clockZones: [
     'UTC',
@@ -83,6 +86,61 @@ export function toggleCollapsed(key) {
 
 export function isCollapsed(key) {
   return load().collapsed.includes(key);
+}
+
+/* ---------- Per-section descriptions toggle ---------- */
+export function getSectionDescriptions(sectionKey) {
+  const p = load();
+  return (p.sectionDescriptions && Object.prototype.hasOwnProperty.call(p.sectionDescriptions, sectionKey))
+    ? p.sectionDescriptions[sectionKey]
+    : undefined;
+}
+export function setSectionDescriptions(sectionKey, val) {
+  const p = load();
+  p.sectionDescriptions ||= {};
+  if (val === undefined || val === null) delete p.sectionDescriptions[sectionKey];
+  else p.sectionDescriptions[sectionKey] = !!val;
+  persist();
+}
+
+/* ---------- Per-section type filters ---------- */
+const DEFAULT_TYPES = { show: true, config: true, troubleshooting: true };
+export function getSectionTypes(sectionKey) {
+  const p = load();
+  return p.sectionTypes && p.sectionTypes[sectionKey]
+    ? { ...DEFAULT_TYPES, ...p.sectionTypes[sectionKey] }
+    : { ...DEFAULT_TYPES };
+}
+export function setSectionType(sectionKey, type, val) {
+  const p = load();
+  p.sectionTypes ||= {};
+  p.sectionTypes[sectionKey] ||= { ...DEFAULT_TYPES };
+  p.sectionTypes[sectionKey][type] = !!val;
+  persist();
+}
+
+/* ---------- CVE vendor-section collapse ---------- */
+export function isCveVendorCollapsed(vendor) {
+  return load().cveCollapsed.includes(vendor);
+}
+export function toggleCveVendorCollapsed(vendor) {
+  const p = load();
+  p.cveCollapsed ||= [];
+  const i = p.cveCollapsed.indexOf(vendor);
+  if (i >= 0) p.cveCollapsed.splice(i, 1);
+  else p.cveCollapsed.push(vendor);
+  persist();
+}
+export function setCveVendorsCollapsed(vendors, collapsed) {
+  const p = load();
+  if (collapsed) {
+    const set = new Set([...(p.cveCollapsed || []), ...vendors]);
+    p.cveCollapsed = [...set];
+  } else {
+    const drop = new Set(vendors);
+    p.cveCollapsed = (p.cveCollapsed || []).filter(v => !drop.has(v));
+  }
+  persist();
 }
 
 /**

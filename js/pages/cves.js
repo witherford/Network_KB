@@ -7,6 +7,7 @@ import { fetchForKind } from '../components/ai-fetch.js';
 import { confirmModal } from '../components/modal.js';
 import { openHtmlImport, renderHtmlCard } from '../components/html-import.js';
 import { openImportModal } from '../components/import-modal.js';
+import { isCveVendorCollapsed, toggleCveVendorCollapsed, setCveVendorsCollapsed } from '../prefs.js';
 
 const SEV_COLOR = { critical: '#991b1b', high: '#b45309', medium: '#0369a1', low: '#6b7280' };
 const SEV_RANK  = { critical: 0, high: 1, medium: 2, low: 3, informational: 4, '': 5 };
@@ -33,6 +34,8 @@ export async function mount(root) {
     <div class="page-toolbar">
       <strong style="font-size:13px">CVE's and bugs</strong>
       <input id="cveSearch" class="search-input" placeholder="Search CVE ID, vendor, product…">
+      <button class="btn sm ghost" id="cveExpandAll" title="Expand every vendor section">▾ Expand all</button>
+      <button class="btn sm ghost" id="cveCollapseAll" title="Collapse every vendor section">▸ Collapse all</button>
       <span class="spacer"></span>
       ${state.editMode ? `
         <button class="btn" id="cvFetch">Fetch now</button>
@@ -46,6 +49,23 @@ export async function mount(root) {
   const c = root.querySelector('#cvePage');
   const render = (filter = '') => renderCves(c, items, filter);
   root.querySelector('#cveSearch').addEventListener('input', e => render(e.target.value));
+  // Vendor-section collapse toggle (delegated).
+  c.addEventListener('click', e => {
+    const tog = e.target.closest('button[data-act=cve-toggle]');
+    if (!tog) return;
+    toggleCveVendorCollapsed(tog.dataset.vendor);
+    render(root.querySelector('#cveSearch').value);
+  });
+  root.querySelector('#cveExpandAll').addEventListener('click', () => {
+    const allVendors = uniqueVendors(items);
+    setCveVendorsCollapsed(allVendors, false);
+    render(root.querySelector('#cveSearch').value);
+  });
+  root.querySelector('#cveCollapseAll').addEventListener('click', () => {
+    const allVendors = uniqueVendors(items);
+    setCveVendorsCollapsed(allVendors, true);
+    render(root.querySelector('#cveSearch').value);
+  });
   render();
 
   if (state.editMode) {
@@ -188,14 +208,19 @@ function renderCves(c, items, filter) {
     const rows = byVendor[vendor];
     const critical = rows.filter(r => (r.it.severity || '').toLowerCase() === 'critical').length;
     const high     = rows.filter(r => (r.it.severity || '').toLowerCase() === 'high').length;
+    const collapsed = isCveVendorCollapsed(vendor);
     return `
-    <section class="platform-section">
+    <section class="platform-section cve-vendor-section${collapsed ? ' cve-collapsed' : ''}" data-vendor="${esc(vendor)}">
       <div class="platform-header">
         <h2 class="ptitle">${esc(vendor)}</h2>
         <span class="pcnt">${rows.length}</span>
         ${critical ? `<span class="sev-chip sev-chip-critical">${critical} critical</span>` : ''}
         ${high ? `<span class="sev-chip sev-chip-high">${high} high</span>` : ''}
+        <span style="margin-left:auto">
+          <button class="btn sm ghost" data-act="cve-toggle" data-vendor="${esc(vendor)}" title="${collapsed ? 'Expand' : 'Collapse'} ${esc(vendor)} section">${collapsed ? '▸' : '▾'}</button>
+        </span>
       </div>
+      <div class="cve-section-body" ${collapsed ? 'hidden' : ''}>
       <table class="tbl">
         <thead><tr><th>CVE</th><th>Product</th><th>Severity</th><th>CVSS</th><th>Published</th><th>Summary</th>${editHeader}</tr></thead>
         <tbody>
@@ -225,10 +250,19 @@ function renderCves(c, items, filter) {
           }).join('')}
         </tbody>
       </table>
+      </div>
     </section>`;
   }).join('');
 
   c.innerHTML = htmlSection + banner + tableSections;
+}
+
+function uniqueVendors(items) {
+  const out = new Set();
+  for (const it of items) {
+    if (it && !(it.html && it.body)) out.add(it.vendor || 'Unknown');
+  }
+  return [...out];
 }
 
 function sortBySeverity(a, b) {
