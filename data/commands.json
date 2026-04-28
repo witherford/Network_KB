@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-28T13:09:34.426Z",
+  "updatedAt": "2026-04-28T14:46:51.805Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -13988,6 +13988,864 @@
             "type": "config",
             "flagged": false
           }
+        ],
+        "OSPF": [
+          {
+            "cmd": "router ospf 1",
+            "desc": "Enter OSPF process 1 (process ID is locally significant).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Manually pin OSPF router-id (avoids re-elections when interfaces flap).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 0.255.255.255 area 0",
+            "desc": "Match any interface with an IP in 10.0.0.0/8 into area 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default",
+            "desc": "Make every interface passive by default; opt-in actives below.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no passive-interface GigabitEthernet0/0",
+            "desc": "Bring one interface back to active OSPF advertising.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "auto-cost reference-bandwidth 100000",
+            "desc": "Set the cost-100 reference to 100 Gbps so 10G/40G/100G interfaces get distinct costs.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "log-adjacency-changes detail",
+            "desc": "Log every state transition for OSPF adjacencies.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf",
+            "desc": "Process-level summary: router-id, area count, SPF stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor",
+            "desc": "Adjacency table: neighbour ID, state, dead-time, address, interface.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor detail",
+            "desc": "Per-neighbour detail incl. options, DR/BDR election, last-event reasons.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface",
+            "desc": "OSPF state per interface: cost, priority, timers, neighbour count.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "Compact per-interface OSPF state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database",
+            "desc": "Full Link-State Database (router/network/summary/external LSAs).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database router self-originate",
+            "desc": "Just the router-LSAs this device originated.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf border-routers",
+            "desc": "ABRs and ASBRs reachable from this router.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf statistics",
+            "desc": "SPF runs, last/min/max SPF time, last reason for SPF.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route ospf",
+            "desc": "OSPF-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip ospf process",
+            "desc": "Restart OSPF; tears down adjacencies and rebuilds. Use cautiously in production.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip ospf 1 area 0",
+            "desc": "Place the interface directly in OSPF area 0 (alternative to the network statement).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf cost 10",
+            "desc": "Override the auto-derived cost on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf priority 0",
+            "desc": "Make this interface ineligible for DR/BDR election.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf hello-interval 3",
+            "desc": "Sub-second hello (default 10 s on broadcast, 30 s NBMA).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf dead-interval minimal hello-multiplier 4",
+            "desc": "Sub-second BFD-style dead-interval (4 hellos in 1 s).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network point-to-point",
+            "desc": "Skip DR/BDR election on broadcast media — faster adjacency.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network broadcast",
+            "desc": "Force broadcast network type (default on Ethernet).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf bfd",
+            "desc": "Bind OSPF to BFD on this interface for sub-second failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf authentication message-digest\nip ospf message-digest-key 1 md5 cisco-key",
+            "desc": "Per-interface MD5 authentication.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub",
+            "desc": "Make area 1 a stub: blocks Type-5 LSAs, replaces with default route.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub no-summary",
+            "desc": "Totally stubby area: blocks Type-3, 4, 5 — only default route enters.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa",
+            "desc": "Not-So-Stubby Area: stub-like but allows local Type-7→5 redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa default-information-originate",
+            "desc": "Inject default route into the NSSA from this ABR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 range 10.1.0.0 255.255.0.0",
+            "desc": "Summarise inter-area routes leaving the ABR (Type-3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "summary-address 192.168.0.0 255.255.0.0",
+            "desc": "Summarise external (Type-5) routes leaving the ASBR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 virtual-link 2.2.2.2",
+            "desc": "Stitch a discontinuous area to area 0 via another router.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 authentication message-digest",
+            "desc": "Enable area-wide MD5 authentication (interfaces still need keys).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected subnets metric 100 metric-type 2",
+            "desc": "Redistribute connected with explicit metric / E2 type.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static subnets route-map STATIC-INTO-OSPF",
+            "desc": "Filtered static-route redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix DENY-DEFAULT in",
+            "desc": "Filter incoming OSPF prefixes (only affects this router's RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "default-information originate always metric 1 metric-type 2",
+            "desc": "Inject a default route into OSPF unconditionally.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle spf 5 200 5000",
+            "desc": "SPF throttling: 5 ms initial, 200 ms hold, 5 s max — accelerates convergence.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle lsa 0 5000 5000",
+            "desc": "LSA generation throttling.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router ospf 1",
+            "desc": "Enable OSPFv3 process (IPv6).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf 1 area 0",
+            "desc": "Per-interface OSPFv3 binding (no network statement in v3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf",
+            "desc": "OSPFv3 process state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf neighbor",
+            "desc": "OSPFv3 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf interface",
+            "desc": "OSPFv3 per-interface state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf database",
+            "desc": "OSPFv3 LSDB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf cost 10",
+            "desc": "Per-interface cost on OSPFv3.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf network point-to-point",
+            "desc": "OSPFv3 network type.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "EIGRP": [
+          {
+            "cmd": "router eigrp 100",
+            "desc": "Enter classic EIGRP process for AS 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp router-id 1.1.1.1",
+            "desc": "Manually set EIGRP router-id (32-bit, not necessarily an interface IP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0",
+            "desc": "Match interfaces in 10.0.0.0/8 (uses classful boundary unless wildcard given).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.1.1.0 0.0.0.255",
+            "desc": "Match a specific subnet with wildcard mask.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no auto-summary",
+            "desc": "Disable classful auto-summarisation (mandatory on modern designs).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default\nno passive-interface GigabitEthernet0/0",
+            "desc": "Default-passive with explicit opt-in for the uplink.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp neighbors",
+            "desc": "EIGRP adjacency table: hold, uptime, retransmits.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp neighbors detail",
+            "desc": "Per-neighbour detail incl. version + capabilities.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology",
+            "desc": "Topology table — successors + feasible successors per prefix.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology all-links",
+            "desc": "All learned paths, incl. non-feasible ones.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces",
+            "desc": "EIGRP per-interface counters: peers, queue, mean SRTT.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces detail",
+            "desc": "Detailed per-interface EIGRP stats incl. timers.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp traffic",
+            "desc": "EIGRP packet counters: hellos, updates, queries, replies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route eigrp",
+            "desc": "EIGRP-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip eigrp neighbors",
+            "desc": "Tear down all EIGRP adjacencies (forces re-sync).",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip hello-interval eigrp 100 2",
+            "desc": "Set hello to 2 s on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip hold-time eigrp 100 6",
+            "desc": "Set hold-time to 6 s — must be 3× hello.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip bandwidth-percent eigrp 100 75",
+            "desc": "Cap EIGRP traffic to 75% of interface bandwidth.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
+            "desc": "Per-interface MD5 authentication via a key-chain.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "variance 2",
+            "desc": "Allow unequal-cost load-balancing up to 2× the best metric.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 6",
+            "desc": "Allow up to 6 ECMP installs (default 4).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub connected summary",
+            "desc": "Mark this router as a stub — only advertises connected + summaries; reduces query scope.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub receive-only",
+            "desc": "Strictest stub: this router receives EIGRP but advertises nothing.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip summary-address eigrp 100 10.10.0.0 255.255.0.0",
+            "desc": "Per-interface summary advertisement.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected metric 1000000 1 255 1 1500",
+            "desc": "Redistribute connected with K-values metric (BW/delay/rel/load/MTU).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static metric 1000000 1 255 1 1500",
+            "desc": "Redistribute static.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix BLOCK-RFC1918 in",
+            "desc": "Filter incoming EIGRP advertisements.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "offset-list 10 in 100 GigabitEthernet0/1",
+            "desc": "Add 100 to the metric of routes received on Gi0/1 matching ACL 10.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers active-time disabled",
+            "desc": "Disable EIGRP SIA (Stuck-In-Active) timer for very-large-scale or testing.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100",
+            "desc": "Modern named-mode EIGRP — required for IPv6 / multi-AF.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100\n  af-interface default\n   passive-interface\n  exit-af-interface\n  topology base\n   maximum-paths 8\n  exit-af-topology",
+            "desc": "Named-mode skeleton with default-passive + 8-way ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router eigrp 100",
+            "desc": "Classic-mode EIGRP for IPv6 process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "EIGRPv6 starts shutdown — must explicitly bring it up.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 eigrp 100",
+            "desc": "Per-interface enable for EIGRPv6.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp neighbors",
+            "desc": "EIGRPv6 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp topology",
+            "desc": "EIGRPv6 topology table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp interfaces",
+            "desc": "EIGRPv6 per-interface state.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "BGP": [
+          {
+            "cmd": "router bgp 65001",
+            "desc": "Enter BGP process for local AS 65001.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp router-id 1.1.1.1",
+            "desc": "Manually pin BGP router-id.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp log-neighbor-changes",
+            "desc": "Log every BGP state change to syslog.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no synchronization",
+            "desc": "Disable IGP-sync requirement (default off in modern IOS).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remote-as 65002",
+            "desc": "Define an eBGP peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 description ISP-A primary",
+            "desc": "Free-text peer description.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 mask 255.255.255.0",
+            "desc": "Originate a prefix into BGP (must be present in RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp summary",
+            "desc": "Per-peer summary: state, prefixes received, uptime.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4",
+            "desc": "Per-peer detail: capabilities, timers, counters.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
+            "desc": "Routes we are sending TO this peer.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
+            "desc": "Routes we received from this peer (requires soft-reconfig inbound).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 routes",
+            "desc": "Routes accepted from this peer (post-policy).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp",
+            "desc": "Full BGP table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp 8.8.8.0/24",
+            "desc": "Per-prefix path detail (best-path selection reasoning).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp regexp _65000_",
+            "desc": "Filter table by AS-path regex (anything that traverses AS 65000).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp paths",
+            "desc": "AS-path attribute database stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4",
+            "desc": "Hard reset of one peer (tears down TCP). Use sparingly.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "clear ip bgp * soft",
+            "desc": "Soft refresh on every peer (apply policy without flap).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft in",
+            "desc": "Soft inbound refresh (re-applies inbound policy from cache).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft out",
+            "desc": "Re-send our outbound advertisements with current policy.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 update-source Loopback0",
+            "desc": "Source BGP TCP from a loopback (essential for iBGP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
+            "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 next-hop-self",
+            "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 password CISCO123",
+            "desc": "TCP MD5 authentication for the peering session.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
+            "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 send-community both",
+            "desc": "Send both standard and extended communities to the peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remove-private-as",
+            "desc": "Strip private AS numbers from outbound updates.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
+            "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
+            "desc": "Apply inbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
+            "desc": "Apply outbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
+            "desc": "Inbound prefix-list filter.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 filter-list 100 in",
+            "desc": "Inbound AS-path filter using AS-path access-list 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
+            "desc": "Prefix-list entry: any /0–/24 inbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip as-path access-list 100 permit ^65002_",
+            "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
+            "desc": "Outbound prepend example for traffic-engineering.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map FROM-ISP permit 10\n set local-preference 200",
+            "desc": "Inbound LP bump to prefer this peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-CUSTOMER permit 10\n set community 65001:100 65001:200",
+            "desc": "Tag advertised routes with communities.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
+            "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
+            "desc": "Aggregate carrying the AS-SET attribute (loop-prevention safe).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected route-map CONN-INTO-BGP",
+            "desc": "Filtered redistribution from connected.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-reflector-client",
+            "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp cluster-id 1.1.1.1",
+            "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
+            "desc": "Peer-group reduces config and update-generation overhead for many similar peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 8",
+            "desc": "Enable 8-way eBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths ibgp 8",
+            "desc": "Enable 8-way iBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp bestpath as-path multipath-relax",
+            "desc": "Allow multipath even when AS-paths differ but length matches (multi-homing).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp graceful-restart",
+            "desc": "Enable Graceful Restart capability negotiation.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp dampening",
+            "desc": "Enable route-flap dampening (mostly avoided in modern Internet operations).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 fall-over bfd",
+            "desc": "Bind BFD for sub-second BGP failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv6 unicast",
+            "desc": "Enter IPv6 unicast address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
+            "desc": "IPv6 BGP peering — activate is mandatory in MP-BGP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast summary",
+            "desc": "IPv6 BGP summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast",
+            "desc": "IPv6 BGP table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family vpnv4",
+            "desc": "VPNv4 (MPLS-VPN) address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast all summary",
+            "desc": "All VPNv4 peers across all VRFs.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv4 vrf TENANT-A\n redistribute connected\n redistribute static",
+            "desc": "Per-VRF BGP address-family for L3VPN.",
+            "type": "config",
+            "flagged": false
+          }
         ]
       },
       "group": "Cisco"
@@ -20949,6 +21807,258 @@
             "desc": "OSPF state/timers/metric on one interface",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "router ospf 1",
+            "desc": "Enter OSPF process 1 (process ID is locally significant).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Manually pin OSPF router-id (avoids re-elections when interfaces flap).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 0.255.255.255 area 0",
+            "desc": "Match any interface with an IP in 10.0.0.0/8 into area 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default",
+            "desc": "Make every interface passive by default; opt-in actives below.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no passive-interface GigabitEthernet0/0",
+            "desc": "Bring one interface back to active OSPF advertising.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "auto-cost reference-bandwidth 100000",
+            "desc": "Set the cost-100 reference to 100 Gbps so 10G/40G/100G interfaces get distinct costs.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "log-adjacency-changes detail",
+            "desc": "Log every state transition for OSPF adjacencies.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor detail",
+            "desc": "Per-neighbour detail incl. options, DR/BDR election, last-event reasons.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "Compact per-interface OSPF state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route ospf",
+            "desc": "OSPF-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip ospf process",
+            "desc": "Restart OSPF; tears down adjacencies and rebuilds. Use cautiously in production.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip ospf 1 area 0",
+            "desc": "Place the interface directly in OSPF area 0 (alternative to the network statement).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf cost 10",
+            "desc": "Override the auto-derived cost on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf priority 0",
+            "desc": "Make this interface ineligible for DR/BDR election.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf hello-interval 3",
+            "desc": "Sub-second hello (default 10 s on broadcast, 30 s NBMA).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf dead-interval minimal hello-multiplier 4",
+            "desc": "Sub-second BFD-style dead-interval (4 hellos in 1 s).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network point-to-point",
+            "desc": "Skip DR/BDR election on broadcast media — faster adjacency.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network broadcast",
+            "desc": "Force broadcast network type (default on Ethernet).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf bfd",
+            "desc": "Bind OSPF to BFD on this interface for sub-second failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf authentication message-digest\nip ospf message-digest-key 1 md5 cisco-key",
+            "desc": "Per-interface MD5 authentication.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub",
+            "desc": "Make area 1 a stub: blocks Type-5 LSAs, replaces with default route.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub no-summary",
+            "desc": "Totally stubby area: blocks Type-3, 4, 5 — only default route enters.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa",
+            "desc": "Not-So-Stubby Area: stub-like but allows local Type-7→5 redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa default-information-originate",
+            "desc": "Inject default route into the NSSA from this ABR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 range 10.1.0.0 255.255.0.0",
+            "desc": "Summarise inter-area routes leaving the ABR (Type-3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "summary-address 192.168.0.0 255.255.0.0",
+            "desc": "Summarise external (Type-5) routes leaving the ASBR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 virtual-link 2.2.2.2",
+            "desc": "Stitch a discontinuous area to area 0 via another router.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 authentication message-digest",
+            "desc": "Enable area-wide MD5 authentication (interfaces still need keys).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected subnets metric 100 metric-type 2",
+            "desc": "Redistribute connected with explicit metric / E2 type.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static subnets route-map STATIC-INTO-OSPF",
+            "desc": "Filtered static-route redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix DENY-DEFAULT in",
+            "desc": "Filter incoming OSPF prefixes (only affects this router's RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "default-information originate always metric 1 metric-type 2",
+            "desc": "Inject a default route into OSPF unconditionally.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle spf 5 200 5000",
+            "desc": "SPF throttling: 5 ms initial, 200 ms hold, 5 s max — accelerates convergence.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle lsa 0 5000 5000",
+            "desc": "LSA generation throttling.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router ospf 1",
+            "desc": "Enable OSPFv3 process (IPv6).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf 1 area 0",
+            "desc": "Per-interface OSPFv3 binding (no network statement in v3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf",
+            "desc": "OSPFv3 process state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf neighbor",
+            "desc": "OSPFv3 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf interface",
+            "desc": "OSPFv3 per-interface state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf database",
+            "desc": "OSPFv3 LSDB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf cost 10",
+            "desc": "Per-interface cost on OSPFv3.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf network point-to-point",
+            "desc": "OSPFv3 network type.",
+            "type": "config",
+            "flagged": false
           }
         ],
         "EIGRP": [
@@ -21009,6 +22119,198 @@
           {
             "cmd": "show ip eigrp summary",
             "desc": "Shows EIGRP summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp 100",
+            "desc": "Enter classic EIGRP process for AS 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp router-id 1.1.1.1",
+            "desc": "Manually set EIGRP router-id (32-bit, not necessarily an interface IP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0",
+            "desc": "Match interfaces in 10.0.0.0/8 (uses classful boundary unless wildcard given).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.1.1.0 0.0.0.255",
+            "desc": "Match a specific subnet with wildcard mask.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no auto-summary",
+            "desc": "Disable classful auto-summarisation (mandatory on modern designs).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default\nno passive-interface GigabitEthernet0/0",
+            "desc": "Default-passive with explicit opt-in for the uplink.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology all-links",
+            "desc": "All learned paths, incl. non-feasible ones.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces detail",
+            "desc": "Detailed per-interface EIGRP stats incl. timers.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route eigrp",
+            "desc": "EIGRP-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip eigrp neighbors",
+            "desc": "Tear down all EIGRP adjacencies (forces re-sync).",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip hello-interval eigrp 100 2",
+            "desc": "Set hello to 2 s on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip hold-time eigrp 100 6",
+            "desc": "Set hold-time to 6 s — must be 3× hello.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip bandwidth-percent eigrp 100 75",
+            "desc": "Cap EIGRP traffic to 75% of interface bandwidth.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
+            "desc": "Per-interface MD5 authentication via a key-chain.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "variance 2",
+            "desc": "Allow unequal-cost load-balancing up to 2× the best metric.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 6",
+            "desc": "Allow up to 6 ECMP installs (default 4).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub connected summary",
+            "desc": "Mark this router as a stub — only advertises connected + summaries; reduces query scope.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub receive-only",
+            "desc": "Strictest stub: this router receives EIGRP but advertises nothing.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip summary-address eigrp 100 10.10.0.0 255.255.0.0",
+            "desc": "Per-interface summary advertisement.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected metric 1000000 1 255 1 1500",
+            "desc": "Redistribute connected with K-values metric (BW/delay/rel/load/MTU).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static metric 1000000 1 255 1 1500",
+            "desc": "Redistribute static.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix BLOCK-RFC1918 in",
+            "desc": "Filter incoming EIGRP advertisements.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "offset-list 10 in 100 GigabitEthernet0/1",
+            "desc": "Add 100 to the metric of routes received on Gi0/1 matching ACL 10.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers active-time disabled",
+            "desc": "Disable EIGRP SIA (Stuck-In-Active) timer for very-large-scale or testing.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100",
+            "desc": "Modern named-mode EIGRP — required for IPv6 / multi-AF.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100\n  af-interface default\n   passive-interface\n  exit-af-interface\n  topology base\n   maximum-paths 8\n  exit-af-topology",
+            "desc": "Named-mode skeleton with default-passive + 8-way ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router eigrp 100",
+            "desc": "Classic-mode EIGRP for IPv6 process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "EIGRPv6 starts shutdown — must explicitly bring it up.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 eigrp 100",
+            "desc": "Per-interface enable for EIGRPv6.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp neighbors",
+            "desc": "EIGRPv6 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp topology",
+            "desc": "EIGRPv6 topology table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp interfaces",
+            "desc": "EIGRPv6 per-interface state.",
             "type": "show",
             "flagged": false
           }
@@ -21090,6 +22392,324 @@
             "cmd": "clear bgp ipv4 unicast <neighbor> soft",
             "desc": "Soft-reset a BGP neighbor without bouncing session",
             "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp 65001",
+            "desc": "Enter BGP process for local AS 65001.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp router-id 1.1.1.1",
+            "desc": "Manually pin BGP router-id.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp log-neighbor-changes",
+            "desc": "Log every BGP state change to syslog.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no synchronization",
+            "desc": "Disable IGP-sync requirement (default off in modern IOS).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remote-as 65002",
+            "desc": "Define an eBGP peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 description ISP-A primary",
+            "desc": "Free-text peer description.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 mask 255.255.255.0",
+            "desc": "Originate a prefix into BGP (must be present in RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4",
+            "desc": "Per-peer detail: capabilities, timers, counters.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
+            "desc": "Routes we are sending TO this peer.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
+            "desc": "Routes we received from this peer (requires soft-reconfig inbound).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 routes",
+            "desc": "Routes accepted from this peer (post-policy).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp 8.8.8.0/24",
+            "desc": "Per-prefix path detail (best-path selection reasoning).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp regexp _65000_",
+            "desc": "Filter table by AS-path regex (anything that traverses AS 65000).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4",
+            "desc": "Hard reset of one peer (tears down TCP). Use sparingly.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "clear ip bgp * soft",
+            "desc": "Soft refresh on every peer (apply policy without flap).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft in",
+            "desc": "Soft inbound refresh (re-applies inbound policy from cache).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft out",
+            "desc": "Re-send our outbound advertisements with current policy.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 update-source Loopback0",
+            "desc": "Source BGP TCP from a loopback (essential for iBGP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
+            "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 next-hop-self",
+            "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 password CISCO123",
+            "desc": "TCP MD5 authentication for the peering session.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
+            "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 send-community both",
+            "desc": "Send both standard and extended communities to the peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remove-private-as",
+            "desc": "Strip private AS numbers from outbound updates.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
+            "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
+            "desc": "Apply inbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
+            "desc": "Apply outbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
+            "desc": "Inbound prefix-list filter.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 filter-list 100 in",
+            "desc": "Inbound AS-path filter using AS-path access-list 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
+            "desc": "Prefix-list entry: any /0–/24 inbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip as-path access-list 100 permit ^65002_",
+            "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
+            "desc": "Outbound prepend example for traffic-engineering.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map FROM-ISP permit 10\n set local-preference 200",
+            "desc": "Inbound LP bump to prefer this peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-CUSTOMER permit 10\n set community 65001:100 65001:200",
+            "desc": "Tag advertised routes with communities.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
+            "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
+            "desc": "Aggregate carrying the AS-SET attribute (loop-prevention safe).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected route-map CONN-INTO-BGP",
+            "desc": "Filtered redistribution from connected.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-reflector-client",
+            "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp cluster-id 1.1.1.1",
+            "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
+            "desc": "Peer-group reduces config and update-generation overhead for many similar peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 8",
+            "desc": "Enable 8-way eBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths ibgp 8",
+            "desc": "Enable 8-way iBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp bestpath as-path multipath-relax",
+            "desc": "Allow multipath even when AS-paths differ but length matches (multi-homing).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp graceful-restart",
+            "desc": "Enable Graceful Restart capability negotiation.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp dampening",
+            "desc": "Enable route-flap dampening (mostly avoided in modern Internet operations).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 fall-over bfd",
+            "desc": "Bind BFD for sub-second BGP failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv6 unicast",
+            "desc": "Enter IPv6 unicast address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
+            "desc": "IPv6 BGP peering — activate is mandatory in MP-BGP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast summary",
+            "desc": "IPv6 BGP summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast",
+            "desc": "IPv6 BGP table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family vpnv4",
+            "desc": "VPNv4 (MPLS-VPN) address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast all summary",
+            "desc": "All VPNv4 peers across all VRFs.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv4 vrf TENANT-A\n redistribute connected\n redistribute static",
+            "desc": "Per-VRF BGP address-family for L3VPN.",
+            "type": "config",
             "flagged": false
           }
         ],
@@ -23727,6 +25347,504 @@
             "type": "config",
             "flagged": true
           }
+        ],
+        "OSPF": [
+          {
+            "cmd": "feature ospf",
+            "desc": "Enable the OSPFv2 feature on Nexus (required before \"router ospf\").",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf UNDERLAY",
+            "desc": "Nexus uses tagged process names (string), not numeric process IDs.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Pin router-id under the process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "log-adjacency-changes detail",
+            "desc": "Verbose adjacency-change syslog.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bfd",
+            "desc": "Enable BFD for OSPF process-wide.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "auto-cost reference-bandwidth 400 Gbps",
+            "desc": "Modern reference-bandwidth for 400G/800G fabrics.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf",
+            "desc": "OSPFv2 process summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbors",
+            "desc": "Adjacency table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "Compact per-interface state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database",
+            "desc": "OSPF LSDB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf border-routers",
+            "desc": "ABRs / ASBRs.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf statistics",
+            "desc": "SPF execution stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/49\n no switchport\n ip address 10.0.0.1/31\n ip router ospf UNDERLAY area 0.0.0.0\n ip ospf network point-to-point\n ip ospf bfd",
+            "desc": "Per-interface OSPF binding — Nexus does NOT use the IOS \"network … area\" command.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface loopback0\n ip address 1.1.1.1/32\n ip router ospf UNDERLAY area 0.0.0.0",
+            "desc": "Loopback into OSPF area 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub no-summary",
+            "desc": "Totally-stubby area.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa default-information-originate",
+            "desc": "NSSA with default-route injection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 range 10.1.0.0/16",
+            "desc": "Inter-area summary.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "summary-address 192.168.0.0/16",
+            "desc": "External summary at the ASBR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 authentication message-digest",
+            "desc": "Area-wide MD5 auth.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute direct route-map ALLOW",
+            "desc": "Redistribute connected (Nexus calls connected \"direct\").",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle spf 50 200 5000",
+            "desc": "SPF throttling.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "feature ospfv3",
+            "desc": "Enable OSPFv3 (IPv6) feature.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospfv3 V6",
+            "desc": "OSPFv3 process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/49\n ipv6 address 2001:db8::1/64\n ipv6 router ospfv3 V6 area 0.0.0.0",
+            "desc": "Per-interface OSPFv3 binding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospfv3",
+            "desc": "OSPFv3 process.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospfv3 neighbor",
+            "desc": "OSPFv3 adjacencies.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "EIGRP": [
+          {
+            "cmd": "feature eigrp",
+            "desc": "Enable EIGRP feature on Nexus (required before \"router eigrp\").",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp 100",
+            "desc": "Enter EIGRP process for AS 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Set EIGRP router-id.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "autonomous-system 100",
+            "desc": "Explicit AS under named-process style on Nexus.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Bring the EIGRP instance up (Nexus EIGRP is shutdown by default).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp",
+            "desc": "Per-process summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp neighbors",
+            "desc": "EIGRP adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology",
+            "desc": "Topology table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces",
+            "desc": "Per-interface EIGRP state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp traffic",
+            "desc": "Per-process EIGRP packet counters.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/1\n no switchport\n ip address 10.1.1.1/24\n ip router eigrp 100",
+            "desc": "Per-interface EIGRP enable on Nexus.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp 100 hello-interval 2",
+            "desc": "Sub-second hello.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip eigrp 100 hold-time 6",
+            "desc": "Hold timer (must be 3× hello).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
+            "desc": "MD5 authentication via key-chain.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "variance 2",
+            "desc": "Unequal-cost load-balance up to 2× best metric.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 8",
+            "desc": "ECMP cap.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub connected summary",
+            "desc": "Stub router (reduces query scope).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute direct route-map ALLOW",
+            "desc": "Redistribute connected (Nexus \"direct\").",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static route-map ALLOW",
+            "desc": "Redistribute static.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv6 unicast",
+            "desc": "IPv6 AF inside EIGRP — Nexus uses MTR/AF style.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Ethernet1/1\n ipv6 address 2001:db8::1/64\n ipv6 router eigrp 100",
+            "desc": "Per-interface EIGRPv6 enable.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp neighbors",
+            "desc": "EIGRPv6 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp topology",
+            "desc": "EIGRPv6 topology.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "BGP": [
+          {
+            "cmd": "feature bgp",
+            "desc": "Enable BGP feature on Nexus (required before \"router bgp\").",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp 65001",
+            "desc": "Enter BGP process for local AS.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Pin BGP router-id under the process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "log-neighbor-changes",
+            "desc": "Log BGP state-change events.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv4 unicast",
+            "desc": "Enter the IPv4 unicast AF — required to advertise networks under it.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0/24",
+            "desc": "Originate a prefix into BGP (Nexus uses prefix/length form).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4\n remote-as 65002\n update-source loopback0\n address-family ipv4 unicast\n  send-community both",
+            "desc": "Peer block — AF activation/policy lives inside the peer block on Nexus.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4\n remote-as 65001\n update-source loopback0\n address-family ipv4 unicast\n  next-hop-self\n  route-reflector-client",
+            "desc": "iBGP peer + route-reflector role.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "template peer SPINE\n remote-as external\n bfd\n update-source Ethernet1/49\n address-family ipv4 unicast\n  send-community both\n  allowas-in 1",
+            "desc": "Peer template (Nexus equivalent of IOS peer-groups; cleaner config for many similar peers).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 10.0.0.0\n inherit peer SPINE",
+            "desc": "Inherit a peer template.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast summary",
+            "desc": "IPv4 BGP peer summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast",
+            "desc": "IPv4 BGP RIB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast neighbors 1.2.3.4",
+            "desc": "Per-peer detail.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast 8.8.8.0/24",
+            "desc": "Per-prefix path detail.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp all summary",
+            "desc": "All AFs / VRFs summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear bgp ipv4 unicast 1.2.3.4 soft in",
+            "desc": "Soft-refresh inbound.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear bgp ipv4 unicast * soft",
+            "desc": "Soft-refresh all peers.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
+            "desc": "Prefix-list (Nexus syntax matches IOS).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip as-path access-list 100 permit \"^65002_\"",
+            "desc": "AS-path filter (Nexus uses quoted regex).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001",
+            "desc": "Outbound prepend route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 8",
+            "desc": "eBGP ECMP cap (under address-family).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths ibgp 8",
+            "desc": "iBGP ECMP cap.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bestpath as-path multipath-relax",
+            "desc": "Multipath even when AS-paths differ but length matches.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv6 unicast",
+            "desc": "IPv6 unicast AF.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family l2vpn evpn",
+            "desc": "BGP EVPN AF (needed for VXLAN-EVPN fabric).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family vpnv4 unicast",
+            "desc": "VPNv4 (MPLS L3VPN) AF.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast summary",
+            "desc": "IPv6 BGP summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn summary",
+            "desc": "EVPN BGP peer summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn",
+            "desc": "EVPN BGP table (VTEP MAC/IP advertisements).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp l2vpn evpn route-type 2",
+            "desc": "Type-2 (MAC/IP) routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4\n bfd",
+            "desc": "Bind BFD to a BGP peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "graceful-restart",
+            "desc": "Enable BGP graceful-restart.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers bestpath-defer 100 maximum 300",
+            "desc": "Defer best-path computation under churn (NX-OS 9.x+).",
+            "type": "config",
+            "flagged": false
+          }
         ]
       }
     },
@@ -25476,6 +27594,1448 @@
           {
             "cmd": "reload",
             "desc": "Reload the AP",
+            "type": "config",
+            "flagged": true
+          }
+        ]
+      }
+    },
+    "ciscoiosxe_router": {
+      "label": "Cisco IOS-XE Router",
+      "badge": "badge-sw",
+      "short": "IOS-XE Router",
+      "group": "Cisco",
+      "sections": {
+        "System & Status": [
+          {
+            "cmd": "show version",
+            "desc": "Software image, uptime, last reload, hardware (route processor + line cards).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform",
+            "desc": "IOS-XE platform/SDM info; on ASR1k shows ESP/SIP/RP modules.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform software status control-processor brief",
+            "desc": "Per-CPU load + memory on the route processor and ESP.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform hardware qfp active datapath utilization summary",
+            "desc": "QuantumFlowProcessor (forwarding engine) utilisation — the ASR/CSR equivalent of \"show processes cpu\" for the dataplane.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Chassis + module inventory with serials.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment",
+            "desc": "PSUs, fans, temperature.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Active config.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show startup-config",
+            "desc": "Saved config.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show file systems",
+            "desc": "Available file systems + free space (bootflash/harddisk/usb).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock detail",
+            "desc": "Current time + source.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active console + VTY sessions.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license summary",
+            "desc": "Smart Licensing summary (DNA / IOS-XE Universal).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show install summary",
+            "desc": "Installed sub-packages + version (IOS-XE patch state).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support | redirect bootflash:tech.txt",
+            "desc": "Full diagnostic dump for TAC, redirected to bootflash.",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Interfaces": [
+          {
+            "cmd": "show interfaces",
+            "desc": "Detailed status, packet/error counters.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip interface brief | exclude unassigned",
+            "desc": "Layer-3 interfaces and their addresses.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces description",
+            "desc": "Brief: interface, status, protocol, description.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interfaces transceiver detail",
+            "desc": "SFP DOM (Tx/Rx power, temperature).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show controllers GigabitEthernet0/0/0",
+            "desc": "PHY-level diagnostics (CRC, framing errors).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/0/0\n description WAN\n ip address 198.51.100.2 255.255.255.252\n no shutdown",
+            "desc": "Routed interface baseline.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Loopback0\n ip address 1.1.1.1 255.255.255.255",
+            "desc": "Loopback for routing protocol IDs / source.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Tunnel0\n ip address 10.255.255.1 255.255.255.252\n tunnel source GigabitEthernet0/0/0\n tunnel destination 198.51.100.10\n tunnel mode ipsec ipv4",
+            "desc": "Route-based IPsec VTI tunnel (modern site-to-site VPN).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface Tunnel0\n tunnel mode gre ip",
+            "desc": "GRE tunnel mode (over IPv4).",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "OSPF": [
+          {
+            "cmd": "router ospf 1",
+            "desc": "Enter OSPF process 1 (process ID is locally significant).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router-id 1.1.1.1",
+            "desc": "Manually pin OSPF router-id (avoids re-elections when interfaces flap).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 0.255.255.255 area 0",
+            "desc": "Match any interface with an IP in 10.0.0.0/8 into area 0.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default",
+            "desc": "Make every interface passive by default; opt-in actives below.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no passive-interface GigabitEthernet0/0",
+            "desc": "Bring one interface back to active OSPF advertising.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "auto-cost reference-bandwidth 100000",
+            "desc": "Set the cost-100 reference to 100 Gbps so 10G/40G/100G interfaces get distinct costs.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "log-adjacency-changes detail",
+            "desc": "Log every state transition for OSPF adjacencies.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf",
+            "desc": "Process-level summary: router-id, area count, SPF stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor",
+            "desc": "Adjacency table: neighbour ID, state, dead-time, address, interface.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor detail",
+            "desc": "Per-neighbour detail incl. options, DR/BDR election, last-event reasons.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface",
+            "desc": "OSPF state per interface: cost, priority, timers, neighbour count.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface brief",
+            "desc": "Compact per-interface OSPF state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database",
+            "desc": "Full Link-State Database (router/network/summary/external LSAs).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf database router self-originate",
+            "desc": "Just the router-LSAs this device originated.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf border-routers",
+            "desc": "ABRs and ASBRs reachable from this router.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf statistics",
+            "desc": "SPF runs, last/min/max SPF time, last reason for SPF.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route ospf",
+            "desc": "OSPF-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip ospf process",
+            "desc": "Restart OSPF; tears down adjacencies and rebuilds. Use cautiously in production.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip ospf 1 area 0",
+            "desc": "Place the interface directly in OSPF area 0 (alternative to the network statement).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf cost 10",
+            "desc": "Override the auto-derived cost on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf priority 0",
+            "desc": "Make this interface ineligible for DR/BDR election.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf hello-interval 3",
+            "desc": "Sub-second hello (default 10 s on broadcast, 30 s NBMA).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf dead-interval minimal hello-multiplier 4",
+            "desc": "Sub-second BFD-style dead-interval (4 hellos in 1 s).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network point-to-point",
+            "desc": "Skip DR/BDR election on broadcast media — faster adjacency.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf network broadcast",
+            "desc": "Force broadcast network type (default on Ethernet).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf bfd",
+            "desc": "Bind OSPF to BFD on this interface for sub-second failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip ospf authentication message-digest\nip ospf message-digest-key 1 md5 cisco-key",
+            "desc": "Per-interface MD5 authentication.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub",
+            "desc": "Make area 1 a stub: blocks Type-5 LSAs, replaces with default route.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 stub no-summary",
+            "desc": "Totally stubby area: blocks Type-3, 4, 5 — only default route enters.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa",
+            "desc": "Not-So-Stubby Area: stub-like but allows local Type-7→5 redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 nssa default-information-originate",
+            "desc": "Inject default route into the NSSA from this ABR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 1 range 10.1.0.0 255.255.0.0",
+            "desc": "Summarise inter-area routes leaving the ABR (Type-3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "summary-address 192.168.0.0 255.255.0.0",
+            "desc": "Summarise external (Type-5) routes leaving the ASBR.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 virtual-link 2.2.2.2",
+            "desc": "Stitch a discontinuous area to area 0 via another router.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "area 0 authentication message-digest",
+            "desc": "Enable area-wide MD5 authentication (interfaces still need keys).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected subnets metric 100 metric-type 2",
+            "desc": "Redistribute connected with explicit metric / E2 type.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static subnets route-map STATIC-INTO-OSPF",
+            "desc": "Filtered static-route redistribution.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix DENY-DEFAULT in",
+            "desc": "Filter incoming OSPF prefixes (only affects this router's RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "default-information originate always metric 1 metric-type 2",
+            "desc": "Inject a default route into OSPF unconditionally.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle spf 5 200 5000",
+            "desc": "SPF throttling: 5 ms initial, 200 ms hold, 5 s max — accelerates convergence.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers throttle lsa 0 5000 5000",
+            "desc": "LSA generation throttling.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router ospf 1",
+            "desc": "Enable OSPFv3 process (IPv6).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf 1 area 0",
+            "desc": "Per-interface OSPFv3 binding (no network statement in v3).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf",
+            "desc": "OSPFv3 process state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf neighbor",
+            "desc": "OSPFv3 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf interface",
+            "desc": "OSPFv3 per-interface state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 ospf database",
+            "desc": "OSPFv3 LSDB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf cost 10",
+            "desc": "Per-interface cost on OSPFv3.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 ospf network point-to-point",
+            "desc": "OSPFv3 network type.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "EIGRP": [
+          {
+            "cmd": "router eigrp 100",
+            "desc": "Enter classic EIGRP process for AS 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp router-id 1.1.1.1",
+            "desc": "Manually set EIGRP router-id (32-bit, not necessarily an interface IP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0",
+            "desc": "Match interfaces in 10.0.0.0/8 (uses classful boundary unless wildcard given).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.1.1.0 0.0.0.255",
+            "desc": "Match a specific subnet with wildcard mask.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no auto-summary",
+            "desc": "Disable classful auto-summarisation (mandatory on modern designs).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface default\nno passive-interface GigabitEthernet0/0",
+            "desc": "Default-passive with explicit opt-in for the uplink.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp neighbors",
+            "desc": "EIGRP adjacency table: hold, uptime, retransmits.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp neighbors detail",
+            "desc": "Per-neighbour detail incl. version + capabilities.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology",
+            "desc": "Topology table — successors + feasible successors per prefix.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp topology all-links",
+            "desc": "All learned paths, incl. non-feasible ones.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces",
+            "desc": "EIGRP per-interface counters: peers, queue, mean SRTT.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp interfaces detail",
+            "desc": "Detailed per-interface EIGRP stats incl. timers.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip eigrp traffic",
+            "desc": "EIGRP packet counters: hellos, updates, queries, replies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route eigrp",
+            "desc": "EIGRP-installed routes only.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip eigrp neighbors",
+            "desc": "Tear down all EIGRP adjacencies (forces re-sync).",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip hello-interval eigrp 100 2",
+            "desc": "Set hello to 2 s on this interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip hold-time eigrp 100 6",
+            "desc": "Set hold-time to 6 s — must be 3× hello.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip bandwidth-percent eigrp 100 75",
+            "desc": "Cap EIGRP traffic to 75% of interface bandwidth.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
+            "desc": "Per-interface MD5 authentication via a key-chain.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "variance 2",
+            "desc": "Allow unequal-cost load-balancing up to 2× the best metric.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 6",
+            "desc": "Allow up to 6 ECMP installs (default 4).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub connected summary",
+            "desc": "Mark this router as a stub — only advertises connected + summaries; reduces query scope.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "eigrp stub receive-only",
+            "desc": "Strictest stub: this router receives EIGRP but advertises nothing.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip summary-address eigrp 100 10.10.0.0 255.255.0.0",
+            "desc": "Per-interface summary advertisement.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected metric 1000000 1 255 1 1500",
+            "desc": "Redistribute connected with K-values metric (BW/delay/rel/load/MTU).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute static metric 1000000 1 255 1 1500",
+            "desc": "Redistribute static.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "distribute-list prefix BLOCK-RFC1918 in",
+            "desc": "Filter incoming EIGRP advertisements.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "offset-list 10 in 100 GigabitEthernet0/1",
+            "desc": "Add 100 to the metric of routes received on Gi0/1 matching ACL 10.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "timers active-time disabled",
+            "desc": "Disable EIGRP SIA (Stuck-In-Active) timer for very-large-scale or testing.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100",
+            "desc": "Modern named-mode EIGRP — required for IPv6 / multi-AF.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100\n  af-interface default\n   passive-interface\n  exit-af-interface\n  topology base\n   maximum-paths 8\n  exit-af-topology",
+            "desc": "Named-mode skeleton with default-passive + 8-way ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 router eigrp 100",
+            "desc": "Classic-mode EIGRP for IPv6 process.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "EIGRPv6 starts shutdown — must explicitly bring it up.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ipv6 eigrp 100",
+            "desc": "Per-interface enable for EIGRPv6.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp neighbors",
+            "desc": "EIGRPv6 adjacencies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp topology",
+            "desc": "EIGRPv6 topology table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 eigrp interfaces",
+            "desc": "EIGRPv6 per-interface state.",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "BGP": [
+          {
+            "cmd": "router bgp 65001",
+            "desc": "Enter BGP process for local AS 65001.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp router-id 1.1.1.1",
+            "desc": "Manually pin BGP router-id.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp log-neighbor-changes",
+            "desc": "Log every BGP state change to syslog.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no synchronization",
+            "desc": "Disable IGP-sync requirement (default off in modern IOS).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remote-as 65002",
+            "desc": "Define an eBGP peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 description ISP-A primary",
+            "desc": "Free-text peer description.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "network 10.0.0.0 mask 255.255.255.0",
+            "desc": "Originate a prefix into BGP (must be present in RIB).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp summary",
+            "desc": "Per-peer summary: state, prefixes received, uptime.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4",
+            "desc": "Per-peer detail: capabilities, timers, counters.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
+            "desc": "Routes we are sending TO this peer.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
+            "desc": "Routes we received from this peer (requires soft-reconfig inbound).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp neighbors 1.2.3.4 routes",
+            "desc": "Routes accepted from this peer (post-policy).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp",
+            "desc": "Full BGP table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp 8.8.8.0/24",
+            "desc": "Per-prefix path detail (best-path selection reasoning).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp regexp _65000_",
+            "desc": "Filter table by AS-path regex (anything that traverses AS 65000).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip bgp paths",
+            "desc": "AS-path attribute database stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4",
+            "desc": "Hard reset of one peer (tears down TCP). Use sparingly.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "clear ip bgp * soft",
+            "desc": "Soft refresh on every peer (apply policy without flap).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft in",
+            "desc": "Soft inbound refresh (re-applies inbound policy from cache).",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip bgp 1.2.3.4 soft out",
+            "desc": "Re-send our outbound advertisements with current policy.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 update-source Loopback0",
+            "desc": "Source BGP TCP from a loopback (essential for iBGP).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
+            "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 next-hop-self",
+            "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 password CISCO123",
+            "desc": "TCP MD5 authentication for the peering session.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
+            "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 send-community both",
+            "desc": "Send both standard and extended communities to the peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 remove-private-as",
+            "desc": "Strip private AS numbers from outbound updates.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
+            "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
+            "desc": "Apply inbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
+            "desc": "Apply outbound route-map.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
+            "desc": "Inbound prefix-list filter.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 filter-list 100 in",
+            "desc": "Inbound AS-path filter using AS-path access-list 100.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
+            "desc": "Prefix-list entry: any /0–/24 inbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip as-path access-list 100 permit ^65002_",
+            "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
+            "desc": "Outbound prepend example for traffic-engineering.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map FROM-ISP permit 10\n set local-preference 200",
+            "desc": "Inbound LP bump to prefer this peer.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "route-map TO-CUSTOMER permit 10\n set community 65001:100 65001:200",
+            "desc": "Tag advertised routes with communities.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
+            "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
+            "desc": "Aggregate carrying the AS-SET attribute (loop-prevention safe).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "redistribute connected route-map CONN-INTO-BGP",
+            "desc": "Filtered redistribution from connected.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 route-reflector-client",
+            "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp cluster-id 1.1.1.1",
+            "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
+            "desc": "Peer-group reduces config and update-generation overhead for many similar peers.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths 8",
+            "desc": "Enable 8-way eBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "maximum-paths ibgp 8",
+            "desc": "Enable 8-way iBGP ECMP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp bestpath as-path multipath-relax",
+            "desc": "Allow multipath even when AS-paths differ but length matches (multi-homing).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp graceful-restart",
+            "desc": "Enable Graceful Restart capability negotiation.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "bgp dampening",
+            "desc": "Enable route-flap dampening (mostly avoided in modern Internet operations).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 1.2.3.4 fall-over bfd",
+            "desc": "Bind BFD for sub-second BGP failure detection.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv6 unicast",
+            "desc": "Enter IPv6 unicast address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
+            "desc": "IPv6 BGP peering — activate is mandatory in MP-BGP.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast summary",
+            "desc": "IPv6 BGP summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv6 unicast",
+            "desc": "IPv6 BGP table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family vpnv4",
+            "desc": "VPNv4 (MPLS-VPN) address-family.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast all summary",
+            "desc": "All VPNv4 peers across all VRFs.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "address-family ipv4 vrf TENANT-A\n redistribute connected\n redistribute static",
+            "desc": "Per-VRF BGP address-family for L3VPN.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "NAT": [
+          {
+            "cmd": "show ip nat translations",
+            "desc": "Active NAT translations.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip nat statistics",
+            "desc": "Hits, misses, dropped translations.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip nat translation *",
+            "desc": "Drop all NAT entries — testing only.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "ip nat inside source list 1 interface GigabitEthernet0/0/0 overload",
+            "desc": "PAT overload to outside interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip nat inside source static 10.0.0.10 198.51.100.10",
+            "desc": "1:1 static NAT.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip nat outside source static 198.51.100.20 10.0.0.20",
+            "desc": "Static NAT for outside-to-inside traffic.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "IPsec / Crypto": [
+          {
+            "cmd": "show crypto ikev2 sa",
+            "desc": "IKEv2 Security Associations (current peer state).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto ikev2 sa detail",
+            "desc": "Verbose IKEv2 detail with proposals + lifetimes.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto ipsec sa",
+            "desc": "IPsec SAs — packets enc/dec, bytes, lifetimes.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto session",
+            "desc": "High-level peer session summary.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto session detail",
+            "desc": "Per-session detail with all SAs and policies.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show crypto ipsec stats",
+            "desc": "Aggregate IPsec packet stats.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "debug crypto ikev2 protocol 64",
+            "desc": "IKEv2 packet-level debug — careful in production.",
+            "type": "troubleshooting",
+            "flagged": true
+          },
+          {
+            "cmd": "crypto ikev2 proposal AES-GCM\n encryption aes-gcm-256\n integrity null\n group 19 20\n prf sha256",
+            "desc": "Modern IKEv2 proposal: AES-GCM with PRF/SHA-256.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ikev2 policy POLICY1\n proposal AES-GCM",
+            "desc": "IKEv2 policy bound to a proposal.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ikev2 keyring KR1\n peer SITE-A\n  address 198.51.100.10\n  pre-shared-key local <psk>\n  pre-shared-key remote <psk>",
+            "desc": "IKEv2 keyring with PSK.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ikev2 profile PROF1\n match identity remote address 198.51.100.10 255.255.255.255\n authentication local pre-share\n authentication remote pre-share\n keyring local KR1",
+            "desc": "IKEv2 profile (binds keyring + identity).",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ipsec transform-set TS1 esp-gcm 256\n mode tunnel",
+            "desc": "IPsec transform-set with AES-GCM.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "crypto ipsec profile PROF1\n set transform-set TS1\n set ikev2-profile PROF1",
+            "desc": "IPsec profile attached to a VTI.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "MPLS / L3VPN": [
+          {
+            "cmd": "show mpls ldp neighbor",
+            "desc": "LDP peers + their assigned label-space.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mpls ldp bindings",
+            "desc": "Label bindings (local + remote).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mpls forwarding-table",
+            "desc": "LFIB — incoming label, outgoing label, next hop, prefix.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mpls interfaces",
+            "desc": "MPLS-enabled interfaces + their forwarding state.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route vrf TENANT-A",
+            "desc": "Per-VRF routing table (L3VPN customer-facing).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast all summary",
+            "desc": "All VPNv4 peers across every VRF.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast all",
+            "desc": "Full VPNv4 RIB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp vpnv4 unicast vrf TENANT-A",
+            "desc": "Per-VRF VPNv4 routes.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mpls ip",
+            "desc": "Enable MPLS IP forwarding globally / per interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/0/0\n mpls ip\n mpls label protocol ldp",
+            "desc": "Enable LDP on a core interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vrf definition TENANT-A\n rd 65001:1\n address-family ipv4\n  route-target export 65001:1\n  route-target import 65001:1",
+            "desc": "L3VPN VRF baseline.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/0/1\n vrf forwarding TENANT-A\n ip address 10.1.1.1 255.255.255.0",
+            "desc": "Place an interface in a VRF.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "QoS": [
+          {
+            "cmd": "show policy-map interface GigabitEthernet0/0/0",
+            "desc": "Per-interface policy stats: matched / queued / dropped.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy-map interface GigabitEthernet0/0/0 output class VOICE",
+            "desc": "Per-class policy detail.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show class-map",
+            "desc": "Configured class-maps.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy-map",
+            "desc": "Configured policy-maps.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "class-map match-any VOICE\n match dscp ef\n match cos 5",
+            "desc": "Match voice traffic by DSCP EF or CoS 5.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "policy-map WAN-OUT\n class VOICE\n  priority percent 30\n class VIDEO\n  bandwidth percent 20\n class class-default\n  fair-queue",
+            "desc": "Hierarchical egress policy — strict priority for voice, CBWFQ otherwise.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/0/0\n service-policy output WAN-OUT",
+            "desc": "Bind the policy outbound on the WAN interface.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "NetFlow / IP SLA": [
+          {
+            "cmd": "show flow exporter",
+            "desc": "Configured Flexible NetFlow exporters + statistics.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show flow monitor",
+            "desc": "Active flow monitors and their cache.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show flow monitor MON cache",
+            "desc": "Per-monitor cache snapshot (flow records).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip sla statistics",
+            "desc": "IP SLA probe results.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip sla configuration",
+            "desc": "Configured SLA probes.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "flow exporter EXP1\n destination 10.50.50.50\n transport udp 2055\n template data timeout 60\n!\nflow record REC1\n match ipv4 source address\n match ipv4 destination address\n match transport source-port\n match transport destination-port\n collect counter bytes\n collect counter packets",
+            "desc": "Flexible NetFlow exporter + record skeleton.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "flow monitor MON1\n exporter EXP1\n record REC1\n cache timeout active 60",
+            "desc": "Flow monitor binding.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface GigabitEthernet0/0/0\n ip flow monitor MON1 input\n ip flow monitor MON1 output",
+            "desc": "Apply NetFlow on an interface.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ip sla 10\n icmp-echo 8.8.8.8 source-interface GigabitEthernet0/0/0\n threshold 200\n timeout 500\n frequency 5\n!\nip sla schedule 10 life forever start-time now",
+            "desc": "Continuous ICMP probe to 8.8.8.8 with 200 ms threshold.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "track 1 ip sla 10 reachability",
+            "desc": "Track object that flips based on SLA result — bind to static routes / EEM.",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "ping 8.8.8.8 source loopback0",
+            "desc": "Sourced ping.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping 8.8.8.8 size 1500 df-bit count 5",
+            "desc": "Path-MTU smoke test.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 8.8.8.8 source loopback0",
+            "desc": "Sourced traceroute.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp",
+            "desc": "ARP cache.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef",
+            "desc": "CEF FIB.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip cef 8.8.8.8 internal",
+            "desc": "CEF entry internals (rewrite + adjacency).",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "IPv4 routing table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 route",
+            "desc": "IPv6 routing table.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 neighbors",
+            "desc": "IPv6 neighbour-discovery cache.",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP interface GigabitEthernet0/0/0 both match any buffer size 10 limit pps 1000",
+            "desc": "Embedded packet capture (EPC) on an interface.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP start",
+            "desc": "Start the capture.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP stop",
+            "desc": "Stop the capture.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "monitor capture CAP export bootflash:cap.pcap",
+            "desc": "Export EPC capture to bootflash.",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform hardware qfp active feature mfr datapath drops",
+            "desc": "Per-feature QFP datapath drop counters (ASR/CSR-only).",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Config Management": [
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running to startup.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "write memory",
+            "desc": "Alias for copy run start.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config bootflash:cfg-2026-04-28.cfg",
+            "desc": "Local backup with date suffix.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "archive\n path bootflash:archive-\n maximum 14\n write-memory\n time-period 1440",
+            "desc": "Auto-archive every 24 h, retain 14.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "configure replace bootflash:archive-1",
+            "desc": "Atomic config rollback to a saved archive.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload in 5",
+            "desc": "Schedule a reload in 5 minutes.",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload cancel",
+            "desc": "Cancel a scheduled reload.",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "install add file bootflash:isr4400-universalk9.17.12.04.SPA.bin activate commit",
+            "desc": "IOS-XE one-shot install / activate / commit.",
             "type": "config",
             "flagged": true
           }
