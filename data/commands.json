@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-28T05:48:53.812Z",
+  "updatedAt": "2026-04-28T11:23:55.155Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2653,78 +2653,6 @@
           {
             "cmd": "show counter global filter packet-filter yes",
             "desc": "Counters limited to active packet-filter",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "system": [
-          {
-            "cmd": "show version",
-            "desc": "Display system information and software version for Palo Alto Networks firewall.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "set deviceconfig system hostname <new-hostname>",
-            "desc": "Set the hostname of the Palo Alto device.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "request system software install <package-url>",
-            "desc": "Install a software package on Palo Alto device for upgrades or patches.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "configuration": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current running configuration of the Palo Alto Networks device.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "configure",
-            "desc": "Enter configuration mode on Palo Alto device to modify settings.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "commit",
-            "desc": "Commit the staged configuration changes on Palo Alto device.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show network interface",
-            "desc": "Display network interface status and configuration on Palo Alto device.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "security": [
-          {
-            "cmd": "show security policy",
-            "desc": "Display configured security policies on Palo Alto firewall.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "troubleshooting": [
-          {
-            "cmd": "debug dataplane packet-trace advanced <source-ip> <destination-ip>",
-            "desc": "Troubleshoot packet flow and policy matches on Palo Alto firewall.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "logs": [
-          {
-            "cmd": "show log threat",
-            "desc": "Display threat-related logs on Palo Alto device.",
             "type": "show",
             "flagged": false
           }
@@ -7776,92 +7704,6 @@
             "cmd": "show wireless trace-on-failure summary",
             "desc": "Last-join-failure traces collected automatically",
             "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "system": [
-          {
-            "cmd": "show version",
-            "desc": "Display system hardware and software version information.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show ns ip",
-            "desc": "Display NetScaler IP address configurations.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "set ns ip <ip_addr> <netmask>",
-            "desc": "Configure a NetScaler IP address.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "show interface",
-            "desc": "Display interface status and statistics.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "loadbalancing": [
-          {
-            "cmd": "show lb vserver",
-            "desc": "Display load balancing virtual server status and statistics.",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "set lb vserver <name> <serviceType> <IP> <port>",
-            "desc": "Create or modify a load balancing virtual server.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "global": [
-          {
-            "cmd": "config t",
-            "desc": "Enter global configuration mode.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "clear ns config -full",
-            "desc": "Clear the entire NetScaler configuration (use with caution).",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "logs": [
-          {
-            "cmd": "show logging",
-            "desc": "Display system log messages.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "diagnostics": [
-          {
-            "cmd": "show techsupport",
-            "desc": "Generate and display technical support information.",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "debug lb vserver <name>",
-            "desc": "Enable debugging for a specific load balancing virtual server.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "config": [
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current running configuration.",
-            "type": "show",
             "flagged": false
           }
         ]
@@ -23523,75 +23365,1757 @@
             "type": "config",
             "flagged": true
           }
-        ],
-        "system": [
+        ]
+      }
+    },
+    "aruba_cx": {
+      "label": "Aruba AOS-CX",
+      "badge": "badge-aruba",
+      "short": "AOS-CX",
+      "group": "Aruba",
+      "sections": {
+        "System & Status": [
           {
             "cmd": "show version",
-            "desc": "Display software version and hardware information.",
+            "desc": "Software image, version, build, uptime, last reload reason",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "config ns param",
-            "desc": "Configure NetScaler system parameters.",
-            "type": "config",
+            "cmd": "show system",
+            "desc": "System name/contact/location + chassis info",
+            "type": "show",
             "flagged": false
-          }
-        ],
-        "configuration": [
+          },
           {
-            "cmd": "show ns config",
-            "desc": "Show current NetScaler configuration.",
+            "cmd": "show system resource-utilization",
+            "desc": "CPU, memory, daemon resource counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Hardware inventory: chassis, modules, transceivers, serials",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment temperature",
+            "desc": "Temperature sensors per module",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment fan",
+            "desc": "Fan tray status / RPM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show environment power-supply",
+            "desc": "Power-supply status, current draw, capacity",
             "type": "show",
             "flagged": false
           },
           {
             "cmd": "show running-config",
-            "desc": "Display current running configuration.",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "global": [
-          {
-            "cmd": "configure terminal",
-            "desc": "Enter global configuration mode.",
-            "type": "config",
-            "flagged": false
-          }
-        ],
-        "diagnostics": [
-          {
-            "cmd": "show tech-support",
-            "desc": "Collect diagnostic information for troubleshooting.",
-            "type": "troubleshooting",
-            "flagged": false
-          },
-          {
-            "cmd": "debug ip packet",
-            "desc": "Enable IP packet debugging for troubleshooting.",
-            "type": "troubleshooting",
-            "flagged": false
-          }
-        ],
-        "network": [
-          {
-            "cmd": "show interfaces",
-            "desc": "Display interface status and statistics.",
+            "desc": "Active configuration",
             "type": "show",
             "flagged": false
           },
           {
-            "cmd": "interface GigabitEthernet0/1",
-            "desc": "Enter interface configuration mode.",
+            "cmd": "show running-config interface 1/1/1",
+            "desc": "Per-interface running-config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show startup-config",
+            "desc": "Saved configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show events",
+            "desc": "System event log (info / warn / err)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show events -d ALL -s warning",
+            "desc": "Filter event log by minimum severity",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock",
+            "desc": "Current date/time + source (NTP / manual)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active sessions (console, SSH, REST)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show capacities",
+            "desc": "Hardware-table capacities (MAC, ARP, route, ACL)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show capacities-status",
+            "desc": "Current usage of those tables",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show feature",
+            "desc": "Optional features installed/enabled",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Interfaces": [
+          {
+            "cmd": "show interface",
+            "desc": "Detailed status, duplex, speed, counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface brief",
+            "desc": "Short interface status table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface 1/1/1",
+            "desc": "Single-interface detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface 1/1/1 transceiver",
+            "desc": "SFP/SFP+ DOM (Tx/Rx power, temp, vendor)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface error-counters",
+            "desc": "Error counters per interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp neighbors",
+            "desc": "LLDP neighbour table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp neighbors detail",
+            "desc": "Full LLDP detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lldp interface",
+            "desc": "LLDP per-interface state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show poe-power",
+            "desc": "PoE budget summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show poe-power interface 1/1/1",
+            "desc": "Per-interface PoE state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/1\n description ACCESS\n vlan access 10\n no shutdown",
+            "desc": "Access-port baseline",
             "type": "config",
             "flagged": false
           },
+          {
+            "cmd": "interface 1/1/24\n description TRUNK\n no shutdown\n no routing\n vlan trunk native 99\n vlan trunk allowed 10,20,30",
+            "desc": "Trunk port baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/49\n no shutdown\n routing\n ip address 10.0.0.1/31\n mtu 9216",
+            "desc": "L3 routed point-to-point uplink",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface lag 1\n no shutdown\n no routing\n vlan trunk allowed 10,20,30\n lacp mode active",
+            "desc": "LACP LAG (port-channel)",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/49\n lag 1",
+            "desc": "Add a member port to LAG 1",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown",
+            "desc": "Disable an interface",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Enable an interface",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "VLANs": [
+          {
+            "cmd": "show vlan",
+            "desc": "All VLANs + member ports",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan 10",
+            "desc": "Single-VLAN detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan summary",
+            "desc": "VLAN counts + active range",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan 10\n name DATA",
+            "desc": "Create a VLAN",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "vlan 10-20",
+            "desc": "Create a VLAN range",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "no vlan 10",
+            "desc": "Delete a VLAN",
+            "type": "config",
+            "flagged": true
+          }
+        ],
+        "Spanning Tree": [
+          {
+            "cmd": "show spanning-tree",
+            "desc": "STP summary (root, mode)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree detail",
+            "desc": "Full per-port STP details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree mst",
+            "desc": "MSTP per-instance state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree mst configuration",
+            "desc": "MSTP region config (name, revision, VLAN-to-instance)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show spanning-tree statistics",
+            "desc": "STP BPDU counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree mode mstp",
+            "desc": "Switch to MSTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree config-name CORP\nspanning-tree config-revision 1\nspanning-tree instance 1 vlan 10,20",
+            "desc": "MSTP region + instance mapping",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/1\n spanning-tree port-type admin-edge\n spanning-tree bpdu-guard",
+            "desc": "Edge port + BPDU Guard",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "L3 Routing": [
           {
             "cmd": "show ip route",
-            "desc": "Display IP routing table.",
+            "desc": "IPv4 routing table (default VRF)",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ip route vrf <name>",
+            "desc": "Per-VRF routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip route summary",
+            "desc": "Route counts by protocol",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip arp",
+            "desc": "ARP cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 route",
+            "desc": "IPv6 routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ipv6 neighbors",
+            "desc": "IPv6 neighbour discovery cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf",
+            "desc": "OSPF process state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf neighbor",
+            "desc": "OSPF adjacencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip ospf interface",
+            "desc": "Per-interface OSPF state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast summary",
+            "desc": "BGP IPv4 peers + prefix counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast",
+            "desc": "BGP IPv4 RIB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show bgp ipv4 unicast neighbors",
+            "desc": "BGP IPv4 per-peer detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route 0.0.0.0/0 1.1.1.1 distance 1 vrf default",
+            "desc": "Static default route",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf 1\n router-id 1.1.1.1\n area 0.0.0.0\n!\ninterface 1/1/49\n ip ospf 1 area 0.0.0.0",
+            "desc": "Single-area OSPF baseline",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp 65001\n bgp router-id 1.1.1.1\n neighbor 1.2.3.4 remote-as 65002\n address-family ipv4 unicast\n  neighbor 1.2.3.4 activate",
+            "desc": "eBGP peer baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "VRF": [
+          {
+            "cmd": "show vrf",
+            "desc": "List configured VRFs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vrf <name>",
+            "desc": "Per-VRF configuration + interfaces",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vrf <name>",
+            "desc": "Create / enter a VRF",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/1\n vrf attach <name>",
+            "desc": "Place interface in VRF",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "VSX / VSF": [
+          {
+            "cmd": "show vsx status",
+            "desc": "VSX peer status, ISL state, role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsx config-consistency",
+            "desc": "Consistency check between VSX peers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsx active-forwarding",
+            "desc": "Active-forwarding decision per VSX MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsx brief",
+            "desc": "Brief VSX summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsf",
+            "desc": "Stack member status (VSF on CX 62/63xx)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsf detail",
+            "desc": "Detailed stack diagnostics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vsf topology",
+            "desc": "VSF stacking topology + ports",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vsx\n inter-switch-link lag 256\n role primary\n keepalive peer 10.99.99.2 source 10.99.99.1",
+            "desc": "VSX baseline on the primary peer",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "ACLs": [
+          {
+            "cmd": "show access-list",
+            "desc": "All ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show access-list ip <name>",
+            "desc": "Single ACL detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show access-list hitcounts ip <name>",
+            "desc": "Per-rule hit counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "access-list ip ALLOW_WEB\n 10 permit tcp any any eq 443\n 20 permit tcp any any eq 80\n 30 deny any any any log",
+            "desc": "Named ACL with logged deny",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "interface 1/1/1\n apply access-list ip ALLOW_WEB in",
+            "desc": "Apply ACL inbound",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Security & AAA": [
+          {
+            "cmd": "show user-list",
+            "desc": "Configured local users + roles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show users",
+            "desc": "Active sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa authentication",
+            "desc": "AAA authentication source order",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa server-groups",
+            "desc": "TACACS+/RADIUS server groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-access clients",
+            "desc": "802.1X / MAC-auth client sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port-access role",
+            "desc": "Configured downloadable user roles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tacacs-server host 10.10.10.50 key plaintext <key>",
+            "desc": "TACACS+ server",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa group server tacacs+ TAC\n server 10.10.10.50",
+            "desc": "Server group",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authentication login default group TAC local",
+            "desc": "Login auth: TACACS first, local fallback",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "user admin password plaintext <pwd> role administrators",
+            "desc": "Local admin user",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "QoS": [
+          {
+            "cmd": "show qos schedule-profile",
+            "desc": "Schedule profile (egress queue scheduling)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show qos queue-profile",
+            "desc": "Queue profile",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show class",
+            "desc": "Defined classes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy",
+            "desc": "Defined policies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy hitcounts",
+            "desc": "Policy hit counts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "qos trust dscp",
+            "desc": "Globally trust DSCP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "class ip VOICE\n 10 match dscp 46\n!\npolicy MARK\n class VOICE\n  action mark dscp 46",
+            "desc": "Class + policy baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Logging & Telemetry": [
+          {
+            "cmd": "show events",
+            "desc": "Event log",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show audit-trail",
+            "desc": "CLI audit trail (who ran what)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ntp status",
+            "desc": "NTP sync state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ntp associations",
+            "desc": "NTP peers + offset",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp",
+            "desc": "SNMP server config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show snmp community",
+            "desc": "SNMP communities",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "logging 10.50.50.50 severity warning",
+            "desc": "Send syslog to a remote host",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp server 10.10.10.10\nntp enable",
+            "desc": "NTP client baseline",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "ping 1.1.1.1",
+            "desc": "IPv4 ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping 1.1.1.1 source-interface loopback0",
+            "desc": "Sourced ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 1.1.1.1",
+            "desc": "Traceroute",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac-address-table",
+            "desc": "MAC address table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac-address-table address 0050.5612.3456",
+            "desc": "Find one MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp-snooping",
+            "desc": "DHCP snooping global state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp-snooping binding",
+            "desc": "DHCP snooping bindings DB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "diag-dump",
+            "desc": "Capture diagnostic dump (TAC use)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech",
+            "desc": "Full diagnostic bundle for TAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech | redirect tftp://10.50.50.50/tech.txt",
+            "desc": "Stream show tech to TFTP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "mirror session 1\n source interface 1/1/1 both\n destination interface 1/1/47\n no shutdown",
+            "desc": "Port mirror (SPAN)",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Config Management": [
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running to startup",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "write memory",
+            "desc": "Alias for copy running-config startup-config",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "checkpoint create CHK1",
+            "desc": "Create a named config checkpoint",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show checkpoint list",
+            "desc": "List checkpoints",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show checkpoint diff CHK1 startup-config",
+            "desc": "Diff checkpoint vs startup",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "checkpoint rollback CHK1",
+            "desc": "Roll back to a checkpoint",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg",
+            "desc": "Backup config to TFTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "boot system primary",
+            "desc": "Boot from primary firmware on next reload",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "boot set-default secondary",
+            "desc": "Set secondary partition as default",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "reboot",
+            "desc": "Reboot the switch",
+            "type": "config",
+            "flagged": true
+          }
+        ],
+        "REST API & Automation": [
+          {
+            "cmd": "show api session",
+            "desc": "Active REST API sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ssh server",
+            "desc": "SSH server config + active sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "https-server rest access-mode read-write",
+            "desc": "Enable REST read-write access",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "https-server vrf mgmt",
+            "desc": "Bind REST to mgmt VRF",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show telemetry",
+            "desc": "gNMI streaming telemetry state",
+            "type": "show",
+            "flagged": false
+          }
+        ]
+      }
+    },
+    "aruba_wlc": {
+      "label": "Aruba Mobility Controller (ArubaOS)",
+      "badge": "badge-aruba",
+      "short": "Aruba MC",
+      "group": "Aruba",
+      "sections": {
+        "System & Status": [
+          {
+            "cmd": "show version",
+            "desc": "ArubaOS version, model, uptime, build",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Hardware inventory + serials",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Active configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show switches",
+            "desc": "Mobility Master + Mobility Controllers in cluster",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show switchinfo",
+            "desc": "Local switch identity, role, MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock",
+            "desc": "Current date/time + source",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show country",
+            "desc": "Configured regulatory country",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license",
+            "desc": "Installed licences (AP, PEFNG, MM, etc.)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license-usage ap",
+            "desc": "AP licence consumption",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show license-usage user",
+            "desc": "User licence consumption",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cpuload",
+            "desc": "CPU utilisation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Memory usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show storage",
+            "desc": "Filesystem usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show keys all",
+            "desc": "Cryptographic keys installed",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show airwave",
+            "desc": "AirWave / Central management state",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "AP Management": [
+          {
+            "cmd": "show ap database",
+            "desc": "All known APs + status, group, IP, model",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap database long",
+            "desc": "AP DB with extra columns (version, location)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap active",
+            "desc": "Currently up APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap details ap-name <name>",
+            "desc": "Per-AP detailed info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap radio-summary",
+            "desc": "Per-radio summary across all APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap radio-summary ap-name <name>",
+            "desc": "Single-AP radio summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap radio-database",
+            "desc": "Radio/channel per AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap config ap-name <name>",
+            "desc": "Effective config applied to an AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm-history ap-name <name>",
+            "desc": "ARM channel/power change history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap snr-info ap-name <name> radio 0",
+            "desc": "Per-radio SNR data",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap monitor active-laser-beams ap-name <name>",
+            "desc": "Spectrum / interference detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap remote debug magic-number ap-name <name>",
+            "desc": "Get debug magic for the AP CLI",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap profile-usage ap-name <name>",
+            "desc": "Profiles applied to this AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap group",
+            "desc": "AP groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap-group <name>",
+            "desc": "Per-group config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap lms-distribution",
+            "desc": "AP-to-LMS controller assignments",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "WLAN & SSID": [
+          {
+            "cmd": "show wlan ssid-profile",
+            "desc": "List SSID profiles",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan ssid-profile <name>",
+            "desc": "SSID profile detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan virtual-ap",
+            "desc": "Virtual-AP profiles (SSID + AAA + radio binding)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show wlan virtual-ap <name>",
+            "desc": "Single virtual-AP profile",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa profile",
+            "desc": "AAA profiles (auth + accounting binding)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa profile <name>",
+            "desc": "Single AAA profile",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap-group <name>",
+            "desc": "AP-group + bound virtual-APs",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Clients & Users": [
+          {
+            "cmd": "show user",
+            "desc": "Connected users (brief)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-table",
+            "desc": "Connected users with roles + APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-table verbose",
+            "desc": "Verbose user-table with timers + classifications",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user mac <mac>",
+            "desc": "Single client by MAC",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user ip <ip>",
+            "desc": "Single client by IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user role <role>",
+            "desc": "Users assigned to a particular role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-table essid <ssid>",
+            "desc": "Users on a specific SSID",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show roaming",
+            "desc": "Roaming events history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show client-roaming-history mac <mac>",
+            "desc": "Per-client roaming history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa user delete mac <mac>",
+            "desc": "Force-disconnect a client by MAC",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "RF / ARM / AirMatch": [
+          {
+            "cmd": "show ap arm rf-summary",
+            "desc": "ARM RF summary across all radios",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm scan-times",
+            "desc": "Per-AP scan timing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm history",
+            "desc": "Cluster-wide ARM history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm client-match-history",
+            "desc": "ClientMatch steering history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm client-match-summary",
+            "desc": "ClientMatch summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm channel-balance",
+            "desc": "Channel balance / co-channel summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap channel ap-name <name>",
+            "desc": "Per-AP current channel + power",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show airmatch report ap-name <name>",
+            "desc": "AirMatch optimisation report for an AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show airmatch event radar",
+            "desc": "AirMatch radar (DFS) event log",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Authentication / RADIUS": [
+          {
+            "cmd": "show aaa",
+            "desc": "AAA global config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa server",
+            "desc": "AAA servers (RADIUS / TACACS / LDAP)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa rad-server-debug",
+            "desc": "RADIUS server debug counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa authentication-server radius",
+            "desc": "RADIUS server detail + reachability",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa state user mac <mac>",
+            "desc": "AAA state for a user",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show aaa profile <name>",
+            "desc": "Per-profile AAA bindings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa authentication-server radius <name>\n host 10.10.10.50\n key <key>",
+            "desc": "Define a RADIUS server",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Cluster (8.x AOS)": [
+          {
+            "cmd": "show lc-cluster group-membership",
+            "desc": "L2 connected MC cluster members",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lc-cluster heartbeat",
+            "desc": "Heartbeat counters between cluster members",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lc-cluster ap",
+            "desc": "AP-to-MC cluster mapping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show lc-cluster vlan-probe-status",
+            "desc": "VLAN probe status (L2-connectivity test)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap lms ap-name <name>",
+            "desc": "AP active-LMS / standby-LMS",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Mesh": [
+          {
+            "cmd": "show ap mesh active",
+            "desc": "Active mesh APs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap mesh topology",
+            "desc": "Mesh tree topology",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap mesh link ap-name <name>",
+            "desc": "Per-AP mesh link metrics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap mesh neighbors ap-name <name>",
+            "desc": "Per-AP mesh neighbours",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Firewall (PEF) & Roles": [
+          {
+            "cmd": "show acl",
+            "desc": "Configured ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show acl ace <id>",
+            "desc": "ACE detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-table verbose role <role>",
+            "desc": "Users currently in a role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show rights <role>",
+            "desc": "Rights / firewall policies for a role",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show datapath session",
+            "desc": "Active dataplane firewall sessions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show datapath session table | include <ip>",
+            "desc": "Filter sessions for one IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show datapath session counters",
+            "desc": "Datapath session-table counters",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Logging & Diagnostics": [
+          {
+            "cmd": "show log all 50",
+            "desc": "Last 50 log entries (all categories)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log security 50",
+            "desc": "Security log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log user-debug 50",
+            "desc": "User-debug tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log system 50",
+            "desc": "System log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log errorlog 50",
+            "desc": "Error log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "logging arm-user",
+            "desc": "Enable per-user ARM logs",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "logging level debugging user mac <mac>",
+            "desc": "Debug-level logs for one MAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap remote debug client-trace ap-name <name>",
+            "desc": "Per-client debug trace from the AP",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support",
+            "desc": "Full diagnostic bundle for TAC",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support | include error",
+            "desc": "Filter tech-support to error lines",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Config Management": [
+          {
+            "cmd": "write memory",
+            "desc": "Save running-config to flash",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config flash:bkp.cfg",
+            "desc": "Save running-config to a named file",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "copy flash:bkp.cfg tftp 10.50.50.50 bkp.cfg",
+            "desc": "Push backup config to TFTP",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "show image version",
+            "desc": "Installed image partitions + which is active",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "copy ftp 10.50.50.50 admin <pwd> arubaos.ari system: partition 1",
+            "desc": "Stage ArubaOS image into partition 1",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "reload",
+            "desc": "Reboot the controller",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload at 02:00",
+            "desc": "Schedule a reload",
+            "type": "config",
+            "flagged": true
+          }
+        ]
+      }
+    },
+    "aruba_ap": {
+      "label": "Aruba AP / Instant",
+      "badge": "badge-aruba",
+      "short": "Aruba AP",
+      "group": "Aruba",
+      "sections": {
+        "System & Status": [
+          {
+            "cmd": "show version",
+            "desc": "AP image version + uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show summary",
+            "desc": "Cluster summary (Instant)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Active configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap-env",
+            "desc": "AP environment variables (provisioning state)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show clock",
+            "desc": "Current date/time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show country",
+            "desc": "Regulatory country setting",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "Hardware inventory + serial",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Memory usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show stats",
+            "desc": "AP-level traffic stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show tech-support",
+            "desc": "Full diagnostic bundle",
+            "type": "troubleshooting",
+            "flagged": false
+          }
+        ],
+        "Network": [
+          {
+            "cmd": "show ip interface brief",
+            "desc": "IP addresses on AP interfaces",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan",
+            "desc": "VLANs known to the AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show port status",
+            "desc": "AP wired-port status (E0/E1/...)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface brief",
+            "desc": "Interface brief",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping 1.1.1.1",
+            "desc": "Ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute 1.1.1.1",
+            "desc": "Traceroute",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Wireless / SSID": [
+          {
+            "cmd": "show network",
+            "desc": "SSIDs configured (Instant)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ssid",
+            "desc": "SSID list",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap radio-summary",
+            "desc": "Radio summary on this AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap channel",
+            "desc": "Current channel + power per radio",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap arm-history",
+            "desc": "ARM channel/power change history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap monitor scan-info",
+            "desc": "Most recent scan results",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Clients": [
+          {
+            "cmd": "show clients",
+            "desc": "Connected clients (Instant)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show client mac <mac>",
+            "desc": "Single-client detail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show user-table",
+            "desc": "Detailed user table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show client roaming-history",
+            "desc": "Roaming history",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aaa user delete mac <mac>",
+            "desc": "Force-disconnect a client",
+            "type": "config",
+            "flagged": false
+          }
+        ],
+        "Cluster (Instant)": [
+          {
+            "cmd": "show cluster",
+            "desc": "Cluster members + roles (conductor / member)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cluster-info",
+            "desc": "Cluster details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show conductor",
+            "desc": "Conductor (formerly master) AP info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show summary support",
+            "desc": "Support summary including cluster",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Mesh": [
+          {
+            "cmd": "show ap mesh-link",
+            "desc": "This AP's mesh link state",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap mesh-topology",
+            "desc": "Mesh tree from this AP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap mesh-counters",
+            "desc": "Mesh-link counters",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "show log",
+            "desc": "AP log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show log debug",
+            "desc": "Debug log tail",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap debug counters",
+            "desc": "Per-AP packet counters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap debug radio-stats 0",
+            "desc": "Radio 0 detailed stats",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap debug radio-stats 1",
+            "desc": "Radio 1 detailed stats",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap debug client-table",
+            "desc": "Per-AP client-table debug",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show airmatch report",
+            "desc": "AirMatch optimisation report",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ap airmatch debug",
+            "desc": "AirMatch debug",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "pcap start <interface> <bpf>",
+            "desc": "On-AP packet capture (sparingly)",
+            "type": "troubleshooting",
+            "flagged": false
+          },
+          {
+            "cmd": "show pcap status",
+            "desc": "Active captures",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Provisioning & Updates": [
+          {
+            "cmd": "show ap-env",
+            "desc": "AP-side variables incl. master IP, AP group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show image version",
+            "desc": "Installed images + active partition",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ap-config-cluster master <ip>",
+            "desc": "Provision the AP to a master controller / VC",
+            "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "apboot",
+            "desc": "Reboot the AP",
+            "type": "config",
+            "flagged": true
+          },
+          {
+            "cmd": "reload",
+            "desc": "Reload the AP",
+            "type": "config",
+            "flagged": true
           }
         ]
       }
