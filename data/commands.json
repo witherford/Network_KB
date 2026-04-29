@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T20:07:27.045Z",
+  "updatedAt": "2026-04-29T20:31:18.184Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5425,31 +5425,36 @@
             "cmd": "show wireless summary",
             "desc": "High-level wireless summary: total APs, clients, and WLANs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Number of APs:        48\nNumber of Clients:    612\nNumber of WLANs:      9\nNumber of Radios:     144"
           },
           {
             "cmd": "show ap summary",
             "desc": "All joined APs: name, model, operational state, IP, and mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name     Model         State IP Address     Mode\nAP-LON-01   C9130AXI-E    Up    10.10.10.21    Local\nAP-WHS-03   C9115AXI-E    Up    10.10.20.31    Flex"
           },
           {
             "cmd": "show ap dot11 24ghz summary",
             "desc": "All 2.4GHz radios: channel, transmit power, and client count",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Channel Power Clients\nAP-LON-01  6       3     12"
           },
           {
             "cmd": "show ap dot11 5ghz summary",
             "desc": "All 5GHz radios: channel, transmit power, and client count",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Channel Power Clients\nAP-LON-01  36      4     45"
           },
           {
             "cmd": "show ap dot11 6ghz summary",
             "desc": "All 6GHz radios (Wi-Fi 6E): channel, power, and client count",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Channel Power Clients\nAP-LON-01  5       3     6"
           },
           {
             "cmd": "show ap name <ap-name> config general",
@@ -5461,7 +5466,8 @@
             "cmd": "show wireless client summary",
             "desc": "Summary of all currently associated wireless clients",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Client MAC        AP Name    WLAN   RSSI\n0011.2233.4455   AP-LON-01  Corp   -55"
           },
           {
             "cmd": "show wireless client detail mac-address <mac>",
@@ -5473,7 +5479,8 @@
             "cmd": "show wlan summary",
             "desc": "All configured WLANs: ID, name, operational status, security type",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "ID  Name        Status   Security\n1   Corp-WLAN  Enabled  WPA2/WPA3\n2   Guest-WLAN Enabled  Open"
           },
           {
             "cmd": "show wlan id <id>",
@@ -5485,31 +5492,43 @@
             "cmd": "show wireless tag site summary",
             "desc": "Summary of all configured site tags and their AP profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Site Tag       AP Count\nLONDON-SITE    22"
           },
           {
             "cmd": "show wireless tag policy summary",
             "desc": "Summary of all configured policy tags",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Policy Tag     WLANs\nCORP-POLICY    3"
           },
           {
             "cmd": "show wireless profile policy summary",
             "desc": "Summary of all wireless policy profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Profile       VLAN  QoS\nCorp-Policy   100   Platinum"
           },
           {
             "cmd": "show ap uptime",
             "desc": "Shows uptime for all joined APs — useful for detecting unexpected reboots",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Uptime\nAP-LON-01 63 days"
           },
           {
             "cmd": "show wireless stats ap join summary",
             "desc": "AP join statistics: total joins, failures, and reason codes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total Joins     : 154\nSuccessful      : 148\nFailed          : 6\nDTLS timeout    : 3\nCert failure    : 2"
+          },
+          {
+            "cmd": "show processes cpu",
+            "desc": "CPU utilisation (5-second / 1-min / 5-min averages).",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
           }
         ],
         "AP Management": [
@@ -5637,7 +5656,8 @@
             "cmd": "show ap summary",
             "desc": "Lists all APs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name     Model         State IP Address     Mode\nAP-LON-01   C9130AXI-E    Up    10.10.10.21    Local\nAP-WHS-03   C9115AXI-E    Up    10.10.20.31    Flex"
           },
           {
             "cmd": "show ap name <ap> summary",
@@ -5824,6 +5844,13 @@
             "desc": "Reload a single AP",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show ap name AP-LON-01 config general",
+            "desc": "Full configuration for a specific AP (model, mode, tags).",
+            "type": "show",
+            "flagged": false,
+            "example": "AP Name    : AP-LON-01\nAP Model   : C9130AXI-E\nAP Mode    : Local\nPolicy Tag : CORP-POLICY\nSite Tag   : LONDON-SITE"
           }
         ],
         "WLAN Configuration": [
@@ -6342,6 +6369,13 @@
             "desc": "",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show wlan id 1",
+            "desc": "Detailed WLAN configuration for the specified WLAN ID.",
+            "type": "show",
+            "flagged": false,
+            "example": "SSID     : Corp\nVLAN     : 100\nSecurity : WPA2/WPA3"
           }
         ],
         "Tags & Profiles": [
@@ -6460,6 +6494,13 @@
             "desc": "Displays band steering statistics: steered clients and steering failures",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show wireless client detail mac-address 0011.2233.4455",
+            "desc": "Detailed client information for one MAC: IP, VLAN, AP, RSSI, SNR.",
+            "type": "show",
+            "flagged": false,
+            "example": "IP Address : 10.50.100.27\nVLAN       : 100\nAP Name    : AP-LON-01\nRSSI       : -55 dBm\nSNR        : 38 dB"
           }
         ],
         "RRM": [
@@ -6853,7 +6894,8 @@
             "cmd": "show wireless profile policy summary",
             "desc": "Shows policy profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Profile       VLAN  QoS\nCorp-Policy   100   Platinum"
           },
           {
             "cmd": "show wireless profile flex summary",
@@ -6883,7 +6925,8 @@
             "cmd": "show wireless summary",
             "desc": "One-page summary: APs joined, clients, tags, controller role",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Number of APs:        48\nNumber of Clients:    612\nNumber of WLANs:      9\nNumber of Radios:     144"
           },
           {
             "cmd": "show boot",
@@ -7029,13 +7072,15 @@
             "cmd": "show ap dot11 5ghz summary",
             "desc": "5GHz radio state per AP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Channel Power Clients\nAP-LON-01  36      4     45"
           },
           {
             "cmd": "show ap dot11 24ghz summary",
             "desc": "2.4GHz radio state per AP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AP Name    Channel Power Clients\nAP-LON-01  6       3     12"
           },
           {
             "cmd": "show ap dot11 dual-band summary",
@@ -7055,7 +7100,8 @@
             "cmd": "show wlan summary",
             "desc": "Lists WLANs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "ID  Name        Status   Security\n1   Corp-WLAN  Enabled  WPA2/WPA3\n2   Guest-WLAN Enabled  Open"
           },
           {
             "cmd": "show wlan id <id>",
@@ -7241,7 +7287,8 @@
             "cmd": "show wireless profile policy summary",
             "desc": "Policy-profile names and state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Profile       VLAN  QoS\nCorp-Policy   100   Platinum"
           },
           {
             "cmd": "show wireless profile policy detailed <name>",
@@ -7253,13 +7300,15 @@
             "cmd": "show wireless tag policy summary",
             "desc": "Policy-tag list (WLAN ↔ profile bindings)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Policy Tag     WLANs\nCORP-POLICY    3"
           },
           {
             "cmd": "show wireless tag site summary",
             "desc": "Site tags and AP mapping",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Site Tag       AP Count\nLONDON-SITE    22"
           },
           {
             "cmd": "show wireless tag rf summary",
@@ -7273,7 +7322,8 @@
             "cmd": "show wireless client summary",
             "desc": "Shows all wireless clients",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Client MAC        AP Name    WLAN   RSSI\n0011.2233.4455   AP-LON-01  Corp   -55"
           },
           {
             "cmd": "show wireless client mac <mac>",
@@ -7819,7 +7869,8 @@
             "cmd": "show wireless profile policy summary",
             "desc": "Shows policy profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Profile       VLAN  QoS\nCorp-Policy   100   Platinum"
           },
           {
             "cmd": "show wireless profile policy <name>",
@@ -12788,6 +12839,27 @@
             "desc": "Change the Automatic Error Recovery Time. — Modifies the timer from default 5 minutes to a value of 30-86400 seconds.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show interface GigabitEthernet1/0/1 transceiver detail",
+            "desc": "IOS / IOS-XE — transceiver vendor, part number, serial, DOM detail.",
+            "type": "show",
+            "flagged": false,
+            "example": "Vendor Name: CISCO\nVendor PN: SFP-10G-SR\nSerial No: FNS1234567A"
+          },
+          {
+            "cmd": "show ip interface GigabitEthernet0/0",
+            "desc": "Detailed L3 status and configuration for a single interface.",
+            "type": "show",
+            "flagged": false,
+            "example": "GigabitEthernet0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24\n  MTU 1500 bytes, BW 1000000 Kbit/sec\n  Encapsulation ARPA"
+          },
+          {
+            "cmd": "show controllers GigabitEthernet0/0",
+            "desc": "Physical / controller-level interface information (link state, PHY, hardware).",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface GigabitEthernet0/0\n  Hardware is iGbE\n  Link is Up - 1Gbps Full Duplex"
           }
         ],
         "Routing": [
@@ -13039,6 +13111,20 @@
             "desc": "Associate the VRF Instance to an Interface or Subinterface. — Moves interface from global table into specific VRF routing table.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show ipv6 neighbors",
+            "desc": "IPv6 neighbour-discovery cache (analogous to ARP for IPv6).",
+            "type": "show",
+            "flagged": false,
+            "example": "IPv6 Address                              Age  Link-layer Addr  Interface\n2001:db8::1                                1   0011.2233.4455  Gi0/0"
+          },
+          {
+            "cmd": "show ip route 10.10.0.0",
+            "desc": "Per-prefix routing detail — protocol, distance/metric, next-hop.",
+            "type": "show",
+            "flagged": false,
+            "example": "Routing entry for 10.10.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20\n  * 192.168.1.2, via GigabitEthernet0/0"
           }
         ],
         "Security": [
@@ -13494,7 +13580,8 @@
             "cmd": "copy running-config startup-config",
             "desc": "Persist running to startup (write mem)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Destination filename [startup-config]?\nBuilding configuration...\n[OK]"
           },
           {
             "cmd": "archive config",
@@ -13932,6 +14019,41 @@
             "desc": "Set IP Precedence Value. — Modifies the IP Precedence field for IPv4/IPv6 packets.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show switch",
+            "desc": "StackWise members, roles, MAC, and ready state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch#  Role    Mac Address        State\n1        Active  5c5a.c7aa.b100     Ready\n2        Member  5c5a.c7aa.b200     Ready\n3        Member  5c5a.c7aa.b300     Ready"
+          },
+          {
+            "cmd": "show run | include [0-9]{1,3}",
+            "desc": "Pipe regex — match digit sequences 1-3 chars long; useful for filtering numeric values like VLAN/MTU.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 1\nmtu 900\ninterface GigabitEthernet0/2"
+          },
+          {
+            "cmd": "show run | include [0-9]",
+            "desc": "Pipe regex — match any line containing at least one digit.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 10\nip address 192.168.1.1 255.255.255.0"
+          },
+          {
+            "cmd": "show processes cpu",
+            "desc": "CPU utilisation (5-second / 1-min / 5-min averages).",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Memory pool totals — total, used, free.",
+            "type": "show",
+            "flagged": false,
+            "example": "Processor Pool Total: 987654321 Used: 456789012 Free: 530865309"
           }
         ],
         "VLANs": [
@@ -14903,6 +15025,13 @@
             "desc": "Commands found: ntp server",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show logging | include severity",
+            "desc": "Filter logging buffer by severity — useful when looking for specific %xxx-N-MSG severity tags.",
+            "type": "show",
+            "flagged": false,
+            "example": "%SYS-5-CONFIG_I: Configured from console\n%LINK-3-UPDOWN: Interface Gi0/1, changed state to up"
           }
         ],
         "Embedded Event Manager / Automation": [
@@ -15030,6 +15159,13 @@
             "desc": "Configure a device to track the installation of a route in the routing table",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "ping <IP_ADDRESS>",
+            "desc": "Basic ICMP reachability test. Replace <IP_ADDRESS> with the target.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
           }
         ],
         "Config Management": [
@@ -15037,13 +15173,15 @@
             "cmd": "copy running-config startup-config",
             "desc": "Save running to startup",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Destination filename [startup-config]?\nBuilding configuration...\n[OK]"
           },
           {
             "cmd": "write memory",
             "desc": "Alias for copy run start",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n[OK]"
           },
           {
             "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg",
@@ -15080,6 +15218,13 @@
             "desc": "Cancel a scheduled reload",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "switch 3 renumber 2",
+            "desc": "Renumber a stack member from 3 to 2 (takes effect after reload).",
+            "type": "config",
+            "flagged": true,
+            "example": "WARNING: Renumbering will take effect after reload"
           }
         ],
         "OSPF": [
@@ -21998,7 +22143,8 @@
             "cmd": "show processes cpu",
             "desc": "Shows CPU usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
           },
           {
             "cmd": "show processes cpu sorted",
@@ -22247,7 +22393,8 @@
             "cmd": "show switch",
             "desc": "Shows switch stack members",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch#  Role    Mac Address        State\n1        Active  5c5a.c7aa.b100     Ready\n2        Member  5c5a.c7aa.b200     Ready\n3        Member  5c5a.c7aa.b300     Ready"
           },
           {
             "cmd": "show switch detail",
@@ -22519,6 +22666,27 @@
             "desc": "Control-plane punt rates per queue",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show interface GigabitEthernet1/0/1 transceiver detail",
+            "desc": "IOS / IOS-XE — transceiver vendor, part number, serial, DOM detail.",
+            "type": "show",
+            "flagged": false,
+            "example": "Vendor Name: CISCO\nVendor PN: SFP-10G-SR\nSerial No: FNS1234567A"
+          },
+          {
+            "cmd": "show ip interface GigabitEthernet0/0",
+            "desc": "Detailed L3 status and configuration for a single interface.",
+            "type": "show",
+            "flagged": false,
+            "example": "GigabitEthernet0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24\n  MTU 1500 bytes, BW 1000000 Kbit/sec\n  Encapsulation ARPA"
+          },
+          {
+            "cmd": "show controllers GigabitEthernet0/0",
+            "desc": "Physical / controller-level interface information (link state, PHY, hardware).",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface GigabitEthernet0/0\n  Hardware is iGbE\n  Link is Up - 1Gbps Full Duplex"
           }
         ],
         "VLAN": [
@@ -23132,6 +23300,20 @@
             "desc": "ARP entry for a single IP incl. age and MAC",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ipv6 neighbors",
+            "desc": "IPv6 neighbour-discovery cache (analogous to ARP for IPv6).",
+            "type": "show",
+            "flagged": false,
+            "example": "IPv6 Address                              Age  Link-layer Addr  Interface\n2001:db8::1                                1   0011.2233.4455  Gi0/0"
+          },
+          {
+            "cmd": "show ip route 10.10.0.0",
+            "desc": "Per-prefix routing detail — protocol, distance/metric, next-hop.",
+            "type": "show",
+            "flagged": false,
+            "example": "Routing entry for 10.10.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20\n  * 192.168.1.2, via GigabitEthernet0/0"
           }
         ],
         "OSPF": [
@@ -25074,6 +25256,70 @@
             "type": "troubleshooting",
             "flagged": false
           }
+        ],
+        "Config Management": [
+          {
+            "cmd": "switch 3 renumber 2",
+            "desc": "Renumber a stack member from 3 to 2 (takes effect after reload).",
+            "type": "config",
+            "flagged": true,
+            "example": "WARNING: Renumbering will take effect after reload"
+          },
+          {
+            "cmd": "write memory",
+            "desc": "Save running-config to startup-config (alias for \"copy running-config startup-config\").",
+            "type": "config",
+            "flagged": false,
+            "example": "Building configuration...\n[OK]"
+          },
+          {
+            "cmd": "copy running-config startup-config",
+            "desc": "Save running-config to startup-config.",
+            "type": "config",
+            "flagged": false,
+            "example": "Destination filename [startup-config]?\nBuilding configuration...\n[OK]"
+          }
+        ],
+        "Show & Status": [
+          {
+            "cmd": "show run | include [0-9]{1,3}",
+            "desc": "Pipe regex — match digit sequences 1-3 chars long; useful for filtering numeric values like VLAN/MTU.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 1\nmtu 900\ninterface GigabitEthernet0/2"
+          },
+          {
+            "cmd": "show run | include [0-9]",
+            "desc": "Pipe regex — match any line containing at least one digit.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 10\nip address 192.168.1.1 255.255.255.0"
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Memory pool totals — total, used, free.",
+            "type": "show",
+            "flagged": false,
+            "example": "Processor Pool Total: 987654321 Used: 456789012 Free: 530865309"
+          }
+        ],
+        "NTP / SNMP / Logging": [
+          {
+            "cmd": "show logging | include severity",
+            "desc": "Filter logging buffer by severity — useful when looking for specific %xxx-N-MSG severity tags.",
+            "type": "show",
+            "flagged": false,
+            "example": "%SYS-5-CONFIG_I: Configured from console\n%LINK-3-UPDOWN: Interface Gi0/1, changed state to up"
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "ping <IP_ADDRESS>",
+            "desc": "Basic ICMP reachability test. Replace <IP_ADDRESS> with the target.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
+          }
         ]
       },
       "group": "Cisco"
@@ -26267,6 +26513,13 @@
             "desc": "L3 routed point-to-point uplink",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show interface ethernet1/1 transceiver details",
+            "desc": "NX-OS — transceiver vendor / part / type / serial.",
+            "type": "show",
+            "flagged": false,
+            "example": "type is 10Gbase-SR\nname is CISCO\npart number is SFP-10G-SR"
           }
         ],
         "VLANs / VPC": [
@@ -29183,6 +29436,27 @@
             "desc": "GRE tunnel mode (over IPv4).",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show interface GigabitEthernet1/0/1 transceiver detail",
+            "desc": "IOS / IOS-XE — transceiver vendor, part number, serial, DOM detail.",
+            "type": "show",
+            "flagged": false,
+            "example": "Vendor Name: CISCO\nVendor PN: SFP-10G-SR\nSerial No: FNS1234567A"
+          },
+          {
+            "cmd": "show ip interface GigabitEthernet0/0",
+            "desc": "Detailed L3 status and configuration for a single interface.",
+            "type": "show",
+            "flagged": false,
+            "example": "GigabitEthernet0/0 is up, line protocol is up\n  Internet address is 192.168.1.1/24\n  MTU 1500 bytes, BW 1000000 Kbit/sec\n  Encapsulation ARPA"
+          },
+          {
+            "cmd": "show controllers GigabitEthernet0/0",
+            "desc": "Physical / controller-level interface information (link state, PHY, hardware).",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface GigabitEthernet0/0\n  Hardware is iGbE\n  Link is Up - 1Gbps Full Duplex"
           }
         ],
         "OSPF": [
@@ -30404,7 +30678,8 @@
             "cmd": "show ipv6 neighbors",
             "desc": "IPv6 neighbour-discovery cache.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "IPv6 Address                              Age  Link-layer Addr  Interface\n2001:db8::1                                1   0011.2233.4455  Gi0/0"
           },
           {
             "cmd": "monitor capture CAP interface GigabitEthernet0/0/0 both match any buffer size 10 limit pps 1000",
@@ -30435,6 +30710,13 @@
             "desc": "Per-feature QFP datapath drop counters (ASR/CSR-only).",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "ping <IP_ADDRESS>",
+            "desc": "Basic ICMP reachability test. Replace <IP_ADDRESS> with the target.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
           }
         ],
         "Config Management": [
@@ -30442,13 +30724,15 @@
             "cmd": "copy running-config startup-config",
             "desc": "Save running to startup.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Destination filename [startup-config]?\nBuilding configuration...\n[OK]"
           },
           {
             "cmd": "write memory",
             "desc": "Alias for copy run start.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n[OK]"
           },
           {
             "cmd": "copy running-config bootflash:cfg-2026-04-28.cfg",
@@ -30485,6 +30769,54 @@
             "desc": "IOS-XE one-shot install / activate / commit.",
             "type": "config",
             "flagged": true
+          }
+        ],
+        "Show & Status": [
+          {
+            "cmd": "show run | include [0-9]{1,3}",
+            "desc": "Pipe regex — match digit sequences 1-3 chars long; useful for filtering numeric values like VLAN/MTU.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 1\nmtu 900\ninterface GigabitEthernet0/2"
+          },
+          {
+            "cmd": "show run | include [0-9]",
+            "desc": "Pipe regex — match any line containing at least one digit.",
+            "type": "show",
+            "flagged": false,
+            "example": "vlan 10\nip address 192.168.1.1 255.255.255.0"
+          },
+          {
+            "cmd": "show processes cpu",
+            "desc": "CPU utilisation (5-second / 1-min / 5-min averages).",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
+          },
+          {
+            "cmd": "show memory",
+            "desc": "Memory pool totals — total, used, free.",
+            "type": "show",
+            "flagged": false,
+            "example": "Processor Pool Total: 987654321 Used: 456789012 Free: 530865309"
+          }
+        ],
+        "NTP / SNMP / Logging": [
+          {
+            "cmd": "show logging | include severity",
+            "desc": "Filter logging buffer by severity — useful when looking for specific %xxx-N-MSG severity tags.",
+            "type": "show",
+            "flagged": false,
+            "example": "%SYS-5-CONFIG_I: Configured from console\n%LINK-3-UPDOWN: Interface Gi0/1, changed state to up"
+          }
+        ],
+        "Routing": [
+          {
+            "cmd": "show ip route 10.10.0.0",
+            "desc": "Per-prefix routing detail — protocol, distance/metric, next-hop.",
+            "type": "show",
+            "flagged": false,
+            "example": "Routing entry for 10.10.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20\n  * 192.168.1.2, via GigabitEthernet0/0"
           }
         ]
       }
