@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T20:45:58.884Z",
+  "updatedAt": "2026-04-29T21:22:26.187Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -1410,19 +1410,22 @@
             "cmd": "show system info",
             "desc": "General system info: model, serial, software version, uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Model            : 6400-8P1S\nSerial Number    : ABCDEF1234567890\nSoftware Version : 1.2.3.4-patch5\nUptime           : 1d 0h 1m 2s (1 day, 0 hours, 1 minute, 2 seconds)"
           },
           {
             "cmd": "show system resources",
             "desc": "Current CPU, memory, and process utilisation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CPU Usage     : 98%\nMemory Usage  : 95% (5 GB out of 5.1 GB available)\nProcess Load  : 4%"
           },
           {
             "cmd": "show system disk-space",
             "desc": "Disk usage across all partitions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Partition : 0\nUsed      : 37GB (37,648 MB) out of 42GB total\nFree      : 5GB (5,124 MB)\n\nPartition : 1\nUsed      : 19GB (19,056 MB) out of 22GB total\nFree      : 3GB (3,072 MB)\n\nPartition : 2\nUsed      : 14GB (14,112 MB) out of 18GB total\nFree      : 4GB (4,096 MB)"
           },
           {
             "cmd": "show system log",
@@ -1464,31 +1467,36 @@
             "cmd": "show chassis-ready",
             "desc": "Confirms the chassis and all cards are operationally ready",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "All cards are operationally ready."
           },
           {
             "cmd": "show environment all",
             "desc": "Reports fan speeds, PSU states, and component temperatures",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Fan 1 Speed         : High\nPSU 1 State         : On\nComponent Temperature: CPU - 45°C, GPU - 60°C"
           },
           {
             "cmd": "show jobs all",
             "desc": "Lists all background jobs: content updates, commits, software installs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Job ID  Type     Status   Time Elapsed  Duration  Message\n1       Commit   FIN      2m 3s         0.8 sec   System reloaded with new software, but no changes yet.\n2       Push     FIN      45s           45 sec    OK\n3       Content  FIN      12s           12 sec    Content upgrade installed."
           },
           {
             "cmd": "show jobs id <id>",
             "desc": "Detail for one job including warnings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Job ID    : 1\nType      : Commit\nStatus    : FIN\nElapsed   : 2m 3s\nDuration  : 0.8 sec\nMessage   : System reloaded with new software, but no changes yet.\n\nCommit Warning: System has been rebooted and reloaded with new software."
           },
           {
             "cmd": "show jobs id <n>",
             "desc": "Detail for a specific job ID (incl. commit warnings)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Job ID    : 1\nType      : Commit\nStatus    : FIN\nElapsed   : 2m 3s\nDuration  : 0.8 sec\nMessage   : System reloaded with new software, but no changes yet.\n\nCommit Warning: System has been rebooted and reloaded with new software."
           },
           {
             "cmd": "show clock",
@@ -1525,6 +1533,13 @@
             "desc": "Enter maintenance mode (TAC use)",
             "type": "troubleshooting",
             "flagged": true
+          },
+          {
+            "cmd": "request jobs id <n>",
+            "desc": "Inspect detailed status of a long-running job (commit / push / software-install). Shows progress %, target vsys, last status.",
+            "type": "config",
+            "flagged": false,
+            "example": "Job ID       : 789\nStatus       : Running\nType         : Policy Push\nProgress     : 60%\nTarget Vsys  : vsys1"
           }
         ],
         "Interfaces": [
@@ -2266,7 +2281,8 @@
             "cmd": "show counter global",
             "desc": "Global dataplane packet counters including all drop reasons",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Counter Group / Name             Value\nflow_action_close                17234\nflow_dos_red_drop                421\nflow_fwd_l3_noroute              17\nflow_policy_deny                 89\nsession_aged_out                 7234"
           },
           {
             "cmd": "show session all",
@@ -2278,7 +2294,8 @@
             "cmd": "show session id <session-id>",
             "desc": "Detailed info about a specific active session by ID",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session ID    : 234\nSource IP     : 192.168.1.1\nDestination IP: 10.0.0.1\nProtocol      : TCP\nApplication   : HTTP\nFlow Count    : 50\nState         : Established\nPolicy        : Allow (Custom)"
           },
           {
             "cmd": "clear session all",
@@ -2296,7 +2313,8 @@
             "cmd": "show log threat",
             "desc": "Threat log: malware, exploits, spyware, and other security events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "[2026-04-29 14:05:06 UTC] 192.168.1.1 > 192.168.2.1 (34 bytes)\n   src=192.168.1.1, dst=192.168.2.1\n   protocol=tcp\n[2026-04-29 14:05:08 UTC] 192.168.2.1 > 192.168.1.1 (34 bytes)\n   src=192.168.2.1, dst=192.168.1.1\n   protocol=tcp"
           },
           {
             "cmd": "show log url",
@@ -2770,13 +2788,22 @@
             "cmd": "show config pushed-shared-policy",
             "desc": "Last shared-policy push received from Panorama (run on FW)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Shared Policy ID : 987654\nDescription      : This is a shared policy template.\nVersion          : latest\nStatus           : Active\n\nCurrent Pushed Configuration:\n- Shared Rule Group : Shared-Rules\n- Rule Count        : 100\n- Flow Count        : 2345"
           },
           {
             "cmd": "show config pushed-template",
             "desc": "Last template push received from Panorama (run on FW)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Template Name : Corp-Template\nDescription   : Default Security Policy\nTemplate ID   : 123456\nVersion       : latest\nStatus        : Active"
+          },
+          {
+            "cmd": "show config pushed-policy",
+            "desc": "View the last security policy pushed from Panorama to a managed firewall (run on the firewall side).",
+            "type": "show",
+            "flagged": false,
+            "example": "Policy ID   : 789012\nDescription : This is a default security policy.\nVersion     : latest\nStatus      : Active\n\nCurrent Pushed Configuration:\n- Policy Group : [Default]\n- Rule Count   : 50\n- Flow Count   : 4321"
           }
         ],
         "Sessions & Flows": [
@@ -2796,7 +2823,8 @@
             "cmd": "show session id <n>",
             "desc": "Detail for a specific session ID (NAT, policy, app, state)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session ID    : 234\nSource IP     : 192.168.1.1\nDestination IP: 10.0.0.1\nProtocol      : TCP\nApplication   : HTTP\nFlow Count    : 50\nState         : Established\nPolicy        : Allow (Custom)"
           },
           {
             "cmd": "show session info",
@@ -2808,7 +2836,8 @@
             "cmd": "show session meter",
             "desc": "Per-vsys session-rate counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Meter ID : 432\nCounter:\n - Total Packets : 6789\n - Bytes In      : 12345\n - Bytes Out     : 54321"
           },
           {
             "cmd": "clear session all filter source <ip>",
@@ -2821,6 +2850,13 @@
             "desc": "Clear a single session by ID",
             "type": "troubleshooting",
             "flagged": false
+          },
+          {
+            "cmd": "show session flow tunnel-id <n>",
+            "desc": "Detail for a specific dataplane flow within a tunnel — includes per-flow counters and TTL.",
+            "type": "show",
+            "flagged": false,
+            "example": "Flow ID         : 54321\nSession ID      : 23456\nSource IP       : 192.168.1.1\nDestination IP  : 10.0.0.1\nProtocol        : UDP\nApplication     : DNS\nBytes In        : 7890\nBytes Out       : 2345\nTTL             : 80"
           }
         ],
         "Packet Diagnostics": [
@@ -2986,37 +3022,43 @@
             "cmd": "show log traffic last-n 50",
             "desc": "Last 50 traffic-log entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Date/Time              | Source IP   | Dest IP     | Proto | Application | Flow Count | State        | Policy\n2026-04-29 14:05:06    | 192.168.1.1 | 10.0.0.1    | TCP   | HTTP        | 1          | Established  | Allow (Default)\n2026-04-29 14:05:09    | 192.168.1.4 | 10.0.0.1    | TCP   | HTTPS       | 1          | Established  | Allow (Default)"
           },
           {
             "cmd": "show log threat last-n 50",
             "desc": "Last 50 threat-log entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Date/Time              | Source IP   | Dest IP     | Severity | Action  | Threat\n2026-04-29 14:01:11    | 203.0.113.5 | 198.51.100.10 | high   | reset-both | spyware-c2\n2026-04-29 14:02:32    | 203.0.113.6 | 198.51.100.10 | medium | block      | brute-force-ssh"
           },
           {
             "cmd": "show log system last-n 50",
             "desc": "System log tail",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Date/Time              | Severity | Object             | Description\n2026-04-29 14:05:06    | info     | user-activity      | User 'admin1' logged in successfully.\n2026-04-29 14:08:22    | warning  | system             | Configuration committed by admin1."
           },
           {
             "cmd": "show log config last-n 50",
             "desc": "Config-change log tail",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Date/Time              | Admin   | Action  | Path\n2026-04-29 14:08:21    | admin1  | set     | rulebase/security/rules/Allow-Web\n2026-04-29 14:08:24    | admin1  | delete  | rulebase/security/rules/Old-FTP"
           },
           {
             "cmd": "show counter global filter delta yes",
             "desc": "Live global counter deltas (firewall internals)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Counter Group / Name             Delta   Value\nflow_action_close                +42     17276\nflow_policy_deny                 +3      92\nsession_aged_out                 +18     7252"
           },
           {
             "cmd": "show counter global filter packet-filter yes",
             "desc": "Counters limited to active packet-filter",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Counter Group / Name             Value\nflow_action_close                17234   (matched packet-filter)\nflow_dos_red_drop                421     (matched packet-filter)"
           }
         ]
       },
@@ -6925,7 +6967,8 @@
             "cmd": "show environment all",
             "desc": "Shows fans",
             "type": "PSU",
-            "flagged": false
+            "flagged": false,
+            "example": "Fan 1 Speed         : High\nPSU 1 State         : On\nComponent Temperature: CPU - 45°C, GPU - 60°C"
           },
           {
             "cmd": "show processes cpu sorted",
@@ -7211,13 +7254,15 @@
             "cmd": "show wlan name <name>",
             "desc": "Shows WLAN details by name",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "WLAN ID            : 1\nSSID               : Corp\nStatus             : Enabled\nSecurity           : WPA2/WPA3\nPolicy Profile     : Corp-Policy"
           },
           {
             "cmd": "show wlan security <id>",
             "desc": "Shows WLAN security settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Security Policy\n---------------\nAuthentication    : WPA2/WPA3\nKey Management    : 802.1X\nPMF               : Optional\nAAA Policy        : Corp-RADIUS"
           },
           {
             "cmd": "show wlan qos <id>",
@@ -7235,25 +7280,29 @@
             "cmd": "show wlan timers <id>",
             "desc": "Shows WLAN timers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session Timeout        : 86400 seconds\nIdle Timeout           : 300 seconds\nExclusion Timeout      : 60 seconds"
           },
           {
             "cmd": "show wlan stats <id>",
             "desc": "Shows WLAN statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total Clients         : 412\nTotal Auth Success    : 398\nTotal Auth Failures   : 14\nTotal Roams           : 126"
           },
           {
             "cmd": "show wlan stats client <id>",
             "desc": "Shows WLAN client stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clients Associated    : 412\nClients Roamed        : 126\nClients Disassociated : 9"
           },
           {
             "cmd": "show wlan stats traffic <id>",
             "desc": "Shows WLAN traffic stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tx Packets : 12,345,678\nRx Packets : 11,982,441\nTx Bytes   : 9.8 GB\nRx Bytes   : 9.1 GB"
           },
           {
             "cmd": "show wlan stats qos <id>",
@@ -7265,55 +7314,64 @@
             "cmd": "show wlan stats security <id>",
             "desc": "Shows WLAN security stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Auth Success    : 398\nAuth Failures   : 14\nPolicy Denies   : 3"
           },
           {
             "cmd": "show wlan stats dot11 24ghz <id>",
             "desc": "Shows WLAN 2.4GHz stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clients              : 58\nTx Retries           : 4.2%\nChannel Utilization  : 31%"
           },
           {
             "cmd": "show wlan stats dot11 5ghz <id>",
             "desc": "Shows WLAN 5GHz stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clients              : 312\nTx Retries           : 2.1%\nChannel Utilization  : 44%"
           },
           {
             "cmd": "show wlan stats dot11 6ghz <id>",
             "desc": "Shows WLAN 6GHz stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clients              : 42\nTx Retries           : 1.3%\nChannel Utilization  : 18%"
           },
           {
             "cmd": "show wlan mobility <id>",
             "desc": "Shows WLAN mobility settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Mobility Anchor     : Local\nFast Secure Roaming : Enabled (802.11r)"
           },
           {
             "cmd": "show wlan wips <id>",
             "desc": "Shows WLAN WIPS settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "WIPS Mode       : Monitor\nRogue Detection : Enabled\nContainment     : Disabled"
           },
           {
             "cmd": "show wlan avc <id>",
             "desc": "Shows WLAN AVC settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "AVC Status        : Enabled\nNBAR Protocol Pack: Enabled\nTop Application   : Microsoft Teams"
           },
           {
             "cmd": "show wlan policy <id>",
             "desc": "Shows WLAN policy profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Policy Profile Name : Corp-Policy\nVLAN                : 100\nQoS Policy          : Platinum\nCentral Switching   : Enabled"
           },
           {
             "cmd": "show wlan flex <id>",
             "desc": "Shows WLAN FlexConnect settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "FlexConnect Local Switching : Disabled\nFlexConnect Local Auth      : Disabled"
           },
           {
             "cmd": "show wlan stats multicast <id>",
@@ -7331,19 +7389,22 @@
             "cmd": "show wlan stats roam <id>",
             "desc": "Shows WLAN roaming stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Intra-Controller Roams : 94\nInter-Controller Roams : 32\nRoam Failures          : 3"
           },
           {
             "cmd": "show wlan stats auth <id>",
             "desc": "Shows WLAN authentication stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "802.1X Success  : 398\n802.1X Failures : 14"
           },
           {
             "cmd": "show wlan stats assoc <id>",
             "desc": "Shows WLAN association stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Associations    : 512\nReassociations  : 126\nDisassociations : 9"
           },
           {
             "cmd": "show wlan stats dhcp <id>",
@@ -7361,19 +7422,22 @@
             "cmd": "show wlan stats eap <id>",
             "desc": "Shows WLAN EAP stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EAP Success  : 398\nEAP Failures : 6\nEAP Timeouts : 2"
           },
           {
             "cmd": "show wlan stats pmkid <id>",
             "desc": "Shows WLAN PMKID stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PMKID Cache Hits   : 221\nPMKID Cache Misses : 17"
           },
           {
             "cmd": "show wlan stats keymgmt <id>",
             "desc": "Shows WLAN key management stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Key Install Success  : 398\nKey Install Failures : 2"
           },
           {
             "cmd": "show wlan stats dot1x <id>",
