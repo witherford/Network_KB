@@ -15,7 +15,7 @@ import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/
 
 const TYPE_LABELS = { all: 'All', show: 'Show', config: 'Configuration', troubleshooting: 'Troubleshooting' };
 
-let ui = { group: 'all', platform: 'all', type: 'all', query: '', selected: new Set() };
+let ui = { group: 'all', platform: 'all', type: 'all', query: '', selected: new Set(), hideWithExamples: false };
 let rootEl = null;
 
 function workingData() {
@@ -83,6 +83,9 @@ function shellHtml() {
       <span style="display:flex;gap:10px;align-items:center;padding:0 8px;flex-wrap:wrap">
         <button class="btn collapse-all-btn" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
         <button class="btn collapse-all-btn" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);white-space:nowrap;font-weight:500" title="Hide commands that already have a 'Show example output' toggle. Useful for finding commands that still need example outputs added.">
+          <input type="checkbox" id="cmdHideExamples" ${ui.hideWithExamples ? 'checked' : ''}> Hide commands with examples
+        </label>
       </span>
     </div>
     <div class="page with-cmd" id="cmdListRoot"></div>`;
@@ -299,6 +302,15 @@ function wireToolbar(root) {
   // current filter is showing.
   root.querySelector('#cmdCollapseAll').addEventListener('click', () => bulkCollapse(true));
   root.querySelector('#cmdExpandAll').addEventListener('click', () => bulkCollapse(false));
+  // "Hide commands with examples" filter — useful for spotting commands
+  // that still need examples added.
+  const hideExBox = root.querySelector('#cmdHideExamples');
+  if (hideExBox) {
+    hideExBox.addEventListener('change', () => {
+      ui.hideWithExamples = hideExBox.checked;
+      renderAll();
+    });
+  }
 }
 
 function bulkCollapse(collapsed) {
@@ -351,6 +363,9 @@ function filtered() {
       const hay = (row.cmd.cmd + ' ' + (row.cmd.desc || '')).toLowerCase();
       if (!hay.includes(q)) continue;
     }
+    // "Hide commands with examples" — filter out anything that already
+    // carries a populated `example` field. Useful for review workflows.
+    if (ui.hideWithExamples && typeof row.cmd.example === 'string' && row.cmd.example.trim().length > 0) continue;
     out.push(row);
   }
   if (ui.platform === 'recent') {

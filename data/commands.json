@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T21:22:26.187Z",
+  "updatedAt": "2026-04-29T21:32:57.127Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -16039,19 +16039,22 @@
             "cmd": "router bgp 65001",
             "desc": "Enter BGP process for local AS 65001.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# router bgp 65001\n(config-router)#"
           },
           {
             "cmd": "bgp router-id 1.1.1.1",
             "desc": "Manually pin BGP router-id.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp router-id 1.1.1.1"
           },
           {
             "cmd": "bgp log-neighbor-changes",
             "desc": "Log every BGP state change to syslog.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp log-neighbor-changes"
           },
           {
             "cmd": "no synchronization",
@@ -16063,19 +16066,22 @@
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
             "desc": "Define an eBGP peer.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 remote-as 65002"
           },
           {
             "cmd": "neighbor 1.2.3.4 description ISP-A primary",
             "desc": "Free-text peer description.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 description LINK-TO-ISP-A"
           },
           {
             "cmd": "network 10.0.0.0 mask 255.255.255.0",
             "desc": "Originate a prefix into BGP (must be present in RIB).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# network 192.168.10.0 mask 255.255.255.0"
           },
           {
             "cmd": "show ip bgp summary",
@@ -16088,13 +16094,15 @@
             "cmd": "show ip bgp neighbors 1.2.3.4",
             "desc": "Per-peer detail: capabilities, timers, counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP neighbor is 10.0.0.2,  remote AS 65002, external link\n  BGP version 4, remote router ID 192.168.5.5\n  BGP state = Established, up for 05:22:11\n  ..."
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
             "desc": "Routes we are sending TO this peer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "   Network          Next Hop            Metric LocPrf Weight Path\n*> 10.50.1.0/24     0.0.0.0                  0         32768 i"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
@@ -16106,7 +16114,8 @@
             "cmd": "show ip bgp neighbors 1.2.3.4 routes",
             "desc": "Routes accepted from this peer (post-policy).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total number of prefixes 2"
           },
           {
             "cmd": "show ip bgp",
@@ -16119,7 +16128,8 @@
             "cmd": "show ip bgp 8.8.8.0/24",
             "desc": "Per-prefix path detail (best-path selection reasoning).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP routing table entry for 10.1.1.0/24, version 5\nPaths: (1 available, best #1)\n  65002\n    10.0.0.2 from 10.0.0.2 (192.168.1.1)\n      Origin IGP, metric 0, localpref 100, valid, external, best"
           },
           {
             "cmd": "show ip bgp regexp _65000_",
@@ -16143,7 +16153,8 @@
             "cmd": "clear ip bgp * soft",
             "desc": "Soft refresh on every peer (apply policy without flap).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# clear ip bgp * soft"
           },
           {
             "cmd": "clear ip bgp 1.2.3.4 soft in",
@@ -16161,31 +16172,36 @@
             "cmd": "neighbor 1.2.3.4 update-source Loopback0",
             "desc": "Source BGP TCP from a loopback (essential for iBGP).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 1.1.1.1 update-source Loopback0"
           },
           {
             "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
             "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.20.20.1 ebgp-multihop 2"
           },
           {
             "cmd": "neighbor 1.2.3.4 next-hop-self",
             "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 next-hop-self"
           },
           {
             "cmd": "neighbor 1.2.3.4 password CISCO123",
             "desc": "TCP MD5 authentication for the peering session.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 password MySecurePass!"
           },
           {
             "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
             "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 ttl-security hops 1"
           },
           {
             "cmd": "neighbor 1.2.3.4 send-community both",
@@ -16197,19 +16213,22 @@
             "cmd": "neighbor 1.2.3.4 remove-private-as",
             "desc": "Strip private AS numbers from outbound updates.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 8.8.8.8 remove-private-as"
           },
           {
             "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
             "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 maximum-prefix 10000 80"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
             "desc": "Apply inbound route-map.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 route-map SET-PREF in"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
@@ -16221,7 +16240,8 @@
             "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
             "desc": "Inbound prefix-list filter.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 prefix-list ONLY-MY-NETS out"
           },
           {
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
@@ -16233,13 +16253,15 @@
             "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
             "desc": "Prefix-list entry: any /0–/24 inbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip prefix-list FILTER-EX seq 10 permit 10.0.0.0/8 ge 24 le 24"
           },
           {
             "cmd": "ip as-path access-list 100 permit ^65002_",
             "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip as-path access-list 1 permit ^65002_"
           },
           {
             "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
@@ -16263,7 +16285,8 @@
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
             "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# aggregate-address 172.16.0.0 255.255.0.0 summary-only"
           },
           {
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
@@ -16281,13 +16304,15 @@
             "cmd": "neighbor 1.2.3.4 route-reflector-client",
             "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 route-reflector-client"
           },
           {
             "cmd": "bgp cluster-id 1.1.1.1",
             "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp cluster-id 1.1.1.1"
           },
           {
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
@@ -16317,7 +16342,8 @@
             "cmd": "bgp graceful-restart",
             "desc": "Enable Graceful Restart capability negotiation.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp graceful-restart"
           },
           {
             "cmd": "bgp dampening",
@@ -16335,7 +16361,8 @@
             "cmd": "address-family ipv6 unicast",
             "desc": "Enter IPv6 unicast address-family.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# address-family ipv6"
           },
           {
             "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
@@ -16347,7 +16374,8 @@
             "cmd": "show bgp ipv6 unicast summary",
             "desc": "IPv6 BGP summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\n... (output similar to IPv4)"
           },
           {
             "cmd": "show bgp ipv6 unicast",
@@ -16407,7 +16435,8 @@
             "cmd": "neighbor ip-address activate",
             "desc": "Activate AFI for a BGP Neighbor. — Required within the address-family context to initiate sessions.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router-af)# neighbor 2001:db8::1 activate"
           },
           {
             "cmd": "network network-mask subnet-mask [route-map]",
@@ -16534,6 +16563,104 @@
             "desc": "View Routes Matching Community. — Displays routes matching a specific BGP community value.",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "neighbor <IP> shutdown",
+            "desc": "Administratively disable a neighbour without deleting any of its config (peering, policies, password, etc. all survive).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 shutdown"
+          },
+          {
+            "cmd": "show ip bgp community <value>",
+            "desc": "Display all routes that carry a specific BGP community tag.",
+            "type": "show",
+            "flagged": false,
+            "example": "*> 10.0.0.0/8       192.168.1.1              0    100      0 65100 i"
+          },
+          {
+            "cmd": "show ip bgp dampening dampened-paths",
+            "desc": "Show routes currently being suppressed by route-flap dampening.",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          From            Reuse          Path\nq  172.16.5.0       10.0.0.2        00:15:20       65002 i"
+          },
+          {
+            "cmd": "show ip bgp rib-failure",
+            "desc": "Show prefixes BGP learned but could NOT install in the main RIB (usually because a better-distance protocol — OSPF, EIGRP, static — already owns the prefix).",
+            "type": "show",
+            "flagged": false,
+            "example": "Network            Next Hop                      RIB-failure   RIB-NH Matches\n10.5.5.0/24        10.0.0.2             Higher admin distance           n/a"
+          },
+          {
+            "cmd": "set local-preference <value>",
+            "desc": "Inside a route-map: set the LOCAL_PREF on matched routes. Higher = more preferred. Local-pref stays inside your AS — used to influence OUTBOUND traffic decisions among iBGP peers.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set local-preference 200"
+          },
+          {
+            "cmd": "set as-path prepend <AS> <AS> <AS>",
+            "desc": "Inside a route-map: prepend extra AS numbers to the AS_PATH so the route looks longer / less attractive to neighbours. Used to influence INBOUND traffic engineering.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set as-path prepend 65001 65001 65001"
+          },
+          {
+            "cmd": "set metric <value>",
+            "desc": "Inside a route-map: set the MED (Multi-Exit Discriminator). Tells an EXTERNAL neighbour which entry point into your AS to prefer. Lower = more preferred.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set metric 50"
+          },
+          {
+            "cmd": "set community <number> | no-export | no-advertise",
+            "desc": "Inside a route-map: tag the route with one or more communities. Special well-known values: no-export (do not send outside the AS), no-advertise (do not send to any peer), local-AS (do not send outside the local sub-AS).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set community no-export"
+          },
+          {
+            "cmd": "bgp confederation identifier <AS>",
+            "desc": "Define the public-facing AS number for a group of internal sub-ASs (BGP confederation).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation identifier 65000"
+          },
+          {
+            "cmd": "bgp confederation peers <AS-List>",
+            "desc": "Tell the router which other sub-ASs belong to the same confederation as the local sub-AS.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation peers 65001 65002"
+          },
+          {
+            "cmd": "show ip bgp labels",
+            "desc": "Display MPLS labels associated with BGP-learned prefixes (used in MPLS-VPN / 6PE / 6vPE deployments).",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          Next Hop      In label/Out label\n*> 10.1.1.0/24     192.168.1.1      18/nolabel"
+          },
+          {
+            "cmd": "show ip bgp quote-as <AS-Number>",
+            "desc": "List all routes whose AS_PATH contains a specific AS number anywhere in the path.",
+            "type": "show",
+            "flagged": false,
+            "example": "*> 172.16.0.0       10.0.0.2                 0             0 65002 64999 i"
+          },
+          {
+            "cmd": "show ip bgp community-list <number>",
+            "desc": "Filter the BGP table down to routes matching a predefined community-list.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Standard BGP table output filtered by community-list)"
+          },
+          {
+            "cmd": "neighbor <IP> soft-reconfiguration inbound",
+            "desc": "Force the router to keep an UNFILTERED copy of every update received from a neighbour. Lets you run \"show ip bgp neighbors X received-routes\" and see what the peer is sending you BEFORE inbound policy. Memory-heavy on big tables.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 soft-reconfiguration inbound"
           }
         ]
       },
@@ -24106,7 +24233,8 @@
             "cmd": "show ip bgp community",
             "desc": "Shows BGP communities",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "*> 10.0.0.0/8       192.168.1.1              0    100      0 65100 i"
           },
           {
             "cmd": "show ip bgp regexp <regex>",
@@ -24148,19 +24276,22 @@
             "cmd": "router bgp 65001",
             "desc": "Enter BGP process for local AS 65001.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# router bgp 65001\n(config-router)#"
           },
           {
             "cmd": "bgp router-id 1.1.1.1",
             "desc": "Manually pin BGP router-id.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp router-id 1.1.1.1"
           },
           {
             "cmd": "bgp log-neighbor-changes",
             "desc": "Log every BGP state change to syslog.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp log-neighbor-changes"
           },
           {
             "cmd": "no synchronization",
@@ -24172,31 +24303,36 @@
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
             "desc": "Define an eBGP peer.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 remote-as 65002"
           },
           {
             "cmd": "neighbor 1.2.3.4 description ISP-A primary",
             "desc": "Free-text peer description.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 description LINK-TO-ISP-A"
           },
           {
             "cmd": "network 10.0.0.0 mask 255.255.255.0",
             "desc": "Originate a prefix into BGP (must be present in RIB).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# network 192.168.10.0 mask 255.255.255.0"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4",
             "desc": "Per-peer detail: capabilities, timers, counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP neighbor is 10.0.0.2,  remote AS 65002, external link\n  BGP version 4, remote router ID 192.168.5.5\n  BGP state = Established, up for 05:22:11\n  ..."
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
             "desc": "Routes we are sending TO this peer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "   Network          Next Hop            Metric LocPrf Weight Path\n*> 10.50.1.0/24     0.0.0.0                  0         32768 i"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
@@ -24208,13 +24344,15 @@
             "cmd": "show ip bgp neighbors 1.2.3.4 routes",
             "desc": "Routes accepted from this peer (post-policy).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total number of prefixes 2"
           },
           {
             "cmd": "show ip bgp 8.8.8.0/24",
             "desc": "Per-prefix path detail (best-path selection reasoning).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP routing table entry for 10.1.1.0/24, version 5\nPaths: (1 available, best #1)\n  65002\n    10.0.0.2 from 10.0.0.2 (192.168.1.1)\n      Origin IGP, metric 0, localpref 100, valid, external, best"
           },
           {
             "cmd": "show ip bgp regexp _65000_",
@@ -24232,7 +24370,8 @@
             "cmd": "clear ip bgp * soft",
             "desc": "Soft refresh on every peer (apply policy without flap).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# clear ip bgp * soft"
           },
           {
             "cmd": "clear ip bgp 1.2.3.4 soft in",
@@ -24250,31 +24389,36 @@
             "cmd": "neighbor 1.2.3.4 update-source Loopback0",
             "desc": "Source BGP TCP from a loopback (essential for iBGP).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 1.1.1.1 update-source Loopback0"
           },
           {
             "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
             "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.20.20.1 ebgp-multihop 2"
           },
           {
             "cmd": "neighbor 1.2.3.4 next-hop-self",
             "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 next-hop-self"
           },
           {
             "cmd": "neighbor 1.2.3.4 password CISCO123",
             "desc": "TCP MD5 authentication for the peering session.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 password MySecurePass!"
           },
           {
             "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
             "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 ttl-security hops 1"
           },
           {
             "cmd": "neighbor 1.2.3.4 send-community both",
@@ -24286,19 +24430,22 @@
             "cmd": "neighbor 1.2.3.4 remove-private-as",
             "desc": "Strip private AS numbers from outbound updates.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 8.8.8.8 remove-private-as"
           },
           {
             "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
             "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 maximum-prefix 10000 80"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
             "desc": "Apply inbound route-map.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 route-map SET-PREF in"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
@@ -24310,7 +24457,8 @@
             "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
             "desc": "Inbound prefix-list filter.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 prefix-list ONLY-MY-NETS out"
           },
           {
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
@@ -24322,13 +24470,15 @@
             "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
             "desc": "Prefix-list entry: any /0–/24 inbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip prefix-list FILTER-EX seq 10 permit 10.0.0.0/8 ge 24 le 24"
           },
           {
             "cmd": "ip as-path access-list 100 permit ^65002_",
             "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip as-path access-list 1 permit ^65002_"
           },
           {
             "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
@@ -24352,7 +24502,8 @@
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
             "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# aggregate-address 172.16.0.0 255.255.0.0 summary-only"
           },
           {
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
@@ -24370,13 +24521,15 @@
             "cmd": "neighbor 1.2.3.4 route-reflector-client",
             "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 route-reflector-client"
           },
           {
             "cmd": "bgp cluster-id 1.1.1.1",
             "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp cluster-id 1.1.1.1"
           },
           {
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
@@ -24406,7 +24559,8 @@
             "cmd": "bgp graceful-restart",
             "desc": "Enable Graceful Restart capability negotiation.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp graceful-restart"
           },
           {
             "cmd": "bgp dampening",
@@ -24424,7 +24578,8 @@
             "cmd": "address-family ipv6 unicast",
             "desc": "Enter IPv6 unicast address-family.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# address-family ipv6"
           },
           {
             "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
@@ -24436,7 +24591,8 @@
             "cmd": "show bgp ipv6 unicast summary",
             "desc": "IPv6 BGP summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\n... (output similar to IPv4)"
           },
           {
             "cmd": "show bgp ipv6 unicast",
@@ -24461,6 +24617,97 @@
             "desc": "Per-VRF BGP address-family for L3VPN.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "neighbor <IP> shutdown",
+            "desc": "Administratively disable a neighbour without deleting any of its config (peering, policies, password, etc. all survive).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 shutdown"
+          },
+          {
+            "cmd": "show ip bgp dampening dampened-paths",
+            "desc": "Show routes currently being suppressed by route-flap dampening.",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          From            Reuse          Path\nq  172.16.5.0       10.0.0.2        00:15:20       65002 i"
+          },
+          {
+            "cmd": "show ip bgp rib-failure",
+            "desc": "Show prefixes BGP learned but could NOT install in the main RIB (usually because a better-distance protocol — OSPF, EIGRP, static — already owns the prefix).",
+            "type": "show",
+            "flagged": false,
+            "example": "Network            Next Hop                      RIB-failure   RIB-NH Matches\n10.5.5.0/24        10.0.0.2             Higher admin distance           n/a"
+          },
+          {
+            "cmd": "set local-preference <value>",
+            "desc": "Inside a route-map: set the LOCAL_PREF on matched routes. Higher = more preferred. Local-pref stays inside your AS — used to influence OUTBOUND traffic decisions among iBGP peers.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set local-preference 200"
+          },
+          {
+            "cmd": "set as-path prepend <AS> <AS> <AS>",
+            "desc": "Inside a route-map: prepend extra AS numbers to the AS_PATH so the route looks longer / less attractive to neighbours. Used to influence INBOUND traffic engineering.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set as-path prepend 65001 65001 65001"
+          },
+          {
+            "cmd": "set metric <value>",
+            "desc": "Inside a route-map: set the MED (Multi-Exit Discriminator). Tells an EXTERNAL neighbour which entry point into your AS to prefer. Lower = more preferred.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set metric 50"
+          },
+          {
+            "cmd": "set community <number> | no-export | no-advertise",
+            "desc": "Inside a route-map: tag the route with one or more communities. Special well-known values: no-export (do not send outside the AS), no-advertise (do not send to any peer), local-AS (do not send outside the local sub-AS).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set community no-export"
+          },
+          {
+            "cmd": "bgp confederation identifier <AS>",
+            "desc": "Define the public-facing AS number for a group of internal sub-ASs (BGP confederation).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation identifier 65000"
+          },
+          {
+            "cmd": "bgp confederation peers <AS-List>",
+            "desc": "Tell the router which other sub-ASs belong to the same confederation as the local sub-AS.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation peers 65001 65002"
+          },
+          {
+            "cmd": "show ip bgp labels",
+            "desc": "Display MPLS labels associated with BGP-learned prefixes (used in MPLS-VPN / 6PE / 6vPE deployments).",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          Next Hop      In label/Out label\n*> 10.1.1.0/24     192.168.1.1      18/nolabel"
+          },
+          {
+            "cmd": "show ip bgp quote-as <AS-Number>",
+            "desc": "List all routes whose AS_PATH contains a specific AS number anywhere in the path.",
+            "type": "show",
+            "flagged": false,
+            "example": "*> 172.16.0.0       10.0.0.2                 0             0 65002 64999 i"
+          },
+          {
+            "cmd": "show ip bgp community-list <number>",
+            "desc": "Filter the BGP table down to routes matching a predefined community-list.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Standard BGP table output filtered by community-list)"
+          },
+          {
+            "cmd": "neighbor <IP> soft-reconfiguration inbound",
+            "desc": "Force the router to keep an UNFILTERED copy of every update received from a neighbour. Lets you run \"show ip bgp neighbors X received-routes\" and see what the peer is sending you BEFORE inbound policy. Memory-heavy on big tables.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 soft-reconfiguration inbound"
           }
         ],
         "Multicast": [
@@ -30151,19 +30398,22 @@
             "cmd": "router bgp 65001",
             "desc": "Enter BGP process for local AS 65001.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# router bgp 65001\n(config-router)#"
           },
           {
             "cmd": "bgp router-id 1.1.1.1",
             "desc": "Manually pin BGP router-id.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp router-id 1.1.1.1"
           },
           {
             "cmd": "bgp log-neighbor-changes",
             "desc": "Log every BGP state change to syslog.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp log-neighbor-changes"
           },
           {
             "cmd": "no synchronization",
@@ -30175,19 +30425,22 @@
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
             "desc": "Define an eBGP peer.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 remote-as 65002"
           },
           {
             "cmd": "neighbor 1.2.3.4 description ISP-A primary",
             "desc": "Free-text peer description.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 description LINK-TO-ISP-A"
           },
           {
             "cmd": "network 10.0.0.0 mask 255.255.255.0",
             "desc": "Originate a prefix into BGP (must be present in RIB).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# network 192.168.10.0 mask 255.255.255.0"
           },
           {
             "cmd": "show ip bgp summary",
@@ -30200,13 +30453,15 @@
             "cmd": "show ip bgp neighbors 1.2.3.4",
             "desc": "Per-peer detail: capabilities, timers, counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP neighbor is 10.0.0.2,  remote AS 65002, external link\n  BGP version 4, remote router ID 192.168.5.5\n  BGP state = Established, up for 05:22:11\n  ..."
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 advertised-routes",
             "desc": "Routes we are sending TO this peer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "   Network          Next Hop            Metric LocPrf Weight Path\n*> 10.50.1.0/24     0.0.0.0                  0         32768 i"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
@@ -30218,7 +30473,8 @@
             "cmd": "show ip bgp neighbors 1.2.3.4 routes",
             "desc": "Routes accepted from this peer (post-policy).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total number of prefixes 2"
           },
           {
             "cmd": "show ip bgp",
@@ -30231,7 +30487,8 @@
             "cmd": "show ip bgp 8.8.8.0/24",
             "desc": "Per-prefix path detail (best-path selection reasoning).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP routing table entry for 10.1.1.0/24, version 5\nPaths: (1 available, best #1)\n  65002\n    10.0.0.2 from 10.0.0.2 (192.168.1.1)\n      Origin IGP, metric 0, localpref 100, valid, external, best"
           },
           {
             "cmd": "show ip bgp regexp _65000_",
@@ -30255,7 +30512,8 @@
             "cmd": "clear ip bgp * soft",
             "desc": "Soft refresh on every peer (apply policy without flap).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# clear ip bgp * soft"
           },
           {
             "cmd": "clear ip bgp 1.2.3.4 soft in",
@@ -30273,31 +30531,36 @@
             "cmd": "neighbor 1.2.3.4 update-source Loopback0",
             "desc": "Source BGP TCP from a loopback (essential for iBGP).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 1.1.1.1 update-source Loopback0"
           },
           {
             "cmd": "neighbor 1.2.3.4 ebgp-multihop 5",
             "desc": "Allow eBGP peer up to 5 hops away (loopback peering).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.20.20.1 ebgp-multihop 2"
           },
           {
             "cmd": "neighbor 1.2.3.4 next-hop-self",
             "desc": "Rewrite next-hop to self when advertising eBGP routes to iBGP peers.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 next-hop-self"
           },
           {
             "cmd": "neighbor 1.2.3.4 password CISCO123",
             "desc": "TCP MD5 authentication for the peering session.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 password MySecurePass!"
           },
           {
             "cmd": "neighbor 1.2.3.4 ttl-security hops 1",
             "desc": "GTSM — drops packets with TTL < 255-hops; eBGP hardening.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.1 ttl-security hops 1"
           },
           {
             "cmd": "neighbor 1.2.3.4 send-community both",
@@ -30309,19 +30572,22 @@
             "cmd": "neighbor 1.2.3.4 remove-private-as",
             "desc": "Strip private AS numbers from outbound updates.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 8.8.8.8 remove-private-as"
           },
           {
             "cmd": "neighbor 1.2.3.4 maximum-prefix 500000 90 restart 30",
             "desc": "Cap inbound at 500k prefixes; warn at 90%; restart 30 min after exceeding.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 maximum-prefix 10000 80"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
             "desc": "Apply inbound route-map.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 route-map SET-PREF in"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
@@ -30333,7 +30599,8 @@
             "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
             "desc": "Inbound prefix-list filter.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 prefix-list ONLY-MY-NETS out"
           },
           {
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
@@ -30345,13 +30612,15 @@
             "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
             "desc": "Prefix-list entry: any /0–/24 inbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip prefix-list FILTER-EX seq 10 permit 10.0.0.0/8 ge 24 le 24"
           },
           {
             "cmd": "ip as-path access-list 100 permit ^65002_",
             "desc": "AS-path ACL: only routes whose AS-path begins with 65002.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config)# ip as-path access-list 1 permit ^65002_"
           },
           {
             "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
@@ -30375,7 +30644,8 @@
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
             "desc": "Originate the summary into BGP, suppress more-specifics outbound.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# aggregate-address 172.16.0.0 255.255.0.0 summary-only"
           },
           {
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
@@ -30393,13 +30663,15 @@
             "cmd": "neighbor 1.2.3.4 route-reflector-client",
             "desc": "Mark the iBGP peer as an RR client (this router is the RR).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.1.1.1 route-reflector-client"
           },
           {
             "cmd": "bgp cluster-id 1.1.1.1",
             "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp cluster-id 1.1.1.1"
           },
           {
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
@@ -30429,7 +30701,8 @@
             "cmd": "bgp graceful-restart",
             "desc": "Enable Graceful Restart capability negotiation.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# bgp graceful-restart"
           },
           {
             "cmd": "bgp dampening",
@@ -30447,7 +30720,8 @@
             "cmd": "address-family ipv6 unicast",
             "desc": "Enter IPv6 unicast address-family.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(config-router)# address-family ipv6"
           },
           {
             "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
@@ -30459,7 +30733,8 @@
             "cmd": "show bgp ipv6 unicast summary",
             "desc": "IPv6 BGP summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\n... (output similar to IPv4)"
           },
           {
             "cmd": "show bgp ipv6 unicast",
@@ -30484,6 +30759,104 @@
             "desc": "Per-VRF BGP address-family for L3VPN.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "neighbor <IP> shutdown",
+            "desc": "Administratively disable a neighbour without deleting any of its config (peering, policies, password, etc. all survive).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 shutdown"
+          },
+          {
+            "cmd": "show ip bgp community <value>",
+            "desc": "Display all routes that carry a specific BGP community tag.",
+            "type": "show",
+            "flagged": false,
+            "example": "*> 10.0.0.0/8       192.168.1.1              0    100      0 65100 i"
+          },
+          {
+            "cmd": "show ip bgp dampening dampened-paths",
+            "desc": "Show routes currently being suppressed by route-flap dampening.",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          From            Reuse          Path\nq  172.16.5.0       10.0.0.2        00:15:20       65002 i"
+          },
+          {
+            "cmd": "show ip bgp rib-failure",
+            "desc": "Show prefixes BGP learned but could NOT install in the main RIB (usually because a better-distance protocol — OSPF, EIGRP, static — already owns the prefix).",
+            "type": "show",
+            "flagged": false,
+            "example": "Network            Next Hop                      RIB-failure   RIB-NH Matches\n10.5.5.0/24        10.0.0.2             Higher admin distance           n/a"
+          },
+          {
+            "cmd": "set local-preference <value>",
+            "desc": "Inside a route-map: set the LOCAL_PREF on matched routes. Higher = more preferred. Local-pref stays inside your AS — used to influence OUTBOUND traffic decisions among iBGP peers.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set local-preference 200"
+          },
+          {
+            "cmd": "set as-path prepend <AS> <AS> <AS>",
+            "desc": "Inside a route-map: prepend extra AS numbers to the AS_PATH so the route looks longer / less attractive to neighbours. Used to influence INBOUND traffic engineering.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set as-path prepend 65001 65001 65001"
+          },
+          {
+            "cmd": "set metric <value>",
+            "desc": "Inside a route-map: set the MED (Multi-Exit Discriminator). Tells an EXTERNAL neighbour which entry point into your AS to prefer. Lower = more preferred.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set metric 50"
+          },
+          {
+            "cmd": "set community <number> | no-export | no-advertise",
+            "desc": "Inside a route-map: tag the route with one or more communities. Special well-known values: no-export (do not send outside the AS), no-advertise (do not send to any peer), local-AS (do not send outside the local sub-AS).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-route-map)# set community no-export"
+          },
+          {
+            "cmd": "bgp confederation identifier <AS>",
+            "desc": "Define the public-facing AS number for a group of internal sub-ASs (BGP confederation).",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation identifier 65000"
+          },
+          {
+            "cmd": "bgp confederation peers <AS-List>",
+            "desc": "Tell the router which other sub-ASs belong to the same confederation as the local sub-AS.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# bgp confederation peers 65001 65002"
+          },
+          {
+            "cmd": "show ip bgp labels",
+            "desc": "Display MPLS labels associated with BGP-learned prefixes (used in MPLS-VPN / 6PE / 6vPE deployments).",
+            "type": "show",
+            "flagged": false,
+            "example": "   Network          Next Hop      In label/Out label\n*> 10.1.1.0/24     192.168.1.1      18/nolabel"
+          },
+          {
+            "cmd": "show ip bgp quote-as <AS-Number>",
+            "desc": "List all routes whose AS_PATH contains a specific AS number anywhere in the path.",
+            "type": "show",
+            "flagged": false,
+            "example": "*> 172.16.0.0       10.0.0.2                 0             0 65002 64999 i"
+          },
+          {
+            "cmd": "show ip bgp community-list <number>",
+            "desc": "Filter the BGP table down to routes matching a predefined community-list.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Standard BGP table output filtered by community-list)"
+          },
+          {
+            "cmd": "neighbor <IP> soft-reconfiguration inbound",
+            "desc": "Force the router to keep an UNFILTERED copy of every update received from a neighbour. Lets you run \"show ip bgp neighbors X received-routes\" and see what the peer is sending you BEFORE inbound policy. Memory-heavy on big tables.",
+            "type": "config",
+            "flagged": false,
+            "example": "(config-router)# neighbor 10.0.0.2 soft-reconfiguration inbound"
           }
         ],
         "NAT": [
