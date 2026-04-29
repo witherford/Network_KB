@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T21:32:57.127Z",
+  "updatedAt": "2026-04-29T22:14:11.378Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -12,13 +12,15 @@
             "cmd": "show ns info",
             "desc": "Display core system information: NSIP, build version, platform type, uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Mapped IP: 10.10.10.11  Total Memory: 16384MB  Free: 4096MB"
           },
           {
             "cmd": "show version",
             "desc": "Shows installed firmware version, build number, and kernel version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NetScaler NS13.1: Build 42.47.nc, Date: Jan 12 2024, 10:22:15"
           },
           {
             "cmd": "show ns hardware",
@@ -30,19 +32,22 @@
             "cmd": "show ns license",
             "desc": "Lists all installed feature licences and enabled features",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Model: NS10000, Max BW: 10000 Mbps, SSL: Enabled"
           },
           {
             "cmd": "show ns ip",
             "desc": "Lists all configured IPs: NSIP, SNIPs, VIPs, MIPs with types and states",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10.10.10.10 255.255.255.0 NetScaler IP Active Enabled"
           },
           {
             "cmd": "show interface",
             "desc": "Status of all network interfaces: link state, speed, duplex, packet stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1/1 (10G Ethernet) State: UP, Speed: 10000, Duplex: FULL"
           },
           {
             "cmd": "show interface <slot/port>",
@@ -54,19 +59,22 @@
             "cmd": "show vlan",
             "desc": "Lists all configured VLANs and bound interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN ID: 10, Alias: Web_VLAN, Interface: 1/1, 1/2"
           },
           {
             "cmd": "show route",
             "desc": "Routing table: static routes, directly connected networks, next hops",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "0.0.0.0 0.0.0.0 10.10.10.1 UG 0 0"
           },
           {
             "cmd": "show arp",
             "desc": "ARP table showing IP-to-MAC address mappings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10.10.10.1 00:ad:d1:22:33:44 1/1 120s"
           },
           {
             "cmd": "show system cpu",
@@ -108,19 +116,672 @@
             "cmd": "show ns feature",
             "desc": "Enabled features — many commands fail silently if feature is off",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Load Balancing: ENABLED, Content Switching: ENABLED"
           },
           {
             "cmd": "show ns mode",
             "desc": "Global mode flags (USNIP, L2, MBF, etc.)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "L3: ENABLED, MBF: DISABLED, EDGE: ENABLED"
           },
           {
             "cmd": "show ns runningconfig | grep -v \"^#\"",
             "desc": "Running config without comment lines",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show dns parameter",
+            "desc": "Display the DNS resolver settings: recursion, caching, max cache size.",
+            "type": "show",
+            "flagged": false,
+            "example": "Recursion: ENABLED  Cache: ENABLED  MaxCacheSize: 500MB"
+          },
+          {
+            "cmd": "show dns profile",
+            "desc": "List DNS profiles — caching, EDNS, DNSSEC, and DNS64 settings applied to vservers.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: dns_default_profile  Caching: ENABLED  EDNS: ENABLED"
+          },
+          {
+            "cmd": "show ns tcpProfile",
+            "desc": "List TCP profiles — window-scaling, SACK, NAGLE and other per-vserver TCP knobs.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: nstcp_default_profile  WS: ENABLED  SACK: ENABLED"
+          },
+          {
+            "cmd": "show ns httpProfile",
+            "desc": "List HTTP profiles — HTTP/2, drop-invalid-header, websocket and per-vserver HTTP knobs.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: nshttp_default_profile  DropInvalHeader: ENABLED"
+          },
+          {
+            "cmd": "show ns xmlnamespace",
+            "desc": "XML namespace prefixes used by XPath-based policy expressions.",
+            "type": "show",
+            "flagged": false,
+            "example": "Prefix: soap  URI: \"http://xmlsoap.org\""
+          },
+          {
+            "cmd": "show system entity",
+            "desc": "Hardware entity status — power supplies, fans, temperature sensors.",
+            "type": "show",
+            "flagged": false,
+            "example": "Type: PowerSupply  ID: 1  State: NORMAL"
+          },
+          {
+            "cmd": "show ntp status",
+            "desc": "NTP synchronisation state — sync flag, stratum, offset, currently selected reference.",
+            "type": "show",
+            "flagged": false,
+            "example": "synchronized  strat 3  offset 0.12ms  ref: 129.6.15.28"
+          },
+          {
+            "cmd": "show audit syslogAction",
+            "desc": "List configured syslog actions — destination server IP, port and facility.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Remote_Syslog  ServerIP: 10.1.1.100  Facility: LOCAL0"
+          },
+          {
+            "cmd": "show audit nslogPolicy",
+            "desc": "List nslog audit policies — selection rule and bound nslog action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: NS_LOG_POL  Action: ns_action  Hits: 4502"
+          },
+          {
+            "cmd": "show audit stats",
+            "desc": "Audit-subsystem counters: messages emitted by syslog/nslog and any errors.",
+            "type": "show",
+            "flagged": false,
+            "example": "SyslogMsgs: 120340  NslogMsgs: 4502  Errors: 0"
+          },
+          {
+            "cmd": "show cloud config",
+            "desc": "Cloud Connector / NSPM / cloud-managed status: connected site ID and link health.",
+            "type": "show",
+            "flagged": false,
+            "example": "Cloud Connector: Connected  Site ID: 1023"
+          },
+          {
+            "cmd": "show cloud stats",
+            "desc": "Cloud-control-plane request counters: total sent, succeeded, failed.",
+            "type": "show",
+            "flagged": false,
+            "example": "Requests Sent: 4502  Success: 4500  Failed: 2"
+          },
+          {
+            "cmd": "show ns feature -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Enabled: LB, CS, SSL, GSLB, Rewrite, Responder"
+          },
+          {
+            "cmd": "show ns mode -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Enabled: L3, EDGE, FR, USNIP"
+          },
+          {
+            "cmd": "show hardware -full",
+            "desc": "Full hardware sensor dump — all CPUs, fans, voltages, temperatures.",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU 0: 45C  CPU 1: 42C  Fan 1: 5200RPM  Voltage: OK"
+          },
+          {
+            "cmd": "show snmp config -full",
+            "desc": "SNMP system identity — sysName, contact, location.",
+            "type": "show",
+            "flagged": false,
+            "example": "SysName: NS-ADC-01  Contact: NOC  Location: Rack 4"
+          },
+          {
+            "cmd": "show snmp community -full",
+            "desc": "SNMP communities and the rights granted (read/write, notify enabled).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: public  Read: ALL  Notify: ENABLED"
+          },
+          {
+            "cmd": "show ntp server -full",
+            "desc": "Configured NTP servers with stratum, type, and current sync state.",
+            "type": "show",
+            "flagged": false,
+            "example": "129.6.15.28  Stratum: 2  Type: NTP  State: UP"
+          },
+          {
+            "cmd": "show audit syslogPolicy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Log_Pol_1: 45021  Log_Pol_2: 0"
+          },
+          {
+            "cmd": "show cache contentGroup -full",
+            "desc": "Integrated-Cache content groups — memory ceiling, current hits.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Static_Content  MaxMemory: 200MB  Hits: 8593"
+          },
+          {
+            "cmd": "show cache policy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Pol_Cache_Images: 550  Pol_Cache_JS: 12"
+          },
+          {
+            "cmd": "show compression stats -full",
+            "desc": "HTTP compression totals — pre-compress and post-compress byte counts.",
+            "type": "show",
+            "flagged": false,
+            "example": "TotalBytesIn: 10GB  TotalBytesOut: 2.5GB"
+          },
+          {
+            "cmd": "show dns record -full",
+            "desc": "Authoritative DNS records served by the ADC: type, value, TTL.",
+            "type": "show",
+            "flagged": false,
+            "example": "Host: ex.com  Type: A  IP: 10.1.1.10  TTL: 3600"
+          },
+          {
+            "cmd": "show ns unit -full",
+            "desc": "NetScaler unit identity — license edition, cluster role, unit ID.",
+            "type": "show",
+            "flagged": false,
+            "example": "UnitID: 0  ClusterNode: 0  License: Plat  Edition: ADC"
+          },
+          {
+            "cmd": "show ns xmlnamespace -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Prefix: ns1  URI: \"http://citrix.com\""
+          },
+          {
+            "cmd": "show ns encryptionKey -full",
+            "desc": "Symmetric/asymmetric encryption keys defined for use by encrypt/decrypt PI expressions.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Key_AES  Type: AES256  Status: ACTIVE"
+          },
+          {
+            "cmd": "show ns tcpProfile -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "nstcp_default: 1M  nstcp_aggressive: 4502"
+          },
+          {
+            "cmd": "show ns httpProfile -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "nshttp_default: 1.2M  nshttp_mobile: 104"
+          },
+          {
+            "cmd": "show cache contentGroup -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Static_Images: 14502  Scripts: 120"
+          },
+          {
+            "cmd": "show cache policy -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 15  Hits: 14622"
+          },
+          {
+            "cmd": "show compression vserver -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Active: 5  Hits: 12903"
+          },
+          {
+            "cmd": "show compression stats -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Savings: 75%  TotalIn: 10GB"
+          },
+          {
+            "cmd": "show dns nameServer -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Servers: 2  State: UP"
+          },
+          {
+            "cmd": "show dns record -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Records: 45"
+          },
+          {
+            "cmd": "show dns policy -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 5  Hits: 120"
+          },
+          {
+            "cmd": "show snmp trap -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Dest: 2  Version: V2"
+          },
+          {
+            "cmd": "show ntp server -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total NTP: 1  Synced: YES"
+          },
+          {
+            "cmd": "show audit nslogAction -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ns_act  Dest: /var/log/ns.log"
+          },
+          {
+            "cmd": "show audit syslogPolicy -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 5  Hits: 120340"
+          },
+          {
+            "cmd": "show system entity -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Power: OK  Fans: OK  Temp: OK"
+          },
+          {
+            "cmd": "show ns info -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU: 2%  MEM: 25%  Uptime: 45 days"
+          },
+          {
+            "cmd": "show ns unit -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Standalone: NO  HA: YES  Primary: YES"
+          },
+          {
+            "cmd": "show cache object",
+            "desc": "Inspect a single cached object — URL, size, hit count, TTL.",
+            "type": "show",
+            "flagged": false,
+            "example": "URL: /index.html  Size: 15KB  Hits: 450  Expires: 300s"
+          },
+          {
+            "cmd": "show ns license -features",
+            "desc": "Per-feature license entitlement (LB / SSL / GSLB / Web Logging etc.).",
+            "type": "show",
+            "flagged": false,
+            "example": "WebLogging: YES, LoadBalancing: YES, SSL: YES, GSLB: YES"
+          },
+          {
+            "cmd": "show system health",
+            "desc": "Compact health overview — CPU temps, fan speeds, PSU state.",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU0: 42C, CPU1: 44C, Fan1: 5000RPM, Power1: UP"
+          },
+          {
+            "cmd": "show ns nspm config",
+            "desc": "NetScaler Pooled Capacity Management state — admin user and cloud connection.",
+            "type": "show",
+            "flagged": false,
+            "example": "NSPM Enabled: YES  User: nsroot  Cloud: Connected"
+          },
+          {
+            "cmd": "show ns license -proxymode",
+            "desc": "Proxy-mode license info — bandwidth ceiling under SSL-proxy/proxy-mode license tier.",
+            "type": "show",
+            "flagged": false,
+            "example": "ProxyMode: ENABLED  MaxBW: 1000Mbps"
+          },
+          {
+            "cmd": "show ns encryptionParams",
+            "desc": "Global encryption parameters used by the policy-engine encrypt() / decrypt() PI functions.",
+            "type": "show",
+            "flagged": false,
+            "example": "Method: AES256  Key_Status: VALID"
+          },
+          {
+            "cmd": "show ns version -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "13.1.42.47.nc"
+          },
+          {
+            "cmd": "show ns hardware -inventory",
+            "desc": "Bill-of-materials view — chassis model, disks, power supplies.",
+            "type": "show",
+            "flagged": false,
+            "example": "Chassis: MPX-8900  Disk: 240GB SSD  PSU: Dual"
+          },
+          {
+            "cmd": "show ns partition",
+            "desc": "Admin partitions — name, max-bandwidth ceiling and currently-consumed bandwidth.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: default  MaxBW: 10000  CurrentBW: 450"
+          },
+          {
+            "cmd": "show cloud connector",
+            "desc": "Cloud Connector tunnel status — bound site, latency, link state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Status: UP  Site: Azure_US_West  Latency: 12ms"
+          },
+          {
+            "cmd": "show ns memory -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 16384MB  Free: 4096MB  Kernel: 1024MB"
+          },
+          {
+            "cmd": "show ns session -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 14502  Active: 850  TimedOut: 120"
+          },
+          {
+            "cmd": "show ns stats -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "(Displays all global counters in raw format)"
+          },
+          {
+            "cmd": "show ns unit -detail",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Unit: 0  Role: MASTER  MasterIP: 10.10.10.10"
+          },
+          {
+            "cmd": "show ns feature -enabled",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "LB, CS, SSL, GSLB, CF, RP, RS, WL, SP, DG, REWRITE"
+          },
+          {
+            "cmd": "show ns mode -enabled",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "L3, EDGE, USNIP, FR"
+          },
+          {
+            "cmd": "show ns hostname -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "NS-ADC-PROD-01"
+          },
+          {
+            "cmd": "show ns version",
+            "desc": "Display the running NetScaler firmware version (build / kernel).",
+            "type": "show",
+            "flagged": false,
+            "example": "NetScaler NS13.1 Build 42.47.nc"
+          },
+          {
+            "cmd": "set snmp community public -read ALL",
+            "desc": "Grant the SNMP community \"public\" read access to the entire MIB tree.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set ns feature LB CS SSL",
+            "desc": "Enable the LB, CS and SSL feature licenses on the ADC.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set ns mode L3 EDGE MBF",
+            "desc": "Enable L3-forwarding, edge-mode and MAC-Based Forwarding global modes.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set ntp server 129.6.15.28 -minpoll 6",
+            "desc": "Tighten the minimum NTP poll interval (2^6 = 64s) for the named NTP server.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set audit syslogAction Srv_1 -logLevel CRITICAL",
+            "desc": "Restrict the syslog action Srv_1 to forward only CRITICAL-or-higher events.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set dns parameter -cache NO",
+            "desc": "Disable the DNS resolver cache (forces each query to recurse).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set cache parameter -memLimit 500",
+            "desc": "Set the global Integrated-Cache memory ceiling to 500 MB.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set compression parameter -cmpLevel HIGH",
+            "desc": "Set HTTP compression aggressiveness to HIGH (best ratio, more CPU).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show hardware",
+            "desc": "Display chassis platform, CPU type and serial number.",
+            "type": "show",
+            "flagged": false,
+            "example": "Platform: NetScaler MPX 8900, CPU: Intel Xeon, Serial: ABC1234567"
+          },
+          {
+            "cmd": "show ns config",
+            "desc": "System config snapshot — system time and a \"config changed since save\" flag.",
+            "type": "show",
+            "flagged": false,
+            "example": "System Time: Mon May 27 10:00:00 2024, Config changed: Yes"
+          },
+          {
+            "cmd": "show ns hostname",
+            "desc": "Display the configured ADC system hostname.",
+            "type": "show",
+            "flagged": false,
+            "example": "Hostname: example.com"
+          },
+          {
+            "cmd": "show ns ntpServer",
+            "desc": "Configured NTP servers and their reachability.",
+            "type": "show",
+            "flagged": false,
+            "example": "1) 129.6.15.28 (time.nist.gov) State: UP"
+          },
+          {
+            "cmd": "show ns session",
+            "desc": "Internal session-table totals — total ever and currently active.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Sessions: 1450, Current Sessions: 120"
+          },
+          {
+            "cmd": "show ns timeout",
+            "desc": "Global session-timeout values — zombie/client/server idle.",
+            "type": "show",
+            "flagged": false,
+            "example": "Zombie: 120s, Client: 60s, Server: 120s"
+          },
+          {
+            "cmd": "show ns unit",
+            "desc": "NetScaler unit identity — unit ID, cluster ID, master flag.",
+            "type": "show",
+            "flagged": false,
+            "example": "Unit ID: 0, Cluster ID: 0, Master: Yes"
+          },
+          {
+            "cmd": "show ns encryptionKey",
+            "desc": "Configured encryption keys — name, algorithm, validity.",
+            "type": "show",
+            "flagged": false,
+            "example": "Key Name: DefaultKey, Type: AES256, Status: Valid"
+          },
+          {
+            "cmd": "show snmp config",
+            "desc": "SNMP system identity — sysContact and sysLocation.",
+            "type": "show",
+            "flagged": false,
+            "example": "Contact: admin@ex.com, Location: DataCenter1"
+          },
+          {
+            "cmd": "show snmp community",
+            "desc": "SNMP community-string definitions and their access rights.",
+            "type": "show",
+            "flagged": false,
+            "example": "Community: public, Read-Only"
+          },
+          {
+            "cmd": "show snmp trap",
+            "desc": "SNMP trap destinations — IP, version, community.",
+            "type": "show",
+            "flagged": false,
+            "example": "Dest: 10.1.1.50, Version: V2, Community: public"
+          },
+          {
+            "cmd": "show snmp alarm",
+            "desc": "Configured SNMP alarm thresholds and severities.",
+            "type": "show",
+            "flagged": false,
+            "example": "Alarm: CPU-Usage, Threshold: 90, Severity: Critical"
+          },
+          {
+            "cmd": "show audit messages",
+            "desc": "Recent audit-log messages from /var/log/ns.log.",
+            "type": "show",
+            "flagged": false,
+            "example": "May 27 12:00:01 NS-ADC-01 PPE-0 : UI_READ : User nsroot"
+          },
+          {
+            "cmd": "show audit syslogPolicy",
+            "desc": "List syslog audit policies — selection rule + bound action + hits.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: pol_log, Action: log_srv, Hits: 12050"
+          },
+          {
+            "cmd": "show audit nslogAction",
+            "desc": "List nslog audit actions — destination file path.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ns_action, Dest: /var/log/ns.log"
+          },
+          {
+            "cmd": "show dns nameServer",
+            "desc": "Configured upstream DNS resolvers and their state.",
+            "type": "show",
+            "flagged": false,
+            "example": "1) 8.8.8.8 State: UP, Protocol: UDP, Port: 53"
+          },
+          {
+            "cmd": "show dns suffix",
+            "desc": "DNS search-suffix list used to qualify short hostnames.",
+            "type": "show",
+            "flagged": false,
+            "example": "example.com, internal.local"
+          },
+          {
+            "cmd": "show dns record",
+            "desc": "Authoritative DNS records the ADC serves (A / AAAA / CNAME / MX).",
+            "type": "show",
+            "flagged": false,
+            "example": "test.com A 1.1.1.1 TTL: 3600"
+          },
+          {
+            "cmd": "show dns policy",
+            "desc": "DNS policies — match expression and action (CACHE / NOCACHE / DROP).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: dns_pol_1, Action: CACHE, Hits: 450"
+          },
+          {
+            "cmd": "show compression vserver",
+            "desc": "Compression virtual servers — algorithm and hit counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CMP_VS, State: UP, Algorithm: GZIP, Hits: 1204"
+          },
+          {
+            "cmd": "show compression stats",
+            "desc": "HTTP compression byte totals and resulting compression ratio.",
+            "type": "show",
+            "flagged": false,
+            "example": "Compressed: 1.2GB, Uncompressed: 4.5GB, Ratio: 3.75:1"
+          },
+          {
+            "cmd": "show cache contentGroup",
+            "desc": "Integrated-Cache content groups — type, allocated memory, hits.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: DEFAULT, Type: HTTP, Memory: 100MB, Hits: 14502"
+          },
+          {
+            "cmd": "show cache policy",
+            "desc": "Integrated-Cache policies — match rule and action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: _cacheByPass, Action: CACHE, Hits: 0"
+          },
+          {
+            "cmd": "show cache stats",
+            "desc": "Integrated-Cache aggregate counters — hits, misses, refresh.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Hits: 50432, Misses: 1203, Refresh: 45"
+          },
+          {
+            "cmd": "show cache selector",
+            "desc": "Cache selectors — expressions that key cached objects (e.g. by URL).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Sel_URL, Rule: HTTP.REQ.URL"
           }
         ],
         "Configuration Management": [
@@ -195,6 +856,48 @@
             "desc": "Generates a comprehensive technical support bundle to /var/tmp/support/",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ns runningConfig | grep -i \"snip\"",
+            "desc": "Filter the running config for SNIP-IP definitions.",
+            "type": "show",
+            "flagged": false,
+            "example": "add ns ip 10.10.10.11 255.255.255.0 -type SNIP"
+          },
+          {
+            "cmd": "show ns runningConfig -output unified",
+            "desc": "Display the merged local + cluster configuration in a single unified view.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Displays merged local and cluster config)"
+          },
+          {
+            "cmd": "set ns hostname",
+            "desc": "Set the system hostname (typically followed by the desired name).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "save ns config",
+            "desc": "Persist the running configuration to /nsconfig/ns.conf so it survives reboots.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "reboot -warm",
+            "desc": "Warm-reboot the ADC — reload software without full hardware re-init.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show ns runningConfig",
+            "desc": "Print the entire running configuration (in-memory) of the ADC.",
+            "type": "show",
+            "flagged": false,
+            "example": "add ns ip 10.10.10.10 255.255.255.0 -type NSIP"
           }
         ],
         "Load Balancing": [
@@ -202,7 +905,8 @@
             "cmd": "show lb vserver",
             "desc": "Lists all LB virtual servers: VIP, protocol, port, state, bound service count",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "LB_VIP (10.1.1.10:443) State: UP, Hits: 20432"
           },
           {
             "cmd": "show lb vserver <name>",
@@ -322,19 +1026,259 @@
             "cmd": "show lb vserver -summary",
             "desc": "Compact view of all LB vservers and state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total Vservers: 15, UP: 12, DOWN: 3, OUT OF SERVICE: 0"
           },
           {
             "cmd": "show lb persistentSessions",
             "desc": "Active persistence entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Vserver: LB_1  Source: 192.168.1.50  Time: 120s"
           },
           {
             "cmd": "bind lb vserver <vs> <service>",
             "desc": "Bind an existing service to a VIP",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "show lb vserver -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LB_VS_1  Persistence: SOURCEIP  Timeout: 2m  LBP: ROUNDROBIN"
+          },
+          {
+            "cmd": "show service -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: SVC_1  IP: 1.1.1.1  MonState: UP  MaxConn: 5000"
+          },
+          {
+            "cmd": "show serviceGroup -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: SG_1  Members: 2  DownMembers: 0  Autoscale: OFF"
+          },
+          {
+            "cmd": "show lb monitor -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: HTTP-Inline  Type: HTTP  Interval: 5  RespCode: 200"
+          },
+          {
+            "cmd": "show lb vserver -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "LB_VS_1: 45032  LB_VS_2: 12  LB_VS_3: 0"
+          },
+          {
+            "cmd": "show lb service -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "SVC_1: 22031  SVC_2: 23001"
+          },
+          {
+            "cmd": "show lb group -full",
+            "desc": "LB groups — persistence-sharing across multiple vservers.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LB_GRP_Prod  LBVservers: LB_VS_1, LB_VS_2"
+          },
+          {
+            "cmd": "show server -summary",
+            "desc": "Server-object roll-up — total / UP / DOWN.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Servers: 50  UP: 48  DOWN: 2"
+          },
+          {
+            "cmd": "show service -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Services: 120  UP: 115  DOWN: 5"
+          },
+          {
+            "cmd": "show serviceGroup -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Groups: 15  UP: 14  PARTIAL: 1"
+          },
+          {
+            "cmd": "show service -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "SVC_Web_1: 45021  SVC_Web_2: 45030"
+          },
+          {
+            "cmd": "show lb group -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 5  Active: 5"
+          },
+          {
+            "cmd": "show lb monitor -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "MON_PING: 1M probes  MON_HTTP: 500k probes"
+          },
+          {
+            "cmd": "show lb persistentSessions -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Active: 1450  Expired: 12903"
+          },
+          {
+            "cmd": "show db user",
+            "desc": "Database back-end users (for MySQL/MSSQL load-balancing).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: db_admin  Database: MySQL  State: ENABLED"
+          },
+          {
+            "cmd": "show db vserver",
+            "desc": "Database load-balancing vservers (DBLB) — protocol-aware MySQL/MSSQL VIPs.",
+            "type": "show",
+            "flagged": false,
+            "example": "DB_LB_VS (10.1.1.20:3306) - MYSQL  State: UP"
+          },
+          {
+            "cmd": "show db parameter",
+            "desc": "Global DBLB parameters: max connections, idle timeout.",
+            "type": "show",
+            "flagged": false,
+            "example": "MaxConnections: 1000  IdleTimeout: 120s"
+          },
+          {
+            "cmd": "set lb vserver LB_VS_1 -state DISABLED",
+            "desc": "Administratively disable LB_VS_1 (existing connections drain, new ones rejected).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set service SVC_1 -maxClient 500",
+            "desc": "Cap the concurrent-connection limit for service SVC_1 at 500.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set lb monitor MON_1 -interval 10 -resptimeout 5",
+            "desc": "Tune monitor MON_1 to probe every 10 s with a 5 s response timeout.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "unbind lb vserver LB_VS_1 SVC_1",
+            "desc": "Remove service SVC_1 from LB vserver LB_VS_1.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "bind lb vserver LB_VS_1 SVC_2",
+            "desc": "Bind service SVC_2 to LB vserver LB_VS_1 so it participates in load-balancing.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "disable lb vserver LB_VS_1",
+            "desc": "",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "enable lb vserver LB_VS_1",
+            "desc": "",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "rm lb vserver LB_VS_Old",
+            "desc": "Delete the LB vserver LB_VS_Old from the configuration.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "rm service SVC_Old",
+            "desc": "Delete the service SVC_Old.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show server",
+            "desc": "List server objects — back-end host IPs referenced by services.",
+            "type": "show",
+            "flagged": false,
+            "example": "Web_Srv1 (192.168.1.10) State: UP"
+          },
+          {
+            "cmd": "show service",
+            "desc": "List all service objects — server-IP/protocol/port + monitor state.",
+            "type": "show",
+            "flagged": false,
+            "example": "SVC_HTTP (192.168.1.10:80) State: UP, Hits: 5042"
+          },
+          {
+            "cmd": "show serviceGroup",
+            "desc": "List all service-group objects — collections of homogeneous back-end services.",
+            "type": "show",
+            "flagged": false,
+            "example": "SG_Web, Member: 192.168.1.10:80, State: UP"
+          },
+          {
+            "cmd": "show lb group",
+            "desc": "LB groups — share persistence sessions across multiple LB vservers.",
+            "type": "show",
+            "flagged": false,
+            "example": "GRP_Production, Member: LB_VIP_1, LB_VIP_2"
+          },
+          {
+            "cmd": "show lb monitor",
+            "desc": "List configured LB monitors — type, interval, retry threshold.",
+            "type": "show",
+            "flagged": false,
+            "example": "MON_HTTP, Type: HTTP, Interval: 5s, Retries: 3"
+          },
+          {
+            "cmd": "show lb parameter",
+            "desc": "Global LB parameters — DBSLB, literal-cookie mode, idle session timeout.",
+            "type": "show",
+            "flagged": false,
+            "example": "DBSLB: DISABLED, LiteralADCCookie: DISABLED, SessionIdleTimeout: 120s"
+          },
+          {
+            "cmd": "show lb metervserver",
+            "desc": "Bandwidth-meter vservers used for surge-protection and capacity-shaping.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: MTR_LB_VS, State: UP, Threshold: 1000, Current: 450"
+          },
+          {
+            "cmd": "show lb monitor -default",
+            "desc": "Default-monitor table — built-in PING/HTTP monitors auto-bound to services.",
+            "type": "show",
+            "flagged": false,
+            "example": "1) Type: PING, Interval: 5s, Timeout: 2s, Retries: 3"
           }
         ],
         "Content Switching": [
@@ -379,6 +1323,76 @@
             "desc": "Sets a redirect URL used when no policy matches on the CS vserver",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show cs vserver -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CS_1  Precedence: RULE  DefaultLB: LB_Def"
+          },
+          {
+            "cmd": "show cs policy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Pol_Mobile: 12034  Pol_Tablet: 402  Pol_PC: 45"
+          },
+          {
+            "cmd": "show cs vserver -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "CS_SSL_443: 1.5M  CS_HTTP_80: 450"
+          },
+          {
+            "cmd": "show cs policy -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 12  Hits: 1.5M"
+          },
+          {
+            "cmd": "show cr policy",
+            "desc": "Cache-Redirection policies — match expression and action (CACHE / ORIGIN).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CR_POL_1  Action: CACHE  Hits: 1205"
+          },
+          {
+            "cmd": "show cr vserver",
+            "desc": "Cache-Redirection virtual servers — front-side IP for transparent/forward cache redirection.",
+            "type": "show",
+            "flagged": false,
+            "example": "CR_VS_1 (10.1.1.5:80) - HTTP  State: UP  Hits: 5042"
+          },
+          {
+            "cmd": "show cs vserver CS_Main",
+            "desc": "Detail of a single CS vserver — VIP/port, state, default LB target.",
+            "type": "show",
+            "flagged": false,
+            "example": "CS_Main (10.10.10.100:443) State: UP, Target: LB_Default"
+          },
+          {
+            "cmd": "show cs policy CS_Mobile",
+            "desc": "Detail of one CS policy — matching expression and hit count.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CS_Mobile, Rule: HTTP.REQ.URL.CONTAINS(\"mobile\"), Hits: 843"
+          },
+          {
+            "cmd": "show cs action CS_Act_1",
+            "desc": "Detail of one CS action — what target LB-vserver requests are forwarded to.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CS_Act_1, TargetVserver: LB_Srv_01"
+          },
+          {
+            "cmd": "show cs parameter",
+            "desc": "Global CS parameters — rewrite-on-backlog and persistence-cookie name.",
+            "type": "show",
+            "flagged": false,
+            "example": "Rewritewhenbacklog: DISABLED, CookieName: NSC_CS"
           }
         ],
         "SSL Management": [
@@ -464,7 +1478,8 @@
             "cmd": "show ssl profile",
             "desc": "Lists all SSL profiles and their configured protocol/cipher settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: ns_default_ssl_profile_frontend, Backend: Disabled"
           },
           {
             "cmd": "add ssl profile <name> -sslProfileType BackEnd",
@@ -482,7 +1497,8 @@
             "cmd": "show ssl ocspResponder",
             "desc": "Lists all configured OCSP responders for certificate revocation checking",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: OCSP_Srv, URL: http://digicert.com, State: UP"
           },
           {
             "cmd": "show ssl fipsKey",
@@ -494,7 +1510,169 @@
             "cmd": "show ssl policy",
             "desc": "SSL policies bound to vservers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: SSL_POL_1, Action: ACT_SSL_1, Hits: 204"
+          },
+          {
+            "cmd": "show ssl vserver -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: VS_SSL  Ciphers: 12  ECC: Enabled  HSTS: Enabled"
+          },
+          {
+            "cmd": "show ssl certKey -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Cert_1  Expiry: 12/2026  Serial: 0AB12  Issuer: DigiCert"
+          },
+          {
+            "cmd": "show ssl cipher -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: DEFAULT  Total: 34  Current: 22"
+          },
+          {
+            "cmd": "show ssl profile -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: secure_prof  DenySSLv3: YES  StrictCA: YES"
+          },
+          {
+            "cmd": "show ssl action -full",
+            "desc": "SSL actions — control client-cert mandatory/optional, OCSP stapling, etc.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: SSL_ACT_1  ClientCert: Mandatory"
+          },
+          {
+            "cmd": "show ssl vserver -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 15  Active: 15"
+          },
+          {
+            "cmd": "show ssl certKey -summary",
+            "desc": "Inventory of SSL cert/key pairs — total / expired / expiring-soon.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 20  Expired: 0  ExpiringSoon: 2"
+          },
+          {
+            "cmd": "show ssl cipher -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Cipher Suites: 34"
+          },
+          {
+            "cmd": "show ssl profile -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Frontend: 5  Backend: 2"
+          },
+          {
+            "cmd": "show ssl action -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Actions: 3"
+          },
+          {
+            "cmd": "show ssl ocspResponder -full",
+            "desc": "OCSP responder configurations used for cert revocation checks.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: OCSP_1  URL: http://ocsp.com  State: UP"
+          },
+          {
+            "cmd": "show ssl crl -full",
+            "desc": "Configured Certificate Revocation Lists and their refresh state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CRL_1  URL: http://crl.com  State: UP"
+          },
+          {
+            "cmd": "show ssl stats -full",
+            "desc": "SSL handshake counters broken down by protocol version.",
+            "type": "show",
+            "flagged": false,
+            "example": "SSLv3: 0  TLS1.1: 45  TLS1.2: 14502  TLS1.3: 890"
+          },
+          {
+            "cmd": "set ssl vserver LB_SSL -tls12 ENABLED",
+            "desc": "Enable TLS 1.2 on the SSL vserver LB_SSL.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "rm ssl certKey Cert_Old",
+            "desc": "Delete the SSL cert/key pair Cert_Old (must already be unbound from any vserver).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show ssl vserver LB_SSL",
+            "desc": "Detail for one SSL vserver — bound cert/keys, DH params, enabled protocols.",
+            "type": "show",
+            "flagged": false,
+            "example": "CertKey: MyCert, DH: Enabled, SSLv3: Disabled, TLS1.2: Enabled"
+          },
+          {
+            "cmd": "show ssl certKey",
+            "desc": "Inventory of SSL cert/key pairs — validity, days to expiry, key type.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: MyCert, Status: Valid, Days to Expiry: 450, Type: RSA"
+          },
+          {
+            "cmd": "show ssl cipher",
+            "desc": "List configured cipher groups and individual cipher priorities.",
+            "type": "show",
+            "flagged": false,
+            "example": "Cipher Name: ECDHE-RSA-AES256-GCM-SHA384, Priority: 1"
+          },
+          {
+            "cmd": "show ssl dhParam",
+            "desc": "Display configured Diffie-Hellman parameter files (used for PFS).",
+            "type": "show",
+            "flagged": false,
+            "example": "DH Name: DH_2048, Bits: 2048, RefreshCount: 0"
+          },
+          {
+            "cmd": "show ssl fips",
+            "desc": "FIPS hardware-security-module state (FIPS-edition appliances only).",
+            "type": "show",
+            "flagged": false,
+            "example": "FIPS Status: Not Present (Standard Appliance)"
+          },
+          {
+            "cmd": "show ssl stats",
+            "desc": "SSL handshake counters — total / success / failures.",
+            "type": "show",
+            "flagged": false,
+            "example": "SSL Handshakes: 14502, Success: 14400, Failures: 102"
+          },
+          {
+            "cmd": "show ssl crl",
+            "desc": "Configured Certificate Revocation Lists — refresh state and freshness.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CRL_Client, Refresh: Enabled, Status: Up-to-date"
+          },
+          {
+            "cmd": "show ssl action",
+            "desc": "List SSL actions — client-cert handling, OCSP stapling, ECC-enable.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACT_SSL_1, ClientAuth: Enabled, ClientCert: Optional"
           }
         ],
         "High Availability": [
@@ -502,7 +1680,8 @@
             "cmd": "show ha node",
             "desc": "HA state: which node is Primary/Secondary and sync status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Node ID: 0, IP: 10.10.10.10, State: Primary"
           },
           {
             "cmd": "show ha node <node-id>",
@@ -520,7 +1699,8 @@
             "cmd": "force ha failover",
             "desc": "Manually triggers HA failover, promoting Secondary to Primary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Done"
           },
           {
             "cmd": "set ha node -haStatus ENABLED",
@@ -563,6 +1743,160 @@
             "desc": "Displays cluster topology, node states, and health",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show ns rpcNode",
+            "desc": "List RPC nodes (peer ADCs in HA / cluster) with their secure-mode flag and reachability.",
+            "type": "show",
+            "flagged": false,
+            "example": "10.10.10.11  Secure: YES  SrcIP: 10.10.10.10  State: UP"
+          },
+          {
+            "cmd": "show ns rpcNode -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "IP: 10.10.10.20  Password: SET  Secure: YES  State: UP"
+          },
+          {
+            "cmd": "show ha node -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Primary: 10.10.10.10  SyncState: SUCCESS  Incs: Enabled"
+          },
+          {
+            "cmd": "show cluster node -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Node 0: 10.10.10.20  State: ACTIVE  Health: OK"
+          },
+          {
+            "cmd": "show cluster instance -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "ID: 1  Nodes: 3  Backplane: 1/1  MTU: 1500"
+          },
+          {
+            "cmd": "show cluster node -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 3  Active: 3  InService: 3"
+          },
+          {
+            "cmd": "show cluster instance -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Instance: 1  CLIP: 10.10.10.50  UP"
+          },
+          {
+            "cmd": "show cluster vserver -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "CLIP_VS: 4502  Management: 120"
+          },
+          {
+            "cmd": "show cluster syncStatus",
+            "desc": "Per-cluster-node config-sync status — last full propagation result.",
+            "type": "show",
+            "flagged": false,
+            "example": "Node 0: SYNCED  Node 1: SYNCED  Node 2: SYNCED"
+          },
+          {
+            "cmd": "show ha node -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Local: Primary  Remote: Secondary  Sync: ENABLED"
+          },
+          {
+            "cmd": "show ha failover -hits",
+            "desc": "HA failover history — total count and timestamp of last failover.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 2  Last: Mon May 20 14:00:10"
+          },
+          {
+            "cmd": "show ha node -detail",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "LocalState: PRIMARY  SyncState: SUCCESS  RemoteState: SECONDARY"
+          },
+          {
+            "cmd": "show cluster backplane",
+            "desc": "Cluster backplane interface state — physical port and MTU between cluster nodes.",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface: 1/1  State: UP  MTU: 1500  Speed: 10G"
+          },
+          {
+            "cmd": "show cluster propagationstatus",
+            "desc": "Per-node status of the latest config propagation (DONE / IN_PROGRESS / FAIL).",
+            "type": "show",
+            "flagged": false,
+            "example": "Node 0: DONE, Node 1: DONE, Node 2: IN_PROGRESS"
+          },
+          {
+            "cmd": "sync ha files",
+            "desc": "Trigger a manual sync of all configurable files (cert/keys, ssl, scripts) across the HA pair.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set ns rpcNode 10.10.10.20 -password NewPass123",
+            "desc": "Update the shared RPC password the local ADC uses to authenticate to peer 10.10.10.20.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set ha node -hasync DISABLED",
+            "desc": "Disable automatic HA configuration sync (changes must be applied manually on each node).",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show ha failover",
+            "desc": "Most-recent HA failover details — trigger reason and timestamp.",
+            "type": "show",
+            "flagged": false,
+            "example": "Reason: Interface 1/1 down, Time: May 20 14:00:10"
+          },
+          {
+            "cmd": "show rpcNode",
+            "desc": "Display configured RPC nodes (peer ADCs) — alias for `show ns rpcNode`.",
+            "type": "show",
+            "flagged": false,
+            "example": "10.10.10.11 State: UP, Password: Set"
+          },
+          {
+            "cmd": "show cluster node",
+            "desc": "List cluster member nodes and their state/role.",
+            "type": "show",
+            "flagged": false,
+            "example": "Node ID: 0, State: ACTIVE, Master: Yes"
+          },
+          {
+            "cmd": "show cluster vserver",
+            "desc": "Cluster IP (CLIP) virtual server used to manage the cluster.",
+            "type": "show",
+            "flagged": false,
+            "example": "CLIP: 10.10.10.50, State: ENABLED"
+          },
+          {
+            "cmd": "show cluster instance",
+            "desc": "Cluster instance configuration — ID, member count, state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Instance ID: 1, Nodes: 3, State: UP"
           }
         ],
         "Networking": [
@@ -613,6 +1947,405 @@
             "desc": "Enables Use Source IP mode globally",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show network visualizer",
+            "desc": "Topology view — node and peer information from the Network Visualizer feature.",
+            "type": "show",
+            "flagged": false,
+            "example": "Node: 10.10.10.10  Peer: 10.10.10.11  Link: UP"
+          },
+          {
+            "cmd": "show network visualizer -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Nodes: 2  Links: 1  State: HEALTHY"
+          },
+          {
+            "cmd": "show ns connectiontable",
+            "desc": "Live connection table — every TCP/UDP flow tracked by the dataplane (5-tuple + state).",
+            "type": "show",
+            "flagged": false,
+            "example": "Source: 192.168.1.5:1234  Dest: 10.1.1.10:443  State: ESTABLISHED"
+          },
+          {
+            "cmd": "show ns pbr",
+            "desc": "Policy-based routes for IPv4 — match criteria, action, next-hop, hit counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: PBR_1  Action: ALLOW  NextHop: 10.10.10.1  Hits: 405"
+          },
+          {
+            "cmd": "show ns pbr6",
+            "desc": "Policy-based routes for IPv6.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: PBR_v6  Action: ALLOW  NextHop: 2001:db8::1  Hits: 0"
+          },
+          {
+            "cmd": "show ns acl",
+            "desc": "IPv4 extended ACLs — match tuple, action (ALLOW/DENY) and hit counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACL_Block_Admin  Action: DENY  DestPort: 80  Hits: 1203"
+          },
+          {
+            "cmd": "show ns acl6",
+            "desc": "IPv6 extended ACLs.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACL_v6_Block  Action: DENY  SrcIP: ::1  Hits: 0"
+          },
+          {
+            "cmd": "show ns simpleacl",
+            "desc": "Simple ACLs — fast-path drop rules for emergency mitigation (auto-expire).",
+            "type": "show",
+            "flagged": false,
+            "example": "10.0.0.5  Protocol: TCP  Port: 22  Hits: 45"
+          },
+          {
+            "cmd": "show route -summary",
+            "desc": "Route-table roll-up — totals by route type (static/connected/dynamic).",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 15  Active: 12  Static: 5  Connected: 7"
+          },
+          {
+            "cmd": "show route -dynamic",
+            "desc": "Routes learned via dynamic protocols (OSPF/BGP/RIP) only.",
+            "type": "show",
+            "flagged": false,
+            "example": "172.16.0.0/16  Gateway: 10.10.10.1  Type: OSPF"
+          },
+          {
+            "cmd": "show bgp config",
+            "desc": "BGP daemon configuration — local AS, router ID, configured neighbour count.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router ID: 1.1.1.1  AS: 65001  Neighbors: 2"
+          },
+          {
+            "cmd": "show bgp neighbor",
+            "desc": "BGP peer session state and uptime.",
+            "type": "show",
+            "flagged": false,
+            "example": "10.10.20.1  State: ESTABLISHED  Uptime: 24h12m"
+          },
+          {
+            "cmd": "show ospf config",
+            "desc": "OSPF configuration — router ID, area, participating interfaces.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router ID: 10.10.10.10  Area: 0.0.0.0  Interfaces: 2"
+          },
+          {
+            "cmd": "show ospf neighbor",
+            "desc": "OSPF adjacency table — neighbour ID, address, state.",
+            "type": "show",
+            "flagged": false,
+            "example": "ID: 10.10.10.1  Address: 10.10.10.1  State: FULL/DR"
+          },
+          {
+            "cmd": "show rip config",
+            "desc": "RIP daemon configuration — update timer and active interfaces.",
+            "type": "show",
+            "flagged": false,
+            "example": "Update Timer: 30s  Interfaces: vlan10"
+          },
+          {
+            "cmd": "show router id",
+            "desc": "Router-ID currently used by the OSPF/BGP routing stack.",
+            "type": "show",
+            "flagged": false,
+            "example": "10.10.10.10"
+          },
+          {
+            "cmd": "show ipsec vpn",
+            "desc": "List configured site-to-site IPsec tunnels and their state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Tunnel: T1  Remote: 203.0.113.5  State: UP"
+          },
+          {
+            "cmd": "show ipsec stats",
+            "desc": "IPsec ESP packet counters — encrypted in/out and any errors.",
+            "type": "show",
+            "flagged": false,
+            "example": "ESP In: 14502  ESP Out: 12903  Errors: 0"
+          },
+          {
+            "cmd": "show interface -full",
+            "desc": "Per-interface throughput and error counters in detail.",
+            "type": "show",
+            "flagged": false,
+            "example": "1/1: Tx: 50Mbps  Rx: 12Mbps  Drops: 0  Errors: 0"
+          },
+          {
+            "cmd": "show route -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "10.10.10.0/24  Type: STATIC  Cost: 1  State: UP"
+          },
+          {
+            "cmd": "show arp -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Entries: 145  Dynamic: 140  Static: 5"
+          },
+          {
+            "cmd": "show vlan -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "VLAN 10: Member Ports: 1/1, 1/2  Untagged: 1/1"
+          },
+          {
+            "cmd": "show channel -full",
+            "desc": "Link-aggregation (LACP) channels and their member-interface state.",
+            "type": "show",
+            "flagged": false,
+            "example": "LA/1: Member Interfaces: 1/1(UP), 1/2(UP)"
+          },
+          {
+            "cmd": "show ns diameter",
+            "desc": "Diameter protocol node identity, realm and connection state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Node: Diam_Node_1  State: UP  Identity: ex.com"
+          },
+          {
+            "cmd": "show ns dhcp -summary",
+            "desc": "Internal DHCP relay/server state — lease counts.",
+            "type": "show",
+            "flagged": false,
+            "example": "State: ENABLED  Leases: 145  Expired: 10"
+          },
+          {
+            "cmd": "show ns connectiontable -type SNIP",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Source: 10.10.10.11:54321  Dest: 192.168.1.10:80"
+          },
+          {
+            "cmd": "show ns pbr -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "PBR_Internal: 4502  PBR_DMZ: 1290"
+          },
+          {
+            "cmd": "show ns acl -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "ACL_DENY_TELNET: 403  ACL_ALLOW_SSH: 15"
+          },
+          {
+            "cmd": "show ns simpleacl -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "10.0.0.5: 45  10.0.0.10: 0"
+          },
+          {
+            "cmd": "show ipsec vpn -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Tunnels Up: 2  Tunnels Down: 0  Total BW: 12Mbps"
+          },
+          {
+            "cmd": "show ipsec tunnel",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: T_Cloud  Local: 10.1.1.10  Remote: 50.1.1.1  UP"
+          },
+          {
+            "cmd": "show ipsec stats -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "SPI In: 0x1234  SPI Out: 0x5678  AuthFail: 0"
+          },
+          {
+            "cmd": "show tunnel vserver",
+            "desc": "Tunnel-mode virtual servers (IP tunnels — GRE, IPIP).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: TUNNEL_VS  State: UP  Type: IP  Hits: 10293"
+          },
+          {
+            "cmd": "show tunnel policy",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: TUNNEL_POL_1  Action: ALLOW  Hits: 10293"
+          },
+          {
+            "cmd": "show tunnel action",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ALLOW  Type: ALLOW  Hits: 10293"
+          },
+          {
+            "cmd": "show ns diameter -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Identity: ex.com  Realm: ex.com  State: UP"
+          },
+          {
+            "cmd": "show ns diameter policy",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: DIAM_POL_1  Action: DIAM_ACT_1  Hits: 0"
+          },
+          {
+            "cmd": "show ns connectiontable -detail",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Src: 10.1.1.5:4521  Dst: 10.1.1.10:443  State: ESTABLISHED  MSS: 1460"
+          },
+          {
+            "cmd": "show ns pbr -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: PBR_1  Action: ALLOW  NextHop: 10.1.1.1  Vlan: 10"
+          },
+          {
+            "cmd": "show ns acl -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACL_1  Action: DENY  Protocol: TCP  DestPort: 23"
+          },
+          {
+            "cmd": "show lb route6 -full",
+            "desc": "IPv6 LB routes installed by the dataplane.",
+            "type": "show",
+            "flagged": false,
+            "example": "::/0  Gateway: fe80::1  Interface: 1/1"
+          },
+          {
+            "cmd": "show ns connectiontable -state TIME_WAIT",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Src: 10.1.1.5:80  Dst: 10.1.1.10:52134"
+          },
+          {
+            "cmd": "show ns ip6 -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total IPv6: 2  Active: 2"
+          },
+          {
+            "cmd": "show ns route6 -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total IPv6 Routes: 5  Active: 4"
+          },
+          {
+            "cmd": "show ns pbr6 -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total PBR6: 1  Hits: 0"
+          },
+          {
+            "cmd": "show ns acl6 -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total ACL6: 2  Hits: 12"
+          },
+          {
+            "cmd": "show ns simpleacl6 -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total SimpleACL6: 0"
+          },
+          {
+            "cmd": "set ns ip 10.10.10.11 -state DISABLED",
+            "desc": "Administratively disable the SNIP/VIP at 10.10.10.11 without removing it.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set interface 1/1 -throughput 1000",
+            "desc": "Cap interface 1/1 throughput at 1000 Mbps.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "rm ns ip 10.10.10.55",
+            "desc": "Delete the IP address 10.10.10.55 from the ADC configuration.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "rm route 192.168.100.0 255.255.255.0 10.1.1.1",
+            "desc": "Remove the static route to 192.168.100.0/24 via 10.1.1.1.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show channel",
+            "desc": "List link-aggregation (LACP) channels and their member-interface state.",
+            "type": "show",
+            "flagged": false,
+            "example": "LA/1 (802.3ad) State: UP, Interfaces: 1/1, 1/2"
+          },
+          {
+            "cmd": "show bridge table",
+            "desc": "L2 forwarding table — MAC addresses learned per VLAN/interface.",
+            "type": "show",
+            "flagged": false,
+            "example": "00:e0:ed:12:34:56 VLAN: 10 Interface: 1/1"
+          },
+          {
+            "cmd": "show ndp",
+            "desc": "IPv6 neighbor-discovery cache (the IPv6 equivalent of ARP).",
+            "type": "show",
+            "flagged": false,
+            "example": "fe80::1 00:0c:29:12:34:56 1/1 300s"
+          },
+          {
+            "cmd": "show route6",
+            "desc": "IPv6 routing table.",
+            "type": "show",
+            "flagged": false,
+            "example": "::/0 2001:db8::1 UG 0 0"
+          },
+          {
+            "cmd": "show ip6",
+            "desc": "IPv6 addresses configured on the ADC and their type/state.",
+            "type": "show",
+            "flagged": false,
+            "example": "2001:db8::10/64 NSIP Active Enabled"
+          },
+          {
+            "cmd": "show lb route6",
+            "desc": "IPv6 LB-routes — used by the ADC for IPv6 forwarding decisions.",
+            "type": "show",
+            "flagged": false,
+            "example": "::/0 ::1 UG 0 0"
           }
         ],
         "Rewrite & Responder": [
@@ -656,13 +2389,15 @@
             "cmd": "show rewrite policy",
             "desc": "Lists all configured rewrite policies",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: RW_POL_Header, Action: ACT_Insert, Hits: 129034"
           },
           {
             "cmd": "show responder policy",
             "desc": "Lists all configured responder policies",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: RS_POL_Redirect, Action: ACT_Redir, Hits: 15403"
           },
           {
             "cmd": "add rewrite action <name> replace HTTP.RES.HEADER(\"Server\") \"\\\"\\\"\"",
@@ -675,6 +2410,279 @@
             "desc": "Inserts HTTP Strict Transport Security header",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show policy expression",
+            "desc": "List all named policy expressions (advanced/PI). Used wherever an expression-name is referenced.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: is_secure_url  Expression: \"HTTP.REQ.URL.CONTAINS(\\\"login\\\")\""
+          },
+          {
+            "cmd": "show policy dataset",
+            "desc": "Display configured policy datasets — typed lookup tables (IPV4, NUM, etc.) used in expressions.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: internal_subnets  Type: IPV4  Index Count: 12"
+          },
+          {
+            "cmd": "show policy variable",
+            "desc": "List policy variables — typed scratchpads used by rewrite/responder, with scope and TTL.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: login_count  Type: ULONG  Scope: SESSION  Expires: 300s"
+          },
+          {
+            "cmd": "show policy stringmap",
+            "desc": "Display string-maps — key/value pairs used for fast in-policy lookups (URL rewrites etc.).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: url_mapping  Key: \"/old\"  Value: \"/new_v2\"  Hits: 45"
+          },
+          {
+            "cmd": "show policy patset",
+            "desc": "List pattern sets — named groups of literal patterns referenced by CONTAINS_ANY / EQUALS_ANY.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: blacklisted_ips  Index: 1  Value: \"192.168.100.0/24\""
+          },
+          {
+            "cmd": "show policy label",
+            "desc": "Display policy labels (named policy banks) and their hit counters and flow-control directive.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LBL_HTTP_REQUEST  Hits: 8502  Flow: NEXT"
+          },
+          {
+            "cmd": "show appflow collector",
+            "desc": "List AppFlow collectors — IPFIX/NetFlow destinations the ADC exports flow records to.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Collector_1  IP: 10.1.1.50  Port: 4739  State: ENABLED"
+          },
+          {
+            "cmd": "show appflow policy",
+            "desc": "Show AppFlow policies — which traffic is exported, with bound action and hit counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: AF_POL_WEB  Action: AF_ACT_1  Hits: 105932"
+          },
+          {
+            "cmd": "show appflow action",
+            "desc": "Display AppFlow actions — which collector(s) receive records and at what client-sample rate.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: AF_ACT_1  Collectors: Collector_1  ClientSample: 100"
+          },
+          {
+            "cmd": "show policy variable -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Variables: 15  Active: 8  Expired: 7"
+          },
+          {
+            "cmd": "show policy stringmap -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Maps: 5  Total Keys: 450  Hits: 12093"
+          },
+          {
+            "cmd": "show policy expression -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: get_user_agent  Expression: \"HTTP.REQ.HEADER(\\\"User-Agent\\\")\""
+          },
+          {
+            "cmd": "show policy label -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "LBL_REQ: 4502  LBL_RES: 120  LBL_SSL: 0"
+          },
+          {
+            "cmd": "show policy dataset -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "internal_subnets: 12903  blocked_ips: 45"
+          },
+          {
+            "cmd": "show ns callout",
+            "desc": "List HTTP callouts — external-server lookups invoked from within policies (auth, lookup APIs).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Auth_Callout  IP: 10.1.1.55  Port: 8080  State: UP"
+          },
+          {
+            "cmd": "show ns callout -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Auth_Callout: 4502  Log_Callout: 12"
+          },
+          {
+            "cmd": "show appflow collector -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Collector_1: 1.5M messages sent"
+          },
+          {
+            "cmd": "show appflow action -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "AF_ACT_Log: 4502  AF_ACT_Monitor: 0"
+          },
+          {
+            "cmd": "show appflow policy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "AF_POL_Global: 105932"
+          },
+          {
+            "cmd": "show responder action -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACT_DROP  Type: DROP  Hits: 1293"
+          },
+          {
+            "cmd": "show rewrite action -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACT_REPLACE  Type: REPLACE  Hits: 8593"
+          },
+          {
+            "cmd": "show responder policy -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Resp_Pol  Action: Act_Drop  Rule: CLIENT.IP.SRC.EQ(1.1.1.1)"
+          },
+          {
+            "cmd": "show rewrite policy -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: RW_Pol  Action: RW_Act  Hits: 12904"
+          },
+          {
+            "cmd": "show videooptimization profile",
+            "desc": "List Video Optimization profiles — adaptive-bitrate pacing and transcoding configurations.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: VO_Default  Pacing: ENABLED  Transcoding: OFF"
+          },
+          {
+            "cmd": "show videooptimization policy",
+            "desc": "Show video-optimization policies binding selection-rule to action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: VO_POL_1  Action: VO_ACT_1  Hits: 1452"
+          },
+          {
+            "cmd": "show videooptimization action",
+            "desc": "Display video-optimization actions: ABR settings, pacing rates.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: VO_ACT_1  ABR: Enabled  Pacing: 2Mbps"
+          },
+          {
+            "cmd": "show feo profile",
+            "desc": "List Front-End Optimization profiles — JS/CSS minification, caching, image-opt settings.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: FEO_Default  Cache: ENABLED  Minify: ENABLED"
+          },
+          {
+            "cmd": "show feo policy",
+            "desc": "Show FEO policies and the action they invoke.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: FEO_POL_1  Action: FEO_ACT_1  Hits: 129"
+          },
+          {
+            "cmd": "show feo action",
+            "desc": "Display FEO actions — image optimization level, JS minify on/off.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: FEO_ACT_1  ImageOpt: High  JSMinify: YES"
+          },
+          {
+            "cmd": "show contentinspection profile",
+            "desc": "Content-Inspection profiles — ICAP/inline-AV/IPS forwarding configuration.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CI_Pro  Type: ICAP  State: UP"
+          },
+          {
+            "cmd": "show contentinspection policy",
+            "desc": "Content-Inspection policies — selection rules forwarding traffic to a CI action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CI_POL_1  Action: CI_ACT_1  Hits: 0"
+          },
+          {
+            "cmd": "show contentinspection action",
+            "desc": "Content-Inspection actions — destination ICAP server IP/port.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: CI_ACT_1  ServerIP: 10.1.1.60  Port: 1344"
+          },
+          {
+            "cmd": "show transform policy",
+            "desc": "URL-Transform policies (legacy) — match expression and bound transform action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: TR_POL_1  Action: TR_ACT_1  Hits: 14502"
+          },
+          {
+            "cmd": "show transform action",
+            "desc": "URL-Transform actions — pattern replacement (e.g. /v1/ → /v2/).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: TR_ACT_1  Priority: 10  Replace: \"/v1/\" with \"/v2/\""
+          },
+          {
+            "cmd": "show appflow action -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: AF_ACT_1  Collectors: Coll_1  PageTracking: Enabled"
+          },
+          {
+            "cmd": "show appflow policy -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: AF_POL_1  Rule: TRUE  Action: AF_ACT_1"
+          },
+          {
+            "cmd": "show responder action",
+            "desc": "Display responder actions — type (DROP / REDIRECT / RESPONDWITH) and target.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACT_Redir, Type: REDIRECT, Target: \"https://site.com\""
+          },
+          {
+            "cmd": "show rewrite action",
+            "desc": "Display rewrite actions — operation type (INSERT/REPLACE/DELETE) and target.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ACT_Insert, Type: INSERT_HTTP_HEADER, Name: X-LB-ID"
+          },
+          {
+            "cmd": "show rewrite stats",
+            "desc": "Rewrite-feature aggregate counters — total rewrites and failures.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Rewrites: 450321, Failed: 0"
           }
         ],
         "AppFW": [
@@ -682,13 +2690,15 @@
             "cmd": "show appfw profile",
             "desc": "Lists all Application Firewall profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: APP_PRO_WEB, Type: HTML, Learning: Enabled"
           },
           {
             "cmd": "show appfw policy",
             "desc": "Lists all AppFW policies and their bound profiles",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: APP_POL_WEB, Action: APP_PRO_WEB, Hits: 45012"
           },
           {
             "cmd": "stat appfw",
@@ -743,6 +2753,83 @@
             "desc": "Exports AppFW learning data in CEF format for analysis",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show appfw profile -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Web_App_Pro  StartURL: Enabled  SQLInj: Enabled"
+          },
+          {
+            "cmd": "show appfw policy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Pol_Web: 40502  Pol_Mobile: 12"
+          },
+          {
+            "cmd": "show appfw learning -summary",
+            "desc": "Roll-up of AppFW learning engine — counts of suggested rules per signature category.",
+            "type": "show",
+            "flagged": false,
+            "example": "SQLInjection: 12  CrossSiteScripting: 4  FieldFormat: 0"
+          },
+          {
+            "cmd": "show appfw signatures -summary",
+            "desc": "Active signature counts: default Citrix-supplied vs user-added.",
+            "type": "show",
+            "flagged": false,
+            "example": "Default: 2450 rules  User: 12 rules"
+          },
+          {
+            "cmd": "show appfw profile -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Web_App_Pro: 45021  API_Pro: 12"
+          },
+          {
+            "cmd": "show appfw learningdata -full",
+            "desc": "Detailed learning suggestions — per-URL counts ready for promotion to relaxation rules.",
+            "type": "show",
+            "flagged": false,
+            "example": "Feature: SQLInjection  URL: /login.php  Count: 12"
+          },
+          {
+            "cmd": "show appfw session",
+            "desc": "Active AppFW sessions (CSRF tokens, form-protection state).",
+            "type": "show",
+            "flagged": false,
+            "example": "Total sessions: 140  Active: 45  TimedOut: 95"
+          },
+          {
+            "cmd": "set appfw profile Pro_1 -sqlInjectionAction block",
+            "desc": "Set the SQL-injection check on profile Pro_1 to block (and log/stat) violating requests.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show appfw signatures",
+            "desc": "Loaded AppFW signatures — name, version, total objects.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Sig_Default, Version: 112, Total Objects: 2450"
+          },
+          {
+            "cmd": "show appfw learningdata",
+            "desc": "AppFW learning-engine suggestions ready for promotion to relaxation rules.",
+            "type": "show",
+            "flagged": false,
+            "example": "Vserver: LB_SSL, Feature: HTML-SQL-Injection, Count: 12"
+          },
+          {
+            "cmd": "show appfw stats",
+            "desc": "AppFW counters — blocks, violations, request totals.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Blocks: 104, Violations: 450, Total Requests: 1M"
           }
         ],
         "Rate Limiting": [
@@ -774,13 +2861,63 @@
             "cmd": "show ns limitIdentifier",
             "desc": "Lists all configured rate limit identifiers and current hit counts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: Rate_Limit  Hits: 145  CurrentRate: 5/sec"
           },
           {
             "cmd": "show stream identifier <name>",
             "desc": "Shows real-time counters for a stream identifier",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show stream selector",
+            "desc": "List stream selectors — expressions that group flows for rate-limiting (e.g. by client IP).",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Sel_IP  Rule: HTTP.REQ.CLIENT.IP"
+          },
+          {
+            "cmd": "show stream identifier",
+            "desc": "List stream identifiers — counters that aggregate selector hits over a sample window.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: ID_Limit_100  Selector: Sel_IP  SampleTime: 1m"
+          },
+          {
+            "cmd": "show stream session",
+            "desc": "Active stream-engine sessions and their current bandwidth measurements per key.",
+            "type": "show",
+            "flagged": false,
+            "example": "Selector: Sel_IP  Key: 10.5.5.1  Current BW: 512Kbps"
+          },
+          {
+            "cmd": "show stream selector -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Sel_User  Rule: HTTP.REQ.USER.NAME"
+          },
+          {
+            "cmd": "show stream identifier -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "ID_Limit_100: 452  ID_Limit_500: 12"
+          },
+          {
+            "cmd": "show ns rateControl",
+            "desc": "Show global rate-control state — kernel-level packet-rate ceiling and current measured rate.",
+            "type": "show",
+            "flagged": false,
+            "example": "Threshold: 1000  Current: 452  Mode: ON"
+          },
+          {
+            "cmd": "show ns limitSession",
+            "desc": "Per-key rate-limit session entries — currently tracked sources and their state.",
+            "type": "show",
+            "flagged": false,
+            "example": "Key: 192.168.1.100  Identifier: Rate_Limit  State: ACTIVE"
           }
         ],
         "GSLB": [
@@ -788,19 +2925,22 @@
             "cmd": "show gslb vserver",
             "desc": "Lists all GSLB virtual servers: name, state, method, bound services",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GSLB_VS (10.50.1.1) - SSL  State: UP  Method: LEASTCONNECTION  Hits: 4501"
           },
           {
             "cmd": "show gslb service",
             "desc": "Lists all GSLB services: name, IP, site, state, and metrics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GSLB_SVC_Web1 (10.10.10.50:443)  State: UP  Site: DC_London"
           },
           {
             "cmd": "show gslb site",
             "desc": "Lists all GSLB sites and their synchronisation status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Site: DC_London  IP: 10.50.1.5  Type: LOCAL  Status: ACTIVE"
           },
           {
             "cmd": "add gslb site <name> <ip>",
@@ -855,6 +2995,48 @@
             "desc": "Triggers immediate GSLB configuration sync to all remote sites",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show gslb domain",
+            "desc": "List GSLB FQDNs and the vserver/service they resolve to.",
+            "type": "show",
+            "flagged": false,
+            "example": "Domain: global.com  Vserver: GSLB_VS  Type: FQDN"
+          },
+          {
+            "cmd": "show gslb parameter",
+            "desc": "Display global GSLB tuning parameters: LDNS probe order, drop-on-half thresholds, MEP/RTT settings.",
+            "type": "show",
+            "flagged": false,
+            "example": "LDNSProbOrder: PING, TCP, DNS  DropRRonHalfThreshold: DISABLED"
+          },
+          {
+            "cmd": "show gslb vserver -summary",
+            "desc": "Compact one-line per GSLB vserver — total / UP / DOWN counts.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total GSLB: 2  UP: 2"
+          },
+          {
+            "cmd": "show gslb site -summary",
+            "desc": "Roll-up of all GSLB sites: total configured and currently active.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Sites: 2  Active: 2"
+          },
+          {
+            "cmd": "show gslb service -summary",
+            "desc": "Roll-up of GSLB services: total and how many are currently UP.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Services: 4  UP: 4"
+          },
+          {
+            "cmd": "show gslb domain -summary",
+            "desc": "Total count of GSLB domains/FQDNs configured on the ADC.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Domains: 5"
           }
         ],
         "AAA & Authentication": [
@@ -862,7 +3044,8 @@
             "cmd": "show aaa user",
             "desc": "Lists all locally defined AAA users and group memberships",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: jsmith, Logintime: 14:00, IP: 192.168.10.5"
           },
           {
             "cmd": "show authentication vserver",
@@ -905,6 +3088,258 @@
             "desc": "Enables external authentication (LDAP/RADIUS) for a management user",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show system user",
+            "desc": "List local management users on the ADC — auth source, group memberships.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: nsroot  ExternalAuth: NO  Groups: superuser"
+          },
+          {
+            "cmd": "show system group",
+            "desc": "Local management groups and their privilege level / members.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: readonly_grp  Privilege: READ-ONLY  Users: 2"
+          },
+          {
+            "cmd": "show system cmdPolicy",
+            "desc": "Command-policies — regex defining which CLI commands a user/group may execute.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: local_policy  Action: ALLOW  CmdSpec: \"(^sh.*)\""
+          },
+          {
+            "cmd": "show authentication ldapAction -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LDAP_Act  Server: 10.1.1.5  DN: \"cn=adm,dc=ex\""
+          },
+          {
+            "cmd": "show authentication radiusAction -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: RAD_Act  Port: 1812  Timeout: 3s  Retries: 3"
+          },
+          {
+            "cmd": "show aaa vserver -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: AAA_VS  State: UP  AuthType: FORM  Portal: Default"
+          },
+          {
+            "cmd": "show aaa session -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "User: jdoe  IntranetIP: 10.1.1.50  StartTime: 10:00"
+          },
+          {
+            "cmd": "show vpn vserver -full",
+            "desc": "NetScaler Gateway / SSL-VPN vserver detail — login limits, ICA-only mode.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: Gateway_1  MaxLogin: 500  ICAOnly: ON"
+          },
+          {
+            "cmd": "show vpn parameter -full",
+            "desc": "Global SSL-VPN session parameters — split-tunnel, Windows cleanup, client cleanup.",
+            "type": "show",
+            "flagged": false,
+            "example": "SplitDNS: REMOTE  WindowsCleanup: ON"
+          },
+          {
+            "cmd": "show system user -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "User: nsroot  Last Login: Mon May 27 09:00:00"
+          },
+          {
+            "cmd": "show system group -full",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Group: Admin_Grp  Policies: 3  Users: 5"
+          },
+          {
+            "cmd": "show aaa session -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Active: 45  Max: 500  Wait: 0"
+          },
+          {
+            "cmd": "show aaa user -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "User_Admin: 45 logins  User_Staff: 120 logins"
+          },
+          {
+            "cmd": "show aaa group -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Groups: 10  Active Policies: 15"
+          },
+          {
+            "cmd": "show vpn vserver -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total Gateway: 2  Active Users: 45"
+          },
+          {
+            "cmd": "show vpn session -summary",
+            "desc": "Active SSL-VPN sessions broken down by client type (full client / ICA / Clientless).",
+            "type": "show",
+            "flagged": false,
+            "example": "SSLVPN: 12  ICA: 33  Clientless: 0"
+          },
+          {
+            "cmd": "show vpn parameter -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "SplitTunnel: ON  ClientCleanup: ON"
+          },
+          {
+            "cmd": "show authentication ldapPolicy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "LDAP_POL_1: 4502  LDAP_POL_FAIL: 12"
+          },
+          {
+            "cmd": "show authentication radiusPolicy -hits",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "RAD_POL_1: 129"
+          },
+          {
+            "cmd": "show authentication samlAction",
+            "desc": "SAML authentication actions — IdP entity URL, signing cert binding.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: SAML_Act  SAMLIDP: http://idp.com"
+          },
+          {
+            "cmd": "show authentication samlPolicy",
+            "desc": "SAML auth policies — selection rule + bound saml action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: SAML_Pol  Action: SAML_Act  Hits: 12"
+          },
+          {
+            "cmd": "show system group -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 5  Privilege: mixed"
+          },
+          {
+            "cmd": "show system user -summary",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Local: 3  External: 0"
+          },
+          {
+            "cmd": "show ns tmsession",
+            "desc": "Active TM/AAA-TM (traffic-management AAA) sessions — used by SSO/forms-based AAA.",
+            "type": "show",
+            "flagged": false,
+            "example": "User: jdoe  SessionID: 12345  TimeRemaining: 1800s"
+          },
+          {
+            "cmd": "set system user admin -password NewPass123",
+            "desc": "Reset the password for the local user \"admin\".",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "set vpn parameter -splitTunnel ON",
+            "desc": "Enable split-tunnel globally for SSL-VPN — only intranet routes traverse the tunnel.",
+            "type": "config",
+            "flagged": false,
+            "example": "Done"
+          },
+          {
+            "cmd": "show aaa vserver VPN_VS",
+            "desc": "Detail of one AAA vserver — VIP/port, state, max user limit.",
+            "type": "show",
+            "flagged": false,
+            "example": "VPN_VS (10.1.1.200:443) State: UP, MaxUsers: 100"
+          },
+          {
+            "cmd": "show aaa group",
+            "desc": "List AAA groups — member users and bound policy/action.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: IT_Admins, Users: 5, Policy: Pol_1"
+          },
+          {
+            "cmd": "show aaa parameter",
+            "desc": "Global AAA parameters — default authentication source and session timeout.",
+            "type": "show",
+            "flagged": false,
+            "example": "DefaultAuth: LOCAL, SessionTimeout: 30m"
+          },
+          {
+            "cmd": "show authentication ldapAction",
+            "desc": "List LDAP authentication actions — server IP/port and base-DN.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LDAP_Act, IP: 10.1.1.5, Port: 389, Base: \"dc=ex,dc=com\""
+          },
+          {
+            "cmd": "show authentication ldapPolicy",
+            "desc": "LDAP policies — selection rule + bound action + hit counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: LDAP_Pol, Rule: TRUE, Action: LDAP_Act, Hits: 405"
+          },
+          {
+            "cmd": "show authentication radiusAction",
+            "desc": "List RADIUS authentication actions — server IP/port and reachability.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: RAD_Act, IP: 10.1.1.6, Port: 1812, State: UP"
+          },
+          {
+            "cmd": "show authentication radiusPolicy",
+            "desc": "RADIUS policies — selection rule + bound RADIUS action + hits.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name: RAD_Pol, Action: RAD_Act, Hits: 12"
+          },
+          {
+            "cmd": "show vpn vserver",
+            "desc": "NetScaler Gateway / SSL-VPN vservers — VIP/port and portal state.",
+            "type": "show",
+            "flagged": false,
+            "example": "VPN_Gate (10.1.1.205:443) State: UP, Portal: Enabled"
+          },
+          {
+            "cmd": "show vpn parameter",
+            "desc": "Global SSL-VPN session parameters — split-tunnel and client-cleanup defaults.",
+            "type": "show",
+            "flagged": false,
+            "example": "SplitTunnel: ON, ClientCleanup: ON"
+          },
+          {
+            "cmd": "show vpn session",
+            "desc": "Active SSL-VPN sessions — user, intranet IP, session duration.",
+            "type": "show",
+            "flagged": false,
+            "example": "User: bwayne, IP: 172.16.1.5, Duration: 01:20:15"
           }
         ],
         "Diagnostics": [
@@ -1026,13 +3461,133 @@
             "cmd": "stat ssl",
             "desc": "SSL transaction counters and errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Handshake_Success: 145020  Handshake_Fail: 12  Sessions: 850"
           },
           {
             "cmd": "stat ns",
             "desc": "Overall system counters including memory/CPU/connections",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "stat ns -detail",
+            "desc": "Global ADC counters in detail mode — per-PE CPU, HTTP req rate, SSL card state.",
+            "type": "show",
+            "flagged": false,
+            "example": "PktCPU: 5%  HTTP_Req: 1250/sec  SSL_Card: UP"
+          },
+          {
+            "cmd": "stat interface 1/1",
+            "desc": "Per-interface throughput and error counters for 1/1.",
+            "type": "show",
+            "flagged": false,
+            "example": "In_Throughput: 45Mbps  Out_Throughput: 12Mbps  Errors: 0"
+          },
+          {
+            "cmd": "stat snmp",
+            "desc": "SNMP subsystem counters: traps sent, GET requests serviced, errors.",
+            "type": "show",
+            "flagged": false,
+            "example": "Traps_Sent: 12  Get_Requests: 4502  Errors: 0"
+          },
+          {
+            "cmd": "stat dns",
+            "desc": "DNS resolver / authoritative counters — queries, answers, cache hits.",
+            "type": "show",
+            "flagged": false,
+            "example": "Queries: 12053  Answers: 12053  Cache_Hits: 450"
+          },
+          {
+            "cmd": "stat cpu",
+            "desc": "Per-CPU utilization across all packet-engine cores.",
+            "type": "show",
+            "flagged": false,
+            "example": "CPU0: 4%  CPU1: 3%  CPU2: 5%  CPU3: 2%"
+          },
+          {
+            "cmd": "stat memory",
+            "desc": "System memory breakdown — total, used, free, in cache.",
+            "type": "show",
+            "flagged": false,
+            "example": "Total: 16GB  Used: 4GB  Free: 12GB  Cache: 1GB"
+          },
+          {
+            "cmd": "stat aaa",
+            "desc": "AAA counters — login successes/failures and active sessions.",
+            "type": "show",
+            "flagged": false,
+            "example": "Login_Success: 4502  Login_Fail: 12  Active_Sessions: 45"
+          },
+          {
+            "cmd": "shell nsconmsg -d current -g pol_hits",
+            "desc": "Dump live policy-hit counters from the kernel newnslog ring buffer.",
+            "type": "show",
+            "flagged": false,
+            "example": "0  0  14502  pol_hits_RESP_POL_1"
+          },
+          {
+            "cmd": "shell nsconmsg -d current -g cac_cur_svc_state",
+            "desc": "Show current service-state counters (UP/DOWN) from newnslog.",
+            "type": "show",
+            "flagged": false,
+            "example": "0  0  1  cac_cur_svc_state_SVC_1_UP"
+          },
+          {
+            "cmd": "shell \"df -h\"",
+            "desc": "Disk usage in human-readable units (BSD shell).",
+            "type": "show",
+            "flagged": false,
+            "example": "Filesystem Size Used Avail Capacity Mounted on /dev/ad0s1a 1.9G 645M 1.1G 36% /"
+          },
+          {
+            "cmd": "shell \"top -b -n 1\"",
+            "desc": "One-shot top snapshot — load averages, top processes by CPU.",
+            "type": "show",
+            "flagged": false,
+            "example": "last pid: 1420; load averages: 0.05, 0.04, 0.01; up 10+04:12:00"
+          },
+          {
+            "cmd": "shell \"ps aux | grep ppe\"",
+            "desc": "Locate the packet-engine processes (PPE-0, PPE-1, …) and their CPU usage.",
+            "type": "show",
+            "flagged": false,
+            "example": "root 1234 98.0 1.2 512M 128M - R 14:00 PPE-0"
+          },
+          {
+            "cmd": "shell \"netstat -rn\"",
+            "desc": "Kernel routing table in numeric form (host stack, not the dataplane).",
+            "type": "show",
+            "flagged": false,
+            "example": "Routing tables Internet: Destination Gateway Flags Netif Expire default 10.1.1.1 UGS 1/1"
+          },
+          {
+            "cmd": "shell \"tail -n 5 /var/log/ns.log\"",
+            "desc": "Show the last five lines of the main NetScaler audit log.",
+            "type": "show",
+            "flagged": false,
+            "example": "May 27 15:00:01 <local0.info> 10.1.1.10 PPE-0 : UI_READ : User nsroot"
+          },
+          {
+            "cmd": "shell \"grep -i 'fail' /var/log/ns.log\"",
+            "desc": "Surface any failure messages in /var/log/ns.log.",
+            "type": "show",
+            "flagged": false,
+            "example": "May 27 10:12:05 Login failed for user admin"
+          },
+          {
+            "cmd": "shell \"uptime\"",
+            "desc": "Time since boot, current load averages and logged-in user count.",
+            "type": "show",
+            "flagged": false,
+            "example": "3:14PM up 10 days, 4:12, 1 user, load averages: 0.02, 0.05, 0.01"
+          },
+          {
+            "cmd": "shell \"cat /flash/nsconfig/ns.conf\"",
+            "desc": "Dump the persisted (saved) ns.conf from /flash/nsconfig — survives reboot.",
+            "type": "show",
+            "flagged": false,
+            "example": "add ns ip 10.10.10.10 255.255.255.0 -type NSIP"
           }
         ],
         "VIP Hit Counter Troubleshooting": [
@@ -1058,7 +3613,8 @@
             "cmd": "stat lb vserver -summary",
             "desc": "One-line-per-vserver summary across the whole appliance (matches the GUI Dashboard view).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total_Req: 1.5M  Total_Resp: 1.5M  Client_Conn: 450"
           },
           {
             "cmd": "stat cs vserver",
@@ -1106,7 +3662,8 @@
             "cmd": "stat gslb vserver",
             "desc": "GSLB vserver counters — DNS query hits per site/vserver. If a site is starved, check here first.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GSLB_VS: Req: 12050, Resp: 12050, AvgRespTime: 15ms"
           },
           {
             "cmd": "stat gslb vserver <name>",
@@ -1395,6 +3952,27 @@
             "desc": "NITRO call returning per-bound-service hit counters alongside the vserver totals.",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "stat service SVC_Web_1",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Req: 45021  Resp: 45020  Throughput: 12Mbps"
+          },
+          {
+            "cmd": "stat lb vserver LB_Prod",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Vserver: LB_Prod, Req: 5042, Resp: 5042, PktsIn: 120k, PktsOut: 115k"
+          },
+          {
+            "cmd": "stat cs vserver CS_Main",
+            "desc": "",
+            "type": "show",
+            "flagged": false,
+            "example": "Hits: 10540, Requests: 10540, Responses: 10490"
           }
         ]
       },
