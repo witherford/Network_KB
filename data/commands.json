@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T05:43:32.961Z",
+  "updatedAt": "2026-04-29T20:07:27.045Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -4560,13 +4560,15 @@
             "cmd": "show version",
             "desc": "IOS version, uptime, hardware model, memory, flash storage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show running-config",
             "desc": "Display the current active running configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
@@ -4578,25 +4580,29 @@
             "cmd": "show interfaces",
             "desc": "Status and statistics for all interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
           },
           {
             "cmd": "show interfaces status",
             "desc": "Concise table: connected state, VLAN assignment, speed, duplex",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
           },
           {
             "cmd": "show ip interface brief",
             "desc": "Summary of all interfaces: IP, method, status, protocol state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     unassigned      YES NVRAM  administratively down down\nGigabitEthernet0/1     10.0.0.1        YES NVRAM  up                    up\nGigabitEthernet0/2     10.10.10.1      YES NVRAM  up                    up\nLoopback0              1.1.1.1         YES NVRAM  up                    up\nVlan1                  unassigned      YES NVRAM  administratively down down\nVlan10                 192.168.10.1    YES NVRAM  up                    up"
           },
           {
             "cmd": "show ip route",
             "desc": "Full routing table: connected, static, and dynamic routes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
           },
           {
             "cmd": "show arp",
@@ -4608,19 +4614,22 @@
             "cmd": "show mac address-table",
             "desc": "MAC address table: learned addresses, VLANs, and ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
           },
           {
             "cmd": "show vlan brief",
             "desc": "Condensed VLAN summary: IDs, names, status, and assigned ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
           },
           {
             "cmd": "show spanning-tree",
             "desc": "STP state for all VLANs: root bridge, port states, timers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
           },
           {
             "cmd": "show spanning-tree vlan <id>",
@@ -4638,7 +4647,8 @@
             "cmd": "show cdp neighbors detail",
             "desc": "Detailed CDP neighbour info including platform and IP addresses",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
           },
           {
             "cmd": "show lldp neighbors",
@@ -4650,19 +4660,22 @@
             "cmd": "show etherchannel summary",
             "desc": "Port-channel/EtherChannel group status and member ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
           },
           {
             "cmd": "show ip ospf neighbor",
             "desc": "OSPF neighbour adjacency table and states",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
           },
           {
             "cmd": "show ip bgp summary",
             "desc": "BGP peer summary: neighbour state and prefixes received",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show processes cpu",
@@ -4686,7 +4699,8 @@
             "cmd": "show inventory",
             "desc": "Hardware inventory: chassis, modules, SFPs with PID and serial numbers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show platform tcam utilization",
@@ -5168,7 +5182,8 @@
             "cmd": "show ip dhcp binding",
             "desc": "Shows all active DHCP leases: MAC, IP, and expiry time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
           },
           {
             "cmd": "show ip dhcp pool",
@@ -5230,7 +5245,8 @@
             "cmd": "show ntp status",
             "desc": "Displays NTP sync state, stratum, reference server, and clock offset",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
           },
           {
             "cmd": "show ntp associations",
@@ -5348,7 +5364,8 @@
             "cmd": "show logging",
             "desc": "Displays the contents of the syslog buffer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "show ip dhcp snooping binding",
@@ -5394,13 +5411,15 @@
             "cmd": "show version",
             "desc": "IOS-XE version, uptime, hardware model, and installed packages",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show running-config",
             "desc": "Full current running configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show wireless summary",
@@ -6628,7 +6647,8 @@
             "cmd": "show logging",
             "desc": "Displays the contents of the syslog buffer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "ping <ip>",
@@ -6746,7 +6766,8 @@
             "cmd": "show version",
             "desc": "Shows WLC software version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show platform",
@@ -6758,7 +6779,8 @@
             "cmd": "show inventory",
             "desc": "Shows hardware inventory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show environment all",
@@ -6782,7 +6804,8 @@
             "cmd": "show logging",
             "desc": "Shows system logs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "show logging onboard",
@@ -12510,19 +12533,22 @@
             "cmd": "show interfaces",
             "desc": "Displays interface status and counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
           },
           {
             "cmd": "show interfaces status",
             "desc": "Shows interface link/duplex/speed summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
           },
           {
             "cmd": "show interfaces description",
             "desc": "Shows interface descriptions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface                      Status         Protocol Description\nGi1/0/1                        up             up       ACCESS-PORT\nGi1/0/2                        up             up       UPLINK-TO-DIST\nGi1/0/3                        admin down     down\nGi1/0/24                       up             up       TRUNK-TO-DIST2\nTe1/1/1                        up             up       40G UPLINK\nPo1                            up             up       MEC-TO-DIST"
           },
           {
             "cmd": "show interfaces trunk",
@@ -12588,13 +12614,15 @@
             "cmd": "show etherchannel summary",
             "desc": "LAG bundle state and member status (P=in-bundle)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
           },
           {
             "cmd": "show lldp neighbors detail",
             "desc": "LLDP info from directly-connected devices",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "------------------------------------------------\nLocal Intf: Gi1/0/24\nChassis id: 0c4b.f0d2.c000\nPort id: Gi1/0/12\nPort Description: UPLINK-TO-ACCESS1\nSystem Name: Distribution1\n\nSystem Description:\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 17.12.04\n\nTime remaining: 105 seconds\nSystem Capabilities: B,R\nEnabled Capabilities: B,R\nManagement Addresses:\n    IP: 10.0.0.2"
           },
           {
             "cmd": "clear counters <int>",
@@ -12636,13 +12664,15 @@
             "cmd": "show vlan brief",
             "desc": "VLANs and their access-port membership",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
           },
           {
             "cmd": "show spanning-tree",
             "desc": "STP state per VLAN — root/designated/blocking",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
           },
           {
             "cmd": "show spanning-tree inconsistentports",
@@ -12654,7 +12684,8 @@
             "cmd": "show cdp neighbors detail",
             "desc": "CDP neighbors with platform, address, capabilities",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
           },
           {
             "cmd": "show ip interface brief | exclude unassigned",
@@ -12764,7 +12795,8 @@
             "cmd": "show ip route",
             "desc": "Displays IPv4 routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
           },
           {
             "cmd": "show ip route <prefix>",
@@ -12776,7 +12808,8 @@
             "cmd": "show ip ospf neighbor",
             "desc": "Shows OSPF neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
           },
           {
             "cmd": "show ip ospf interface",
@@ -12788,13 +12821,15 @@
             "cmd": "show ip ospf database",
             "desc": "Shows OSPF LSDB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip bgp summary",
             "desc": "Shows BGP peer summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show ip bgp neighbors",
@@ -12806,19 +12841,22 @@
             "cmd": "show ip bgp",
             "desc": "Shows BGP table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP table version is 2143, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i - internal,\n              r RIB-failure, S Stale, m multipath, b backup-path, x best-external\n\n   Network          Next Hop            Metric LocPrf Weight Path\n*> 0.0.0.0          1.2.3.4                              0 65002 i\n*> 8.8.8.0/24       1.2.3.4                  0           0 65002 15169 i\n*> 10.0.0.0/8       0.0.0.0                  0         32768 i\n* i 172.16.0.0/16   2.2.2.2                  0    100      0 65003 i\n*>                  5.6.7.8                              0 65003 i"
           },
           {
             "cmd": "show ip eigrp neighbors",
             "desc": "Shows EIGRP neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
           },
           {
             "cmd": "show ip eigrp topology",
             "desc": "Shows EIGRP topology table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
           },
           {
             "cmd": "show ip protocols",
@@ -12842,7 +12880,8 @@
             "cmd": "show ip ospf interface brief",
             "desc": "Per-interface OSPF state, area, cost, neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "debug ip ospf adj",
@@ -12884,7 +12923,8 @@
             "cmd": "show vrf",
             "desc": "List configured VRFs and their interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "  Name                             Default RD            Protocols   Interfaces\n  CUSTOMER-A                       65001:1               ipv4        Gi0/0/1\n                                                                     Gi0/0/2\n  CUSTOMER-B                       65001:2               ipv4        Gi0/0/3\n  MGMT                             <not set>             ipv4        Gi0/0/4"
           },
           {
             "cmd": "show ip route vrf <name>",
@@ -13066,13 +13106,15 @@
             "cmd": "show mac address-table",
             "desc": "All learned MACs across the switch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
           },
           {
             "cmd": "show port-security",
             "desc": "Port-security summary: violations, secure MAC counts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Secure Port  MaxSecureAddr  CurrentAddr  SecurityViolation  Security Action\n                (Count)       (Count)          (Count)\n---------------------------------------------------------------------------\n       Gi1/0/1              1            1                  0         Restrict\n       Gi1/0/5              2            2                  0          Protect\n       Gi1/0/24             1            0                  0         Shutdown\n---------------------------------------------------------------------------\nTotal Addresses in System (excluding one mac per port)     : 2\nMax Addresses limit in System (excluding one mac per port) : 4096"
           },
           {
             "cmd": "show dot1x all",
@@ -13144,13 +13186,15 @@
             "cmd": "show ip dhcp snooping",
             "desc": "DHCP snooping global state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10\nDHCP snooping is operational on following VLANs:\n10\nDHCP snooping is configured on the following Interfaces:\nNone\nInsertion of option 82 is enabled\n   circuit-id default format: vlan-mod-port\n   remote-id: 7c21.0d6a.0000 (MAC)\nOption 82 on untrusted port is not allowed\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                    Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet1/0/24      yes        yes             unlimited"
           },
           {
             "cmd": "show authentication sessions interface Gi1/0/1 details",
             "desc": "802.1X / MAB session detail per port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            Interface:  GigabitEthernet1/0/1\n               IIF-ID:  0x14B8408000000051\n          MAC Address:  001a.b3c4.5678\n         IPv6 Address:  Unknown\n         IPv4 Address:  10.0.10.45\n            User-Name:  jdoe\n              Status:  Authorized\n              Domain:  DATA\n      Oper host mode:  multi-auth\n    Oper control dir:  both\n     Session timeout:  N/A\n   Common Session ID:  0A000A2D0000000300A1B5C2\n     Acct Session ID:  0x000003D2\n              Handle:  0xCB000003\n      Current Policy:  POLICY_Gi1/0/1"
           },
           {
             "cmd": "show aaa servers",
@@ -13374,7 +13418,8 @@
             "cmd": "show inventory",
             "desc": "Serial numbers + PIDs for TAC cases",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show platform",
@@ -13404,7 +13449,8 @@
             "cmd": "show processes cpu sorted | exclude 0.00",
             "desc": "Only processes with non-zero CPU usage",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 8%/1%; one minute: 11%; five minutes: 9%\n PID Runtime(ms)     Invoked      uSecs   5Sec   1Min   5Min TTY Process\n  72       42183       12834       3286  3.43%  3.21%  2.98%   0 IP RIB Update\n 134       18472       28911        638  1.21%  1.18%  1.05%   0 IP SNMP\n 391        9183        2018       4549  0.81%  0.73%  0.65%   0 SSH Process\n  91        7321       18293        400  0.65%  0.60%  0.58%   0 ARP Input"
           },
           {
             "cmd": "show logging summary",
@@ -13466,7 +13512,8 @@
             "cmd": "show clock detail",
             "desc": "Clock, timezone, and time-source",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10:23:45.301 UTC Mon Feb 5 2026\nTime source is NTP\nSummer time starts 02:00:00 UTC Sun Mar 29 2026\nSummer time ends 03:00:00 UTC Sun Oct 25 2026"
           },
           {
             "cmd": "show ntp associations",
@@ -13478,7 +13525,8 @@
             "cmd": "show users",
             "desc": "Active VTY/console sessions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "    Line       User       Host(s)              Idle       Location\n*  1 vty 0     admin      idle                 00:00:00 10.50.50.50\n   2 vty 1     ops-team   idle                 00:14:32 10.50.50.51"
           },
           {
             "cmd": "show ssh",
@@ -13492,13 +13540,15 @@
             "cmd": "show version",
             "desc": "Software version, image, uptime, last reload, register",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show running-config",
             "desc": "Active in-memory configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
@@ -13510,7 +13560,8 @@
             "cmd": "show inventory",
             "desc": "Hardware inventory: chassis, modules, transceivers, serials",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show environment all",
@@ -13528,7 +13579,8 @@
             "cmd": "show processes cpu sorted | exclude 0.00",
             "desc": "CPU usage by process, ignore idle",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CPU utilization for five seconds: 8%/1%; one minute: 11%; five minutes: 9%\n PID Runtime(ms)     Invoked      uSecs   5Sec   1Min   5Min TTY Process\n  72       42183       12834       3286  3.43%  3.21%  2.98%   0 IP RIB Update\n 134       18472       28911        638  1.21%  1.18%  1.05%   0 IP SNMP\n 391        9183        2018       4549  0.81%  0.73%  0.65%   0 SSH Process\n  91        7321       18293        400  0.65%  0.60%  0.58%   0 ARP Input"
           },
           {
             "cmd": "show processes cpu history",
@@ -13558,13 +13610,15 @@
             "cmd": "show clock detail",
             "desc": "Current time + source (manual / NTP / hardware)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10:23:45.301 UTC Mon Feb 5 2026\nTime source is NTP\nSummer time starts 02:00:00 UTC Sun Mar 29 2026\nSummer time ends 03:00:00 UTC Sun Oct 25 2026"
           },
           {
             "cmd": "show users",
             "desc": "Active console / VTY sessions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "    Line       User       Host(s)              Idle       Location\n*  1 vty 0     admin      idle                 00:00:00 10.50.50.50\n   2 vty 1     ops-team   idle                 00:14:32 10.50.50.51"
           },
           {
             "cmd": "show line vty 0 4",
@@ -13696,7 +13750,8 @@
             "cmd": "show interfaces status",
             "desc": "View Condensed Interface Status. — Displays Port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
           },
           {
             "cmd": "ip address ip-address subnet-mask secondary",
@@ -13884,7 +13939,8 @@
             "cmd": "show vlan brief",
             "desc": "VLAN ID/name and member ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
           },
           {
             "cmd": "show vlan id 10",
@@ -14180,7 +14236,8 @@
             "cmd": "show spanning-tree",
             "desc": "STP topology per VLAN: root, port states, costs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
           },
           {
             "cmd": "show spanning-tree summary",
@@ -14204,7 +14261,8 @@
             "cmd": "show etherchannel summary",
             "desc": "Port-channels: status, members, protocol",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
           },
           {
             "cmd": "show etherchannel load-balance",
@@ -14216,7 +14274,8 @@
             "cmd": "show mac address-table",
             "desc": "Full MAC table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
           },
           {
             "cmd": "show mac address-table address 0050.5612.3456",
@@ -14580,7 +14639,8 @@
             "cmd": "show ip pim neighbor",
             "desc": "PIM neighbours and uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PIM Neighbor Table\nMode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,\n      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable\n\nNeighbor          Interface                Uptime/Expires    Ver   DR\nAddress                                                            Prio/Mode\n10.0.0.2          GigabitEthernet0/1       1d04h/00:01:38    v2    1 / DR S P G"
           },
           {
             "cmd": "show ip pim interface",
@@ -14678,7 +14738,8 @@
             "cmd": "show ip nat translations",
             "desc": "Active NAT translations",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Pro  Inside global       Inside local        Outside local       Outside global\nicmp 198.51.100.10:512 10.0.0.5:512        8.8.8.8:512         8.8.8.8:512\ntcp  198.51.100.10:33214 10.0.0.5:33214    142.250.46.193:443  142.250.46.193:443\nudp  198.51.100.10:5060 10.0.0.10:5060     203.0.113.50:5060   203.0.113.50:5060"
           },
           {
             "cmd": "show ip nat statistics",
@@ -14710,7 +14771,8 @@
             "cmd": "show ip dhcp binding",
             "desc": "DHCP server leases",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
           },
           {
             "cmd": "show ip dhcp server statistics",
@@ -14748,7 +14810,8 @@
             "cmd": "show ntp status",
             "desc": "NTP sync state, stratum, reference",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
           },
           {
             "cmd": "show ntp associations",
@@ -14772,7 +14835,8 @@
             "cmd": "show logging",
             "desc": "Logging buffer + destinations",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "ntp server 10.10.10.10 prefer",
@@ -14890,7 +14954,8 @@
             "cmd": "show ip arp",
             "desc": "ARP cache",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
           },
           {
             "cmd": "show ip arp <ip>",
@@ -14902,13 +14967,15 @@
             "cmd": "show cdp neighbors detail",
             "desc": "CDP neighbours with full info (IP, software, capabilities)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
           },
           {
             "cmd": "show lldp neighbors detail",
             "desc": "LLDP neighbours with full info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "------------------------------------------------\nLocal Intf: Gi1/0/24\nChassis id: 0c4b.f0d2.c000\nPort id: Gi1/0/12\nPort Description: UPLINK-TO-ACCESS1\nSystem Name: Distribution1\n\nSystem Description:\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 17.12.04\n\nTime remaining: 105 seconds\nSystem Capabilities: B,R\nEnabled Capabilities: B,R\nManagement Addresses:\n    IP: 10.0.0.2"
           },
           {
             "cmd": "monitor capture CAP interface Gi1/0/1 both match any buffer size 10 limit pps 1000",
@@ -15068,7 +15135,8 @@
             "cmd": "show ip ospf neighbor",
             "desc": "Adjacency table: neighbour ID, state, dead-time, address, interface.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
           },
           {
             "cmd": "show ip ospf neighbor detail",
@@ -15086,13 +15154,15 @@
             "cmd": "show ip ospf interface brief",
             "desc": "Compact per-interface OSPF state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "show ip ospf database",
             "desc": "Full Link-State Database (router/network/summary/external LSAs).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip ospf database router self-originate",
@@ -15424,7 +15494,8 @@
             "cmd": "show ip eigrp neighbors",
             "desc": "EIGRP adjacency table: hold, uptime, retransmits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
           },
           {
             "cmd": "show ip eigrp neighbors detail",
@@ -15436,7 +15507,8 @@
             "cmd": "show ip eigrp topology",
             "desc": "Topology table — successors + feasible successors per prefix.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
           },
           {
             "cmd": "show ip eigrp topology all-links",
@@ -15702,7 +15774,8 @@
             "cmd": "show ip bgp summary",
             "desc": "Per-peer summary: state, prefixes received, uptime.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4",
@@ -15732,7 +15805,8 @@
             "cmd": "show ip bgp",
             "desc": "Full BGP table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP table version is 2143, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i - internal,\n              r RIB-failure, S Stale, m multipath, b backup-path, x best-external\n\n   Network          Next Hop            Metric LocPrf Weight Path\n*> 0.0.0.0          1.2.3.4                              0 65002 i\n*> 8.8.8.0/24       1.2.3.4                  0           0 65002 15169 i\n*> 10.0.0.0/8       0.0.0.0                  0         32768 i\n* i 172.16.0.0/16   2.2.2.2                  0    100      0 65003 i\n*>                  5.6.7.8                              0 65003 i"
           },
           {
             "cmd": "show ip bgp 8.8.8.0/24",
@@ -16678,13 +16752,15 @@
             "cmd": "show version",
             "desc": "Shows ASA version and license",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show inventory",
             "desc": "Shows hardware inventory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show cpu usage",
@@ -17138,7 +17214,8 @@
             "cmd": "show logging",
             "desc": "Shows logging configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "show logging buffer",
@@ -21648,13 +21725,15 @@
             "cmd": "show version",
             "desc": "Shows software version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show running-config",
             "desc": "Shows running configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
@@ -21764,7 +21843,8 @@
             "cmd": "show inventory",
             "desc": "Shows hardware inventory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show diag",
@@ -21980,7 +22060,8 @@
             "cmd": "show logging",
             "desc": "Shows system logs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
           },
           {
             "cmd": "show logging onboard",
@@ -22290,19 +22371,22 @@
             "cmd": "show interfaces",
             "desc": "Shows all interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
           },
           {
             "cmd": "show interfaces status",
             "desc": "Shows interface status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
           },
           {
             "cmd": "show interfaces description",
             "desc": "Shows interface descriptions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface                      Status         Protocol Description\nGi1/0/1                        up             up       ACCESS-PORT\nGi1/0/2                        up             up       UPLINK-TO-DIST\nGi1/0/3                        admin down     down\nGi1/0/24                       up             up       TRUNK-TO-DIST2\nTe1/1/1                        up             up       40G UPLINK\nPo1                            up             up       MEC-TO-DIST"
           },
           {
             "cmd": "show interfaces counters",
@@ -22448,7 +22532,8 @@
             "cmd": "show vlan brief",
             "desc": "Shows VLAN summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
           },
           {
             "cmd": "show vlan id <id>",
@@ -22516,7 +22601,8 @@
             "cmd": "show spanning-tree",
             "desc": "Shows spanning-tree summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
           },
           {
             "cmd": "show spanning-tree detail",
@@ -22628,7 +22714,8 @@
             "cmd": "show etherchannel summary",
             "desc": "Shows EtherChannel summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
           },
           {
             "cmd": "show etherchannel detail",
@@ -22696,7 +22783,8 @@
             "cmd": "show mac address-table",
             "desc": "Shows MAC address table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
           },
           {
             "cmd": "show mac address-table dynamic",
@@ -22758,7 +22846,8 @@
             "cmd": "show port-security",
             "desc": "Shows port security summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Secure Port  MaxSecureAddr  CurrentAddr  SecurityViolation  Security Action\n                (Count)       (Count)          (Count)\n---------------------------------------------------------------------------\n       Gi1/0/1              1            1                  0         Restrict\n       Gi1/0/5              2            2                  0          Protect\n       Gi1/0/24             1            0                  0         Shutdown\n---------------------------------------------------------------------------\nTotal Addresses in System (excluding one mac per port)     : 2\nMax Addresses limit in System (excluding one mac per port) : 4096"
           },
           {
             "cmd": "show port-security interface <int>",
@@ -22968,7 +23057,8 @@
             "cmd": "show ip route",
             "desc": "Shows IPv4 routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
           },
           {
             "cmd": "show ip route <prefix>",
@@ -22998,7 +23088,8 @@
             "cmd": "show ip arp",
             "desc": "Shows ARP table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
           },
           {
             "cmd": "show ip arp detail",
@@ -23054,7 +23145,8 @@
             "cmd": "show ip ospf neighbor",
             "desc": "Shows OSPF neighbors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
           },
           {
             "cmd": "show ip ospf interface",
@@ -23066,7 +23158,8 @@
             "cmd": "show ip ospf database",
             "desc": "Shows OSPF LSDB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip ospf border-routers",
@@ -23168,7 +23261,8 @@
             "cmd": "show ip ospf interface brief",
             "desc": "Compact per-interface OSPF state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "show ip route ospf",
@@ -23374,13 +23468,15 @@
             "cmd": "show ip eigrp neighbors",
             "desc": "Shows EIGRP neighbors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
           },
           {
             "cmd": "show ip eigrp topology",
             "desc": "Shows EIGRP topology",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
           },
           {
             "cmd": "show ip eigrp interfaces",
@@ -23628,13 +23724,15 @@
             "cmd": "show ip bgp",
             "desc": "Shows BGP table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP table version is 2143, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i - internal,\n              r RIB-failure, S Stale, m multipath, b backup-path, x best-external\n\n   Network          Next Hop            Metric LocPrf Weight Path\n*> 0.0.0.0          1.2.3.4                              0 65002 i\n*> 8.8.8.0/24       1.2.3.4                  0           0 65002 15169 i\n*> 10.0.0.0/8       0.0.0.0                  0         32768 i\n* i 172.16.0.0/16   2.2.2.2                  0    100      0 65003 i\n*>                  5.6.7.8                              0 65003 i"
           },
           {
             "cmd": "show ip bgp summary",
             "desc": "Shows BGP summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show ip bgp neighbors",
@@ -24044,7 +24142,8 @@
             "cmd": "show ip pim neighbor",
             "desc": "Shows PIM neighbors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PIM Neighbor Table\nMode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,\n      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable\n\nNeighbor          Interface                Uptime/Expires    Ver   DR\nAddress                                                            Prio/Mode\n10.0.0.2          GigabitEthernet0/1       1d04h/00:01:38    v2    1 / DR S P G"
           },
           {
             "cmd": "show ip pim interface",
@@ -24234,7 +24333,8 @@
             "cmd": "show ip dhcp binding",
             "desc": "Shows DHCP bindings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
           },
           {
             "cmd": "show ip dhcp pool",
@@ -24252,7 +24352,8 @@
             "cmd": "show ip dhcp snooping",
             "desc": "Shows DHCP snooping status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10\nDHCP snooping is operational on following VLANs:\n10\nDHCP snooping is configured on the following Interfaces:\nNone\nInsertion of option 82 is enabled\n   circuit-id default format: vlan-mod-port\n   remote-id: 7c21.0d6a.0000 (MAC)\nOption 82 on untrusted port is not allowed\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                    Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet1/0/24      yes        yes             unlimited"
           },
           {
             "cmd": "show ip dhcp snooping binding",
@@ -24296,7 +24397,8 @@
             "cmd": "show ntp status",
             "desc": "Shows NTP status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
           },
           {
             "cmd": "show ntp associations",
@@ -25995,13 +26097,15 @@
             "cmd": "show version",
             "desc": "Software version, hardware, uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show inventory",
             "desc": "Hardware inventory: chassis, modules, transceivers, serials",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show module",
@@ -26025,7 +26129,8 @@
             "cmd": "show running-config",
             "desc": "Active configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
@@ -26073,13 +26178,15 @@
             "cmd": "show clock detail",
             "desc": "Current time + NTP source",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10:23:45.301 UTC Mon Feb 5 2026\nTime source is NTP\nSummer time starts 02:00:00 UTC Sun Mar 29 2026\nSummer time ends 03:00:00 UTC Sun Oct 25 2026"
           },
           {
             "cmd": "show users",
             "desc": "Active sessions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "    Line       User       Host(s)              Idle       Location\n*  1 vty 0     admin      idle                 00:00:00 10.50.50.50\n   2 vty 1     ops-team   idle                 00:14:32 10.50.50.51"
           }
         ],
         "Interfaces": [
@@ -26173,7 +26280,8 @@
             "cmd": "show vlan brief",
             "desc": "Short VLAN table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
           },
           {
             "cmd": "show vpc",
@@ -26235,7 +26343,8 @@
             "cmd": "show ip route",
             "desc": "IPv4 routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
           },
           {
             "cmd": "show ip route vrf <name>",
@@ -26259,25 +26368,29 @@
             "cmd": "show ip ospf interface brief",
             "desc": "OSPF on each interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "show ip ospf database",
             "desc": "OSPF LSDB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip bgp summary",
             "desc": "BGP peers, state, prefix counts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show ip bgp",
             "desc": "BGP RIB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP table version is 2143, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i - internal,\n              r RIB-failure, S Stale, m multipath, b backup-path, x best-external\n\n   Network          Next Hop            Metric LocPrf Weight Path\n*> 0.0.0.0          1.2.3.4                              0 65002 i\n*> 8.8.8.0/24       1.2.3.4                  0           0 65002 15169 i\n*> 10.0.0.0/8       0.0.0.0                  0         32768 i\n* i 172.16.0.0/16   2.2.2.2                  0    100      0 65003 i\n*>                  5.6.7.8                              0 65003 i"
           },
           {
             "cmd": "show ip bgp neighbors <ip>",
@@ -26289,7 +26402,8 @@
             "cmd": "show ip pim neighbor",
             "desc": "PIM neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PIM Neighbor Table\nMode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,\n      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable\n\nNeighbor          Interface                Uptime/Expires    Ver   DR\nAddress                                                            Prio/Mode\n10.0.0.2          GigabitEthernet0/1       1d04h/00:01:38    v2    1 / DR S P G"
           },
           {
             "cmd": "show ip pim interface",
@@ -26555,13 +26669,15 @@
             "cmd": "show ip arp",
             "desc": "ARP cache",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
           },
           {
             "cmd": "show mac address-table",
             "desc": "MAC address table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
           },
           {
             "cmd": "show mac address-table address 0050.5612.3456",
@@ -26573,13 +26689,15 @@
             "cmd": "show cdp neighbors detail",
             "desc": "CDP neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
           },
           {
             "cmd": "show lldp neighbors detail",
             "desc": "LLDP neighbours",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "------------------------------------------------\nLocal Intf: Gi1/0/24\nChassis id: 0c4b.f0d2.c000\nPort id: Gi1/0/12\nPort Description: UPLINK-TO-ACCESS1\nSystem Name: Distribution1\n\nSystem Description:\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 17.12.04\n\nTime remaining: 105 seconds\nSystem Capabilities: B,R\nEnabled Capabilities: B,R\nManagement Addresses:\n    IP: 10.0.0.2"
           },
           {
             "cmd": "show bfd neighbors",
@@ -26709,13 +26827,15 @@
             "cmd": "show ip ospf interface brief",
             "desc": "Compact per-interface state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "show ip ospf database",
             "desc": "OSPF LSDB.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip ospf border-routers",
@@ -26855,13 +26975,15 @@
             "cmd": "show ip eigrp neighbors",
             "desc": "EIGRP adjacencies.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
           },
           {
             "cmd": "show ip eigrp topology",
             "desc": "Topology table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
           },
           {
             "cmd": "show ip eigrp interfaces",
@@ -28919,7 +29041,8 @@
             "cmd": "show version",
             "desc": "Software image, uptime, last reload, hardware (route processor + line cards).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show platform",
@@ -28943,7 +29066,8 @@
             "cmd": "show inventory",
             "desc": "Chassis + module inventory with serials.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show environment",
@@ -28955,7 +29079,8 @@
             "cmd": "show running-config",
             "desc": "Active config.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
@@ -28973,13 +29098,15 @@
             "cmd": "show clock detail",
             "desc": "Current time + source.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "10:23:45.301 UTC Mon Feb 5 2026\nTime source is NTP\nSummer time starts 02:00:00 UTC Sun Mar 29 2026\nSummer time ends 03:00:00 UTC Sun Oct 25 2026"
           },
           {
             "cmd": "show users",
             "desc": "Active console + VTY sessions.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "    Line       User       Host(s)              Idle       Location\n*  1 vty 0     admin      idle                 00:00:00 10.50.50.50\n   2 vty 1     ops-team   idle                 00:14:32 10.50.50.51"
           },
           {
             "cmd": "show license summary",
@@ -29005,7 +29132,8 @@
             "cmd": "show interfaces",
             "desc": "Detailed status, packet/error counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
           },
           {
             "cmd": "show ip interface brief | exclude unassigned",
@@ -29017,7 +29145,8 @@
             "cmd": "show interfaces description",
             "desc": "Brief: interface, status, protocol, description.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface                      Status         Protocol Description\nGi1/0/1                        up             up       ACCESS-PORT\nGi1/0/2                        up             up       UPLINK-TO-DIST\nGi1/0/3                        admin down     down\nGi1/0/24                       up             up       TRUNK-TO-DIST2\nTe1/1/1                        up             up       40G UPLINK\nPo1                            up             up       MEC-TO-DIST"
           },
           {
             "cmd": "show interfaces transceiver detail",
@@ -29109,7 +29238,8 @@
             "cmd": "show ip ospf neighbor",
             "desc": "Adjacency table: neighbour ID, state, dead-time, address, interface.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
           },
           {
             "cmd": "show ip ospf neighbor detail",
@@ -29127,13 +29257,15 @@
             "cmd": "show ip ospf interface brief",
             "desc": "Compact per-interface OSPF state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
           },
           {
             "cmd": "show ip ospf database",
             "desc": "Full Link-State Database (router/network/summary/external LSAs).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
             "cmd": "show ip ospf database router self-originate",
@@ -29393,7 +29525,8 @@
             "cmd": "show ip eigrp neighbors",
             "desc": "EIGRP adjacency table: hold, uptime, retransmits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
           },
           {
             "cmd": "show ip eigrp neighbors detail",
@@ -29405,7 +29538,8 @@
             "cmd": "show ip eigrp topology",
             "desc": "Topology table — successors + feasible successors per prefix.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
           },
           {
             "cmd": "show ip eigrp topology all-links",
@@ -29623,7 +29757,8 @@
             "cmd": "show ip bgp summary",
             "desc": "Per-peer summary: state, prefixes received, uptime.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4",
@@ -29653,7 +29788,8 @@
             "cmd": "show ip bgp",
             "desc": "Full BGP table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "BGP table version is 2143, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i - internal,\n              r RIB-failure, S Stale, m multipath, b backup-path, x best-external\n\n   Network          Next Hop            Metric LocPrf Weight Path\n*> 0.0.0.0          1.2.3.4                              0 65002 i\n*> 8.8.8.0/24       1.2.3.4                  0           0 65002 15169 i\n*> 10.0.0.0/8       0.0.0.0                  0         32768 i\n* i 172.16.0.0/16   2.2.2.2                  0    100      0 65003 i\n*>                  5.6.7.8                              0 65003 i"
           },
           {
             "cmd": "show ip bgp 8.8.8.0/24",
@@ -29919,7 +30055,8 @@
             "cmd": "show ip nat translations",
             "desc": "Active NAT translations.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Pro  Inside global       Inside local        Outside local       Outside global\nicmp 198.51.100.10:512 10.0.0.5:512        8.8.8.8:512         8.8.8.8:512\ntcp  198.51.100.10:33214 10.0.0.5:33214    142.250.46.193:443  142.250.46.193:443\nudp  198.51.100.10:5060 10.0.0.10:5060     203.0.113.50:5060   203.0.113.50:5060"
           },
           {
             "cmd": "show ip nat statistics",
@@ -30235,7 +30372,8 @@
             "cmd": "show ip arp",
             "desc": "ARP cache.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
           },
           {
             "cmd": "show ip cef",
@@ -30253,7 +30391,8 @@
             "cmd": "show ip route",
             "desc": "IPv4 routing table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
           },
           {
             "cmd": "show ipv6 route",

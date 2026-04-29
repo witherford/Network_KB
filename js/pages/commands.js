@@ -4,7 +4,7 @@
 
 import { loadData } from '../dataloader.js';
 import { esc, hlText, debounce, copyToClipboard, toast, download } from '../utils.js';
-import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags, getSectionCommands, setSectionCommands, getSectionTypes, setSectionType } from '../prefs.js';
+import { getPrefs, setPref, toggleFavourite, isFavourite, pushRecent, toggleCollapsed, isCollapsed, collapseAll, cmdKey, isFlagged, setFlag, unsetFlag, getFlag, getAllFlags, getSectionTypes, setSectionType } from '../prefs.js';
 import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig, getGlobalFlagCount, incrementGlobalFlagCount } from '../components/flag-validator.js';
@@ -83,12 +83,9 @@ function shellHtml() {
       <span style="display:flex;gap:10px;align-items:center;padding:0 8px;flex-wrap:wrap">
         <button class="btn collapse-all-btn" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
         <button class="btn collapse-all-btn" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);white-space:nowrap;font-weight:500">
-          <input type="checkbox" id="cmdDescTog" ${p.cmdVisible ? 'checked' : ''}> Show commands
-        </label>
       </span>
     </div>
-    <div class="page ${p.cmdVisible ? 'with-cmd' : ''}" id="cmdListRoot"></div>`;
+    <div class="page with-cmd" id="cmdListRoot"></div>`;
 }
 
 function renderAll() {
@@ -278,15 +275,10 @@ function countByType() {
 
 function wireToolbar(root) {
   const search = root.querySelector('#cmdSearch');
-  const desc = root.querySelector('#cmdDescTog');
   const onSearch = debounce(() => { ui.query = search.value.trim(); renderList(); }, 120);
   search.addEventListener('input', onSearch);
   search.addEventListener('keydown', e => {
     if (e.key === 'Escape') { search.value = ''; ui.query = ''; renderList(); }
-  });
-  desc.addEventListener('change', () => {
-    setPref('cmdVisible', desc.checked);
-    document.getElementById('cmdListRoot').classList.toggle('with-cmd', desc.checked);
   });
   document.addEventListener('keydown', e => {
     if (e.key === '/' && document.activeElement !== search && !e.target.closest('input, textarea')) {
@@ -406,28 +398,22 @@ function renderList() {
     for (const [secName, items] of secs) {
       const collapseKey = pk + ':' + secName;
       const collapsed = isCollapsed(collapseKey);
-      const secCmdOverride = getSectionCommands(collapseKey);   // bool | undefined
-      const pageCmd = getPrefs().cmdVisible;
-      const effCmdShown = (secCmdOverride === undefined) ? pageCmd : secCmdOverride;
       const types = getSectionTypes(collapseKey);
       // Filter items by per-section type toggles.
       const visible = items.filter(r => {
         const t = r.cmd.type || 'show';
         return !!types[t === 'show' || t === 'config' || t === 'troubleshooting' ? t : 'show'];
       });
-      const cmdClass = (secCmdOverride === true) ? ' with-cmd-section'
-                     : (secCmdOverride === false) ? ' no-cmd-section' : '';
       // Topic-grouping: if the section is large + diverse enough, render
       // topic sub-headers (BGP / OSPF / STP / VLAN / etc.); otherwise flat.
       const itemsHtml = renderItemsBody(visible, q);
-      html += `<article class="section-card${cmdClass}" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
+      html += `<article class="section-card" data-sec="${esc(collapseKey)}" data-pk="${esc(pk)}" data-sname="${esc(secName)}">
         <header class="section-title">
           <span class="section-title-text">${esc(secName)}</span>
           <span class="sec-cnt">${visible.length}${visible.length !== items.length ? `<span class="sec-cnt-total" title="${items.length} total in this section">/${items.length}</span>` : ''}</span>
           <span class="sec-controls" role="group" aria-label="Section controls">
             <button class="btn sm ghost sec-ctl" data-act="sec-expand" title="Show every command in this section">▾ Expand</button>
             <button class="btn sm ghost sec-ctl" data-act="sec-collapse" title="Hide every command in this section">▸ Collapse</button>
-            <button class="btn sm ghost sec-ctl ${effCmdShown ? 'on' : ''}" data-act="sec-desc" title="Toggle whether the underlying command text is shown next to its description">${effCmdShown ? '✓ Showing commands' : 'Show commands'}</button>
             <span class="sec-type-filters" role="group" aria-label="Type filters">
               <button class="btn sm ghost type-chip ${types.show ? 'on' : ''} tt-show" data-act="sec-type" data-type="show" title="Toggle 'show' commands">SHOW</button>
               <button class="btn sm ghost type-chip ${types.config ? 'on' : ''} tt-config" data-act="sec-type" data-type="config" title="Toggle 'config' commands">CONFIG</button>
@@ -481,16 +467,14 @@ function cmdItemHtml(row, query) {
   const flagInfo = flagged ? getFlag(key) : null;
   const t = row.cmd.type || 'show';
   const sel = ui.selected.has(key);
-  // Labelled-row layout: a "Description: …" line is always visible, and a
-  // "Command: …" line appears when the page-level or per-section "Show
-  // commands" toggle is on. The CSS classes .with-cmd-section /
-  // .no-cmd-section on the section-card override the page-level default.
+  const hasExample = typeof row.cmd.example === 'string' && row.cmd.example.trim().length > 0;
   return `<div class="cmd-item${fav ? ' favourite' : ''}${row.cmd.flagged ? ' flagged' : ''}${flagged ? ' user-flagged' : ''}${sel ? ' selected' : ''}" data-key="${esc(key)}" data-cmd="${esc(row.cmd.cmd)}" data-pk="${esc(row.pk)}" data-section="${esc(row.section)}" data-idx="${row.idx}">
     <div class="cmd-row">
       ${state.editMode ? `<input type="checkbox" class="cmd-sel" ${sel ? 'checked' : ''} title="Select">` : ''}
       <div class="cmd-body">
         <div class="cmd-line cmd-desc-line"><span class="cmd-lbl">Description:</span> <span class="cmd-desc-text">${hlText(row.cmd.desc || '(no description)', query)}</span></div>
         <div class="cmd-line cmd-cmd-line"><span class="cmd-lbl">Command:</span> <code class="cmd-cmd-text">${hlText(row.cmd.cmd, query)}</code></div>
+        ${hasExample ? `<button class="cmd-example-toggle" data-act="example" type="button" title="View an example of this command's output">▸ Show example output</button><pre class="cmd-example" hidden>${esc(row.cmd.example)}</pre>` : ''}
         ${flagged ? `<div class="cmd-flag-reason" title="Flagged ${new Date(flagInfo.ts).toLocaleString()}"><span class="cmd-flag-pill">🚩 Flagged</span> ${esc(flagInfo.reason)}</div>` : ''}
       </div>
       <div class="cmd-actions">
@@ -538,15 +522,8 @@ function onListClick(e) {
     if (!isCollapsed(card.dataset.sec)) toggleCollapsed(card.dataset.sec);
     renderList(); return;
   }
-  // Per-section "Show commands" toggle — three-state cycle:
-  // inherit → forced on → forced off → inherit.
-  if (act === 'sec-desc' && card) {
-    const cur = getSectionCommands(card.dataset.sec);
-    if (cur === undefined) setSectionCommands(card.dataset.sec, true);
-    else if (cur === true) setSectionCommands(card.dataset.sec, false);
-    else setSectionCommands(card.dataset.sec, undefined);
-    renderList(); return;
-  }
+  // Per-section "Show commands" toggle removed in v1.3.5 — commands are
+  // now always visible. Old prefs entries are harmless and ignored.
   // Per-section type filter chip — toggle one type on/off in this section.
   if (act === 'sec-type' && card) {
     const sectionKey = card.dataset.sec;
@@ -583,6 +560,16 @@ function onListClick(e) {
   }
   if (act === 'flag') return openFlagModal(item.dataset.key, item.dataset.cmd);
   if (act === 'unflag') return openUnflagConfirm(item.dataset.key, item.dataset.cmd);
+  // Per-item "Show example output" toggle. Local-only (not persisted).
+  if (act === 'example') {
+    const pre = item.querySelector('.cmd-example');
+    if (!pre) return;
+    const showing = !pre.hidden;
+    pre.hidden = showing;
+    btn.textContent = showing ? '▸ Show example output' : '▾ Hide example output';
+    btn.classList.toggle('open', !showing);
+    return;
+  }
 }
 
 function openFlagModal(key, cmd) {
