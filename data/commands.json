@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-29T20:31:18.184Z",
+  "updatedAt": "2026-04-29T20:45:58.884Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5851,6 +5851,55 @@
             "type": "show",
             "flagged": false,
             "example": "AP Name    : AP-LON-01\nAP Model   : C9130AXI-E\nAP Mode    : Local\nPolicy Tag : CORP-POLICY\nSite Tag   : LONDON-SITE"
+          },
+          {
+            "cmd": "ap name AP-TEMP-01 name AP-LON-01",
+            "desc": "Rename a joined AP. The AP will rejoin the controller under its new name; client sessions on its radios will drop briefly during the rejoin.",
+            "type": "config",
+            "flagged": true,
+            "example": "AP will rejoin controller with new name."
+          },
+          {
+            "cmd": "ap name AP-LON-01 location \"London HQ – 3rd Floor – East Wing\"",
+            "desc": "Set a free-text location string on an AP. Used by RRM neighbour grouping and shown in WLC reports / Cisco DNA Center.",
+            "type": "config",
+            "flagged": false,
+            "example": "Location string updated successfully."
+          },
+          {
+            "cmd": "ap name AP-LON-01 reset",
+            "desc": "Reboot a single AP via the controller. The AP CAPWAP tunnel drops, the AP reboots, then rejoins under the same tags.",
+            "type": "config",
+            "flagged": true,
+            "example": "AP reset command issued successfully."
+          },
+          {
+            "cmd": "ap name AP-LON-01 mode local",
+            "desc": "Switch an AP to Local mode (default — centrally-switched data plane via the WLC). The AP reboots and rejoins.",
+            "type": "config",
+            "flagged": true,
+            "example": "AP will reboot and rejoin controller."
+          },
+          {
+            "cmd": "ap name AP-LON-01 mode flexconnect",
+            "desc": "Switch an AP to FlexConnect mode (locally-switched at the AP — survives WAN outages to the WLC). The AP reboots and rejoins.",
+            "type": "config",
+            "flagged": true,
+            "example": "AP will reboot and rejoin controller."
+          },
+          {
+            "cmd": "ap name AP-LON-01 mode monitor",
+            "desc": "Switch an AP to Monitor mode (no client serving — full-time spectrum / wIPS scan). The AP reboots and rejoins.",
+            "type": "config",
+            "flagged": true,
+            "example": "AP will reboot and rejoin controller."
+          },
+          {
+            "cmd": "ap name AP-LON-01 led disable",
+            "desc": "Turn off an AP's status LEDs (cosmetic — useful in customer-facing offices and dark-mode hospitality deployments).",
+            "type": "config",
+            "flagged": false,
+            "example": "LED state updated successfully."
           }
         ],
         "WLAN Configuration": [
@@ -6438,6 +6487,27 @@
             "desc": "Creates or enters an AP join profile",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "ap name AP-LON-01 tag site LONDON-SITE",
+            "desc": "Assign a site tag to an AP. Site tags carry AP-join profile, flex profile, and RRM grouping.",
+            "type": "config",
+            "flagged": false,
+            "example": "Site tag assignment successful."
+          },
+          {
+            "cmd": "ap name AP-LON-01 tag policy CORP-POLICY",
+            "desc": "Assign a policy tag to an AP. Policy tags map WLAN profiles → policy profiles for this AP.",
+            "type": "config",
+            "flagged": false,
+            "example": "Policy tag assignment successful."
+          },
+          {
+            "cmd": "ap name AP-LON-01 tag rf HIGH-DENSITY",
+            "desc": "Assign an RF tag to an AP. RF tags hold per-band RF profiles (DCA / TPC / channel widths / data-rate sets).",
+            "type": "config",
+            "flagged": false,
+            "example": "RF tag assignment successful."
           }
         ],
         "Client Management": [
@@ -6557,6 +6627,34 @@
             "desc": "Enables logging of all RRM-initiated channel changes",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "ap name AP-LON-01 dot11 24ghz channel 6",
+            "desc": "Override the RRM-assigned 2.4 GHz channel on a single AP. RRM stops adjusting this radio until the override is cleared.",
+            "type": "config",
+            "flagged": false,
+            "example": "RRM overridden."
+          },
+          {
+            "cmd": "ap name AP-LON-01 dot11 5ghz channel 36",
+            "desc": "Override the RRM-assigned 5 GHz channel on a single AP. RRM stops adjusting this radio until the override is cleared.",
+            "type": "config",
+            "flagged": false,
+            "example": "RRM overridden."
+          },
+          {
+            "cmd": "ap name AP-LON-01 dot11 24ghz txpower 3",
+            "desc": "Override the 2.4 GHz transmit-power level (1 = max, 8 = min). Disables RRM TPC for this radio.",
+            "type": "config",
+            "flagged": false,
+            "example": "Transmit power updated."
+          },
+          {
+            "cmd": "ap name AP-LON-01 dot11 5ghz txpower 4",
+            "desc": "Override the 5 GHz transmit-power level (1 = max, 8 = min). Disables RRM TPC for this radio.",
+            "type": "config",
+            "flagged": false,
+            "example": "Transmit power updated."
           }
         ],
         "Security & AAA": [
