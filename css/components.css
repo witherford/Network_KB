@@ -1136,6 +1136,31 @@ tr.cve-recent td {
   color: #b91c1c !important;
 }
 
+/* "Hide commands with examples" filter button — sits next to Expand/Collapse
+   all on the commands page toolbar. The .on state colours it accent so
+   it's obviously active. */
+.cmd-filter-btn {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 4px 10px !important;
+  white-space: nowrap;
+  border: 1px solid var(--border, rgba(255,255,255,.18)) !important;
+  background: transparent !important;
+  color: var(--text-2, inherit) !important;
+}
+.cmd-filter-btn:hover {
+  background: rgba(14, 165, 233, 0.08) !important;
+}
+.cmd-filter-btn.on {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border-color: rgba(14, 165, 233, 0.55) !important;
+  color: var(--accent, #0369a1) !important;
+  font-weight: 600 !important;
+}
+.theme-dark .cmd-filter-btn.on {
+  color: #38bdf8 !important;
+}
+
 /* Per-section header controls (Expand / Collapse / Descriptions / type filters). */
 .section-card .section-title {
   flex-wrap: wrap;

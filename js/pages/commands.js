@@ -83,9 +83,10 @@ function shellHtml() {
       <span style="display:flex;gap:10px;align-items:center;padding:0 8px;flex-wrap:wrap">
         <button class="btn collapse-all-btn" id="cmdExpandAll" title="Expand every section">▾ Expand all sections</button>
         <button class="btn collapse-all-btn" id="cmdCollapseAll" title="Collapse every section">▸ Collapse all sections</button>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);white-space:nowrap;font-weight:500" title="Hide commands that already have a 'Show example output' toggle. Useful for finding commands that still need example outputs added.">
-          <input type="checkbox" id="cmdHideExamples" ${ui.hideWithExamples ? 'checked' : ''}> Hide commands with examples
-        </label>
+        <button class="btn cmd-filter-btn ${ui.hideWithExamples ? 'on' : ''}" id="cmdHideExamples" type="button"
+          title="Hide commands that already have a 'Show example output' toggle. Useful for finding commands that still need examples.">
+          ${ui.hideWithExamples ? '✓ Hiding cmds with examples' : '☐ Hide cmds with examples'}
+        </button>
       </span>
     </div>
     <div class="page with-cmd" id="cmdListRoot"></div>`;
@@ -303,11 +304,16 @@ function wireToolbar(root) {
   root.querySelector('#cmdCollapseAll').addEventListener('click', () => bulkCollapse(true));
   root.querySelector('#cmdExpandAll').addEventListener('click', () => bulkCollapse(false));
   // "Hide commands with examples" filter — useful for spotting commands
-  // that still need examples added.
-  const hideExBox = root.querySelector('#cmdHideExamples');
-  if (hideExBox) {
-    hideExBox.addEventListener('change', () => {
-      ui.hideWithExamples = hideExBox.checked;
+  // that still need examples added. Toggle button updates its own text +
+  // 'on' class on click.
+  const hideExBtn = root.querySelector('#cmdHideExamples');
+  if (hideExBtn) {
+    hideExBtn.addEventListener('click', () => {
+      ui.hideWithExamples = !ui.hideWithExamples;
+      hideExBtn.classList.toggle('on', ui.hideWithExamples);
+      hideExBtn.textContent = ui.hideWithExamples
+        ? '✓ Hiding cmds with examples'
+        : '☐ Hide cmds with examples';
       renderAll();
     });
   }
