@@ -1217,11 +1217,53 @@ tr.cve-recent td {
 .theme-dark .cmd-cmd-text { background: rgba(255,255,255,.05); }
 .cmd-desc-text { color: var(--text, inherit); }
 
-/* Default: command line hidden. Toggle classes turn it on. */
-.cmd-cmd-line { display: none; }
-.with-cmd .cmd-cmd-line { display: block; }
-.section-card.with-cmd-section .cmd-cmd-line { display: block !important; }
-.section-card.no-cmd-section   .cmd-cmd-line { display: none  !important; }
+/* Command line is always visible (the legacy "Show commands" toggle was
+   removed in v1.3.5). The .with-cmd / .with-cmd-section / .no-cmd-section
+   classes are kept for backward compatibility but no longer affect display. */
+.cmd-cmd-line { display: block; }
+
+/* Per-row "Show example output" toggle — only renders when the command
+   has a populated `example` field. Click to expand a pre-formatted block
+   of representative output. */
+.cmd-example-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  background: rgba(14,165,233,0.06);
+  color: var(--accent, #0369a1);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: .2px;
+}
+.cmd-example-toggle:hover {
+  background: rgba(14,165,233,0.14);
+}
+.theme-dark .cmd-example-toggle {
+  color: #38bdf8;
+}
+.cmd-example-toggle.open {
+  background: rgba(14,165,233,0.18);
+}
+.cmd-example {
+  margin: 6px 0 4px 0;
+  padding: 10px 12px;
+  font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.04);
+  border-left: 3px solid var(--accent, #0ea5e9);
+  border-radius: 4px;
+  white-space: pre;
+  overflow-x: auto;
+  max-height: 420px;
+  color: var(--text, inherit);
+}
+.theme-dark .cmd-example {
+  background: rgba(255,255,255,0.04);
+}
 
 /* Type-badge moved into the actions column, beneath the Copy button. */
 .cmd-actions {
