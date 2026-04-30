@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-04-30T05:47:46.801Z",
+  "updatedAt": "2026-04-30T17:07:15.977Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -3365,13 +3365,15 @@
             "cmd": "nstrace -size 0 -tcpdump YES -nodes 0",
             "desc": "Starts packet capture on all interfaces in pcap format",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> nstrace -size 0 -tcpdump YES -nodes 0\n\nnstrace: Started full capture, output in tcpdump format\nFile: /var/nstrace/ns0.pcap\n\nWhat it means:\n- -size 0    : full packet capture (no truncation).\n- -tcpdump YES : write in pcap format (open with Wireshark / tcpdump).\n- -nodes 0   : on a cluster, capture only the local node (0).\n- Equivalent to \"start nstrace -filetype PCAP\" on modern firmware."
           },
           {
             "cmd": "nstrace -stop",
             "desc": "Stops an active packet capture session",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> nstrace -stop\n\nnstrace: stopped\nCaptured: 524288 packets\nDropped : 0\n\nWhat it means:\n- Legacy form (without \"start\") still works on older firmware.\n- Modern equivalent is just \"stop nstrace\"."
           },
           {
             "cmd": "shell tail -f /var/log/ns.log",
@@ -3437,7 +3439,8 @@
             "cmd": "nstrace.sh -time 60 -size 0",
             "desc": "Collect a capture for 60s with full packet size",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nstrace.sh -time 60 -size 0\nnstrace.sh: starting capture for 60 seconds, full packet\nCapture complete. Output: /var/nstrace/ns0.cap\n\nWhat it means:\n- BSD-shell helper script that wraps \"start nstrace\" and auto-stops\n  after the specified time.\n- Run from \"shell\" prompt, NOT from the NetScaler CLI:\n    > shell\n    # nstrace.sh -time 60 -size 0"
           },
           {
             "cmd": "nsconmsg -d current -s ConLb=1 -g lb_tot",
@@ -3588,6 +3591,195 @@
             "type": "show",
             "flagged": false,
             "example": "add ns ip 10.10.10.10 255.255.255.0 -type NSIP"
+          },
+          {
+            "cmd": "start nstrace -filter <expression>",
+            "desc": "Start a NetScaler packet trace with a CONNECTION.* filter expression. Every connection that matches the expression is written to /var/nstrace/. Filter expressions support &&, || and grouping with parentheses; the whole filter must be enclosed in double quotes.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.DSTIP.EQ(10.248.1.15)\"\nnstrace: started, output in /var/nstrace/ns_00001.cap\n\n# Expression grammar:\n#   CONNECTION.<qualifier>.<method>(<value>)\n#   joined by  &&  (AND)  or  ||  (OR)\n#   parens for grouping\n\n# Method shortlist by qualifier type:\n#   IP/IPv6/INTF/SERVICE_TYPE  : EQ, NE\n#   ports / VLAN / CONNID /\n#     PPEID / TRAFFIC_DOMAIN_ID: EQ, NE, GT, GE, LT, LE, BETWEEN\n#   SVCNAME / LB_VSERVER.NAME /\n#     CS_VSERVER.NAME          : EQ, NE, CONTAINS, STARTSWITH, ENDSWITH\n\nWhat it means:\n- The expression is evaluated per-connection. Hits → packets are\n  written to the rolling trace files.\n- Quote string values: SVCNAME.EQ(\"svc1\") not SVCNAME.EQ(svc1).\n- Combine with -size 0 for full packets and -link ENABLED to also\n  capture the linked server-side flow when matching the client side\n  (or vice-versa)."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.SRCIP.EQ(<ipv4>)\"",
+            "desc": "Match traffic by client (source) IPv4 address. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.SRCIP.EQ(10.1.1.1)\"\nnstrace: started, filter matches client IP 10.1.1.1\n\nWhat it means:\n- SRCIP is the original client IP. On the back-end leg this becomes\n  a SNIP (because the ADC source-NATs by default), so use SVCNAME or\n  LB_VSERVER.NAME to follow the back-end side.\n- Use NE to exclude a noisy client: CONNECTION.SRCIP.NE(127.0.0.1)"
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.DSTIP.EQ(<ipv4>)\"",
+            "desc": "Match traffic by destination IPv4 address. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.DSTIP.EQ(10.248.1.15)\"\nnstrace: started, filter matches destination IP 10.248.1.15\n\nWhat it means:\n- DSTIP is the destination as seen by the ADC packet-engine — for\n  client → ADC traffic this is a VIP; for ADC → server traffic it is\n  the back-end real-server IP.\n- Combine with .NE to exclude management subnets, e.g.\n    CONNECTION.DSTIP.NE(192.168.0.0/16)  ← (subnet not allowed; use IP only)"
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.IP.EQ(<ipv4>)\"",
+            "desc": "Match traffic where IPv4 address (source OR destination) equals the value. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.IP.EQ(10.1.1.1)\"\nnstrace: started, filter matches either side = 10.1.1.1\n\nWhat it means:\n- Equivalent to \"(SRCIP.EQ X || DSTIP.EQ X)\" but shorter.\n- Useful when you don't yet know whether the host you're chasing is\n  client or server in the conversation.\n- The classic \"exclude loopback then match host\" idiom:\n   \"CONNECTION.IP.NE(127.0.0.1) && CONNECTION.IP.EQ(10.102.44.111)\""
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.SRCIPv6.EQ(<ipv6>)\"",
+            "desc": "Match traffic by client (source) IPv6 address. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.SRCIPv6.EQ(2001:db8:0:0:1::1)\"\nnstrace: started, filter matches IPv6 source 2001:db8::1::1\n\nWhat it means:\n- IPv6 form of SRCIP. Address is parsed as a single hex literal —\n  do NOT enclose in brackets.\n- Methods limited to EQ / NE — no subnet matching."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.DSTIPv6.EQ(<ipv6>)\"",
+            "desc": "Match traffic by destination IPv6 address. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.DSTIPv6.EQ(2001:db8::10)\"\nnstrace: started, filter matches IPv6 destination 2001:db8::10\n\nWhat it means:\n- IPv6 form of DSTIP. Same usage rules as DSTIP — typical use is to\n  catch traffic destined to a v6 VIP or backend server."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.IPv6.EQ(<ipv6>)\"",
+            "desc": "Match traffic where IPv6 address (source OR destination) equals the value. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.IPv6.EQ(2001:db8::10)\"\nnstrace: started, filter matches either side = 2001:db8::10\n\nWhat it means:\n- Combined SRCIPv6 || DSTIPv6 in a single qualifier."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.SRCPORT.EQ(<port>)\"",
+            "desc": "Match traffic by client (source) TCP/UDP port. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.SRCPORT.EQ(443)\"\nnstrace: started, filter matches source port 443\n\n# BETWEEN form:\n> start nstrace -filter \"CONNECTION.SRCPORT.BETWEEN(49152,65535)\"\nnstrace: started, filter matches ephemeral source ports\n\nWhat it means:\n- Use BETWEEN to capture an ephemeral port range — handy when chasing\n  client-initiated reconnect storms.\n- Most operational filtering uses DSTPORT (server port); SRCPORT is\n  rarely useful unless investigating outbound flows."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.DSTPORT.EQ(<port>)\"",
+            "desc": "Match traffic by destination TCP/UDP port. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.DSTPORT.EQ(443)\"\nnstrace: started, filter matches destination port 443\n\n# OR-pattern for HTTP + HTTPS:\n> start nstrace -filter \"CONNECTION.DSTPORT.EQ(80) || CONNECTION.DSTPORT.EQ(443)\"\nnstrace: started, filter matches HTTP or HTTPS\n\nWhat it means:\n- Most useful per-port filter — catches all traffic terminating on\n  the named service port (VIP listener or backend server port).\n- Combine with -link ENABLED to also capture the corresponding\n  back-end leg of each matched flow."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.PORT.EQ(<port>)\"",
+            "desc": "Match traffic where TCP/UDP port (source OR destination) equals the value. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.PORT.EQ(443)\"\nnstrace: started, filter matches either side port = 443\n\nWhat it means:\n- Equivalent to (SRCPORT.EQ X || DSTPORT.EQ X). Convenient when you\n  want any conversation involving the named port, regardless of\n  direction."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.VLANID.EQ(<id>)\"",
+            "desc": "Match traffic on a specific VLAN ID. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.VLANID.EQ(20)\"\nnstrace: started, filter matches VLAN 20\n\nWhat it means:\n- Useful on multi-tenant ADCs to isolate one customer's flows by\n  their dedicated VLAN.\n- VLAN 0 is the native (untagged) VLAN."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.CONNID.EQ(<id>)\"",
+            "desc": "Match traffic by internal PCB (Protocol Control Block) ID. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.CONNID.EQ(123456)\"\nnstrace: started, filter matches PCB 123456\n\nWhat it means:\n- The PCB ID uniquely identifies a single TCP connection on the\n  ADC. Pull it from \"show ns connectiontable\" and feed into the\n  filter to capture exactly one conversation end-to-end."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.PPEID.EQ(<id>)\"",
+            "desc": "Match traffic handled by a specific Packet Processing Engine (PE) core. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.PPEID.EQ(0)\"\nnstrace: started, filter matches PE-0 only\n\nWhat it means:\n- Multi-PE ADCs distribute connections across cores. Use PPEID to\n  capture only flows handled by one specific PE — useful when one\n  PE shows abnormal CPU or drops in \"stat ns -detail\".\n- Get PE count from \"show ns -detail\" or \"shell ps aux | grep ppe\"."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.SVCNAME.EQ(<name>)\"",
+            "desc": "Match traffic by NetScaler service name. Methods: EQ, NE, CONTAINS, STARTSWITH, ENDSWITH.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.SVCNAME.EQ(\\\"svc-web1\\\")\"\nnstrace: started, filter matches service \"svc-web1\"\n\n# CONTAINS (fuzzy) form:\n> start nstrace -filter \"CONNECTION.SVCNAME.CONTAINS(\\\"web\\\")\"\nnstrace: started, filter matches any service whose name contains \"web\"\n\nWhat it means:\n- SVCNAME refers to the NAME of a configured \"service\" object, not\n  a free-form text. Find names with \"show service\".\n- String values must be in escaped double-quotes inside the outer\n  filter quotes: \"CONNECTION.SVCNAME.EQ(\\\"svc1\\\")\".\n- Pair with -link ENABLED to also capture the corresponding client\n  (VIP-side) leg of every matched server-side flow."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.LB_VSERVER.NAME.EQ(<name>)\"",
+            "desc": "Match traffic that hits a specific LB virtual server. Methods: EQ, NE, CONTAINS, STARTSWITH, ENDSWITH.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.LB_VSERVER.NAME.EQ(\\\"lb-web-prod\\\")\"\nnstrace: started, filter matches LB vserver \"lb-web-prod\"\n\n# Capture both sides of each matched flow:\n> start nstrace -size 0 -filter \"CONNECTION.LB_VSERVER.NAME.EQ(\\\"lb-web-prod\\\")\" -link ENABLED\n\nWhat it means:\n- Filters on the LB vserver name (the front-end VIP container, not\n  the back-end services). Find names with \"show lb vserver\".\n- The most common front-end-troubleshooting filter — catches every\n  client connection landing on the named VIP.\n- \"-link ENABLED\" follows each client leg to its corresponding\n  server leg through the load-balancing decision."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.CS_VSERVER.NAME.EQ(<name>)\"",
+            "desc": "Match traffic that hits a specific Content Switching virtual server. Methods: EQ, NE, CONTAINS, STARTSWITH, ENDSWITH.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.CS_VSERVER.NAME.EQ(\\\"cs-edge-https\\\")\"\nnstrace: started, filter matches CS vserver \"cs-edge-https\"\n\nWhat it means:\n- For Content-Switching deployments where a CS vserver fronts\n  multiple LB vservers. Use CS_VSERVER.NAME to capture before the\n  CS-policy decision; use LB_VSERVER.NAME to capture after."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.INTF.EQ(<x/y>)\"",
+            "desc": "Match traffic on a specific physical / logical interface. Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.INTF.EQ(\\\"1/1\\\")\"\nnstrace: started, filter matches interface 1/1\n\nWhat it means:\n- Interface ID syntax is \"slot/port\" (e.g. 1/1, 0/1, LA/1 for LACP).\n- Useful when you need to confirm whether traffic is even arriving\n  on a specific NIC — combine with \"stat interface\" packet counters."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.SERVICE_TYPE.EQ(<type>)\"",
+            "desc": "Match traffic by service type (HTTP, SSL, TCP, UDP, FTP, etc.). Methods: EQ, NE.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.SERVICE_TYPE.EQ(SSL)\"\nnstrace: started, filter matches SSL services\n\n# Valid service-type literals:\n#  SVC_HTTP | FTP | TCP | UDP | SSL | SSL_BRIDGE | SSL_TCP | NNTP\n#  RPCSVR | RPCSVRS | RPCCLNT | SVC_DNS | ADNS | SNMP | RTSP\n#  DHCPRA | ANY | MONITOR | MONITOR_UDP | MONITOR_PING | SIP_UDP\n#  SVC_MYSQL | SVC_MSSQL | FIX | SSL_FIX | PKTSTEER | SVC_AAA\n#  SERVICE_UNKNOWN\n\nWhat it means:\n- Service type is the protocol assigned to each LB/CS vserver and\n  service. Filter to a type to catch all conversations of that\n  protocol regardless of port (e.g. SSL spans 443, 8443, 9443…)."
+          },
+          {
+            "cmd": "start nstrace -filter \"CONNECTION.TRAFFIC_DOMAIN_ID.EQ(<id>)\"",
+            "desc": "Match traffic in a specific Traffic Domain. Methods: EQ, NE, GT, GE, LT, LE, BETWEEN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -filter \"CONNECTION.TRAFFIC_DOMAIN_ID.EQ(10)\"\nnstrace: started, filter matches traffic domain 10\n\nWhat it means:\n- Traffic Domains provide L3 segmentation on a single ADC (overlapping\n  IP address spaces between domains).\n- TD 0 is the default. Use this filter on multi-tenant ADCs that\n  separate tenants by Traffic Domain rather than by VLAN."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter \"CONNECTION.IP.NE(127.0.0.1) && CONNECTION.IP.EQ(<ipv4>)\"",
+            "desc": "Capture full-size packets to/from a host while excluding loopback (which would otherwise fill the trace with health-monitor noise).",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"CONNECTION.IP.NE(127.0.0.1) && CONNECTION.IP.EQ(10.102.44.111)\"\nnstrace: started, full capture for host 10.102.44.111 (loopback excluded)\n\nWhat it means:\n- The 127.0.0.0/8 noise comes from internal monitor probes and\n  in-kernel housekeeping — almost always uninteresting and very\n  high-volume.\n- This idiom keeps the .cap file small and focused on real client\n  ↔ server traffic for one host."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter \"CONNECTION.DSTPORT.EQ(443) || CONNECTION.DSTPORT.EQ(80)\"",
+            "desc": "Capture all HTTP and HTTPS traffic terminating on the ADC.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"CONNECTION.DSTPORT.EQ(443) || CONNECTION.DSTPORT.EQ(80)\"\nnstrace: started, capturing HTTP + HTTPS traffic, full size\n\nWhat it means:\n- Common starting point when \"the website is slow\" — captures every\n  connection landing on standard web ports.\n- Pair with -link ENABLED to also pull in the back-end leg of every\n  matched front-end flow."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter \"CONNECTION.SVCNAME.EQ(<name>)\" -link ENABLED",
+            "desc": "Capture full back-end traffic for a service AND its corresponding client-side traffic on the same trace.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"CONNECTION.SVCNAME.EQ(\\\"svc-web1\\\")\" -link ENABLED\nnstrace: started, capturing svc-web1 with linked client side\n\nWhat it means:\n- -link ENABLED tells nstrace: \"for every matched server-side flow,\n  also include the client-side flow that produced it\" (and vice\n  versa).\n- Without -link, you only see one half of every conversation, which\n  makes diagnosis nearly impossible for back-end-only filters.\n- This is THE canonical filter for diagnosing slow back-end services."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter \"CONNECTION.LB_VSERVER.NAME.EQ(<name>)\" -link ENABLED",
+            "desc": "Capture all client-side traffic to an LB virtual server plus the corresponding back-end (server-side) traffic.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"CONNECTION.LB_VSERVER.NAME.EQ(\\\"lb-web-prod\\\")\" -link ENABLED\nnstrace: started, capturing both legs of every flow on lb-web-prod\n\nWhat it means:\n- Use this when troubleshooting a single VIP end-to-end.\n- The capture includes the SSL handshake, HTTP traffic, and the\n  selected back-end server's responses.\n- Combine with \"-capsslkeys ENABLED\" to also export SSL session\n  keys so Wireshark can decrypt the flows."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter \"(CONNECTION.SRCIP.EQ(<ipv4>) && CONNECTION.SRCPORT.EQ(<port>)) || CONNECTION.DSTPORT.EQ(<port>)\"",
+            "desc": "Combine multiple expressions with parentheses to capture either an exact client tuple OR any traffic to a destination port.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"(CONNECTION.SRCIP.EQ(10.1.1.1) && CONNECTION.SRCPORT.EQ(80)) || CONNECTION.DSTPORT.EQ(443)\"\nnstrace: started, complex OR/AND filter\n\nWhat it means:\n- Group sub-expressions in parens; combine groups with || or &&.\n- Demonstrates: \"(client side specific) OR (any HTTPS)\".\n- Operator precedence: && binds tighter than || — always parenthesise\n  for clarity."
+          },
+          {
+            "cmd": "start nstrace -size 0 -nf 24 -time 3600 -filter <expression>",
+            "desc": "Long-running capture with file rotation — 24 files × 3600 sec each = 24 hours of rolling capture history.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 -nf 24 -time 3600 -filter \"CONNECTION.IP.EQ(10.1.1.1)\"\nnstrace: started, rotating 24 files of 3600s each\n\nWhat it means:\n- -nf 24    : keep at most 24 trace files in the rotation.\n- -time 3600: each file covers 3600 sec (1 hour) of capture.\n- Total = 24 hr rolling window. New file replaces the oldest.\n- Use when chasing an intermittent issue that happens \"sometime\n  overnight\" — leave running, retrieve files after the event."
+          },
+          {
+            "cmd": "start nstrace -perNIC ENABLED -filter <expression>",
+            "desc": "Capture into separate trace files per interface — easier to analyse asymmetric / per-NIC issues. Only valid with default cap format.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -perNIC ENABLED -filter \"CONNECTION.DSTPORT.EQ(443)\"\nnstrace: started, per-interface trace files\n\n# Resulting files (one per active NIC):\n# /var/nstrace/ns_00001_0_1.cap   ← interface 0/1\n# /var/nstrace/ns_00001_1_1.cap   ← interface 1/1\n# /var/nstrace/ns_00001_LA_1.cap  ← LACP channel LA/1\n\nWhat it means:\n- Default behaviour interleaves all packets into one file regardless\n  of incoming interface — annoying when investigating per-NIC drops.\n- -perNIC ENABLED produces one file per interface so each .cap can\n  be opened separately in Wireshark."
+          },
+          {
+            "cmd": "start nstrace -size 0 -filter <expression> -link ENABLED -skipLocalSSH ENABLED -capsslkeys ENABLED -capdroppkt ENABLED",
+            "desc": "Recommended \"kitchen-sink\" capture template: full size, link client and server legs, exclude SSH session noise, export SSL keys for Wireshark decryption, and include dropped packets.",
+            "type": "config",
+            "flagged": false,
+            "example": "> start nstrace -size 0 \\\n        -filter \"CONNECTION.LB_VSERVER.NAME.EQ(\\\"lb-web-prod\\\")\" \\\n        -link ENABLED \\\n        -skipLocalSSH ENABLED \\\n        -capsslkeys ENABLED \\\n        -capdroppkt ENABLED\nnstrace: started, full diagnostic capture for lb-web-prod\n\nWhat it means:\n- -size 0           : full packet capture (no truncation).\n- -link ENABLED     : also capture the linked back-end / front-end leg.\n- -skipLocalSSH ENABLED : exclude your management SSH from the trace\n                          (otherwise you capture yourself!).\n- -capsslkeys ENABLED   : export the SSL master keys to ns_sslkey.log\n                          so Wireshark can decrypt TLS in the trace.\n- -capdroppkt ENABLED   : also write packets that the ADC dropped —\n                          critical for \"which ACL/policy is blocking\n                          this traffic?\" investigations.\n- Combine with -nf / -time for long-running captures."
           }
         ],
         "VIP Hit Counter Troubleshooting": [
@@ -3837,19 +4029,22 @@
             "cmd": "start nstrace -size 0 -filter \"VSVRIP == 10.0.0.10 && VSVRPORT == 443\" -mode TXB",
             "desc": "Capture only traffic destined to a single VIP (VSVRIP filter is the cleanest way to isolate one vserver). -size 0 = full packets, -mode TXB = decrypt with private key when available.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> start nstrace -size 0 -filter \"VSVRIP == 10.0.0.10 && VSVRPORT == 443\" -mode TXB\nnstrace started successfully\n\nWhat it means:\n- -size 0 : full packet capture (no truncation). Default 164 bytes.\n- -filter : only matching connections are written to the trace file.\n- -mode TXB : capture transmitted-buffered packets in addition to RX.\n- Files land in /var/nstrace/ as ns_<id>_NN.cap, rotated every 1h\n  by default (see -nf and -time flags)."
           },
           {
             "cmd": "stop nstrace",
             "desc": "Stop the running capture; produces a .cap in /var/nstrace/.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> stop nstrace\n\nnstrace: stopped, captured 128394 packets, 0 dropped\nTrace file: /var/nstrace/ns_00001.cap\n\nWhat it means:\n- Stops the running capture and seals the .cap files so they can be\n  copied off-box (scp /var/nstrace/*.cap user@host:/path/).\n- \"0 dropped\" means no kernel buffer overruns — capture is complete."
           },
           {
             "cmd": "show nstrace",
             "desc": "Status of any running nstrace capture.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show nstrace\n        State: Running\n        Packets captured: 128394\n        Packets dropped: 0\n        Current file: /var/nstrace/ns_00001.cap\n        Filter: CONNECTION.DSTIP.EQ(10.248.1.15)\n        Mode: NEW_RX TXB\n        Size: 0 (full packet)\n        File rotation: 24 files × 3600 sec\n\nWhat it means:\n- Use to monitor an ongoing capture without stopping it.\n- \"Packets dropped > 0\" means the capture buffer is overrunning —\n  shrink -size, narrow the -filter, or capture for less time.\n- Same command also displays the configured filter so you can confirm\n  exactly what is being matched."
           },
           {
             "cmd": "shell tail -f /var/log/ns.log | grep <vip>",
