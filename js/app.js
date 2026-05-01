@@ -176,12 +176,53 @@ function wireVersionUI() {
     const orig = checkBtn.textContent;
     checkBtn.textContent = 'Checking…';
     try {
-      // Trigger SW update + refresh "latest version" line.
+      // 1. Trigger SW update — re-fetches sw.js byte-for-byte. If it
+      //    differs, the existing update-banner / controllerchange flow
+      //    handles the reload, and we exit early here.
+      let swResult = 'unsupported';
       if (typeof window.checkForAppUpdate === 'function') {
-        const r = await window.checkForAppUpdate();
-        if (r === 'updating') latestEl.textContent = 'Update found — downloading. Reload prompt will appear when ready.';
+        swResult = await window.checkForAppUpdate();
+        if (swResult === 'updating') {
+          latestEl.textContent = 'Update found — downloading. Reload prompt will appear when ready.';
+          return;
+        }
       }
-      await refreshLatest({ silent: false });
+
+      // 2. Re-fetch data/version.json so the "latest" line reflects the
+      //    deployed version. refreshLatest now returns the latest string.
+      const latest = await refreshLatest({ silent: false });
+
+      // 3. Data-only update path: sw.js is unchanged (typical for an
+      //    automated GitHub-merge workflow that only edits data/*.json),
+      //    but data/version.json reports a newer build. Manually purge
+      //    the data caches AND the cached js/version.js, then reload —
+      //    the network-first SW strategy will pull the fresh JSON, and
+      //    a new APP_VERSION will arrive once version.js is re-fetched.
+      if (latest && compareVersions(APP_VERSION, latest) < 0) {
+        latestEl.textContent =
+          `New version ${latest} found — reloading with fresh content…`;
+        try {
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            // Drop every data-* cache (commands.json, cves.json, etc.)
+            await Promise.all(
+              keys.filter(k => k.startsWith('data-'))
+                  .map(k => caches.delete(k))
+            );
+            // Also evict js/version.js from each shell-* cache so the
+            // bundled APP_VERSION constant refreshes on the next load.
+            for (const k of keys.filter(k => k.startsWith('shell-'))) {
+              try {
+                const c = await caches.open(k);
+                await c.delete('./js/version.js');
+                await c.delete('js/version.js');
+                await c.delete(new URL('js/version.js', location.href).href);
+              } catch { /* ignore per-cache errors */ }
+            }
+          }
+        } catch { /* ignore — reload will still help */ }
+        setTimeout(() => location.reload(), 800);
+      }
     } catch (err) {
       latestEl.hidden = false;
       latestEl.textContent = 'Check failed: ' + err.message;
@@ -205,12 +246,14 @@ function wireVersionUI() {
       latestEl.classList.toggle('ver-behind', behind);
       latestEl.classList.toggle('ver-current-ok', !behind);
       latestEl.textContent = `The latest version is ${latest}` + (behind ? '  ·  you are behind — click to update' : '  ·  you are up to date');
+      return latest;
     } catch (err) {
       if (!silent) {
         latestEl.hidden = false;
         latestEl.textContent = 'Could not fetch latest version (' + err.message + ')';
         latestEl.classList.add('ver-err');
       }
+      return null;
     }
   }
 }
