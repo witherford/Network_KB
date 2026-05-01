@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:40:23.690Z",
+  "updatedAt": "2026-05-01T20:43:32.342Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2757,55 +2757,64 @@
             "cmd": "stat appfw",
             "desc": "Global AppFW statistics: violations blocked, requests inspected",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat appfw\n\nAppFW Counter Statistics\n        Total Requests Inspected         : 1,245,392\n        Requests Blocked                 : 142\n        Top Block Reasons:\n          SQLInjection                   : 78\n          CrossSiteScripting             : 31\n          StartURL                       : 18\n          BufferOverflow                 : 9\n          CookieConsistency              : 6\n        Learning Engine\n          Suggestions Pending            : 412\n          Suggested Rules Generated      : 2103\n\nWhat it means:\n- AppFW = Application Firewall (WAF) — inspects HTTP traffic for\n  OWASP-style attacks.\n- \"Blocked\" counters break down by violation type. SQLi + XSS being\n  highest is normal; sustained high BufferOverflow means an attacker\n  is fuzzing endpoints.\n- \"Suggestions Pending\" : the learning engine has spotted patterns it\n  thinks could become whitelist rules. Review via \"show appfw\n  learningdata\"."
           },
           {
             "cmd": "add appfw profile <name> -defaults advanced",
             "desc": "Creates an AppFW profile with advanced (strict) default settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add appfw profile appfw_pro_web -defaults advanced\nDone\n\n> show appfw profile appfw_pro_web | head -10\nName : appfw_pro_web\n        Defaults                          : advanced\n        StartURL Closure                  : ON\n        SQL Injection Type                : SQLSPLCHARORKEYWORD\n        Default CharSet                   : UTF-8\n        SQL Injection Action              : log,stats\n        Cross Site Scripting Action       : log,stats\n        Buffer Overflow Action            : log,stats\n\nWhat it means:\n- \"advanced\" pre-loads safe-but-strict default values for every check\n  (SQLi, XSS, buffer overflow, start-URL closure, cookie consistency,\n  etc.).\n- Default action set to \"log,stats\" — counts and logs violations\n  WITHOUT blocking. Add \"block\" only after a tuning period.\n- Compare with -defaults basic (very permissive, mostly off)."
           },
           {
             "cmd": "set appfw profile <name> -startURLAction block log stats",
             "desc": "Configures Start URL check actions: block violations and log them",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set appfw profile appfw_pro_web -startURLAction block log stats\nDone\n\n# StartURL closure now blocks any request whose URL is not in the\n# whitelist of legitimate entry points. Browsers must arrive via\n# referer-chain from a known StartURL.\n\nWhat it means:\n- \"Start URL\" check stops users from deep-linking into back-end\n  endpoints, forcing them to enter via the home page or other\n  whitelisted URLs.\n- Action set: \"block\" + \"log\" + \"stats\" = drop violating request,\n  emit syslog, increment counter.\n- For app-like flows that legitimately deep-link (REST APIs,\n  bookmarkable pages), tune via \"Start URL Closure\" or maintain\n  an explicit whitelist."
           },
           {
             "cmd": "set appfw profile <name> -sqlInjectionAction block log",
             "desc": "Enables SQL injection protection with block and log actions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set appfw profile appfw_pro_web -sqlInjectionAction block log -sqlInjectionType SQLSPLCHARANDKEYWORD\nDone\n\n# Sample blocked request:\nGET /search?q=' OR 1=1-- HTTP/1.1\nHTTP/1.1 403 Forbidden\n%APPFW-3-SQLINJ_VIOLATION: Profile: appfw_pro_web, URL: /search,\n                            Field: q, Reason: SQL keyword + special chars\n\nWhat it means:\n- Detects SQL injection patterns in URL/form/header fields.\n- Type SQLSPLCHARANDKEYWORD : strictest — requires BOTH special chars\n  (quotes, semicolons) AND SQL keywords (UNION, SELECT, DROP) before\n  flagging. Lower types catch more but generate more false positives.\n- Combine with \"stats\" to feed counters even when blocking."
           },
           {
             "cmd": "set appfw profile <name> -crossSiteScriptingAction block log",
             "desc": "Enables XSS protection with block and log actions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set appfw profile appfw_pro_web -crossSiteScriptingAction block log\nDone\n\n# Sample blocked request:\nGET /comment?text=<script>alert(1)</script> HTTP/1.1\nHTTP/1.1 403 Forbidden\n%APPFW-3-XSS_VIOLATION: Profile: appfw_pro_web, URL: /comment,\n                       Field: text, Reason: <script> tag detected\n\nWhat it means:\n- Cross-Site Scripting check inspects HTML/JS injection patterns\n  in user-supplied parameters.\n- Whitelist legitimate HTML-bearing fields (rich-text editors)\n  via \"bind appfw profile -crossSiteScriptingURL exempted_url\".\n- Detection is signature-based + heuristic; false-positive review\n  is essential during ramp-up."
           },
           {
             "cmd": "add appfw policy <name> <rule> <profile>",
             "desc": "Creates an AppFW policy binding a rule expression to a profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add appfw policy appfw_pol_web 'HTTP.REQ.IS_VALID' appfw_pro_web\nDone\n\n> show appfw policy\nName : appfw_pol_web\n        Rule       : HTTP.REQ.IS_VALID\n        Profile    : appfw_pro_web\n        Hits       : 0\n\nWhat it means:\n- Wires a match-rule to an AppFW profile. Rule \"HTTP.REQ.IS_VALID\"\n  matches any well-formed HTTP request (i.e. fire on everything).\n- Use stricter rules to apply different profiles to different URLs\n  (e.g. one profile for the API, one for the customer portal).\n- Bind to a vserver or globally to activate."
           },
           {
             "cmd": "bind appfw global <policy> <priority>",
             "desc": "Binds an AppFW policy globally",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind appfw global appfw_pol_web 100\nDone\n\n> show appfw global\n        Priority   Policy Name      Goto Expression\n        100        appfw_pol_web    END\n\nWhat it means:\n- \"Global\" binding makes the policy evaluate on every HTTP/SSL\n  vserver — all front-end traffic is inspected.\n- Priority 100 (lower = first); use 100/200/300 spacing.\n- Per-vserver bind (\"bind lb vserver -policyName\") gives finer\n  control for environments where AppFW shouldn't apply to all\n  apps (e.g. internal-only services)."
           },
           {
             "cmd": "show appfw learningdata <profile> startURL",
             "desc": "Shows learned URL patterns for the Start URL check of a profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show appfw learningdata appfw_pro_web startURL\n\nURL                              Hits      Status\n/                                12,405    Suggested for whitelist\n/login                           11,201    Suggested for whitelist\n/api/v1/healthcheck              4,505     Suggested for whitelist\n/static/*.png                    35,012    Suggested for whitelist\n/admin/internal-debug            3         Anomaly — review\n\nWhat it means:\n- The learning engine watches real traffic and proposes URL patterns\n  that should be whitelisted for the StartURL check.\n- \"Suggested for whitelist\" entries can be promoted via the GUI's\n  \"Learning data\" view or via CLI.\n- Anomalies (low hits + unusual paths) surface potential probing —\n  worth investigating before whitelisting."
           },
           {
             "cmd": "export appfw learningdata <profile> -exportformat CEF",
             "desc": "Exports AppFW learning data in CEF format for analysis",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> export appfw learningdata appfw_pro_web -exportformat CEF -filename appfw-learning-2026-05-01.cef\nDone\n\n> shell ls -la /var/log/appfw/learning/\nappfw-learning-2026-05-01.cef   2.3 MB\n\nWhat it means:\n- Exports learning suggestions in Common Event Format (CEF) for\n  ingestion into Splunk / QRadar / ArcSight / other SIEMs.\n- Lets security teams review proposed rules in their existing\n  workflows rather than the ADC GUI.\n- Other formats: XML (machine-readable), CSV (spreadsheet-friendly)."
           },
           {
             "cmd": "show appfw profile -full",
@@ -3421,19 +3430,22 @@
             "cmd": "ping <destination-ip>",
             "desc": "ICMP echo requests from NSIP to test basic IP reachability",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> ping 10.40.0.5\nPING 10.40.0.5 (10.40.0.5): 56 data bytes\n64 bytes from 10.40.0.5: icmp_seq=0 ttl=64 time=0.214 ms\n64 bytes from 10.40.0.5: icmp_seq=1 ttl=64 time=0.198 ms\n64 bytes from 10.40.0.5: icmp_seq=2 ttl=64 time=0.221 ms\n^C\n--- 10.40.0.5 ping statistics ---\n3 packets transmitted, 3 packets received, 0% packet loss\nround-trip min/avg/max = 0.198/0.211/0.221 ms\n\nWhat it means:\n- ICMP echo from the ADC. Source defaults to the appropriate SNIP\n  for the destination's subnet.\n- ttl=64 means IP TTL on the reply — high values indicate same-L3-hop.\n- \"0% packet loss\" confirms reachability. Use Ctrl+C to stop."
           },
           {
             "cmd": "ping -S <source-ip> <destination-ip>",
             "desc": "Ping from a specific source IP e.g. a SNIP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> ping -S 10.10.10.11 8.8.8.8\nPING 8.8.8.8 (8.8.8.8) from 10.10.10.11: 56 data bytes\n64 bytes from 8.8.8.8: icmp_seq=0 ttl=115 time=2.412 ms\n64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=2.398 ms\n\nWhat it means:\n- \"-S\" forces a specific source IP (must be a configured ADC IP).\n- Use to confirm that a particular SNIP/MIP can reach a destination\n  — very common when multi-NIC ADCs route via different uplinks\n  per VLAN.\n- Destination's reply must come back via a route that returns to\n  the chosen source SNIP."
           },
           {
             "cmd": "traceroute <destination-ip>",
             "desc": "Traces network path from NetScaler to destination",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> traceroute 8.8.8.8\ntraceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets\n 1  10.10.10.1 (10.10.10.1)        0.412 ms  0.398 ms\n 2  edge-rtr.corp.local (10.0.0.1) 1.214 ms  1.198 ms\n 3  isp-pe.global.net (203.0.113.1) 4.512 ms  4.498 ms\n 4  * * *\n 5  google-edge.bb.net (74.125.1.5) 12.114 ms  12.098 ms\n 6  8.8.8.8 (8.8.8.8)              12.512 ms  12.498 ms\n\nWhat it means:\n- Walks the IP path to the destination by sending packets with\n  increasing TTL — each router on the path replies with ICMP\n  TIME_EXCEEDED, exposing itself.\n- \"* * *\" = router didn't reply (often blocks ICMP for security);\n  not a problem unless the trace stops dead there.\n- Useful for confirming asymmetric routing or pinpointing where\n  packet loss happens between two endpoints."
           },
           {
             "cmd": "nstrace -size 0 -tcpdump YES -nodes 0",
@@ -3453,61 +3465,71 @@
             "cmd": "shell tail -f /var/log/ns.log",
             "desc": "Follows ns.log in real time — primary troubleshooting command",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell tail -f /var/log/ns.log\nMay  1 11:22:01 NS-ADC PPE-0 : default UI CMD_EXECUTED 21 0\n        : User nsroot - Remote_ip 10.0.0.50 - Command \"show lb vserver\"\nMay  1 11:22:05 NS-ADC PPE-0 : default APPFW SQLINJ_VIOLATION 1\n        Profile: appfw_pro_web URL: /search Field: q\nMay  1 11:22:08 NS-ADC PPE-0 : default DUAL NBRCHANGE 1\n        : Neighbor 10.10.10.11 is up\n\nWhat it means:\n- Live tail of the main NetScaler audit / event log. Every config\n  change, policy hit (with logging on), and significant subsystem\n  event lands here.\n- Format: \"<timestamp> <hostname> <PE-id> : <facility> <event-class>\n  <event-id> <args>\".\n- Press Ctrl+C to stop the tail.\n- \"shell\" wrapper required because tail isn't a NetScaler CLI cmd."
           },
           {
             "cmd": "shell tail -f /var/log/bash.log",
             "desc": "Follows CLI audit log in real time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell tail -f /var/log/bash.log\n2026-05-01T11:22:18+00:00 NS-ADC nsroot[1234]: pwd\n2026-05-01T11:22:25+00:00 NS-ADC nsroot[1234]: cat /flash/nsconfig/ns.conf\n2026-05-01T11:22:31+00:00 NS-ADC opadmin[1245]: nstrace.sh -time 60 -size 0\n\nWhat it means:\n- BSD-shell command audit log — records every command run from the\n  \"shell\" prompt with user, PID, and timestamp.\n- Critical for security forensics: did any user run dangerous shell\n  commands during the incident window?\n- The CLI command audit log is /var/log/ns.log (different file)."
           },
           {
             "cmd": "shell grep ERR /var/log/ns.log",
             "desc": "Searches ns.log for error lines",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell grep ERR /var/log/ns.log | tail -10\nMay  1 09:14:22 NS-ADC PPE-0 : default APPFW SQLINJ_VIOLATION ERR\nMay  1 09:18:45 NS-ADC PPE-0 : default SSLLOG SSL_HANDSHAKE_FAILURE ERR\nMay  1 10:02:11 NS-ADC PPE-0 : default DUAL NBRCHANGE_FAILURE ERR\n\nWhat it means:\n- Filters ns.log for error-class events. Quick way to see what's\n  going wrong without scrolling through info-level noise.\n- Combine with \"tail -200\" or pipe to \"less\" for paginated review.\n- Common follow-up: \"grep <event-id>\" once you spot a recurring\n  error code, to see all occurrences with their context."
           },
           {
             "cmd": "shell cat /var/log/ssl.log",
             "desc": "Prints SSL log — diagnose SSL handshake errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell cat /var/log/ssl.log | tail -5\n2026-05-01T11:22:01 SSL_HANDSHAKE_SUCCESS - Client 203.0.113.45\n        Protocol: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384\n2026-05-01T11:22:08 SSL_HANDSHAKE_FAILURE - Client 198.51.100.10\n        Reason: peer used unsupported cipher\n2026-05-01T11:22:15 SSL_OCSP_FAILURE - Cert: server.crt\n        Reason: OCSP responder timeout\n\nWhat it means:\n- SSL/TLS-specific event log. Captures handshake successes/failures,\n  cipher selection, OCSP-stapling responses, cert-expiry warnings.\n- Handshake-failure entries include the peer IP and a reason —\n  critical for diagnosing TLS interop issues with old clients.\n- Volume can be high on busy SSL VIPs; rotate aggressively."
           },
           {
             "cmd": "shell cat /var/log/aaa.log",
             "desc": "Prints AAA authentication log",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell cat /var/log/aaa.log | tail -5\n2026-05-01T11:22:01 LOGIN_FAILED user=jsmith reason=\"bad credentials\"\n        source=203.0.113.45 auth_type=LDAP\n2026-05-01T11:22:18 LOGIN_SUCCESS user=jsmith\n        source=203.0.113.45 auth_type=LDAP\n2026-05-01T11:22:30 SESSION_TIMEOUT user=jdoe\n        intranet_ip=10.99.0.50 duration=00:30:00\n\nWhat it means:\n- Authentication / VPN / AAA event log. Login failures, successful\n  logins, session timeouts, MFA challenges all recorded.\n- Forensic gold: pinpoint exactly when a compromised user logged in\n  and from where.\n- Set log retention long enough to support your compliance\n  requirements (typically 90+ days for SOX/PCI)."
           },
           {
             "cmd": "shell df -h",
             "desc": "Disk usage for all partitions in human-readable format",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell df -h\nFilesystem      Size    Used   Avail Capacity  Mounted on\n/dev/ad0s1a     1.9G    645M   1.1G   36%      /\n/dev/ad0s1e     474M    1.4M   435M    0%      /tmp\n/dev/ad0s1f     14G     2.1G   11G    16%      /var\n/dev/ad0s1d     474M    14K    436M    0%      /flash\n\nWhat it means:\n- BSD disk-usage report. Each mount is a separate partition.\n- /flash : factory firmware + config (~500 MB, mostly stable).\n- /var   : logs + nstrace files + tech-support bundles. Most likely\n           to fill up. >80% triggers /var/log/ns.log warnings; at\n           >95% the box may stop accepting new connections.\n- /tmp   : transient working space; cleared on reboot."
           },
           {
             "cmd": "show ns events",
             "desc": "Recent system events: state changes, failovers, cert expiry warnings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns events | tail -10\n\nEventTime                  Module    Severity  Eventid  Message\n2026-05-01 11:22:01.123    SSL       INFO      9001     Handshake success client=203.0.113.45\n2026-05-01 11:22:08.512    APPFW     ERROR     5012     SQLi violation, profile=appfw_pro_web\n2026-05-01 11:22:15.014    DUAL      WARN      4042     Neighbor 10.10.10.11 down\n\nWhat it means:\n- Structured event-ring buffer in CLI form (no need to drop to\n  shell for grep-ing log files).\n- Severity codes: EMERGENCY, ALERT, CRITICAL, ERROR, WARN, INFO,\n  DEBUG.\n- EventID is unique per event-class — useful for filtering with\n  \"show ns events -eventId 5012\"."
           },
           {
             "cmd": "show ns connectiontable -detail full",
             "desc": "Full connection table with per-connection details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns connectiontable -detail full | head -10\n\nSource IP:Port           Dest IP:Port           State           Protocol  Idle\n203.0.113.45:54321       10.20.0.10:443         ESTABLISHED     TCP       0:00:01\n10.10.10.11:33102        192.168.1.10:80        ESTABLISHED     TCP       0:00:00\n10.10.10.11:48201        192.168.1.11:80        TIME_WAIT       TCP       0:00:14\n\nTotal connections : 8,502\n        ESTABLISHED  : 7,432\n        TIME_WAIT    : 921\n        CLOSE_WAIT   : 142\n        SYN_SENT     :   7\n\nWhat it means:\n- Live connection table — every TCP/UDP flow currently tracked\n  by the dataplane.\n- \"ESTABLISHED\" : healthy, active. \"TIME_WAIT\" : closed, briefly\n  remembered for late-arriving FINs. \"CLOSE_WAIT\" : remote closed,\n  local app hasn't yet — a high count of these is a back-end app bug.\n- Filter via -filter \"CONNECTION.IP.EQ(...)\" to narrow down."
           },
           {
             "cmd": "nsconmsg -d current -g all",
             "desc": "Reads nsconmsg counters live from the NetScaler — powerful diagnostic tool",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -d current -g all | head -10\n\nNetScaler V21 Performance Data\nReltime: 0:0:1:0\nIndex Counter Group / Name             Value     Rate    Type\n    1 sys_tot_pkt_rcvd                 14502301  4502    rate\n    2 sys_tot_pkt_sent                 14490190  4501    rate\n    3 ssl_tot_handshake_success        145020    320     rate\n    4 lb_tot_servers_up                48        0       cnts\n\nWhat it means:\n- \"nsconmsg\" is the kernel performance-counter front-end.\n- \"-d current\" : show current values (vs -d statswt0 for historical).\n- \"-g all\" : every counter group. Add \"-g <name>\" to filter:\n    nsconmsg -d current -g ssl_tot\n    nsconmsg -d current -g http_tot\n- \"Rate\" column : per-second rate over the sample interval (Reltime)."
           },
           {
             "cmd": "shell netstat -an | grep ESTABLISHED | wc -l",
             "desc": "Counts established TCP connections from the BSD shell",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell netstat -an | grep ESTABLISHED | wc -l\n8502\n\nWhat it means:\n- BSD-stack count of ESTABLISHED TCP connections currently held by\n  the management plane.\n- Compare with \"show ns connectiontable\" which counts dataplane\n  flows — these are separate counters.\n- A sudden spike in management-plane connections might signal\n  password-spray probes against the management interface."
           },
           {
             "cmd": "nstrace.sh -time 60 -size 0",
@@ -3520,19 +3542,22 @@
             "cmd": "nsconmsg -d current -s ConLb=1 -g lb_tot",
             "desc": "Live LB counters (running total)",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -d current -s ConLb=1 -g lb_tot\n\nReltime: 0:0:1:0\nIndex Counter Group / Name           Value      Rate\n    1 lb_tot_pri_clt_responses       1,245,402  4502\n    2 lb_tot_pri_svr_responses       1,245,402  4502\n    3 lb_tot_pri_responses_overall   1,245,402  4502\n    4 lb_tot_avg_resp_time_ms        12         0\n\nWhat it means:\n- \"-s ConLb=1\" filters to LB feature counters only.\n- \"lb_tot_pri_*\" : per-vserver totals. \"_avg_resp_time_ms\" is the\n  smoothed back-end response time.\n- Use to spot which LB vserver is the dominant traffic shaper."
           },
           {
             "cmd": "shell grep -i ssl /var/log/ns.log | tail -200",
             "desc": "Recent SSL-related events in ns.log",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell grep -i ssl /var/log/ns.log | tail -200\n\nMay  1 11:22:01 NS-ADC PPE-0 : default SSLLOG SSL_HANDSHAKE_SUCCESS\nMay  1 11:22:08 NS-ADC PPE-0 : default SSLLOG SSL_HANDSHAKE_FAILURE\n        Reason: peer chose TLSv1.0 (deprecated)\nMay  1 11:22:14 NS-ADC PPE-0 : default SSLLOG SSL_OCSP_FAILURE\n        Cert: server.crt OCSP responder timeout 5s\nMay  1 11:22:31 NS-ADC PPE-0 : default SSLLOG SSL_HANDSHAKE_RENEGOTIATION\n        Client 203.0.113.45 forced renegotiation\n\nWhat it means:\n- Filtered tail of ns.log keeping just SSL-related events.\n- Useful for capturing the last few hundred TLS errors during a\n  troubleshooting session.\n- For longer history, look at /var/log/ssl.log directly (rotated\n  separately)."
           },
           {
             "cmd": "shell nsconmsg -K /var/nslog/newnslog -d event",
             "desc": "Decode the binary event log for correlation",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d event | head -10\n\nNetScaler V21 Performance Data — Event mode\nTime          Event Description\n11:00:01      sys_event_appflow_collector_failed (collector_1)\n11:02:14      sys_event_lb_service_unavailable (svc_web_1)\n11:02:14      sys_event_lb_vserver_state_change (lb_web → DOWN)\n11:02:18      sys_event_lb_service_available (svc_web_1)\n11:02:18      sys_event_lb_vserver_state_change (lb_web → UP)\n\nWhat it means:\n- \"newnslog\" is a binary ring buffer of every counter and event.\n- \"-d event\" mode prints the event log entries (state-change\n  notifications, anomalies).\n- Excellent for post-mortem: see exactly what flapped and when,\n  with sub-second timestamps."
           },
           {
             "cmd": "stat ssl",
@@ -3545,7 +3570,8 @@
             "cmd": "stat ns",
             "desc": "Overall system counters including memory/CPU/connections",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ns\n\nNetScaler Statistics — global\n        Throughput (Mbps)        : 1840\n        HTTP Requests/sec        : 4502\n        HTTP Responses/sec       : 4500\n        SSL Transactions/sec     : 2101\n        Active Conns - Client    : 8,502\n        Active Conns - Server    : 7,432\n        TCP Resets sent          : 142\n        Memory Usage (%)         : 28\n        CPU Usage  (%)           : 12\n\nWhat it means:\n- High-level dataplane health snapshot. First go-to during a\n  performance complaint.\n- \"TCP Resets sent\" rising rapidly = something is killing connections\n  (rate-limit, ACL, surge protection). Drill into responder/AppQoE\n  policy stats next.\n- CPU + memory : aggregate across all PEs. Sustained >70% needs\n  investigation; >90% is critical."
           },
           {
             "cmd": "stat ns -detail",
