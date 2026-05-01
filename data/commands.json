@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:47:25.185Z",
+  "updatedAt": "2026-05-01T20:51:50.268Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -3923,19 +3923,22 @@
             "cmd": "stat lb vserver",
             "desc": "Summary statistics for every load-balancing vserver: hits, requests/sec, established connections, response-time. First place to look when a VIP \"isn't getting traffic\".",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat lb vserver\n\nLB Vserver Statistics — All\nName        Hits      Requests  Responses  Cur Cli Conn  Cur Svr Conn\nlb-web      102,341   102,341   102,000    8             6\nlb-api      45,012    45,012    44,902     4             4\nlb-mobile   12,003    12,003    11,998     1             1\n\nWhat it means:\n- Aggregate per-VIP counters in one view. Use to identify which\n  VIP is taking the most traffic.\n- \"Cur Cli/Svr Conn\" : current connection counts on each leg.\n- Hits = Requests — for HTTP. For TCP they may differ if multiple\n  TCP segments make up one logical request."
           },
           {
             "cmd": "stat lb vserver <vsrv-name>",
             "desc": "Full counter set for one LB vserver — Hits, HitsRate, RequestsRate, ResponsesRate, EstablishedConn, BytesReceivedRate, AvgTTFB.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat lb vserver lb-web\n\nLB Vserver Statistics for lb-web\n        Hits                  : 102,341\n        Requests              : 102,341\n        Responses             : 102,000\n        Current Cli Conn      : 8\n        Total Client Conn     : 50,012\n        Current Svr Conn      : 6\n        Bytes In              : 18.2 MB\n        Bytes Out             : 124.6 MB\n        Spillover Hits        : 0\n        Bound Service Stats:\n          svc_web1: hits 25,420\n          svc_web2: hits 25,432\n          svc_web3: hits 25,510\n          svc_web4: hits 25,979\n\nWhat it means:\n- Per-VIP counters drilling into bound service distribution.\n- \"Spillover Hits 0\" is healthy — non-zero means VIP is overloaded\n  and traffic is being deflected to backup vserver.\n- Service-hit balance shows whether load is evenly spread (it\n  should be roughly equal under ROUNDROBIN; deliberately uneven\n  under weighted methods)."
           },
           {
             "cmd": "stat lb vserver <vsrv-name> -detail",
             "desc": "Verbose form: also shows per-service-binding hits, surge-queue depth, spillover counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat lb vserver lb-web -detail\n\nLB Vserver Detailed Statistics for lb-web\n        Hits                  : 102,341\n        Pkts Received         : 1,245,902\n        Pkts Sent             : 1,290,000\n        Avg Response Time     : 12 ms\n        Surge Queue Depth     : 0\n        Active Transactions   : 8\n        Reset Counter:\n          Sent to Client      : 12\n          Sent to Server      : 0\n        Persistence Counter:\n          Cookie Insert       : 102,341\n          Cookie Read         : 95,210\n\nWhat it means:\n- Detailed view including packet-level counters and surge queue.\n- \"Surge Queue Depth\" : connections queued waiting for an LB slot.\n  Sustained > 0 means the VIP is overloaded.\n- \"Reset to Client\" : how often the ADC TCP-RST'd a client. High\n  values indicate timeouts or surge-protection drops."
           },
           {
             "cmd": "stat lb vserver -summary",
@@ -3948,43 +3951,50 @@
             "cmd": "stat cs vserver",
             "desc": "Content-switching vserver counters — Hits per CS vserver. The \"front door\" for many deployments; check this before the LB vservers.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cs vserver\n\nCS Vserver Statistics — All\nName              Hits        Requests   Cur Cli Conn  Cur Svr Conn\ncs-edge-https     1.5M        1.5M       145           120\ncs-internal-api   45,012      45,012     8             8\n\nWhat it means:\n- Per-CS-vserver hits. Compare to LB-vserver hits to see how the\n  CS routing decisions distribute traffic to back-end LB-vservers.\n- A CS vserver with low hits but a high-priority policy that should\n  be matching often = the policy expression is wrong."
           },
           {
             "cmd": "stat cs vserver <csvsrv-name>",
             "desc": "Single CS vserver detail incl. policy-hit breakdown.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cs vserver cs-edge-https\n\nCS Vserver Statistics for cs-edge-https\n        Hits                  : 1,520,000\n        Requests              : 1,520,000\n        Responses             : 1,519,500\n        Current Client Conn   : 145\n        Total Client Conn     : 502,000\n        Bound Policy Stats (top):\n          cs_pol_mobile  : 450,012\n          cs_pol_api     : 120,003\n          cs_pol_admin   : 405\n\nWhat it means:\n- Per-CS-vserver counters with policy-hit breakdown.\n- Top policies by hits help confirm traffic shape — a policy with\n  zero hits over a long uptime is misconfigured.\n- Sum of policy hits plus default-LB hits should equal Hits."
           },
           {
             "cmd": "stat cs policy",
             "desc": "Per-CS-policy hit counts. Use this to confirm which policy is steering traffic to which target LB vserver.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cs policy\n\nCS Policy Statistics — All\nPolicy Name        Hits        Last Hit Time\ncs_pol_mobile      450,012     2026-05-01 11:22:18\ncs_pol_api         120,003     2026-05-01 11:22:17\ncs_pol_admin       405         2026-05-01 09:14:22\ncs_pol_geo_eu      0           never                  ← unused\n\nWhat it means:\n- All CS policies, sorted by hit count.\n- \"Last Hit Time : never\" is a flag: either the policy expression\n  matches nothing, or the policy is bound but its priority lets\n  another policy win first.\n- Use to clean up stale policies after a feature retirement."
           },
           {
             "cmd": "stat cs policy <policy>",
             "desc": "Single CS policy hits + bind-point counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cs policy cs_pol_mobile\n\nPolicy Name : cs_pol_mobile\n        Rule        : HTTP.REQ.HEADER(\"User-Agent\").CONTAINS(\"Mobile\")\n        Action      : cs_act_mobile\n        Hits        : 450,012\n        Undef Hits  : 0\n        First Hit   : 2026-04-25 09:00:00\n        Last Hit    : 2026-05-01 11:22:18\n\nWhat it means:\n- Per-policy detail. \"Undef Hits\" : evaluation errors (e.g. header\n  not present in a non-HTTP request).\n- High Undef Hits hint at a too-broad bind point — the policy is\n  evaluating on traffic where the rule grammar can't apply."
           },
           {
             "cmd": "stat ssl vserver <vsrv-name>",
             "desc": "SSL-offload vserver counters — TLS handshakes, alerts, session-reuse rate. Useful when client TLS issues show as \"no hits on the LB\".",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ssl vserver vs_https\n\nSSL Vserver Statistics for vs_https\n        SSL Sessions            : 8,502\n        Total Handshakes        : 145,021\n        Handshake Success       : 144,989\n        Handshake Failures      : 32\n        Session Reuses          : 102,341\n        SNI Connections         : 145,012\n        Cert Errors:\n          Verify Failures       : 12\n          Expired Certs         : 0\n          Untrusted Certs       : 12\n\nWhat it means:\n- Per-SSL-vserver counters. Failure / total handshake ratio under\n  1% is normal.\n- \"Verify Failures: 12, Untrusted Certs: 12\" : 12 clients tried\n  with a cert the ADC didn't trust (probably mTLS misconfiguration).\n- Session Reuses : how many resumptions skipped a full handshake —\n  high ratio = good."
           },
           {
             "cmd": "stat aaa vserver",
             "desc": "AAA vservers — auth attempts, success/fail counts.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat aaa vserver\n\nAAA Vserver Statistics — All\nName             Hits      Auth Success  Auth Failure  Active Sessions\nauth_vs_main     45,012    44,890        122           45\nauth_vs_partner  12,003    11,998        5             12\n\nWhat it means:\n- Per-AAA-vserver: total auth attempts, success/failure split,\n  current active sessions.\n- Failure ratio jumping over 5% = either an LDAP/RADIUS backend\n  problem OR a credential-stuffing attack. Drill into ns.log for\n  failure reasons."
           },
           {
             "cmd": "stat vpn vserver",
             "desc": "Gateway / VPN vserver counters — connected users, ICA proxy state, hits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat vpn vserver\n\nVPN Vserver Statistics — All\nName             Hits      Active Sessions  Total Sessions  Failed Logins\ngw-rwa-corp      45,012    45              50,012           122\ngw-rwa-partner   12,003    12              12,003           5\n\nWhat it means:\n- NetScaler Gateway / SSL-VPN per-vserver counters.\n- \"Active Sessions\" : currently logged-in users. Compare with the\n  vpn-vserver's MaxLogin value; a sustained ratio near 100% means\n  capacity is exhausted."
           },
           {
             "cmd": "stat gslb vserver",
@@ -3997,169 +4007,197 @@
             "cmd": "stat gslb vserver <name>",
             "desc": "Single GSLB vserver detail (per-IP hits, MEP status).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat gslb vserver GSLB_VS\n\nGSLB Vserver Statistics for GSLB_VS\n        DNS Requests           : 12,053\n        DNS Responses          : 12,053\n        Avg Response Time      : 15 ms\n        LB Method              : RTT\n        Bound GSLB Services:\n          GSLB_SVC_Web1 (DC_London)   : Hits 6,201\n          GSLB_SVC_Web2 (DC_NewYork)  : Hits 5,852\n\nWhat it means:\n- DNS-level counters for the GSLB vserver. Hits = number of DNS\n  queries that returned an answer.\n- Service hits show where GSLB sent clients — RTT / static-proximity\n  methods may produce uneven distribution by design (most clients\n  closer to one DC)."
           },
           {
             "cmd": "stat cr vserver",
             "desc": "Cache-redirection vserver counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cr vserver\n\nCache Redirection Vserver Statistics — All\nName        Hits      Cache Hits  Origin Hits  Bypass Hits\ncr-vs-1     50,432    35,012      14,901       519\n\nWhat it means:\n- Per-CR-vserver counters split by destination decision:\n  - Cache Hits : sent to cache server (e.g. Squid).\n  - Origin Hits : sent to origin (cache miss / non-cacheable).\n  - Bypass Hits : skipped CR entirely (matched a bypass policy).\n- High Origin/Cache ratio = cache miss rate is bad — review\n  cacheability rules or cache server health."
           },
           {
             "cmd": "stat service",
             "desc": "All backend services — hits, current connections, max-clients headroom.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat service\n\nService Statistics — All\nName        Hits      Cur Conn  Total Conn  Throughput\nsvc_web1    25,420    8         12,005      45 Mbps\nsvc_web2    25,432    8         12,003      44 Mbps\nsvc_web3    25,510    7         12,002      45 Mbps\nsvc_web4    25,979    9         12,401      46 Mbps\n\nWhat it means:\n- Per-back-end-service counters. Even distribution = healthy\n  load-balancing.\n- \"Throughput\" is per-service bandwidth; sum should approximate\n  the LB-vserver's throughput."
           },
           {
             "cmd": "stat service <svc>",
             "desc": "Per-service detail. Cross-check vserver hits against backend hits to spot policy-stuck or surge-queue issues.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat service svc_web1\n\nService Statistics for svc_web1\n        State                  : UP\n        Hits                   : 25,420\n        Current Conn (Cli/Svr) : 8 / 8\n        Total Conn             : 12,005\n        Bytes In               : 4.5 MB\n        Bytes Out              : 31.2 MB\n        Avg SRTT (ms)          : 12\n        Last Reason for State  : Probe Successful (HTTP 200)\n\nWhat it means:\n- Per-service detail. \"Avg SRTT\" : smoothed round-trip time to the\n  back-end — if it jumps suddenly the back-end has a network or\n  CPU issue.\n- \"Last Reason for State\" tells you exactly why the service is\n  UP/DOWN — invaluable for health-check tuning."
           },
           {
             "cmd": "stat servicegroup",
             "desc": "Service-group level counters; aggregates members.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat servicegroup\n\nService Group Statistics — All\nName        Members  UP  Hits      Throughput\nsg_web      4        4   102,341   180 Mbps\nsg_api      3        2   45,012    35 Mbps   ← one member DOWN\n\nWhat it means:\n- Per-service-group view. \"Members / UP\" = total/healthy ratio.\n- A discrepancy (3 members, 2 UP) is a health-check failure on one\n  back-end — drill into \"stat servicegroup <name>\" or\n  \"show servicegroup <name>\" to find which."
           },
           {
             "cmd": "stat servicegroup <sg>",
             "desc": "Per-service-group counters incl. each member's hits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat servicegroup sg_web\n\nService Group Statistics for sg_web\n        Members                : 4 (UP: 4, DOWN: 0)\n        Hits                   : 102,341\n        Total Conn             : 50,012\n        Per-member breakdown:\n          192.168.1.10:443  Hits 25,420  Cur Conn 8\n          192.168.1.11:443  Hits 25,432  Cur Conn 8\n          192.168.1.12:443  Hits 25,510  Cur Conn 7\n          192.168.1.13:443  Hits 25,979  Cur Conn 9\n\nWhat it means:\n- Drill-down with per-member counters. Helps confirm balanced\n  distribution (or deliberately weighted skew).\n- A member with disproportionately high hits + connections might\n  be the only one not honouring persistence cookies — investigate."
           },
           {
             "cmd": "stat lb monitor <mon>",
             "desc": "Monitor probe stats — probes sent, failures. Failing monitors → service marked DOWN → vserver shows zero hits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat lb monitor mon_health\n\nLB Monitor Statistics for mon_health\n        Type                   : HTTP\n        Probes Sent            : 1,250,000\n        Probes Successful      : 1,249,901\n        Probes Failed          : 99\n        Last Probe State       : Success (HTTP 200)\n        Avg Probe Time         : 8 ms\n\nWhat it means:\n- Per-monitor probe counters. Failure ratio < 0.1% normal.\n- Avg Probe Time : how long the back-end takes to respond to the\n  health check. Sudden increase = back-end performance trouble.\n- A growing \"Probes Failed\" count, even if services stay UP, is\n  an early-warning indicator."
           },
           {
             "cmd": "show service <svc>",
             "desc": "Service config + UP/DOWN state + last state-change. The \"why is this DOWN\" command.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show service svc_web1\n\nName             : svc_web1\n        IP             : 192.168.1.10\n        Port           : 443\n        Protocol       : SSL\n        State          : UP\n        Last State Change : Wed May  1 09:00:00 2026\n        Bound Vservers : lb-web, cs-edge-https\n        Bound Monitors :\n          tcp_default     : UP, last probe 2 sec ago\n          mon_health      : UP, last probe 4 sec ago\n        Current Conn   : 8 (cli) / 8 (svr)\n        Cookie Stats   : insert 12,401  read 11,890\n\nWhat it means:\n- Per-service config + state snapshot. \"Last State Change\" tells\n  you if the service is freshly recovered or has been stable.\n- Bound monitors show ALL probes that must pass for UP state.\n- \"Cookie Stats\" : how many persistence cookies this service has\n  inserted vs how many returning clients used one."
           },
           {
             "cmd": "show servicegroup <sg>",
             "desc": "Service-group config + per-member state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show servicegroup sg_web\n\nName             : sg_web\n        Protocol       : SSL\n        Maxconn        : 0 (unlimited)\n        Bound Members  :\n          192.168.1.10:443  State UP   weight 1\n          192.168.1.11:443  State UP   weight 1\n          192.168.1.12:443  State UP   weight 1\n          192.168.1.13:443  State DISABLED  ← admin disabled\n        Bound Monitors :\n          tcp_default\n          mon_health\n\nWhat it means:\n- Per-servicegroup config + member list with per-member state.\n- \"DISABLED\" = administratively out (someone ran \"disable\" on it).\n  \"DOWN\" = monitor failed.\n- Use to confirm a maintenance disable happened on the right\n  member before re-enabling."
           },
           {
             "cmd": "stat rewrite policy",
             "desc": "Rewrite-policy hit counts. Confirms whether a rewrite is firing on the affected vserver.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat rewrite policy\n\nRewrite Policy Statistics — All\nPolicy Name           Hits        Undef Hits  Last Hit\npol_xff               1,245,012   0           2026-05-01 11:22:18\npol_strip_server      1,245,000   0           2026-05-01 11:22:18\npol_hsts              1,245,000   0           2026-05-01 11:22:18\npol_old_unused        0           0           never\n\nWhat it means:\n- All rewrite policies and their hit counts.\n- Three top policies firing on every request = expected (XFF\n  injection, server banner strip, HSTS header on every response).\n- Zero-hit policy : either retired traffic pattern, or rule never\n  matches (worth reviewing)."
           },
           {
             "cmd": "stat rewrite policy <pol>",
             "desc": "Single rewrite policy detail.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat rewrite policy pol_xff\n\nPolicy Name : pol_xff\n        Rule         : HTTP.REQ.IS_VALID\n        Action       : act_xff\n        Hits         : 1,245,012\n        Undef Hits   : 0\n        First Hit    : 2026-04-15 09:00:00\n        Last Hit     : 2026-05-01 11:22:18\n\nWhat it means:\n- Per-policy detail.\n- Rule HTTP.REQ.IS_VALID matches every well-formed HTTP request\n  (i.e. fires on everything). Hits ~ requests.\n- Combine with \"stat rewrite action\" to confirm action-level\n  counters match."
           },
           {
             "cmd": "stat responder policy",
             "desc": "Responder-policy hits — useful when expected traffic is being silently responded-to or dropped.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat responder policy\n\nResponder Policy Statistics — All\nPolicy Name              Hits     Last Hit\npol_block_admin          1,250    2026-05-01 11:01:14\npol_geo_block_kr         412      2026-05-01 10:14:08\npol_throttle_login       12,403   2026-05-01 11:21:55\npol_decommissioned       0        never\n\nWhat it means:\n- All responder policies. Useful to spot when a block rule starts\n  firing more aggressively than usual (sign of a probing campaign).\n- pol_throttle_login firing 12k times = legitimate brute-force\n  defence working as designed."
           },
           {
             "cmd": "stat responder policy <pol>",
             "desc": "Single responder policy detail.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat responder policy pol_throttle_login\n\nPolicy Name : pol_throttle_login\n        Rule         : sys.check_limit(\"limit_login\")\n        Action       : DROP\n        Hits         : 12,403\n        Undef Hits   : 0\n        First Hit    : 2026-04-30 09:00:00\n        Last Hit     : 2026-05-01 11:21:55\n\nWhat it means:\n- Per-policy detail. Hits = times the rate-limit was exceeded.\n- DROP action silently kills the connection. Compare with RESET\n  (TCP RST) or RESPONDWITH (custom error page)."
           },
           {
             "cmd": "stat appfw policy <pol>",
             "desc": "AppFW-policy hit counts + violations.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat appfw policy appfw_pol_web\n\nPolicy Name : appfw_pol_web\n        Rule         : HTTP.REQ.IS_VALID\n        Profile      : appfw_pro_web\n        Hits         : 1,245,392\n        Block Count  : 142\n        Top Block Reasons:\n          SQLInjection         : 78\n          CrossSiteScripting   : 31\n          StartURL             : 18\n\nWhat it means:\n- AppFW policy stats with breakdown of WHY requests were blocked.\n- Hits = total inspections. Block Count = of those, how many\n  triggered an action.\n- Sustained high SQLi/XSS = tune profile relaxations OR you have\n  legitimate attackers being properly blocked."
           },
           {
             "cmd": "stat appqoe policy",
             "desc": "App-QoE policy hits (priority queueing, surge protection).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat appqoe policy\n\nAppQoE Policy Statistics — All\nPolicy Name       Hits      Action       Surge Drops\npol_priority_paid  450,012  PRIORITY_HIGH  0\npol_throttle_free  1,200,000 PRIORITY_LOW  240\n\nWhat it means:\n- AppQoE = Application Quality of Experience: prioritises traffic\n  classes during overload.\n- Surge Drops on the LOW-priority class = ADC was overloaded and\n  shed lower-priority traffic to protect the higher-priority class.\n  Working as designed."
           },
           {
             "cmd": "stat ns acl",
             "desc": "Global ACL hit counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ns acl\n\nACL Statistics — IPv4 Extended\nACL Name                Action  Hits         Drop Rate (pps)\nACL_BLOCK_TELNET        DENY    14,523       0.5\nACL_ALLOW_MGMT          ALLOW   8,902,341    300\nACL_DEFAULT_DROP        DENY    142          0.0\n\nWhat it means:\n- Per-ACL hit counters. DENY-action hits show what bad traffic\n  was successfully blocked.\n- \"Drop Rate\" current packets-per-second hitting the rule. A\n  sudden spike on a deny rule = active attack."
           },
           {
             "cmd": "stat ns acl6",
             "desc": "Global IPv6 ACL hit counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ns acl6\n\nACL Statistics — IPv6 Extended\nACL Name             Action  Hits     Drop Rate (pps)\nACL6_BLOCK_RA        DENY    421      0.0\nACL6_ALLOW_LOCAL     ALLOW   45,012   2\n\nWhat it means:\n- IPv6 extended ACL counters — counterpart to \"stat ns acl\".\n- IPv6 ACLs are independent of IPv4; you need a v4 + v6 ACL set\n  for dual-stack environments."
           },
           {
             "cmd": "stat ns simpleacl",
             "desc": "Simple-ACL counters (line-rate ACLs).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ns simpleacl\n\nSimple ACL Statistics\nSource IP        Hits     TTL\n10.99.0.5        45       3540s   ← will expire automatically\n192.168.99.10    0        7200s\n\nWhat it means:\n- Simple ACLs = fast-path drop rules used for emergency mitigation.\n- They auto-expire after their TTL — useful for short-term blocks\n  without permanent config changes.\n- Hits = how many packets each rule has dropped during its lifetime."
           },
           {
             "cmd": "nsconmsg -K newnslog -d current -g vserver_hits_rate",
             "desc": "Live real-time view of every vserver's hits-per-second from the NetScaler kernel counter ring. Run from BSD shell (after \"shell\" command).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d current -g vserver_hits_rate\n\nReltime: 0:0:1:0\nIndex Counter Group / Name                  Value    Rate\n    1 vserver_hits_rate (lb-web)            102341   452\n    2 vserver_hits_rate (lb-api)            45012    198\n    3 vserver_hits_rate (cs-edge-https)     1520000  6700\n\nWhat it means:\n- newnslog binary counter dump filtered to per-vserver hit RATES.\n- \"Rate\" column is per-second. Top vservers by rate help identify\n  which VIP is the dominant traffic shaper.\n- Use during live troubleshooting — much lower overhead than\n  running \"stat lb vserver\" repeatedly."
           },
           {
             "cmd": "nsconmsg -K newnslog -d current -g requests_rate",
             "desc": "Live request-rate view across all vservers.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d current -g requests_rate\n\nReltime: 0:0:1:0\nIndex Counter Group / Name              Value      Rate\n    1 requests_rate (HTTP)              4,502,000  4502\n    2 requests_rate (SSL)               2,101,000  2101\n\nWhat it means:\n- Aggregate per-protocol request rate.\n- \"Rate\" is requests per second, smoothed.\n- Sudden divergence between HTTP and SSL request rates may indicate\n  a TLS-stripping bug or one feature being overloaded."
           },
           {
             "cmd": "nsconmsg -K newnslog -d statswt0 -g vsvr_hits",
             "desc": "Continuously watch vserver_hits counters (refreshes every 7 sec, the default newnslog interval).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d statswt0 -g vsvr_hits | tail -10\n\nTime Sample Counter Group / Name      Value\n2026-05-01 11:00:00  vsvr_hits (lb-web)  102000\n2026-05-01 11:01:00  vsvr_hits (lb-web)  102341\n2026-05-01 11:02:00  vsvr_hits (lb-web)  102801\n2026-05-01 11:03:00  vsvr_hits (lb-web)  103401\n\nWhat it means:\n- \"statswt0\" is the historical (time-series) ring of newnslog.\n  Each row is a 1-minute sample.\n- Use to graph trends over the last few hours / days.\n- Combine with \"tail -100\" or pipe to a CSV for analysis in Excel."
           },
           {
             "cmd": "nsconmsg -K newnslog -s ConLb=2 -d oldconmsg",
             "desc": "Aggregate vserver hits from the historical newnslog ring buffer — no live capture needed.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -s ConLb=2 -d oldconmsg\n\nSample older counter dump (uses ConLb=2 wider columns):\n\nIndex Counter                          Value         Rate\n    1 lb_tot_pri_responses_overall     1,245,402     4502\n    2 lb_tot_avg_resp_time_ms          12            0\n    3 lb_tot_pri_clt_responses         1,245,402     4502\n\nWhat it means:\n- \"-s ConLb=2\" widens the column display so very long counter\n  values aren't truncated.\n- \"-d oldconmsg\" : legacy historical mode (kept for backward\n  compatibility scripts)."
           },
           {
             "cmd": "nsconmsg -K newnslog -d setime -s totalcount=2000 -g vserver",
             "desc": "Show timestamped vserver counters with explicit sample count — use to correlate hit drops with timestamps in /var/log/ns.log.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d setime -s totalcount=2000 -g vserver\n\nShowing last 2000 vserver-counter samples:\n2026-05-01 11:22:18 vserver_hits (lb-web) 102341\n2026-05-01 11:22:18 vserver_hits (lb-api) 45012\n... (1998 more rows)\n\nWhat it means:\n- \"-d setime\" prints a fixed number of recent samples (totalcount).\n- \"-g vserver\" filters to vserver counters only.\n- Useful for exporting a fixed-size dataset to a forensic file\n  during an incident."
           },
           {
             "cmd": "nsconmsg -K /var/nslog/newnslog -d past -s ConLb=2 -g vsvr_tot_hits",
             "desc": "Replay total vserver hits from a saved newnslog file (post-incident analysis).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell nsconmsg -K /var/nslog/newnslog -d past -s ConLb=2 -g vsvr_tot_hits\n\nPast vserver total-hits across all retained samples:\n2026-04-30 09:00:00  vsvr_tot_hits (lb-web)  98000\n2026-04-30 11:00:00  vsvr_tot_hits (lb-web)  99401\n2026-05-01 09:00:00  vsvr_tot_hits (lb-web)  100012\n\nWhat it means:\n- \"-d past\" : full historical retention from this newnslog file.\n- newnslog rotates after a configurable size — older data is in\n  /var/nslog/newnslog.0, .1, .2, etc.\n- For longer history, point \"-K\" at a specific older file."
           },
           {
             "cmd": "show ns connectiontable -filter \"Vsvr == 10.0.0.10:443\"",
             "desc": "List every connection landing on a specific VIP — proves traffic is reaching the appliance even when \"stat lb vserver\" hits look low.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns connectiontable -filter \"Vsvr == 10.0.0.10:443\"\n\nSource IP:Port            Dest IP:Port            State            Idle\n203.0.113.45:54321        10.0.0.10:443           ESTABLISHED      0:00:01\n198.51.100.20:62103       10.0.0.10:443           ESTABLISHED      0:00:00\n198.51.100.30:42118       10.0.0.10:443           TIME_WAIT        0:00:09\n\nTotal connections to 10.0.0.10:443 : 142\n\nWhat it means:\n- Filters live conntable to only flows targeting the named VIP.\n- Useful when one specific VIP is suspected of misbehaving — see\n  exactly which clients are connected and in what state.\n- \"TIME_WAIT\" entries are normal transient state after close."
           },
           {
             "cmd": "show ns connectiontable -filter \"VsvrName == web-vs\"",
             "desc": "Same as above but filtered by vserver name.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns connectiontable -filter \"VsvrName == web-vs\"\n\nSource IP:Port            Dest IP:Port            State            Idle\n203.0.113.45:54321        10.0.0.10:443           ESTABLISHED      0:00:01\n... (142 rows)\n\nWhat it means:\n- Same as above but filters by vserver NAME instead of IP — more\n  robust if the VIP IP might change or if the vserver is on a\n  range / wildcard.\n- Filter expressions support && and ||:\n    -filter \"VsvrName == web-vs && SrcIP == 203.0.113.45\""
           },
           {
             "cmd": "show ns conntable | grep <vip>",
             "desc": "Quick BSD-shell variant when you only need a count of in-flight connections for a VIP.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns conntable | grep 10.0.0.10\n\n203.0.113.45:54321  10.0.0.10:443  ESTABLISHED  TCP  0:00:01\n198.51.100.20:62103 10.0.0.10:443  ESTABLISHED  TCP  0:00:00\n198.51.100.30:42118 10.0.0.10:443  TIME_WAIT    TCP  0:00:09\n\nWhat it means:\n- Quick-and-dirty filtering of conntable via grep — useful in\n  scripted contexts where the structured -filter syntax is\n  unavailable or harder to compose.\n- Less efficient for large tables; prefer \"-filter\" form for\n  routine use."
           },
           {
             "cmd": "stat ns connectiontable",
             "desc": "Aggregate connection-table counters: total flows, surge-queue, half-open.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ns connectiontable\n\nConnection Table Statistics\n        Current Total Conn         : 8,502\n        Total Lifetime Conn        : 145,021\n        State Distribution:\n          ESTABLISHED              : 7,432\n          TIME_WAIT                : 921\n          CLOSE_WAIT               : 142\n          SYN_SENT                 : 7\n        Conn Memory Used           : 14.2 MB / 1.0 GB\n\nWhat it means:\n- Aggregate conntable stats. ESTABLISHED is the dominant state.\n- \"CLOSE_WAIT\" rising = back-end app is closing connections but\n  not the local socket — application bug.\n- \"Conn Memory Used\" : guard against running out; busy ADCs\n  may need conn-table tuning (\"set ns config -maxConn\")."
           },
           {
             "cmd": "start nstrace -size 0 -filter \"VSVRIP == 10.0.0.10 && VSVRPORT == 443\" -mode TXB",
@@ -4186,103 +4224,120 @@
             "cmd": "shell tail -f /var/log/ns.log | grep <vip>",
             "desc": "Watch ns.log for syslog events tied to a specific VIP (state changes, monitor flaps).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell tail -f /var/log/ns.log | grep 10.0.0.10\n\nMay  1 11:22:01 NS-ADC PPE-0 : default LB SVC_AVAIL Service svc_web1 (10.0.0.10:443) UP\nMay  1 11:22:08 NS-ADC PPE-0 : default LB SVC_DOWN Service svc_web2 (10.0.0.10:443) DOWN\n\nWhat it means:\n- Live ns.log tail filtered to a single VIP IP — see only events\n  related to that vserver.\n- Combine multiple greps:\n    tail -f ns.log | grep 10.0.0.10 | grep DOWN\n- Press Ctrl+C to stop the tail."
           },
           {
             "cmd": "shell tail -f /var/log/newnslog",
             "desc": "Tail the binary newnslog ring (output is binary; pipe through nsconmsg to render).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell tail -f /var/log/newnslog 2>&1 | strings | head -10\n\nThis binary file is best read via nsconmsg.\n\n# Better:\n# shell nsconmsg -K /var/log/newnslog -d current -g <pattern>\n\nWhat it means:\n- /var/log/newnslog is BINARY — using \"tail -f\" prints unreadable\n  output. Use \"nsconmsg\" to decode it instead.\n- For live tailing of decoded counters:\n    shell nsconmsg -K /var/log/newnslog -d current -g vserver_hits_rate -s reltime=1\n  (refreshes every 1 sec)."
           },
           {
             "cmd": "clear ns stats",
             "desc": "Reset ALL appliance counters (vserver hits, services, policies, SSL, etc.). Use to baseline before/after a change.",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "> clear ns stats\nAre you sure you want to clear all statistical counters? [Y/N] Y\nDone\n\n> stat ns | head -3\n        HTTP Requests/sec     : 0    ← reset\n        Throughput (Mbps)     : 0    ← reset\n\nWhat it means:\n- Resets ALL counters (vservers, services, monitors, AppFW, etc.)\n  to zero.\n- Useful as a clean baseline before reproducing an issue.\n- Does NOT affect connection table or running config — only\n  statistics."
           },
           {
             "cmd": "clear lb vserver <vsrv-name>",
             "desc": "Clear stats for a single LB vserver only.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> clear lb vserver lb-web\nDone\n\n> stat lb vserver lb-web | head -3\n        Hits      : 0     ← reset\n        Requests  : 0     ← reset\n\nWhat it means:\n- Resets stats for a specific LB vserver only — surgical compared\n  to \"clear ns stats\".\n- Useful when diagnosing one VIP's behaviour without disturbing\n  baseline counters elsewhere."
           },
           {
             "cmd": "clear cs vserver <csvsrv-name>",
             "desc": "Clear stats for a single CS vserver only.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "> clear cs vserver cs-edge-https\nDone\n\n> stat cs vserver cs-edge-https | head -3\n        Hits      : 0     ← reset\n\nWhat it means:\n- Resets the per-CS-vserver hit counters and policy-hit\n  breakdowns. Underlying LB-vserver counters untouched.\n- Pairs naturally with \"clear cs policy\" if you want to reset\n  per-policy hits at the same time."
           },
           {
             "cmd": "clear ns connectiontable",
             "desc": "Drop all entries from the in-memory connection table — disruptive; resolves stuck flows.",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "> clear ns connectiontable\nAre you sure you want to clear all active connections? [Y/N] Y\nDone. 8,502 connections cleared.\n\nWhat it means:\n- DESTRUCTIVE: closes EVERY active TCP/UDP flow on the dataplane.\n- Used during emergency conditions where the conntable is\n  corrupted or memory-exhausted.\n- Production users will see RST on every existing connection;\n  re-establish takes a few seconds."
           },
           {
             "cmd": "show lb vserver <vsrv-name>",
             "desc": "Vserver state (UP / DOWN / OUT OF SERVICE) + bound services and current effective state. A DOWN vserver records zero hits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show lb vserver lb-web\n\nName             : lb-web\n        State            : UP\n        Effective State  : UP\n        IP : 10.0.0.10:443 (SSL)\n        Persistence      : COOKIEINSERT\n        LB Method        : LEASTCONNECTION\n        Bound Services   : 4 (UP: 4)\n\nWhat it means:\n- Per-VIP config + state.\n- \"Effective State\" : computed from individual service health.\n  UP requires at least one service UP.\n- For deeper service-level detail, follow up with\n  \"show service <svc>\" on each bound service."
           },
           {
             "cmd": "show ns ip <vip>",
             "desc": "Confirm the VIP is configured and ARP-eligible. A typo or missing -arp ENABLED stops all hits cold.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns ip 10.0.0.10\n\nIP                  Type   Mode    State      VLAN  Options\n10.0.0.10           VIP    Active  Enabled    100   ARP=ENABLED, MGMTACCESS=DISABLED\n\nWhat it means:\n- Looks up a single IP in the ADC's IP table.\n- Type VIP : front-end Virtual IP for an LB/CS/GSLB vserver.\n- ARP ENABLED : ADC responds to ARP requests for this IP. Disable\n  on float-VIPs in HA-active-active scenarios where another node\n  owns the responder role.\n- MGMTACCESS DISABLED : VIP doesn't accept management traffic."
           },
           {
             "cmd": "show ns arp <vip>",
             "desc": "Confirm the VIP has an ARP entry — if upstream switch hasn't learned it, traffic never arrives.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns arp 10.0.0.1\n\nIP            HWaddr               IF      VLAN  Type     Age\n10.0.0.1      00:1a:1e:11:22:33    1/1     1     DYNAMIC  60s\n\nWhat it means:\n- ARP table entry for the gateway / next-hop of the named VIP.\n- Useful when troubleshooting \"VIP not reachable\" — confirms\n  L2 resolution to the upstream router is happening.\n- Type DYNAMIC : auto-resolved. STATIC : manually pinned.\n- Age : seconds since the entry was last refreshed."
           },
           {
             "cmd": "show route <vip>",
             "desc": "Confirm reverse path back to the client; missing static route = SYN/ACKs blackhole and hits stay low.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show route 10.0.0.10\n\nNetwork/Mask        Gateway     Vlan  State  Source   Cost\n10.0.0.0/24         (direct)    100   UP     CONNECT  0\n\nWhat it means:\n- Routing decision the ADC would use for the named destination.\n- \"(direct)\" : the destination is on a directly-attached subnet\n  (no gateway hop needed).\n- For routes via a gateway, the column shows the next-hop IP."
           },
           {
             "cmd": "show ns runningconfig | grep -i <vsrv-name>",
             "desc": "Pull the full config block for the vserver — bindings, policies, persistence, listen policy. Quick sanity check.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns runningconfig | grep -i lb-web\n\nadd lb vserver lb-web SSL 10.0.0.10 443\nset lb vserver lb-web -lbMethod LEASTCONNECTION -persistenceType COOKIEINSERT\nbind lb vserver lb-web svc_web1\nbind lb vserver lb-web svc_web2\nbind ssl vserver lb-web -certkeyName wildcard.global.com\n\nWhat it means:\n- Filtered runningConfig — only lines mentioning the named vserver.\n- Quick way to capture every config line involved in one VIP for\n  documentation / change-control purposes.\n- Use case-insensitive (-i) so partial matches across naming\n  conventions still hit."
           },
           {
             "cmd": "show ns listenpolicy",
             "desc": "List listen-policies. A misfiring listen-policy on a wildcard vserver siphons hits away from the expected one.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns listenpolicy\n\nListen Policy : default\n        Policy expression  : (none — accept all by default)\n        Bound vservers     : (all)\n\n# With explicit policies:\nListen Policy : restrict_internal\n        Policy expression  : CLIENT.IP.SRC.IN_SUBNET(10.0.0.0/8)\n        Bound vservers     : lb-internal-api\n\nWhat it means:\n- Listen policies decide WHICH vserver responds to a given inbound\n  connection. By default, the IP+port match wins.\n- Use to enforce CIDR-based access (only internal subnets reach\n  this VIP) without ACLs.\n- Bound vservers ignore connections that don't match the listen\n  expression."
           },
           {
             "cmd": "show appflow",
             "desc": "AppFlow / IPFIX export config. If counters look right but reporting/MAS shows zero, the export side may be broken.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show appflow\n\nAppFlow Statistics:\n        Total flows exported   : 14,520,341\n        Active collectors      : 1\n          Collector_1 (10.1.1.50:4739): connected, last sent 2 sec ago\n        Active actions         : 1\n          AF_ACT_1 (Sample 100%, page tracking)\n        Active policies        : 1\n          AF_POL_GLOBAL (rule TRUE, hits 14,520,341)\n\nWhat it means:\n- AppFlow exports IPFIX records to external collectors (Splunk,\n  Citrix ADM, Plixer Scrutinizer, etc.).\n- \"ClientSample 100\" : every flow exported. Lower percentages\n  reduce overhead on the ADC + collector.\n- Useful for application-performance monitoring and security\n  forensics with full flow + metadata fidelity."
           },
           {
             "cmd": "curl -k -u <user>:<pwd> https://<nsip>/nitro/v1/stat/lbvserver/<name>",
             "desc": "NITRO REST stat endpoint — JSON response with all counters, suitable for Prometheus/Grafana exporters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ curl -k -u nsroot:secret https://10.10.10.10/nitro/v1/stat/lbvserver/lb-web | jq\n\n{\n  \"errorcode\": 0,\n  \"message\": \"Done\",\n  \"lbvserver\": [{\n    \"name\"       : \"lb-web\",\n    \"totalrequests\": \"102341\",\n    \"curclntconnections\": \"8\",\n    \"totalpktssent\"     : \"1290000\"\n  }]\n}\n\nWhat it means:\n- NITRO is the ADC's REST/JSON management API. Per-vserver stats\n  via /stat/lbvserver/<name>.\n- \"-k\" : skip TLS verification (NSIP self-signed). For production,\n  add proper trust anchors.\n- Output is JSON; pipe through \"jq\" or jq-equivalent for readable\n  formatting."
           },
           {
             "cmd": "curl -k -u <user>:<pwd> https://<nsip>/nitro/v1/stat/lbvserver",
             "desc": "NITRO bulk stat for every LB vserver in one call.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ curl -k -u nsroot:secret https://10.10.10.10/nitro/v1/stat/lbvserver | jq '.lbvserver[] | .name + \" \" + .totalrequests'\n\n\"lb-web 102341\"\n\"lb-api 45012\"\n\"lb-mobile 12003\"\n\"lb-default 0\"\n\nWhat it means:\n- Without a name suffix, returns ALL LB vservers — useful for\n  bulk monitoring scripts.\n- Pair with jq to extract specific fields: name + hits count\n  becomes a clean per-vserver summary.\n- Same shape works for other endpoints: /stat/csvserver,\n  /stat/service, /stat/servicegroup."
           },
           {
             "cmd": "curl -k -u <user>:<pwd> https://<nsip>/nitro/v1/stat/csvserver/<name>",
             "desc": "NITRO stat endpoint for a CS vserver.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ curl -k -u nsroot:secret https://10.10.10.10/nitro/v1/stat/csvserver/cs-edge-https | jq\n\n{\n  \"errorcode\": 0,\n  \"csvserver\": [{\n    \"name\"               : \"cs-edge-https\",\n    \"totalrequests\"      : \"1520000\",\n    \"totalresponses\"     : \"1519500\",\n    \"curclntconnections\" : \"145\"\n  }]\n}\n\nWhat it means:\n- Same shape as the LB-vserver endpoint but for Content-Switching\n  vservers.\n- Use for monitoring scripts that want CS-vserver-level metrics\n  rather than the underlying LB-vserver split."
           },
           {
             "cmd": "curl -k -u <user>:<pwd> \"https://<nsip>/nitro/v1/stat/lbvserver/<name>?statbindings=yes\"",
             "desc": "NITRO call returning per-bound-service hit counters alongside the vserver totals.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ curl -k -u nsroot:secret \"https://10.10.10.10/nitro/v1/stat/lbvserver/lb-web?statbindings=yes\" | jq\n\n{\n  \"errorcode\": 0,\n  \"lbvserver\": [{\n    \"name\": \"lb-web\",\n    \"totalrequests\": \"102341\",\n    \"lbvserver_service_binding\": [\n      { \"servicename\": \"svc_web1\", \"totalrequests\": \"25420\" },\n      { \"servicename\": \"svc_web2\", \"totalrequests\": \"25432\" },\n      { \"servicename\": \"svc_web3\", \"totalrequests\": \"25510\" },\n      { \"servicename\": \"svc_web4\", \"totalrequests\": \"25979\" }\n    ]\n  }]\n}\n\nWhat it means:\n- \"?statbindings=yes\" includes per-bound-service stats inside the\n  vserver response.\n- Single API call returns the full picture: VIP-level totals plus\n  the load distribution across back-end services.\n- Use for dashboards that want to show hit-distribution heatmaps\n  per VIP."
           },
           {
             "cmd": "stat service SVC_Web_1",
