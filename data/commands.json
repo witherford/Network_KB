@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T21:40:29.169Z",
+  "updatedAt": "2026-05-01T21:46:02.786Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -16364,7 +16364,8 @@
             "cmd": "show ssh",
             "desc": "Active SSH sessions and versions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ssh\n\nConnection Version Mode Encryption       Hmac          State                 Username\n0          2.0     IN   aes256-ctr        hmac-sha2-256 Session started       admin\n0          2.0     OUT  aes256-ctr        hmac-sha2-256 Session started       admin\n\n%No SSHv1 server connections running.\n\nWhat it means:\n- Active SSH sessions with cipher / HMAC negotiation results.\n- Per-direction (IN / OUT) entries — both must show the same\n  session.\n- \"No SSHv1\" = legacy protocol disabled (good — SSHv1 is broken).\n- Confirm strong ciphers (aes256-ctr, chacha20-poly1305) and\n  modern HMACs (sha2-256, sha2-512)."
           }
         ],
         "Show & Status": [
@@ -16400,13 +16401,15 @@
             "cmd": "show environment all",
             "desc": "Fan, temperature, and power supply status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show environment all\n\nSensor List:    Environmental Monitoring\nSensor          Location          State        Reading\nPower Supply 1  PWR-PS1           Normal       OK (220V AC)\nPower Supply 2  PWR-PS2           Normal       OK (220V AC)\nFan Tray        FAN1              Normal       OK (5200 RPM)\nInlet Temp      Slot 1            Normal       28C\nOutlet Temp     Slot 1            Normal       42C\nHotspot Temp    CPU0              Normal       58C  (warning >80)\n\nWhat it means:\n- Hardware sensor dashboard — power, fans, temperatures.\n- Any \"Critical\" or \"Warning\" state is a hardware alarm — open a\n  TAC case immediately on dual-PSU redundancy loss.\n- \"Hotspot\" sensors near 80°C threshold = airflow issue (dust,\n  blocked vents, failed fan)."
           },
           {
             "cmd": "show platform",
             "desc": "Modules / supervisors / line cards detail",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show platform\n\nChassis type: C9300-48UXM-A\nSwitch  Ports  Card Type                Serial No.   MAC Address\n*1      48     C9300-48UXM              FCW2245A0AB  001a.1e11.2233\n 2      48     C9300-48UXM              FCW2245A0AC  001a.1e11.2244\n 3      48     C9300-48UXM              FCW2245A0AD  001a.1e11.2255\n\nSwitch  Slot  CFG  ID  Hw  Sw                  CurSw         Action\n*1      0     1    8   2.0  17.09.04a           Active        Active\n 2      0     1    8   2.0  17.09.04a           Standby       Standby\n 3      0     1    8   2.0  17.09.04a           Member        Member\n\nWhat it means:\n- Chassis / stack overview. \"*\" = active switch in a stack.\n- \"CurSw\" : currently-running software image. Mismatched versions\n  in a stack cause problems — investigate via \"show version\" per\n  switch.\n- Confirm member counts match physical hardware before stack\n  operations."
           },
           {
             "cmd": "show processes cpu sorted | exclude 0.00",
@@ -16419,7 +16422,8 @@
             "cmd": "show processes cpu history",
             "desc": "5-second / 1-minute / 60-minute CPU history",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show processes cpu history\n\nR1            12:00:00 PM Wednesday May 01 2026\n   100\n    90\n    80                                              *\n    70                                            * * *\n    60                                          * * * * *\n    50  *  *  *  *  *  *  *  *  *  *  *  *    * * * * * *\n    10\n       0    5    10   15   20   25   30   35   40   45   50   55   60\n                       CPU% per second (last 60 seconds)\n\nWhat it means:\n- ASCII art of CPU% over time — 60-sec, 1-hour, and 72-hour windows.\n- Visual spike spotting: CPU jumped 50→90% during the recent attack.\n- Useful for capacity-planning conversations with management — print\n  this to PDF for change reviews."
           },
           {
             "cmd": "show processes memory sorted",
@@ -16432,7 +16436,8 @@
             "cmd": "show memory statistics",
             "desc": "Detailed memory pool statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show memory statistics\n\n                Head     Total(b)     Used(b)     Free(b)   Lowest(b)   Largest(b)\nProcessor   2A4B1234   1073741824   245678901   828062923   745678901   123456789\n   I/O      2A5B5678    536870912    98765432   438105480    98765432    98765432\n\nWhat it means:\n- Memory pool stats. \"Free\" = currently available. \"Lowest\" =\n  lowest-ever free since boot (water-mark).\n- \"Largest\" = biggest contiguous free block. If \"Free\" is high but\n  \"Largest\" is low, memory is fragmented.\n- Sustained low Lowest watermark = approaching exhaustion; investigate\n  with \"show processes memory sorted\"."
           },
           {
             "cmd": "show file systems",
@@ -16480,7 +16485,8 @@
             "cmd": "interface interface-id",
             "desc": "Enter interface configuration mode. — Used to configure specific ports",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/0\nR1(config-if)# vrf forwarding CUSTOMER-A\nR1(config-if)# ip address 10.99.0.1 255.255.255.0\nR1(config-if)# no shutdown\n\nWhat it means:\n- Generic interface entry syntax. Common types: GigabitEthernet,\n  TenGigE, Loopback, Vlan, Tunnel, Port-channel.\n- Shorthand abbreviations work: \"int gi0/0\".\n- Order of commands matters: VRF binding usually FIRST (clears\n  any existing IP), then IP address."
           },
           {
             "cmd": "show interfaces status",
@@ -16901,7 +16907,8 @@
             "cmd": "switchport mode access",
             "desc": "Configure an interface as a Layer 2 Access Port. — Assigns traffic from the specified VLAN only; no 802.1Q tags on packets transmitted/received.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode access\n\nSwitch# show interfaces gi1/0/1 switchport | include Mode\nAdministrative Mode: static access\nOperational Mode: static access\n\nWhat it means:\n- Forces a single-VLAN access port. Untagged frames only.\n- Disables DTP negotiation — port won't accidentally become a\n  trunk because someone connected a switch.\n- Always set this explicitly on user-facing ports; relying on\n  default (\"dynamic auto\") is a security weakness."
           },
           {
             "cmd": "switchport access vlan {vlan-id | name vlan-name}",
@@ -16914,7 +16921,8 @@
             "cmd": "switchport mode trunk",
             "desc": "Configure an interface as a Trunk Port. — Allows multiple VLANs to traverse via 802.1Q tagging; typically used for switch-to-switch or router links.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode trunk\n\nSwitch# show interfaces gi1/0/24 switchport | include Mode\nAdministrative Mode: trunk\nOperational Mode: trunk\n\nWhat it means:\n- Forces 802.1q trunk mode. Frames carry VLAN tags except for the\n  native VLAN.\n- Disables DTP — required by most enterprise security baselines.\n- Pair with \"switchport trunk allowed vlan\" to restrict the trunk\n  to specific VLANs."
           },
           {
             "cmd": "switchport trunk native vlan vlan-id",
@@ -16934,7 +16942,8 @@
             "cmd": "show interfaces trunk",
             "desc": "Verify Trunk Port Status and Allowed VLANs. — Displays interface status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces trunk\n\nPort      Mode             Encapsulation  Status        Native vlan\nGi1/0/24  on               802.1q         trunking      99\nPo1       on               802.1q         trunking      99\n\nPort      Vlans allowed on trunk\nGi1/0/24  10,20,30,99\nPo1       1-4094\n\nPort      Vlans allowed and active in management domain\nGi1/0/24  10,20,30,99\n\nPort      Vlans in spanning tree forwarding state and not pruned\nGi1/0/24  10,20,30\n\nWhat it means:\n- \"Mode on\" = manually-configured trunk (no DTP). \"Encapsulation\n  802.1q\" = standard tagging.\n- \"Native vlan 99\" = untagged frames on the trunk land in VLAN 99.\n- \"Vlans allowed\" = configured permission. \"active\" = exists in\n  VLAN database. \"forwarding\" = passing traffic right now.\n- Mismatched native VLANs cause an immediate %SPANTREE-2-PVSTSIM\n  warning at the upstream switch."
           },
           {
             "cmd": "show mac address-table [address | dynamic | vlan]",
@@ -17136,7 +17145,8 @@
             "cmd": "switchport nonegotiate",
             "desc": "Disable DTP Communication on an Interface. — Prevents port from forming a trunk with dynamic desirable/auto neighbors (static trunk).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport nonegotiate\n\nSwitch# show interfaces gi1/0/24 switchport | include Negotiation\nNegotiation of Trunking: Off\n\nWhat it means:\n- Disables DTP (Dynamic Trunking Protocol). Port will NOT\n  advertise itself or react to negotiation messages.\n- Required step in security hardening — prevents an attacker\n  plugging into an access port and forming a rogue trunk.\n- Run on every access port AND on every manually-configured\n  trunk."
           },
           {
             "cmd": "show interface [interface-id] trunk",
@@ -17198,13 +17208,15 @@
             "cmd": "no shutdown",
             "desc": "Brings the interface or SVI up administratively",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# no shutdown\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n\nR1# show interfaces gi0/1 | include line protocol\nGigabitEthernet0/1 is up, line protocol is up\n\nWhat it means:\n- Brings the interface administratively up. L1/L2 negotiation runs;\n  \"line protocol up\" confirms the data link is operational.\n- \"no shutdown\" with no L1 = \"interface is up, line protocol is\n  down\" (admin up, but cable/transceiver problem)."
           },
           {
             "cmd": "shutdown",
             "desc": "Administratively shuts down the interface or SVI",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# shutdown\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to administratively down\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to down\n\nR1# show interfaces gi0/1 | include line protocol\nGigabitEthernet0/1 is administratively down, line protocol is down\n\nWhat it means:\n- Administratively disables the interface. Power on the port stays\n  but no traffic flows.\n- Reverse with \"no shutdown\".\n- Default state on most platforms is shutdown — must explicitly\n  \"no shutdown\" newly-configured interfaces."
           },
           {
             "cmd": "show vlan id <id>",
@@ -17373,7 +17385,8 @@
             "cmd": "spanning-tree guard root",
             "desc": "Enable Root Guard on an Interface. — Prevents a configured port from becoming a root port upon receipt of a superior BPDU (places in `root inconsistent` state).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/24\nSwitch(config-if)# spanning-tree guard root\n\n# If a \"better\" BPDU (would make peer the root) arrives:\n%SPANTREE-2-ROOTGUARD_BLOCK: Root guard blocking port Gi1/0/24 on VLAN0010.\n\nWhat it means:\n- Prevents the connected switch from becoming the STP root.\n- Use on ports facing other administrative domains (e.g. partner\n  / customer switch) where you don't want their topology changes\n  to alter your root.\n- If a \"superior\" BPDU arrives, port goes into \"root-inconsistent\"\n  blocking state — recovers automatically when the offending\n  BPDU stops."
           },
           {
             "cmd": "spanning-tree portfast default / spanning-tree portfast",
@@ -17796,7 +17809,8 @@
             "cmd": "show ip mroute",
             "desc": "Multicast routing table (full)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip mroute\n\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group,\n       C - Connected, L - Local, P - Pruned, R - RP-bit set,\n       F - Register flag, T - SPT-bit set, J - Join SPT\n\n(*, 239.1.1.1), 00:14:23/00:02:50, RP 10.0.0.1, flags: SC\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:14:23/00:02:50\n\n(10.99.0.5, 239.1.1.1), 00:00:14/00:02:46, flags: T\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:00:14/00:02:46\n\nWhat it means:\n- (*, G) entries : shared tree rooted at the RP.\n- (S, G) entries : source-specific shortest-path tree (SPT).\n- \"Incoming interface\" : RPF interface — must point upstream\n  toward the source/RP, otherwise packets are dropped.\n- \"Outgoing interface list\" (OIL) : where the multicast is being\n  replicated to.\n- T flag = SPT switchover happened (came off the shared tree)."
           },
           {
             "cmd": "show ip mroute summary",
@@ -17851,7 +17865,8 @@
             "cmd": "ip pim sparse-mode",
             "desc": "Enable PIM sparse-mode on an interface",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/0\nR1(config-if)# ip pim sparse-mode\n\nR1# show ip pim interface gigabitethernet0/0\nGigabitEthernet0/0  Address: 10.10.10.1  Mode: Sparse\n                    DR: 10.10.10.50  Hello: 30 sec  Holdtime: 105 sec\n\nWhat it means:\n- Enables PIM-SM (Sparse Mode) on the interface — most common\n  multicast deployment.\n- Requires an RP for (*,G) state until SPT switchover happens.\n- \"DR\" = Designated Router on the segment (handles forwarding\n  decisions for source-side traffic)."
           },
           {
             "cmd": "ip pim rp-address 10.0.0.1",
@@ -18066,7 +18081,8 @@
             "cmd": "show ntp associations",
             "desc": "Lists all configured NTP peers and their sync status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ntp associations\n\n  address         ref clock       st   when   poll   reach   delay   offset    disp\n*~129.6.15.28     .GPS.            1     12     64    377    24.521   0.142    0.221\n+~10.10.10.50     129.6.15.28      2     45    128    377     1.214  -0.014    0.012\n ~10.10.10.51     129.6.15.28      2    102    128    377     1.198   0.018    0.014\n\n* sys.peer, # selected, + candidate, - outlyer, x falseticker, . pps.peer\n\nWhat it means:\n- \"*\" = the currently-selected sync peer (sys.peer).\n- \"st\" = stratum. 1 = directly synced to a reference clock (atomic,\n  GPS); 2-15 = downstream peers.\n- \"reach\" = octal bit-mask of last 8 polls (377 = all 8 successful).\n- \"delay/offset/disp\" = round-trip in ms / phase offset in ms /\n  dispersion (clock uncertainty)."
           },
           {
             "cmd": "show snmp",
@@ -18349,7 +18365,8 @@
             "cmd": "debug ip ospf adj",
             "desc": "OSPF adjacency events (use sparingly)",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "R1# debug ip ospf adj\n\nOSPF adjacency events debugging is on\n\nR1#\n%OSPF: 2 Way Communication to 2.2.2.2 on Gi0/0, state 2WAY\n%OSPF: Send DBD to 2.2.2.2 seq 0x800 opt 0x52\n%OSPF: Rcv DBD from 2.2.2.2 seq 0x800 opt 0x52\n%OSPF: NBR Negotiation Done. We are the SLAVE\n%OSPF: Synchronized with 2.2.2.2, state FULL\n\nR1# undebug all\n\nWhat it means:\n- Real-time logging of OSPF adjacency state machine transitions.\n- See the FSM walk: 2WAY → EXSTART → EXCHANGE → LOADING → FULL.\n- \"We are the SLAVE\" = master/slave for DBD sequencing — higher\n  router-id wins MASTER. No operational impact post-FULL.\n- ALWAYS run \"undebug all\" after debugging — debug commands\n  consume CPU."
           },
           {
             "cmd": "undebug all",
@@ -18418,7 +18435,8 @@
             "cmd": "show ip dhcp snooping binding",
             "desc": "Shows the DHCP snooping binding table: MAC, IP, VLAN, port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip dhcp snooping binding\n\nMacAddress          IpAddress     Lease(sec)  Type           VLAN  Interface\n00:1a:1e:11:22:33   10.10.0.50    86400       dhcp-snooping  10    Gi1/0/1\n00:1a:1e:44:55:66   10.10.0.51    72000       dhcp-snooping  10    Gi1/0/2\n\nTotal number of bindings: 2\n\nWhat it means:\n- DHCP-snooping binding table — IP-MAC-port-VLAN tuples learned\n  via DHCP exchanges on trusted ports.\n- Used by Dynamic ARP Inspection (DAI) and IP Source Guard for\n  L2 attack prevention.\n- Manual entries possible: \"ip dhcp snooping binding ... interface\".\n- Permanent: \"ip dhcp snooping database flash:dhcp-bindings.txt\"\n  ensures persistence across reboots."
           },
           {
             "cmd": "clear arp-cache",
@@ -18482,7 +18500,8 @@
             "cmd": "show archive",
             "desc": "Archived configurations available",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show archive\n\nThe maximum archive configurations allowed is 14.\nThe next archive file will be named flash:archive-15\nArchive #  Name\n   1       flash:archive-1\n   2       flash:archive-2\n   ...\n  14       flash:archive-14   (Most recent)\n\nWhat it means:\n- Lists currently stored config archives. The \"archive\" feature\n  saves running-config to a file every time you \"write memory\" or\n  on a timer.\n- Use to roll back a bad config: \"configure replace flash:archive-13\".\n- \"maximum 14\" = ring buffer; oldest archive is overwritten when\n  the 15th is created."
           },
           {
             "cmd": "configure replace flash:archive-1",
@@ -18564,52 +18583,18 @@
         ],
         "OSPF": [
           {
-            "cmd": "router ospf 1",
-            "desc": "Enter OSPF process 1 (process ID is locally significant).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "router-id 1.1.1.1",
-            "desc": "Manually pin OSPF router-id (avoids re-elections when interfaces flap).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network 10.0.0.0 0.255.255.255 area 0",
-            "desc": "Match any interface with an IP in 10.0.0.0/8 into area 0.",
-            "type": "config",
-            "flagged": false
-          },
-          {
             "cmd": "passive-interface default",
             "desc": "Make every interface passive by default; opt-in actives below.",
             "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "no passive-interface GigabitEthernet0/0",
-            "desc": "Bring one interface back to active OSPF advertising.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "auto-cost reference-bandwidth 100000",
-            "desc": "Set the cost-100 reference to 100 Gbps so 10G/40G/100G interfaces get distinct costs.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "log-adjacency-changes detail",
-            "desc": "Log every state transition for OSPF adjacencies.",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# passive-interface default\nR1(config-router)# no passive-interface GigabitEthernet0/0\n\nR1# show ip protocols | include passive\n   Passive Interface(s):\n     GigabitEthernet0/1\n     GigabitEthernet0/2\n     ...\n   Active interfaces: GigabitEthernet0/0\n\nWhat it means:\n- Inverts the default — every interface is passive UNLESS explicitly\n  un-passived.\n- Prevents accidental adjacencies on unintended interfaces (rogue\n  router on a spare port, etc.). Best-practice on access-layer routers."
           },
           {
             "cmd": "show ip ospf",
             "desc": "Process-level summary: router-id, area count, SPF stats.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip ospf\n\nRouting Process \"ospf 1\" with ID 1.1.1.1\nStart time: 00:00:14.142, Time elapsed: 1d 12:14:21\nSupports only single TOS(TOS0) routes\nSupports opaque LSA\nSupports Link-local Signaling (LLS)\nSupports area transit capability\nEvent-log enabled, Maximum number of events: 1000, Mode: cyclic\nIt is an autonomous system boundary router\nRedistributing External Routes from,\n   bgp 65001 with metric 100, includes subnets in redistribution\nNumber of areas in this router: 1 normal, 0 stub, 0 nssa\nNumber of areas transit capable: 0\n\nWhat it means:\n- Process-level OSPF state. \"ASBR\" status, redistribution config,\n  area counts, opaque-LSA support.\n- \"It is an autonomous system boundary router\" = this router\n  imports routes from another protocol via redistribute.\n- \"Redistributing External Routes\" : confirms what's being\n  redistributed and the seed metric."
           },
           {
             "cmd": "show ip ospf neighbor",
@@ -18647,12 +18632,6 @@
             "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
           },
           {
-            "cmd": "show ip ospf database router self-originate",
-            "desc": "Just the router-LSAs this device originated.",
-            "type": "show",
-            "flagged": false
-          },
-          {
             "cmd": "show ip ospf border-routers",
             "desc": "ABRs and ASBRs reachable from this router.",
             "type": "show",
@@ -18681,36 +18660,6 @@
             "example": "R1# clear ip ospf process\nReset ALL OSPF processes? [no]: yes\n\n%OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 on Gi0/0 from FULL to DOWN\n%OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 on Gi0/0 from LOADING to FULL\n\nWhat it means:\n- All adjacencies bounce, the LSDB is rebuilt, and SPF re-runs.\n- Required after changing the router-id (auto or manual) — OSPF will\n  not promote a new ID until the process restarts.\n- Disruptive on production. Schedule during a maintenance window."
           },
           {
-            "cmd": "ip ospf 1 area 0",
-            "desc": "Place the interface directly in OSPF area 0 (alternative to the network statement).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf cost 10",
-            "desc": "Override the auto-derived cost on this interface.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf priority 0",
-            "desc": "Make this interface ineligible for DR/BDR election.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf hello-interval 3",
-            "desc": "Sub-second hello (default 10 s on broadcast, 30 s NBMA).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf dead-interval minimal hello-multiplier 4",
-            "desc": "Sub-second BFD-style dead-interval (4 hellos in 1 s).",
-            "type": "config",
-            "flagged": false
-          },
-          {
             "cmd": "ip ospf network point-to-point",
             "desc": "Skip DR/BDR election on broadcast media — faster adjacency.",
             "type": "config",
@@ -18732,190 +18681,46 @@
             "example": "R1(config-if)# ip ospf bfd\n\nR1# show ip ospf interface Gi0/0 | include BFD\n  BFD enabled\n\nWhat it means:\n- Per-interface override of \"bfd all-interfaces\" — useful when you\n  want sub-second convergence on a few critical links but not on\n  every OSPF-enabled port (LAN segments etc.)."
           },
           {
-            "cmd": "ip ospf authentication message-digest\nip ospf message-digest-key 1 md5 cisco-key",
-            "desc": "Per-interface MD5 authentication.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 1 stub",
-            "desc": "Make area 1 a stub: blocks Type-5 LSAs, replaces with default route.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 1 stub no-summary",
-            "desc": "Totally stubby area: blocks Type-3, 4, 5 — only default route enters.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 1 nssa",
-            "desc": "Not-So-Stubby Area: stub-like but allows local Type-7→5 redistribution.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 1 nssa default-information-originate",
-            "desc": "Inject default route into the NSSA from this ABR.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 1 range 10.1.0.0 255.255.0.0",
-            "desc": "Summarise inter-area routes leaving the ABR (Type-3).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "summary-address 192.168.0.0 255.255.0.0",
-            "desc": "Summarise external (Type-5) routes leaving the ASBR.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 0 virtual-link 2.2.2.2",
-            "desc": "Stitch a discontinuous area to area 0 via another router.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "area 0 authentication message-digest",
-            "desc": "Enable area-wide MD5 authentication (interfaces still need keys).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "redistribute connected subnets metric 100 metric-type 2",
-            "desc": "Redistribute connected with explicit metric / E2 type.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "redistribute static subnets route-map STATIC-INTO-OSPF",
-            "desc": "Filtered static-route redistribution.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "distribute-list prefix DENY-DEFAULT in",
-            "desc": "Filter incoming OSPF prefixes (only affects this router's RIB).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "default-information originate always metric 1 metric-type 2",
-            "desc": "Inject a default route into OSPF unconditionally.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "timers throttle spf 5 200 5000",
-            "desc": "SPF throttling: 5 ms initial, 200 ms hold, 5 s max — accelerates convergence.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "timers throttle lsa 0 5000 5000",
-            "desc": "LSA generation throttling.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ipv6 router ospf 1",
-            "desc": "Enable OSPFv3 process (IPv6).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ipv6 ospf 1 area 0",
-            "desc": "Per-interface OSPFv3 binding (no network statement in v3).",
-            "type": "config",
-            "flagged": false
-          },
-          {
             "cmd": "show ipv6 ospf",
             "desc": "OSPFv3 process state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 ospf\n\nRouting Process \"ospfv3 1\" with ID 1.1.1.1\n Event-log enabled, Maximum number of events: 1000, Mode: cyclic\n Router is not originating router-LSAs with maximum metric\n\n SPF schedule delay 5000 msecs, Hold time between two SPFs 10000 msecs\n Number of areas in this router is 1. 1 normal 0 stub 0 nssa\n Reference bandwidth unit is 100 mbps\n\n Area BACKBONE(0)\n        Number of interfaces in this area is 2\n\nWhat it means:\n- Process-level OSPFv3 state: router-id, SPF timers, area count.\n- \"Reference bandwidth unit is 100 mbps\" : default — same caveat\n  as IPv4 OSPF (modify with \"auto-cost reference-bandwidth\").\n- \"Area BACKBONE(0)\" : confirms area-0 is configured."
           },
           {
             "cmd": "show ipv6 ospf neighbor",
             "desc": "OSPFv3 adjacencies.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 ospf neighbor\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\nNeighbor ID     Pri State          Dead Time  Interface ID Interface\n2.2.2.2           1 FULL/-         00:00:34   3            GigabitEthernet0/0/0\n\nWhat it means:\n- IPv6 OSPF (OSPFv3) neighbours. State FULL = healthy steady-state.\n- Adjacencies form over IPv6 link-local addresses (FE80::/10).\n- \"Pri\" : OSPF priority for DR/BDR election (only relevant on\n  broadcast network types).\n- \"Interface ID 3\" : 32-bit interface identifier (OSPFv3 uses\n  these instead of IP addresses to identify interfaces in LSAs)."
           },
           {
             "cmd": "show ipv6 ospf interface",
             "desc": "OSPFv3 per-interface state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 ospf interface\n\nGigabitEthernet0/0/0 is up, line protocol is up\n  Link Local Address FE80::1, Interface ID 3\n  Internet Address 2001:DB8::1/64\n  Area 0, Process ID 1, Instance ID 0, Router ID 1.1.1.1\n  Network Type POINT_TO_POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT_TO_POINT\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Hello due in 00:00:01\n\nWhat it means:\n- Per-interface OSPFv3 state.\n- \"Link Local Address FE80::1\" : adjacency is formed on the\n  link-local IPv6 address.\n- \"Instance ID 0\" : OSPFv3 supports multiple instances on the\n  same link (rare, used in some MANET / mobile scenarios).\n- Hello/Dead intervals : same defaults as IPv4 OSPF (10/40 on\n  point-to-point, 30/120 on NBMA)."
           },
           {
             "cmd": "show ipv6 ospf database",
             "desc": "OSPFv3 LSDB.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 ospf database\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nADV Router       Age   Seq#       Fragment ID  Link Count\n1.1.1.1          412   0x80000003          0   2\n2.2.2.2          410   0x80000004          0   2\n\n                Inter Area Prefix Link States (Area 0)\n\nADV Router       Age   Seq#       Prefix\n1.1.1.1          120   0x80000001 2001:DB8:99::/64\n\nWhat it means:\n- IPv6 OSPF (OSPFv3) LSDB. Same shape as IPv4 OSPF, with IPv6\n  specific LSA types (Type-8 = link, Type-9 = intra-area-prefix).\n- \"Inter Area Prefix\" replaces \"Summary Net\" from OSPFv2.\n- Use to verify IPv6-specific topology before drilling into\n  individual LSAs."
           },
           {
             "cmd": "ipv6 ospf cost 10",
             "desc": "Per-interface cost on OSPFv3.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ipv6 ospf cost 10\n\nR1# show ipv6 ospf interface gi0/0 | include Cost\n  Network Type POINT_TO_POINT, Cost: 10\n\nWhat it means:\n- Per-interface OSPFv3 cost override. Lower = preferred.\n- Default cost based on auto-cost reference bandwidth / interface\n  speed.\n- Use to influence path selection without touching interface\n  bandwidth (which would have side effects)."
           },
           {
             "cmd": "ipv6 ospf network point-to-point",
             "desc": "OSPFv3 network type.",
             "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "redistribute ospf <process-id> / redistribute connected",
-            "desc": "Redistribute IGP/Connected Routes into BGP. — Safe for IGP->BGP; metric carried over as MED. Caution needed for BGP->IGP due to scale.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "passive-interface interface-id",
-            "desc": "Disable OSPF/EIGRP adjacency formation. — Prevents forming neighbor adjacencies on specific interfaces (e.g.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "router ospf process-id",
-            "desc": "Initialize OSPFv2 process. — Sets the OSPF process ID (locally significant).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network ip-address wildcard-mask area area-id",
-            "desc": "Enable OSPF on interfaces matching network/wildcard/area. — Selects and enables OSPF on specific interfaces for a given area.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "default-information originate [always] [metric metric-value] [metric-type type-value]",
-            "desc": "Advertise default route into OSPF domain. — Propagates a default route to other areas or ASes.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf cost 1–65535",
-            "desc": "Manually set interface cost. — Overrides automatic cost calculation with a specific value.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf priority 0–255",
-            "desc": "Set DR/BDR election priority. — Higher values are preferred for Designated Router (DR) elections.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip ospf network broadcast | point-to-point",
-            "desc": "Set OSPFv2 network type. — Defines the medium type (e.g.",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ipv6 ospf network point-to-point\n\nR1# show ipv6 ospf interface gi0/0 | include Network\n  Network Type POINT_TO_POINT, Cost: 1\n\nWhat it means:\n- Forces point-to-point network type. Skips DR/BDR election\n  (faster convergence on back-to-back router links).\n- Both ends must agree. Default on Ethernet is broadcast.\n- Common on routed inter-router fibre links."
           },
           {
             "cmd": "ip ospf hello-interval",
@@ -18930,18 +18735,6 @@
             "type": "config",
             "flagged": false,
             "example": "R1(config-if)# ip ospf dead-interval 20\n\nR1# show ip ospf interface Gi0/0 | include Dead\n  Timer intervals configured, Hello 5, Dead 20, Wait 20, Retransmit 5\n\nWhat it means:\n- If 20 seconds pass without a Hello, the neighbour is declared down,\n  the adjacency drops, and SPF re-runs.\n- Best practice: dead = 4 × hello. Both ends MUST agree.\n- Variant \"ip ospf dead-interval minimal hello-multiplier <n>\" pushes\n  Hellos sub-second for hyper-fast convergence."
-          },
-          {
-            "cmd": "show ip ospf interface [brief]",
-            "desc": "View OSPF-enabled interfaces. — Displays IP addresses",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ip ospf neighbor [detail]",
-            "desc": "View neighbor adjacency table. — Shows neighbor ID",
-            "type": "show",
-            "flagged": false
           },
           {
             "cmd": "router ospf [id]",
@@ -19457,41 +19250,11 @@
         ],
         "EIGRP": [
           {
-            "cmd": "router eigrp 100",
-            "desc": "Enter classic EIGRP process for AS 100.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "eigrp router-id 1.1.1.1",
-            "desc": "Manually set EIGRP router-id (32-bit, not necessarily an interface IP).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network 10.0.0.0",
-            "desc": "Match interfaces in 10.0.0.0/8 (uses classful boundary unless wildcard given).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network 10.1.1.0 0.0.0.255",
-            "desc": "Match a specific subnet with wildcard mask.",
-            "type": "config",
-            "flagged": false
-          },
-          {
             "cmd": "no auto-summary",
             "desc": "Disable classful auto-summarisation (mandatory on modern designs).",
             "type": "config",
             "flagged": false,
             "example": "R1(config-router)# no auto-summary\n\nR# show ip route eigrp\nD 10.1.1.0/24 [90/2816] via 192.168.1.2, Gi0/0   ← actual /24\nD 10.2.2.0/24 [90/3072] via 192.168.1.2, Gi0/0   ← actual /24\n\nWhat it means:\n- With auto-summary ON (legacy default), 10.1.1.0/24 and 10.2.2.0/24\n  would BOTH be advertised as 10.0.0.0/8 the moment the route crossed\n  a classful boundary, breaking VLSM.\n- \"no auto-summary\" tells EIGRP to honour the original prefix length.\n- Default is now OFF on modern IOS, but always include the line for\n  config clarity and to be safe on older platforms."
-          },
-          {
-            "cmd": "passive-interface default\nno passive-interface GigabitEthernet0/0",
-            "desc": "Default-passive with explicit opt-in for the uplink.",
-            "type": "config",
-            "flagged": false
           },
           {
             "cmd": "show ip eigrp neighbors",
@@ -19504,7 +19267,8 @@
             "cmd": "show ip eigrp neighbors detail",
             "desc": "Per-neighbour detail incl. version + capabilities.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip eigrp neighbors detail\n\nEIGRP-IPv4 Neighbors for AS(100)\nH  Address    Interface  Hold Uptime    SRTT  RTO  Q  Seq Num\n0  10.1.1.2   Gi0/0      12   00:04:15  4     100  0  12\n   Time since Restart: never\n   Static neighbor: No\n   Restart capable: Yes\n   Stub Peer Advertising: (CONNECTED, STATIC) Routes\n   Suppressing queries: Yes\n   Holdtime advertised: 15 secs\n   Topologies advertised to peer: base\n\nWhat it means:\n- Verbose form of \"show ip eigrp neighbors\" — adds Restart-\n  capability, stub-peer flags, suppressed-query state.\n- \"Stub Peer Advertising: (CONNECTED, STATIC) Routes\" : the peer\n  is configured as an EIGRP stub. Local router auto-suppresses\n  queries to it (good — reduces SIA risk).\n- \"Restart capable: Yes\" : peer supports Graceful Restart (NSF).\n- \"Suppressing queries: Yes\" : we will NOT send Queries to this\n  peer during DUAL active state."
           },
           {
             "cmd": "show ip eigrp topology",
@@ -19531,7 +19295,8 @@
             "cmd": "show ip eigrp interfaces detail",
             "desc": "Detailed per-interface EIGRP stats incl. timers.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip eigrp interfaces detail\n\nEIGRP-IPv4 Interfaces for AS(100)\n                Xmit Queue  PeerQ       Mean   Pacing Time   Multicast\nInterface Peers Un/Reliable Un/Reliable SRTT   Un/Reliable   Flow Timer\nGi0/0     1     0/0         0/0         12     0/2           50\n  Hello-interval is 5, Hold-time is 15\n  Split-horizon is enabled\n  Next xmit serial: 142\n  Packetized sent/expedited: 4502/0\n  Hello's sent/expedited: 24512/12\n  Un/reliable mcasts: 0/12 Un/reliable ucasts: 4502/4500\n  Multicast exceptions: 0  CR packets: 0  ACKs suppressed: 142\n\nWhat it means:\n- Verbose interface stats including timers, split-horizon state,\n  per-packet-type counters, multicast exceptions.\n- \"Hello-interval 5 / Hold-time 15\" : confirms timer configuration.\n- \"Split-horizon enabled\" : default; disable on hub-and-spoke\n  multipoint interfaces.\n- \"Multicast exceptions\" : connections that fell back to unicast\n  (slow neighbour or failed multicast). > 0 = investigate the\n  underlay."
           },
           {
             "cmd": "show ip eigrp traffic",
@@ -19555,184 +19320,46 @@
             "example": "R1# clear ip eigrp neighbors\n\n%DUAL-5-NBRCHANGE: EIGRP-IPv4 100: Neighbor 10.1.1.2 (Gi0/0) is down: manually cleared\n%DUAL-5-NBRCHANGE: EIGRP-IPv4 100: Neighbor 10.1.1.2 (Gi0/0) is up: new adjacency\n\nWhat it means:\n- All EIGRP neighbours bounce; topology and routes are rebuilt.\n- Disruptive — use only when you've made a config change that needs\n  a clean adjacency (e.g. authentication, K-values).\n- \"clear ip eigrp neighbors 10.1.1.2\" resets just one peer."
           },
           {
-            "cmd": "ip hello-interval eigrp 100 2",
-            "desc": "Set hello to 2 s on this interface.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip hold-time eigrp 100 6",
-            "desc": "Set hold-time to 6 s — must be 3× hello.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip bandwidth-percent eigrp 100 75",
-            "desc": "Cap EIGRP traffic to 75% of interface bandwidth.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
-            "desc": "Per-interface MD5 authentication via a key-chain.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "variance 2",
-            "desc": "Allow unequal-cost load-balancing up to 2× the best metric.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "maximum-paths 6",
-            "desc": "Allow up to 6 ECMP installs (default 4).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "eigrp stub connected summary",
-            "desc": "Mark this router as a stub — only advertises connected + summaries; reduces query scope.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "eigrp stub receive-only",
-            "desc": "Strictest stub: this router receives EIGRP but advertises nothing.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip summary-address eigrp 100 10.10.0.0 255.255.0.0",
-            "desc": "Per-interface summary advertisement.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "redistribute connected metric 1000000 1 255 1 1500",
-            "desc": "Redistribute connected with K-values metric (BW/delay/rel/load/MTU).",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "redistribute static metric 1000000 1 255 1 1500",
-            "desc": "Redistribute static.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "distribute-list prefix BLOCK-RFC1918 in",
-            "desc": "Filter incoming EIGRP advertisements.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "offset-list 10 in 100 GigabitEthernet0/1",
-            "desc": "Add 100 to the metric of routes received on Gi0/1 matching ACL 10.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "timers active-time disabled",
-            "desc": "Disable EIGRP SIA (Stuck-In-Active) timer for very-large-scale or testing.",
-            "type": "config",
-            "flagged": true
-          },
-          {
-            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100",
-            "desc": "Modern named-mode EIGRP — required for IPv6 / multi-AF.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100\n  af-interface default\n   passive-interface\n  exit-af-interface\n  topology base\n   maximum-paths 8\n  exit-af-topology",
-            "desc": "Named-mode skeleton with default-passive + 8-way ECMP.",
-            "type": "config",
-            "flagged": false
-          },
-          {
             "cmd": "ipv6 router eigrp 100",
             "desc": "Classic-mode EIGRP for IPv6 process.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ipv6 router eigrp 100\nR1(config-rtr)# eigrp router-id 1.1.1.1\nR1(config-rtr)# no shutdown\n\nR1# show ipv6 protocols | include eigrp\n*** IPv6 Routing is Enabled ***\n\"eigrp 100\" is enabled\n\nWhat it means:\n- Classic-mode IPv6 EIGRP process. Modern best practice is to use\n  Named Mode (\"router eigrp NAMED\" + \"address-family ipv6\n  unicast\").\n- Process must be \"no shutdown\" — IPv6 EIGRP boots in shutdown\n  state.\n- Enable per-interface with \"ipv6 eigrp 100\"."
           },
           {
             "cmd": "no shutdown",
             "desc": "EIGRPv6 starts shutdown — must explicitly bring it up.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# no shutdown\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n\nR1# show interfaces gi0/1 | include line protocol\nGigabitEthernet0/1 is up, line protocol is up\n\nWhat it means:\n- Brings the interface administratively up. L1/L2 negotiation runs;\n  \"line protocol up\" confirms the data link is operational.\n- \"no shutdown\" with no L1 = \"interface is up, line protocol is\n  down\" (admin up, but cable/transceiver problem)."
           },
           {
             "cmd": "ipv6 eigrp 100",
             "desc": "Per-interface enable for EIGRPv6.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ipv6 eigrp 100\n\nR1# show ipv6 eigrp interfaces\nEIGRP-IPv6 Interfaces for AS(100)\n                Xmit Queue   PeerQ        Mean\nInterface  Peers  Un/Reliable  Un/Reliable  SRTT\nGi0/0      1      0/0          0/0          1\n\nWhat it means:\n- Activates Classic-mode IPv6 EIGRP on the interface.\n- Establishes adjacencies over IPv6 link-local (FE80::/10) — no\n  global IPv6 prefix needed.\n- For Named Mode, use \"af-interface\" inside the\n  \"address-family ipv6 unicast\" instead."
           },
           {
             "cmd": "show ipv6 eigrp neighbors",
             "desc": "EIGRPv6 adjacencies.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 eigrp neighbors\n\nEIGRP-IPv6 Neighbors for AS(100)\nH  Address        Interface  Hold Uptime    SRTT  RTO  Q   Seq Num\n                                  (sec)         (ms)      Cnt\n0  Link-local     Gi0/0      12   00:04:15  4     100  0   12\n   address: FE80::2\n\nWhat it means:\n- Active IPv6 EIGRP neighbours.\n- Neighbours identified by IPv6 link-local addresses.\n- Same column meaning as IPv4 EIGRP: Hold = sec until adjacency\n  declared dead. SRTT = smoothed RTT."
           },
           {
             "cmd": "show ipv6 eigrp topology",
             "desc": "EIGRPv6 topology table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 eigrp topology\n\nEIGRP-IPv6 Topology Table for AS(100)/ID(1.1.1.1)\n\nP 2001:DB8:99::/48, 1 successors, FD is 2816\n        via FE80::2 (2816/2570), GigabitEthernet0/0\n\nWhat it means:\n- IPv6 EIGRP topology table. Same meaning as IPv4 (P = passive,\n  FD = feasible distance).\n- Next-hop FE80::2 = peer's link-local address.\n- Pre-RIB view; \"show ipv6 route eigrp\" shows what's actually\n  installed."
           },
           {
             "cmd": "show ipv6 eigrp interfaces",
             "desc": "EIGRPv6 per-interface state.",
             "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "router eigrp as-number",
-            "desc": "Initialize EIGRP process. — Sets the Autonomous System (AS) number for the local router.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network network [mask]",
-            "desc": "Enable EIGRP on interfaces matching network/mask. — Defines which networks participate in the EIGRP routing domain.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp router-id router-id",
-            "desc": "Statically set Router ID. — Ensures RID stability; best practice to assign a static IPv4 address.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp hello-interval seconds",
-            "desc": "Set Hello interval. — Configures the time interval for sending EIGRP hello packets.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp hold-time seconds",
-            "desc": "Set Hold time. — Configures the time to wait before declaring a neighbor unreachable.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp timers holdtime hello",
-            "desc": "Configure both timers together. — Sets both hello and hold times in one command (e.g.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp summary-address network mask [interface-id] next-hop-ip",
-            "desc": "Interface-specific summarization. — Summarizes routes on a per-interface basis to reduce table size.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "ip eigrp variance value",
-            "desc": "Configure unequal-cost load balancing (Variance). — Allows installation of multiple paths with different metrics into the RIB.",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 eigrp interfaces\n\nEIGRP-IPv6 Interfaces for AS(100)\n                Xmit Queue   PeerQ        Mean   Pacing Time   Multicast\nInterface  Peers  Un/Reliable  Un/Reliable  SRTT   Un/Reliable   Flow Timer\nGi0/0      1      0/0          0/0          1      0/2           50\n\nWhat it means:\n- Per-interface EIGRP-IPv6 stats.\n- \"Peers\" : active EIGRP-IPv6 neighbours on this interface.\n- Same column meanings as \"show ip eigrp interfaces\" (IPv4)."
           },
           {
             "cmd": "router eigrp [as-number]",
@@ -20832,7 +20459,8 @@
             "cmd": "show tcp brief",
             "desc": "Verify TCP Sessions Between Routers. — Checks BGP session establishment (Port 179) and connection initiation direction.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show tcp brief\n\nTCB         Local Address       Foreign Address     (state)\n12345678    10.10.10.1.179      10.10.10.50.51223   ESTAB     ← BGP\n87654321    10.10.10.1.22       10.50.50.50.42102   ESTAB     ← SSH from mgmt\nABCDEF12    10.10.10.1.23       0.0.0.0.0           LISTEN    ← telnet (oh dear)\n\nWhat it means:\n- All TCP connections + listeners on the router itself (control\n  plane only — does not show forwarded flows).\n- BGP sessions on port 179, SSH on 22, telnet on 23 — confirm\n  expected sessions are established.\n- LISTEN entries on 23 / 80 / 443 = enabled services. Lock down\n  unused with \"no ip http server\" / \"transport input ssh\"."
           },
           {
             "cmd": "show ip route bgp / show ipv6 route bgp",
