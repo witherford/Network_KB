@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:36:48.405Z",
+  "updatedAt": "2026-05-01T20:40:23.690Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -1307,43 +1307,50 @@
             "cmd": "show cs vserver",
             "desc": "Lists all CS virtual servers: VIPs, protocols, states, policy counts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show cs vserver\n1)  Name      : cs-edge-https\n       Type      : SSL\n       State     : UP\n       VIP       : 203.0.113.10:443\n       Precedence: RULE\n       Default LB: lb-default-fallback\n       Bound Pols: 5\n\nWhat it means:\n- CS vserver = front-end VIP that splits traffic to multiple\n  underlying LB vservers based on policies.\n- Precedence RULE : evaluate CS policies in priority order.\n  Alternative URL : evaluate URL-based policies first.\n- Default LB : fallback target when no CS policy matches."
           },
           {
             "cmd": "add cs vserver <name> <protocol> <VIP> <port>",
             "desc": "Creates a content switching virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add cs vserver cs-edge-https SSL 203.0.113.10 443 -cltTimeout 180\nDone\n> bind ssl vserver cs-edge-https -certkeyName wildcard-global-com\nDone\n\n> show cs vserver cs-edge-https\n        IP : 203.0.113.10:443 (SSL)\n        State : UP\n\nWhat it means:\n- Creates the CS-vserver shell. Bind a default LB-vserver via\n  \"set cs vserver -lbVserver\", and bind CS policies separately.\n- For SSL, also bind a cert/key pair via \"bind ssl vserver\".\n- cltTimeout 180 : kill idle client connections after 3 min."
           },
           {
             "cmd": "add cs policy <name> -rule <expression>",
             "desc": "Creates a CS policy using a NetScaler policy expression",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add cs policy cs_pol_mobile -rule 'HTTP.REQ.HEADER(\"User-Agent\").CONTAINS(\"Mobile\")' -action cs_act_mobile\nDone\n\n> show cs policy cs_pol_mobile\nName : cs_pol_mobile\n        Rule       : HTTP.REQ.HEADER(\"User-Agent\").CONTAINS(\"Mobile\")\n        Action     : cs_act_mobile\n        Hits       : 0\n\nWhat it means:\n- CS policy expressions use the full PI grammar — anything available\n  to rewrite/responder is fair game (URL, host, header, source IP,\n  geo, time of day).\n- \"action\" must be a previously defined CS action (which carries the\n  target LB-vserver).\n- Bind to a CS vserver to activate."
           },
           {
             "cmd": "add cs action <name> -targetLBVserver <lb-vserver>",
             "desc": "Creates a CS action directing traffic to an LB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add cs action cs_act_mobile -targetLBVserver lb-mobile-app\nDone\n\n> show cs action cs_act_mobile\nName             : cs_act_mobile\n        TargetLBVserver  : lb-mobile-app\n        Hits             : 0\n\nWhat it means:\n- A CS action is a tiny wrapper that names a target LB-vserver. Its\n  only job: tell a CS policy \"send the matched traffic here\".\n- Same target LB-vserver can be referenced by many CS actions.\n- Built-in convenience: 'set cs vserver -lbVserver X' creates and\n  binds a default action automatically."
           },
           {
             "cmd": "bind cs vserver <cs-vserver> -policyName <policy> -targetLBVserver <lb-vserver> -priority <num>",
             "desc": "Binds a CS policy to a CS virtual server with priority",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind cs vserver cs-edge-https -policyName cs_pol_mobile -targetLBVserver lb-mobile-app -priority 100 -gotoPriorityExpression END\nDone\n\n> show cs vserver cs-edge-https | include Bound\n        Bound Policies:\n          100 cs_pol_mobile    END  → lb-mobile-app\n\nWhat it means:\n- Wires CS policy → CS vserver, with priority and goto behaviour.\n- Lower priority number = evaluated FIRST. Use 100, 200, 300 spacing\n  for future inserts.\n- gotoPriorityExpression END : stop on first match. NEXT continues\n  through the policy chain."
           },
           {
             "cmd": "stat cs vserver <name>",
             "desc": "Real-time traffic statistics for a CS virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat cs vserver cs-edge-https\n\nCS Vserver Statistics for cs-edge-https\n        Hits                   : 102,345\n        Requests               : 102,345\n        Responses              : 102,000\n        Current Client Conn    : 8\n        Total Client Conn      : 50,234\n        Current Server Conn    : 6\n        Bytes In               : 18.2 MB\n        Bytes Out              : 124.6 MB\n        Policy Hits Top 3:\n                cs_pol_mobile  : 45,012\n                cs_pol_api     : 12,003\n                cs_pol_admin   : 405\n\nWhat it means:\n- Per-CS-vserver counters since boot or last \"clear ns stats\".\n- Policy Hits Top 3 : helps confirm traffic is hitting the policies\n  you expected. A policy with 0 hits over a long uptime usually\n  means its rule is wrong or its priority is below a NEXT-only\n  policy that always matches."
           },
           {
             "cmd": "set cs vserver <name> -redirectURL <url>",
             "desc": "Sets a redirect URL used when no policy matches on the CS vserver",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set cs vserver cs-edge-https -redirectURL https://maintenance.global.com/\nDone\n\n# Browser hitting the VIP now sees:\nHTTP/1.1 302 Found\nLocation: https://maintenance.global.com/\n\nWhat it means:\n- Sets a fallback URL the CS vserver redirects to when the chosen\n  back-end LB-vserver is DOWN (no FS healthy services).\n- Useful for graceful maintenance pages instead of \"Connection\n  refused\" errors.\n- Returns HTTP/1.1 302 — change with -redirectURLType for 301\n  permanent redirects."
           },
           {
             "cmd": "show cs vserver -full",
@@ -1934,49 +1941,57 @@
             "cmd": "add ns ip <ip> <mask> -type <SNIP|VIP|MIP|NSIP>",
             "desc": "Adds a new IP address of the specified type",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add ns ip 10.10.10.11 255.255.255.0 -type SNIP -mgmtAccess DISABLED -snmp DISABLED\nDone\n\n> show ns ip\n        IP                  Type       Mode    State\n        10.10.10.10         NSIP       Active  Enabled\n        10.10.10.11         SNIP       Active  Enabled    ← just added\n\nWhat it means:\n- NSIP : management IP for the ADC itself (one per box).\n- SNIP : Subnet IP — used by the ADC as its source when talking to\n         back-end servers in that subnet.\n- VIP  : Virtual IP — front-end IP serviced by an LB/CS/GSLB vserver.\n- MIP  : Mapped IP — legacy, mostly replaced by SNIPs.\n- mgmtAccess DISABLED stops the SNIP from accepting management\n  traffic (SSH, GUI, NITRO API). Best practice on data SNIPs."
           },
           {
             "cmd": "add route <network> <mask> <gateway>",
             "desc": "Adds a static route to the routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add route 0.0.0.0 0.0.0.0 10.10.10.1\nDone\n> add route 192.168.0.0 255.255.0.0 10.10.10.254\nDone\n\n> show route\n        Network/Mask                  Gateway       Vlan  State\n        0.0.0.0/0                     10.10.10.1    1     UP   (default)\n        192.168.0.0/16                10.10.10.254  1     UP\n\nWhat it means:\n- Static route — used when no dynamic protocol (BGP/OSPF) is\n  injecting prefixes.\n- Default route uses 0.0.0.0/0 + a gateway IP that lives on a\n  configured SNIP subnet.\n- Routes are SNIP-bound; deleting the SNIP that the gateway is on\n  removes the route automatically."
           },
           {
             "cmd": "clear arp",
             "desc": "Flushes the entire ARP cache",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> clear arp\nAre you sure you want to clear all ARP entries? [Y/N] Y\nDone\n\n> show arp\n        IP            HWaddress         IF      VLAN  Type\n        10.10.10.1    00:1a:1e:11:22:33 1/1     1     DYNAMIC  ← re-resolved\n\nWhat it means:\n- Flushes the entire ARP cache. Each subsequent first-packet to a\n  destination triggers a fresh ARP request.\n- Briefly disruptive — first packet may be lost if the L3 next-hop\n  hasn't been re-resolved yet.\n- Use to recover from poisoned ARP entries or after a swing-over to\n  a new gateway MAC."
           },
           {
             "cmd": "send arp -all",
             "desc": "Forces gratuitous ARP for all IPs — use after a failover",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> send arp -all\nDone\n\n# This forces gratuitous ARPs from every VIP/SNIP — useful after a\n# physical move that left upstream switches with stale CAM entries.\n\nWhat it means:\n- Sends a gratuitous ARP for every VIP/SNIP on the appliance.\n- Tells upstream switches \"this MAC owns these IPs now\" — refreshes\n  their MAC tables instantly.\n- Auto-fired on HA failover; manual use is for cable-swap scenarios."
           },
           {
             "cmd": "add vlan <id>",
             "desc": "Creates a new VLAN object",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add vlan 100 -aliasName web_servers\nDone\n> bind vlan 100 -ifnum 1/1 -tagged\n> bind vlan 100 -ipAddress 10.20.0.1 255.255.255.0\nDone\n\n> show vlan\nVLAN ID: 100\n        Alias Name        : web_servers\n        Tagged Interfaces : 1/1\n        Bound IPs         : 10.20.0.1/24\n\nWhat it means:\n- Defines an L2 broadcast domain. Bind interfaces tagged or untagged\n  to determine 802.1q behaviour on the wire.\n- Bind IPs to the VLAN to make the ADC L3-routeable on that segment.\n- VLAN 1 is the default (untagged) and exists implicitly."
           },
           {
             "cmd": "bind vlan <id> -ifnum <interface>",
             "desc": "Binds a physical interface to a VLAN for tagged traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind vlan 100 -ifnum 1/1 -tagged\nDone\n\n> show vlan 100 | include Interfaces\n        Tagged Interfaces : 1/1\n        Untagged Interfaces : (none)\n\nWhat it means:\n- Adds an interface to the named VLAN. \"-tagged\" makes the link an\n  802.1q trunk for this VLAN; without it, the interface treats this\n  VLAN as untagged (native).\n- An interface can be untagged in only ONE VLAN but tagged in many.\n- Mismatched tagging at the upstream switch = silent traffic loss\n  on that VLAN."
           },
           {
             "cmd": "add channel <name> -ifnum <num1> <num2>",
             "desc": "Creates a Link Aggregation (LA) channel",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add channel LA/1 -ifnum 1/1 1/2 -tagAll ON\n> set channel LA/1 -lacpMode ACTIVE -speed 10000\nDone\n\n> show channel\nLA/1 (802.3ad LACP) State: UP\n        Members      : 1/1 (UP), 1/2 (UP)\n        Speed        : 10000 Mbps (aggregated)\n        LACP Mode    : ACTIVE\n        Hash Method  : SRC_DST_IP\n\nWhat it means:\n- Combines multiple physical interfaces into a single logical link\n  for bandwidth + redundancy.\n- LACP ACTIVE both ends → fast negotiation. PASSIVE-PASSIVE will not\n  bring the channel up.\n- Hash method controls per-flow distribution. SRC_DST_IP is a safe\n  default; SRC_DST_PORT can be used for HTTP-heavy workloads."
           },
           {
             "cmd": "set ns config -usip ON",
             "desc": "Enables Use Source IP mode globally",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set ns config -usip ON\nDone\n\n> show ns config | include USIP\n        USIP                : ON\n\nWhat it means:\n- USIP = Use Source IP. With USIP ON, the ADC uses the original\n  client IP when talking to back-end servers (instead of a SNIP).\n- Required when back-end logging or security relies on the real\n  client IP and X-Forwarded-For isn't an option.\n- Side effect: back-end servers MUST route their reply traffic\n  back through the ADC (typically via static route or default\n  gateway pointing at the SNIP). Otherwise return packets bypass\n  the ADC and the connection breaks."
           },
           {
             "cmd": "show network visualizer",
@@ -2383,37 +2398,43 @@
             "cmd": "add rewrite action <name> insert_http_header X-Forwarded-For CLIENT.IP.SRC",
             "desc": "Inserts X-Forwarded-For header with client source IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add rewrite action act_xff insert_http_header X-Forwarded-For CLIENT.IP.SRC\nDone\n\n# Outbound HTTP request now contains:\nGET /api/login HTTP/1.1\nHost: api.global.com\nX-Forwarded-For: 203.0.113.45    ← original client IP\n\nWhat it means:\n- Inserts an HTTP header containing a PI-expression value. Here the\n  XFF header carries the original client IP that the back-end\n  server-side application can log instead of the SNIP.\n- CLIENT.IP.SRC always evaluates to the L3 source IP of the request,\n  pre-NAT.\n- Pair with a rewrite policy + REQ_OVERRIDE bind to make it actually\n  fire on traffic."
           },
           {
             "cmd": "add rewrite policy <name> <rule> <action>",
             "desc": "Creates a rewrite policy applying an action when rule matches",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add rewrite policy pol_xff true act_xff\nDone\n\n> show rewrite policy pol_xff\nName : pol_xff\n        Rule       : true\n        Action     : act_xff\n        Hits       : 0\n        Undef Hits : 0\n\nWhat it means:\n- Wires a match rule to a rewrite action. \"true\" means \"fire on\n  every request\" — usually you'd use a more specific PI expression\n  like HTTP.REQ.IS_VALID.\n- \"Undef Hits\" counts rule-evaluation errors; should stay at 0\n  in a well-formed policy.\n- Bind to a vserver or global with \"bind rewrite global\" for the\n  policy to actually evaluate."
           },
           {
             "cmd": "bind rewrite global <policy> <priority>",
             "desc": "Binds a rewrite policy globally to all traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind rewrite global pol_xff 100 NEXT -type REQ_OVERRIDE\nDone\n\n> show rewrite global -type REQ_OVERRIDE\n        Priority   Policy Name      Goto Expression\n        100        pol_xff          NEXT\n\nWhat it means:\n- \"global\" binding fires on every vserver of every relevant feature.\n- Priority 100: lower number = evaluated FIRST. Use 100/200/300\n  spacing so future policies can be inserted without renumbering.\n- \"NEXT\" goto: continue evaluating subsequent policies in this bank.\n  Use \"END\" to stop after this policy fires.\n- type REQ_OVERRIDE : evaluated before the LB/CS-policy decision —\n  important so the inserted header reaches the back-end-decision\n  path correctly."
           },
           {
             "cmd": "add responder action <name> respondwith 403",
             "desc": "Creates a responder action returning HTTP 403 Forbidden",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add responder action act_drop respondwith '\"HTTP/1.1 403 Forbidden\\r\\n\\r\\n\"'\nDone\n\n> show responder action act_drop\nName : act_drop\n        Type    : RESPONDWITH\n        Target  : \"HTTP/1.1 403 Forbidden\\r\\n\\r\\n\"\n        Hits    : 0\n\nWhat it means:\n- Crafts a synthetic response that the ADC sends back to the client\n  WITHOUT forwarding the request to a back-end.\n- Common for blocking known bad URLs, geo-blocking, rate-limiting\n  responses.\n- Note the literal \"\\r\\n\\r\\n\" sequence — required to terminate\n  the HTTP headers properly."
           },
           {
             "cmd": "add responder policy <name> HTTP.REQ.URL.CONTAINS('/admin') DROP",
             "desc": "Drops requests to URLs containing /admin",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add responder policy pol_block_admin 'HTTP.REQ.URL.CONTAINS(\"/admin\")' DROP\nDone\n\n> bind responder global pol_block_admin 100 END\nDone\n\n# Trying to reach /admin:\n$ curl -v http://www.global.com/admin\n* Connection #0 to host www.global.com left intact\n* Empty reply from server   ← TCP RST due to DROP action\n\nWhat it means:\n- DROP action silently kills the TCP connection — neither the\n  back-end nor the client see a clean response.\n- Compare with NOOP (just log/count), RESET (TCP RST), or\n  RESPONDWITH (custom error page).\n- Use HTTP.REQ.URL.CONTAINS_ANY(\"patset\") for multiple URL prefixes\n  in a single rule (much faster than chained CONTAINS())."
           },
           {
             "cmd": "bind responder global <policy> <priority>",
             "desc": "Binds a responder policy globally to all traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind responder global pol_block_admin 100 END\nDone\n\n> show responder global\n        Priority   Policy Name        Goto Expression\n        100        pol_block_admin    END\n\nWhat it means:\n- Activates the responder policy globally. \"END\" stops further\n  policies in this bank if this one fires — usually correct for\n  blocking actions.\n- Without \"type\" specified, the bind is to the default override\n  bank (REQ_OVERRIDE for HTTP).\n- Priority numbering: leave gaps (100, 200, 300) so inserting new\n  policies doesn't require renumbering."
           },
           {
             "cmd": "show rewrite policy",
@@ -2433,13 +2454,15 @@
             "cmd": "add rewrite action <name> replace HTTP.RES.HEADER(\"Server\") \"\\\"\\\"\"",
             "desc": "Strips the Server response header to hide backend identity",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add rewrite action act_strip_server replace 'HTTP.RES.HEADER(\"Server\")' '\"\"'\nDone\n> add rewrite policy pol_strip_server true act_strip_server\n> bind rewrite global pol_strip_server 200 NEXT -type RES_OVERRIDE\nDone\n\n# Original back-end response: Server: Apache/2.4.41 (Ubuntu)\n# After rewrite:                Server: (empty)\n\nWhat it means:\n- Removes the server-banner header from outbound responses to avoid\n  fingerprinting attacks.\n- Replacing with empty string (\"\") keeps the header present but\n  empty. To remove the header entirely, use a \"delete_http_header\"\n  action instead.\n- type RES_OVERRIDE : evaluated on the response leg (server →\n  client), before the response leaves the ADC."
           },
           {
             "cmd": "add rewrite action <name> insert_http_header HSTS '\"max-age=31536000; includeSubDomains\"'",
             "desc": "Inserts HTTP Strict Transport Security header",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add rewrite action act_hsts insert_http_header Strict-Transport-Security '\"max-age=31536000; includeSubDomains; preload\"'\nDone\n> add rewrite policy pol_hsts 'HTTP.REQ.IS_VALID && CLIENT.SSL.IS_SSL' act_hsts\n> bind rewrite global pol_hsts 300 NEXT -type RES_OVERRIDE\nDone\n\n# Server response now contains:\nHTTP/1.1 200 OK\nStrict-Transport-Security: max-age=31536000; includeSubDomains; preload\n\nWhat it means:\n- Adds the HSTS header so browsers refuse to downgrade to HTTP for\n  one year (31,536,000 seconds).\n- \"includeSubDomains\" extends the lock to subdomains.\n- \"preload\" qualifies the domain for the HSTS preload list (browser-\n  shipped lists of HSTS-required domains).\n- Only fires on SSL connections (CLIENT.SSL.IS_SSL) — sending HSTS\n  over HTTP is meaningless and triggers browser warnings."
           },
           {
             "cmd": "show policy expression",
@@ -3095,43 +3118,50 @@
             "cmd": "show authentication vserver",
             "desc": "Lists all authentication virtual servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show authentication vserver\n1)   Name  : auth_vs_main\n       State : UP\n       Effective State : UP\n       Protocol : SSL\n       Port  : 443\n       IP   : 10.30.0.50\n       Authentication : ON\n       Authentication Profile : default\n\nWhat it means:\n- Authentication vservers handle login flows (form / SAML / OAuth).\n- Used by AAA-TM for SSO, ICA Proxy, and forms-auth-protected\n  applications.\n- \"Authentication Profile\" carries the bound LDAP/RADIUS/SAML actions\n  and policies — the actual authentication backends."
           },
           {
             "cmd": "add system user <username> <password>",
             "desc": "Creates a new NetScaler management user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add system user opadmin Welcome2026!\nDone\n\n> bind system user opadmin operator -priority 100\nDone\n\n> show system user\nName              External Auth     Groups               CommandPolicy\nnsroot            NO                superuser            superuser\nopadmin           NO                operator             operator\n\nWhat it means:\n- Creates a local management user. Default access: NONE — must bind\n  to a CmdPolicy (operator/sysadmin/superuser) for the user to do\n  anything.\n- \"External Auth NO\" : password is local. Set to YES + bind to\n  ldap/tacacs policy to authenticate against an external directory\n  while keeping the local user object for audit.\n- nsroot is the built-in superuser; never delete it."
           },
           {
             "cmd": "add authentication ldapAction <name> -serverIP <ip> -ldapBase <dn>",
             "desc": "Creates an LDAP auth action for AD authentication",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add authentication ldapAction LDAP_Corp -serverIP 10.40.0.5 -serverPort 636 -ldapBase \"dc=corp,dc=local\" -ldapBindDn \"cn=svc-adc,ou=service,dc=corp,dc=local\" -ldapBindDnPassword secret -secType SSL -ldapLoginName sAMAccountName\nDone\n\n> show authentication ldapAction LDAP_Corp\nName : LDAP_Corp\n        Server IP   : 10.40.0.5\n        Server Port : 636\n        Base DN     : dc=corp,dc=local\n        Login Name  : sAMAccountName\n        Sec Type    : SSL\n        Bind DN     : cn=svc-adc,ou=service,dc=corp,dc=local\n\nWhat it means:\n- Defines an LDAP/AD connection profile for authentication.\n- secType SSL : LDAPS on TCP/636. Use TLS for STARTTLS upgrade on\n  TCP/389. \"PLAIN\" sends passwords cleartext — never use.\n- ldapLoginName sAMAccountName : tells the ADC to use the user's\n  Windows logon name. UPN form: \"userPrincipalName\".\n- The bindDn account is the service principal used for searches —\n  needs read access to the user OUs."
           },
           {
             "cmd": "add authentication samlAction <name> -samlIdPCertName <cert> -samlRedirectUrl <url>",
             "desc": "Creates a SAML auth action for federated SSO",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add authentication samlAction SAML_AzureAD -samlIdPCertName azure-token-signing.crt -samlRedirectUrl https://login.microsoftonline.com/<tenant-id>/saml2 -samlIssuerName https://nkb.global.com/saml/metadata -samlSigningCertName saml-signing.crt\nDone\n\n> show authentication samlAction SAML_AzureAD\nName             : SAML_AzureAD\n        IDP Cert Name      : azure-token-signing.crt\n        Redirect URL       : https://login.microsoftonline.com/.../saml2\n        Issuer Name (SP)   : https://nkb.global.com/saml/metadata\n        SP Signing Cert    : saml-signing.crt\n\nWhat it means:\n- Configures the ADC as a SAML Service Provider (SP) federated\n  with an external IdP (Azure AD / Okta / ADFS / etc.).\n- IDP Cert is used to verify the signature on inbound SAML\n  assertions from the IdP.\n- Redirect URL is where the user's browser is sent for SSO.\n- Issuer Name is your SP entityID — must match what the IdP has\n  configured for this app."
           },
           {
             "cmd": "kill aaa session -username <user>",
             "desc": "Terminates all active Gateway sessions for a user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> kill aaa session -username jsmith\nAre you sure you want to terminate session(s) for user jsmith? [Y/N] Y\nDone. 2 sessions terminated.\n\nWhat it means:\n- Forcibly logs out all active sessions for the named user.\n- Common during incident response — kicks a compromised user off\n  the gateway immediately.\n- \"kill aaa session -all\" terminates EVERYONE; usually only used\n  during emergency maintenance."
           },
           {
             "cmd": "show aaa session",
             "desc": "Lists all active AAA/Gateway sessions with usernames and IPs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show aaa session\nTotal active sessions: 45\n1)   User Name : jsmith\n       IntranetIP    : 10.99.0.50\n       Login Time    : Wed May  1 09:00:12 2026\n       Idle Time     : 0:00:14\n       Authentication: LDAP\n\nWhat it means:\n- Active SSL-VPN / AAA-TM sessions, with which back-end IP each\n  client is currently mapped to (intranetIP).\n- Idle Time : seconds since last user activity. Sessions are reaped\n  per \"show vpn parameter -idleTimeout\".\n- Authentication column shows which auth source proved the user."
           },
           {
             "cmd": "set system user <username> -externalAuth ENABLED",
             "desc": "Enables external authentication (LDAP/RADIUS) for a management user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set system user opadmin -externalAuth ENABLED\nDone\n\n> show system user opadmin\nName             : opadmin\n        External Auth      : YES         ← was NO\n        Auth Type          : LDAP (via policy LDAP_Pol_Mgmt)\n\nWhat it means:\n- Switches the user from local-password to external-directory auth.\n- LOCAL password is retained but ignored as long as ExternalAuth is\n  YES — useful as a break-glass fallback.\n- Requires an authentication policy bound to \"system global\" pointing\n  at the LDAP/RADIUS/TACACS action that should authenticate the user."
           },
           {
             "cmd": "show system user",
