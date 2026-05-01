@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:51:50.268Z",
+  "updatedAt": "2026-05-01T21:08:41.688Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -15364,7 +15364,8 @@
             "cmd": "debug ip ospf adj",
             "desc": "Live OSPF adjacency transitions — disable immediately after",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# debug ip ospf adj\n\nOSPF adjacency events debugging is on\n\nR1#\n%OSPF: 2 Way Communication to 2.2.2.2 on Gi0/0, state 2WAY\n%OSPF: Send DBD to 2.2.2.2 seq 0x800 opt 0x52\n%OSPF: Rcv DBD from 2.2.2.2 seq 0x800 opt 0x52\n%OSPF: NBR Negotiation Done. We are the SLAVE\n%OSPF: Synchronized with 2.2.2.2, state FULL\n\nR1# undebug all\n\nWhat it means:\n- Real-time logging of OSPF adjacency state machine transitions.\n- See the FSM walk: 2WAY → EXSTART → EXCHANGE → LOADING → FULL.\n- \"We are the SLAVE\" = master/slave for DBD sequencing — higher\n  router-id wins MASTER. No operational impact post-FULL.\n- ALWAYS run \"undebug all\" after debugging — debug commands\n  consume CPU."
           },
           {
             "cmd": "show ipv6 route",
@@ -15413,7 +15414,8 @@
             "cmd": "show ip mroute",
             "desc": "IP multicast routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip mroute\n\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group,\n       C - Connected, L - Local, P - Pruned, R - RP-bit set,\n       F - Register flag, T - SPT-bit set, J - Join SPT\n\n(*, 239.1.1.1), 00:14:23/00:02:50, RP 10.0.0.1, flags: SC\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:14:23/00:02:50\n\n(10.99.0.5, 239.1.1.1), 00:00:14/00:02:46, flags: T\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:00:14/00:02:46\n\nWhat it means:\n- (*, G) entries : shared tree rooted at the RP.\n- (S, G) entries : source-specific shortest-path tree (SPT).\n- \"Incoming interface\" : RPF interface — must point upstream\n  toward the source/RP, otherwise packets are dropped.\n- \"Outgoing interface list\" (OIL) : where the multicast is being\n  replicated to.\n- T flag = SPT switchover happened (came off the shared tree)."
           },
           {
             "cmd": "show ip route 8.8.8.8",
@@ -15595,7 +15597,8 @@
             "cmd": "ip pim sparse-mode",
             "desc": "Enables PIM Sparse Mode on the interface for multicast routing",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/0\nR1(config-if)# ip pim sparse-mode\n\nR1# show ip pim interface gigabitethernet0/0\nGigabitEthernet0/0  Address: 10.10.10.1  Mode: Sparse\n                    DR: 10.10.10.50  Hello: 30 sec  Holdtime: 105 sec\n\nWhat it means:\n- Enables PIM-SM (Sparse Mode) on the interface — most common\n  multicast deployment.\n- Requires an RP for (*,G) state until SPT switchover happens.\n- \"DR\" = Designated Router on the segment (handles forwarding\n  decisions for source-side traffic)."
           },
           {
             "cmd": "ip multicast-routing",
@@ -15663,7 +15666,8 @@
             "cmd": "show ssh",
             "desc": "Shows SSH server status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ssh\n\nConnection Version Mode Encryption       Hmac          State                 Username\n0          2.0     IN   aes256-ctr        hmac-sha2-256 Session started       admin\n0          2.0     OUT  aes256-ctr        hmac-sha2-256 Session started       admin\n\n%No SSHv1 server connections running.\n\nWhat it means:\n- Active SSH sessions with cipher / HMAC negotiation results.\n- Per-direction (IN / OUT) entries — both must show the same\n  session.\n- \"No SSHv1\" = legacy protocol disabled (good — SSHv1 is broken).\n- Confirm strong ciphers (aes256-ctr, chacha20-poly1305) and\n  modern HMACs (sha2-256, sha2-512)."
           },
           {
             "cmd": "show mac address-table",
@@ -15695,7 +15699,8 @@
             "cmd": "show ip dhcp snooping binding",
             "desc": "DHCP snooping binding table — the source of truth for DAI/IPSG",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip dhcp snooping binding\n\nMacAddress          IpAddress     Lease(sec)  Type           VLAN  Interface\n00:1a:1e:11:22:33   10.10.0.50    86400       dhcp-snooping  10    Gi1/0/1\n00:1a:1e:44:55:66   10.10.0.51    72000       dhcp-snooping  10    Gi1/0/2\n\nTotal number of bindings: 2\n\nWhat it means:\n- DHCP-snooping binding table — IP-MAC-port-VLAN tuples learned\n  via DHCP exchanges on trusted ports.\n- Used by Dynamic ARP Inspection (DAI) and IP Source Guard for\n  L2 attack prevention.\n- Manual entries possible: \"ip dhcp snooping binding ... interface\".\n- Permanent: \"ip dhcp snooping database flash:dhcp-bindings.txt\"\n  ensures persistence across reboots."
           },
           {
             "cmd": "show ip arp inspection",
@@ -16005,67 +16010,78 @@
             "cmd": "show processes cpu sorted",
             "desc": "Top CPU consumers — look for control-plane pegging",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show processes cpu sorted\n\nCPU utilization for five seconds: 23%/8%; one minute: 14%; five minutes: 12%\n PID Runtime(ms)   Invoked     uSecs  5Sec  1Min  5Min TTY Process\n 142     12345     45012        274   12%   8%    7%   0   IP Input\n 245      4521     12003        376    5%   3%    3%   0   BGP Router\n   1      1234      4012        307    3%   1%    1%   0   Init\n\nWhat it means:\n- Top-line: total CPU \"X%/Y%\" — X = total, Y = interrupt CPU. Y near\n  X means the CPU is spending most cycles in fast-path forwarding,\n  not control-plane work.\n- \"5Sec\" = process CPU over last 5 seconds.\n- Sustained per-process CPU > 50% on a single process = a problem\n  with that subsystem."
           },
           {
             "cmd": "show processes cpu history",
             "desc": "ASCII histogram of CPU over last hour/day",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show processes cpu history\n\nR1            12:00:00 PM Wednesday May 01 2026\n   100\n    90\n    80                                              *\n    70                                            * * *\n    60                                          * * * * *\n    50  *  *  *  *  *  *  *  *  *  *  *  *    * * * * * *\n    10\n       0    5    10   15   20   25   30   35   40   45   50   55   60\n                       CPU% per second (last 60 seconds)\n\nWhat it means:\n- ASCII art of CPU% over time — 60-sec, 1-hour, and 72-hour windows.\n- Visual spike spotting: CPU jumped 50→90% during the recent attack.\n- Useful for capacity-planning conversations with management — print\n  this to PDF for change reviews."
           },
           {
             "cmd": "show memory statistics",
             "desc": "Memory pool usage — watch for fragmentation",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show memory statistics\n\n                Head     Total(b)     Used(b)     Free(b)   Lowest(b)   Largest(b)\nProcessor   2A4B1234   1073741824   245678901   828062923   745678901   123456789\n   I/O      2A5B5678    536870912    98765432   438105480    98765432    98765432\n\nWhat it means:\n- Memory pool stats. \"Free\" = currently available. \"Lowest\" =\n  lowest-ever free since boot (water-mark).\n- \"Largest\" = biggest contiguous free block. If \"Free\" is high but\n  \"Largest\" is low, memory is fragmented.\n- Sustained low Lowest watermark = approaching exhaustion; investigate\n  with \"show processes memory sorted\"."
           },
           {
             "cmd": "show platform hardware fed switch active qos queue stats interface <int>",
             "desc": "Cat9k queue drops per interface",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show platform hardware fed switch active qos queue stats interface gi1/0/1\n\nInterface: gi1/0/1\nDBL: Disabled  Trust DSCP: True\nQueue Buffers Bandwidth Threshold Drops    Enqueue\n  0      30%      30%       80%   12       45,012\n  1      20%      20%       80%   0        12,003\n  2      30%      30%       80%   0        45,021\n  3      20%      20%       80%   0        2,103\n\nWhat it means:\n- Per-interface egress queue stats on Catalyst hardware.\n- \"Drops\" : packets that overran the queue threshold and got\n  tail-dropped. Should be 0 for priority queues.\n- \"Enqueue\" : total packets that entered each queue.\n- Use to verify QoS marking is hitting the right hardware queue."
           },
           {
             "cmd": "show logging | include <keyword>",
             "desc": "Filter syslog buffer for a specific event",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show logging | include LINK\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down\n\nWhat it means:\n- Filters log buffer to lines containing the keyword.\n- Common patterns:\n    | include LINK         — interface state changes\n    | include OSPF|BGP     — routing protocol events\n    | include %.*-3-       — severity 3 (errors) only\n- Pipe is case-sensitive; use \"|i\" alias for case-insensitive\n  in some IOS XE versions."
           },
           {
             "cmd": "monitor session 1 source interface <int> both\\n monitor session 1 destination interface <int>",
             "desc": "Local SPAN between two ports",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# monitor session 1 source interface gi1/0/1 both\nR1(config)# monitor session 1 destination interface gi1/0/24\n\nR1# show monitor session 1\nSession 1\n---------\nType                : Local Session\nSource Ports        :\n    Both           : Gi1/0/1\nDestination Ports   : Gi1/0/24\n    Encapsulation  : Native\n          Ingress  : Disabled\n\nWhat it means:\n- SPAN (Switched Port Analyzer) — copies traffic from source ports\n  to a destination port for packet-capture analysis.\n- \"both\" : capture ingress + egress. Other options: rx, tx.\n- Destination port must be unused; receives traffic only (no\n  return traffic possible).\n- Plug a packet-capture tool (Wireshark / tcpdump) into the\n  destination port."
           },
           {
             "cmd": "debug platform packet-capture monitor capture CAP interface <int> both",
             "desc": "EPC in-box capture on newer IOS-XE",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# monitor capture CAP interface gi1/0/1 both match any buffer size 10\nR1# monitor capture CAP start\nR1# monitor capture CAP stop\nR1# show monitor capture CAP buffer\n\nBuffer Size: 10 MB, Capture: Stopped\nPackets captured: 4,502\nPackets dropped: 0\n\n# Detailed packet view:\nR1# show monitor capture CAP buffer detailed | head -20\n\nWhat it means:\n- \"monitor capture\" is the modern Embedded Packet Capture (EPC).\n  Captures packets to a memory buffer or file without external\n  packet-capture appliance.\n- \"match any\" : capture everything. Use ACL filtering for targeted\n  captures: \"match access-list 100\".\n- Export to .pcap with \"monitor capture CAP export flash:cap.pcap\"."
           },
           {
             "cmd": "test crypto isakmp <peer>",
             "desc": "Attempt an IKE negotiation manually for diagnosis",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# test crypto isakmp 198.51.100.50\n\nTest crypto isakmp:\n   ISAKMP SA negotiation initiated to peer 198.51.100.50\n   ISAKMP SA established. Encryption: AES-256, Hash: SHA-256\n\nWhat it means:\n- Triggers an immediate ISAKMP/IKE Phase 1 negotiation with a peer\n  WITHOUT waiting for interesting traffic to fire it.\n- Useful for VPN troubleshooting — confirms ISAKMP can complete\n  before debugging Phase 2 / IPsec SA.\n- Failure messages point at config mismatches: pre-shared key,\n  proposals, NAT-T issues."
           },
           {
             "cmd": "show tech-support | redirect flash:tac.txt",
             "desc": "Dump complete tech-support to flash for TAC upload",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show tech-support | redirect flash:tac.txt\n\n# Wait several minutes ...\nR1# dir flash: | include tac\n   24  -rw-       4256321  May  1 2026 11:22:18 +00:00  tac.txt\n\nWhat it means:\n- Bundles the output of dozens of show commands into a single text\n  file on flash — Cisco TAC asks for this on every case.\n- \"| redirect\" sends output to file instead of console (avoids\n  paging through 50 MB of output interactively).\n- After collection, scp / ftp the file to the TAC case."
           },
           {
             "cmd": "show version | include uptime|Version|image",
             "desc": "Quick uptime + software version one-liner",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show version | include uptime|Version|image\n\nCisco IOS XE Software, Version 17.09.04a\nR1 uptime is 14 weeks, 3 days, 12 hours, 22 minutes\nSystem image file is \"bootflash:packages.conf\"\n\nWhat it means:\n- Quick health/version view — most common first command in a TAC\n  case.\n- Uptime > 365 days might indicate a missed maintenance window.\n- \"System image file\" : confirms which IOS XE package is currently\n  running (vs what's installed but not active)."
           },
           {
             "cmd": "show environment all",
             "desc": "Voltages, temperatures, fan/PSU state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show environment all\n\nSensor List:    Environmental Monitoring\nSensor          Location          State        Reading\nPower Supply 1  PWR-PS1           Normal       OK (220V AC)\nPower Supply 2  PWR-PS2           Normal       OK (220V AC)\nFan Tray        FAN1              Normal       OK (5200 RPM)\nInlet Temp      Slot 1            Normal       28C\nOutlet Temp     Slot 1            Normal       42C\nHotspot Temp    CPU0              Normal       58C  (warning >80)\n\nWhat it means:\n- Hardware sensor dashboard — power, fans, temperatures.\n- Any \"Critical\" or \"Warning\" state is a hardware alarm — open a\n  TAC case immediately on dual-PSU redundancy loss.\n- \"Hotspot\" sensors near 80°C threshold = airflow issue (dust,\n  blocked vents, failed fan)."
           },
           {
             "cmd": "show inventory",
@@ -16078,25 +16094,29 @@
             "cmd": "show platform",
             "desc": "Platform-specific state (FP, linecards, supervisor)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show platform\n\nChassis type: C9300-48UXM-A\nSwitch  Ports  Card Type                Serial No.   MAC Address\n*1      48     C9300-48UXM              FCW2245A0AB  001a.1e11.2233\n 2      48     C9300-48UXM              FCW2245A0AC  001a.1e11.2244\n 3      48     C9300-48UXM              FCW2245A0AD  001a.1e11.2255\n\nSwitch  Slot  CFG  ID  Hw  Sw                  CurSw         Action\n*1      0     1    8   2.0  17.09.04a           Active        Active\n 2      0     1    8   2.0  17.09.04a           Standby       Standby\n 3      0     1    8   2.0  17.09.04a           Member        Member\n\nWhat it means:\n- Chassis / stack overview. \"*\" = active switch in a stack.\n- \"CurSw\" : currently-running software image. Mismatched versions\n  in a stack cause problems — investigate via \"show version\" per\n  switch.\n- Confirm member counts match physical hardware before stack\n  operations."
           },
           {
             "cmd": "show ip traffic",
             "desc": "IP layer counters incl. drops per reason",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip traffic\n\nIP statistics:\n  Rcvd:  14502301 total, 14490190 local destination\n         0 format errors, 0 checksum errors, 12 bad hop count\n         0 unknown protocol, 0 not a gateway\n         0 security failures, 0 bad options, 0 with options\n  Frags: 0 reassembled, 0 timeouts, 0 couldn't reassemble\n         0 fragmented, 0 fragments, 0 couldn't fragment\n  Bcast: 4502 received, 0 sent\n  Mcast: 12003 received, 14523 sent\n  Sent:  14490190 generated, 12100 forwarded\n  Drop:  0 encapsulation failed, 0 unresolved, 0 no adjacency\n         0 no route, 142 unicast RPF, 0 forced drop\n\nWhat it means:\n- Top-level IP-stack stats. \"Rcvd local destination\" = packets\n  destined to this router itself (control-plane).\n- \"checksum errors\" or \"bad hop count\" > 0 = data-corruption or\n  TTL-expired packets — investigate further.\n- \"unicast RPF\" drops : packets failed RPF check. High counts hint\n  at asymmetric routing or RPF-mode misconfig."
           },
           {
             "cmd": "show tcp brief",
             "desc": "Active TCP sessions on the device (SSH/BGP/telnet)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show tcp brief\n\nTCB         Local Address       Foreign Address     (state)\n12345678    10.10.10.1.179      10.10.10.50.51223   ESTAB     ← BGP\n87654321    10.10.10.1.22       10.50.50.50.42102   ESTAB     ← SSH from mgmt\nABCDEF12    10.10.10.1.23       0.0.0.0.0           LISTEN    ← telnet (oh dear)\n\nWhat it means:\n- All TCP connections + listeners on the router itself (control\n  plane only — does not show forwarded flows).\n- BGP sessions on port 179, SSH on 22, telnet on 23 — confirm\n  expected sessions are established.\n- LISTEN entries on 23 / 80 / 443 = enabled services. Lock down\n  unused with \"no ip http server\" / \"transport input ssh\"."
           },
           {
             "cmd": "show ip sockets",
             "desc": "UDP/TCP listening sockets in the control plane",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip sockets\n\nProto    Remote               Port  Local                 Port  In Out  Stat TTY OutputIF\n17(UDP)  --listen--           --    --any--               123   0  0    1   0   any\n6(TCP)   10.10.10.50          51223 10.10.10.1            179   0  0    11  0   --\n6(TCP)   10.50.50.50          42102 10.10.10.1            22    0  0    11  0   --\n\nWhat it means:\n- IP-layer socket state — covers UDP listeners as well as TCP.\n- Proto 17 = UDP, 6 = TCP.\n- Useful when troubleshooting NTP / SNMP / TFTP — confirms the\n  router is actually listening on the expected UDP port."
           },
           {
             "cmd": "show processes cpu sorted | exclude 0.00",
@@ -16109,19 +16129,22 @@
             "cmd": "show logging summary",
             "desc": "Counts per facility/severity in the log buffer",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show logging summary\n\n+-------+------------+-----------+-----------+---------+\n|       | EMERGENCY  | ALERT     | CRITICAL  | ERROR   |\n+-------+------------+-----------+-----------+---------+\n| TOTAL |     0      |    0      |    0      |  142    |\n| LAST  |   never    |  never    |  never    | 02:14:21|\n+-------+------------+-----------+-----------+---------+\n\n+-------+------------+-----------+-----------+---------+\n|       | WARNING    | NOTICE    | INFO      | DEBUG   |\n+-------+------------+-----------+-----------+---------+\n| TOTAL |   421      |   1245    |  4502     |   0     |\n| LAST  | 00:14:21   | 00:00:14  | 00:00:01  |  never  |\n+-------+------------+-----------+-----------+---------+\n\nWhat it means:\n- Severity-bucketed log counters. Quick triage tool — any non-zero\n  EMERGENCY / ALERT / CRITICAL deserves immediate investigation.\n- \"LAST\" : how long ago the most recent message of that severity\n  arrived. \"never\" = no message of that severity since boot."
           },
           {
             "cmd": "ping vrf <name> <dst> size <b> df-bit",
             "desc": "Per-VRF ping with DF-bit for PMTUD check",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# ping vrf CUSTOMER-A 10.99.0.5 size 1500 df-bit count 5\n\nType escape sequence to abort.\nSending 5, 1500-byte ICMP Echos to 10.99.0.5, timeout is 2 seconds:\nPacket sent with the DF bit set\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 1/2/4 ms\n\nWhat it means:\n- VRF-scoped ping — sources from CUSTOMER-A's RIB / table, not\n  the global one.\n- \"size 1500\" + \"df-bit\" : forces a 1500-byte unfragmented packet\n  to test path MTU. If any hop's MTU < 1500, ping fails with\n  \"fragmentation needed\" returned.\n- Standard MTU-sweep technique for diagnosing path MTU problems."
           },
           {
             "cmd": "traceroute mpls ipv4 <prefix>",
             "desc": "MPLS LSP traceroute",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# traceroute mpls ipv4 10.99.0.0/24\n\nTracing MPLS Label Switched Path to 10.99.0.0/24, timeout is 2 seconds\n  0  10.10.10.1 MRU 1500 [Labels: 22000 Exp: 0]\n  1  10.10.10.50 MRU 1500 [Labels: 22001 Exp: 0]  4 ms\n  2  10.10.20.50 MRU 1500 [Labels: 22002 Exp: 0]  8 ms\n  3  10.20.0.50  MRU 1500 [Labels: implicit-null Exp: 0]  12 ms\n\nWhat it means:\n- LSP traceroute — shows the MPLS label stack at each hop. Useful\n  for verifying MPLS-VPN underlay paths.\n- \"implicit-null\" at the last hop = penultimate-hop popping (PHP);\n  the previous router popped the label.\n- \"MRU\" = Maximum Receive Unit — the LSP's effective MTU."
           }
         ],
         "Management": [
@@ -16129,19 +16152,22 @@
             "cmd": "show running-config | section <keyword>",
             "desc": "Show config starting from a section header",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show running-config | section interface GigabitEthernet0/1\ninterface GigabitEthernet0/1\n description WAN-uplink\n ip address 198.51.100.5 255.255.255.252\n ip ospf network point-to-point\n ip ospf cost 100\n no shutdown\n\nWhat it means:\n- \"section\" filters running-config to lines matching the keyword\n  PLUS their indented sub-lines (the entire config block).\n- More useful than \"include\" when looking at structured config\n  (interfaces, BGP neighbors, route-maps).\n- Standard pipe filter; works after any \"show\" command."
           },
           {
             "cmd": "show running-config interface <int>",
             "desc": "Running config scoped to a single interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show running-config interface gi0/1\n\ninterface GigabitEthernet0/1\n description WAN-uplink\n ip address 198.51.100.5 255.255.255.252\n ip ospf network point-to-point\n ip ospf cost 100\n no shutdown\n\nWhat it means:\n- Direct shortcut to one interface's config block — equivalent to\n  \"show running-config | section gi0/1\" but cleaner output.\n- Works for any interface type (subif, port-channel, vlan, etc.)."
           },
           {
             "cmd": "show archive",
             "desc": "Rollback-archive contents if configured",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show archive\n\nThe maximum archive configurations allowed is 14.\nThe next archive file will be named flash:archive-15\nArchive #  Name\n   1       flash:archive-1\n   2       flash:archive-2\n   ...\n  14       flash:archive-14   (Most recent)\n\nWhat it means:\n- Lists currently stored config archives. The \"archive\" feature\n  saves running-config to a file every time you \"write memory\" or\n  on a timer.\n- Use to roll back a bad config: \"configure replace flash:archive-13\".\n- \"maximum 14\" = ring buffer; oldest archive is overwritten when\n  the 15th is created."
           },
           {
             "cmd": "copy running-config startup-config",
@@ -16154,13 +16180,15 @@
             "cmd": "archive config",
             "desc": "Take a named snapshot for rollback",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# archive config\n\nArchiving configuration ...\nArchive saved as flash:archive-15\n\nWhat it means:\n- Manually triggers an archive save. Bypasses the timer (if any)\n  and the \"write-memory\" trigger.\n- Useful before a risky change — guarantees a known-good rollback\n  point."
           },
           {
             "cmd": "configure replace flash:<file> force",
             "desc": "Roll back to a previous archived config",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# configure replace flash:archive-13 force\n\nThe new running config has been replaced with flash:archive-13.\nRun \"show running-config\" to verify.\n\nWhat it means:\n- Atomically replaces the entire running-config with the contents\n  of an archive file.\n- \"force\" skips the confirmation prompt — useful in automation but\n  dangerous interactively.\n- Compare with \"copy flash:archive-13 running-config\" which MERGES\n  rather than replaces.\n- The atomic replace is the safer rollback mechanism."
           },
           {
             "cmd": "show clock detail",
@@ -16173,7 +16201,8 @@
             "cmd": "show ntp associations",
             "desc": "NTP peers and stratum",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ntp associations\n\n  address         ref clock       st   when   poll   reach   delay   offset    disp\n*~129.6.15.28     .GPS.            1     12     64    377    24.521   0.142    0.221\n+~10.10.10.50     129.6.15.28      2     45    128    377     1.214  -0.014    0.012\n ~10.10.10.51     129.6.15.28      2    102    128    377     1.198   0.018    0.014\n\n* sys.peer, # selected, + candidate, - outlyer, x falseticker, . pps.peer\n\nWhat it means:\n- \"*\" = the currently-selected sync peer (sys.peer).\n- \"st\" = stratum. 1 = directly synced to a reference clock (atomic,\n  GPS); 2-15 = downstream peers.\n- \"reach\" = octal bit-mask of last 8 polls (377 = all 8 successful).\n- \"delay/offset/disp\" = round-trip in ms / phase offset in ms /\n  dispersion (clock uncertainty)."
           },
           {
             "cmd": "show users",
@@ -17584,7 +17613,8 @@
             "cmd": "show ip mroute summary",
             "desc": "Multicast routing summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip mroute summary\n\nIP Multicast Routing Table\nTotal: 2 (*,G), 5 (S,G)\n        2 entries with hardware-switched data\n        5 entries with software-switched data\nTotal bandwidth: 142 Mbps\nAverage pps: 4502\n\nWhat it means:\n- High-level multicast summary — total mroute entries, bandwidth,\n  packet rate.\n- \"hardware-switched\" entries are forwarded by ASIC (line-rate);\n  \"software-switched\" go through the CPU (limited rate).\n- Spike in software-switched count often means TCAM exhaustion\n  or unsupported (S, G) features."
           },
           {
             "cmd": "show ip pim neighbor",
@@ -17597,31 +17627,36 @@
             "cmd": "show ip pim interface",
             "desc": "PIM-enabled interfaces, mode, DR",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip pim interface\n\nInterface          Address       Mode       Nbr Count   Hello Intvl\nGigabitEthernet0/0 10.10.10.1    Sparse     2           30\nGigabitEthernet0/1 10.20.0.1     Sparse     0           30\nLoopback0          1.1.1.1       Sparse     0           30\n\nWhat it means:\n- All PIM-enabled interfaces with their PIM mode and neighbour\n  counts.\n- \"Mode Sparse\" : PIM-SM (most common). Other modes: Dense, SSM,\n  Bidir.\n- \"Nbr Count 0\" on a transit interface = no PIM neighbour formed —\n  check pim configuration on the peer.\n- \"Hello Intvl 30\" : PIM hellos every 30 sec (default). Lower for\n  faster failure detection; higher to reduce control-plane load."
           },
           {
             "cmd": "show ip pim rp",
             "desc": "PIM rendezvous-point assignments",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip pim rp\n\nGroup: 239.1.1.1, RP: 10.0.0.1, v2, uptime 02:14:21, expires 00:02:42\nGroup: 239.1.2.0/24, RP: 10.0.0.2, via Auto-RP, v2\n\nWhat it means:\n- Per-group → RP mapping. v2 = PIM version (current standard).\n- Three discovery mechanisms:\n  - Static : \"ip pim rp-address <ip>\" on every router.\n  - Auto-RP : Cisco-proprietary multicast announcements.\n  - BSR : standards-based (RFC 5059).\n- \"expires\" : countdown to next refresh; non-static methods\n  re-learn periodically."
           },
           {
             "cmd": "show ip igmp groups",
             "desc": "IGMP joined groups per interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip igmp groups\n\nIGMP Connected Group Membership\nGroup Address    Interface          Uptime    Expires    Last Reporter\n239.1.1.1        GigabitEthernet0/1 02:14:23  00:02:32   10.20.0.50\n224.0.0.13       GigabitEthernet0/0 1d12h     00:02:14   10.10.10.50\n224.0.0.5        GigabitEthernet0/0 1d12h     never      10.10.10.1 (local)\n\nWhat it means:\n- Per-segment list of multicast groups with active receivers.\n- \"Last Reporter\" : the most recent host to send an IGMP report\n  for this group on this interface.\n- 224.0.0.x are link-local (OSPF, RIP, etc.) — never forwarded\n  off-segment.\n- \"Expires never\" = group is locally generated (router itself)."
           },
           {
             "cmd": "show ip igmp snooping",
             "desc": "L2 IGMP snooping state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip igmp snooping\n\nGlobal IGMP Snooping configuration:\n-------------------------------------------\nIGMP snooping              : Enabled\nIGMPv3 snooping            : Enabled\nReport suppression         : Enabled\nTCN solicit query          : Disabled\nTCN flood query count      : 2\nRobustness variable        : 2\n\nVlan 10:\n--------\nIGMP snooping              : Enabled\nMulticast querier          : Enabled\nQuerier address            : 10.10.0.1\nIGMP groups learned        : 12\n\nWhat it means:\n- IGMP snooping prunes multicast on L2 ports — only ports with\n  active receivers get the traffic, instead of broadcast-flooding.\n- \"Multicast querier\" : a switch acts as the elected IGMP querier\n  on a VLAN that has no router.\n- \"Report suppression\" : sends only one IGMP report per group per\n  segment, reducing IGMP traffic on busy LANs."
           },
           {
             "cmd": "ip multicast-routing distributed",
             "desc": "Enable multicast routing globally",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip multicast-routing distributed\n\nR1# show ip mroute | head -3\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, ...\n\nWhat it means:\n- Globally enables IP multicast routing. Required before any PIM\n  or IGMP config takes effect.\n- \"distributed\" enables hardware acceleration on platforms that\n  support it (most modern Cisco gear).\n- After enabling, configure each interface with \"ip pim sparse-mode\"\n  (or other mode)."
           },
           {
             "cmd": "ip pim sparse-mode",
@@ -17633,55 +17668,64 @@
             "cmd": "ip pim rp-address 10.0.0.1",
             "desc": "Static PIM RP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip pim rp-address 10.0.0.1\n\nR1# show ip pim rp | include 10.0.0.1\nGroup: 224.0.0.0/4 → RP: 10.0.0.1 (static)\n\nWhat it means:\n- Statically configures the RP for ALL multicast groups (224/4).\n- Simplest RP discovery mechanism — works in small networks where\n  every router can be configured manually.\n- For larger networks, use Auto-RP or BSR for automatic discovery.\n- Add \"override\" to override Auto-RP / BSR with the static config."
           },
           {
             "cmd": "ip pim sparse-mode | ip pim dense-mode | ip pim bidirectional-mode | ip pim ssm",
             "desc": "Enable PIM Mode. — Configures the Protocol Independent Multicast (PIM) mode for multicast routing.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# Sparse Mode (most common):\nR1(config-if)# ip pim sparse-mode\n\n# Dense Mode (legacy, flood-and-prune):\nR1(config-if)# ip pim dense-mode\n\n# Bidirectional (one tree per group, no SPT):\nR1(config-if)# ip pim bidir-enable\nR1(config)# ip pim rp-address 10.0.0.1 bidir\n\n# Source-Specific Multicast (SSM, no RP needed):\nR1(config)# ip pim ssm range 232.0.0.0/8\n\nWhat it means:\n- Sparse-mode : pull model — only forwards to receivers that joined.\n- Dense-mode : push model — flood then prune. Deprecated, scales poorly.\n- Bidir : single tree per group with no SPT. Good for many-to-many\n  apps (financial trading).\n- SSM : channel-based (S, G) only. No RP needed; client must\n  specify both source and group (IGMPv3 / SSM-aware app)."
           },
           {
             "cmd": "ip igmp version {2 | 3}",
             "desc": "Set IGMP Version. — Defines whether to use IGMPv2 or IGMPv3 for group management.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/1\nR1(config-if)# ip igmp version 3\n\nR1# show ip igmp interface gigabitethernet 0/1 | include version\n  IGMP version is 3\n\nWhat it means:\n- v2 (default on most Cisco) : group-based — receiver joins a group.\n- v3 : channel-based — receiver joins (S, G) pairs (required for SSM).\n- All hosts on a segment must speak the same version; the lowest\n  version wins (a single v2 host forces the segment to v2)."
           },
           {
             "cmd": "ip mroute multicast-address interface-id",
             "desc": "Static MRoute Entry. — Manually programs a static multicast route entry (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip mroute 239.1.1.1 interface gigabitethernet 0/0\n\nR1# show ip mroute 239.1.1.1 | include incoming\n  Incoming interface: GigabitEthernet0/0  ← static override\n\nWhat it means:\n- Static mroute — overrides the unicast RIB for the named multicast\n  group.\n- Used to fix RPF (Reverse Path Forwarding) check failures when\n  unicast and multicast topologies diverge (asymmetric routing,\n  MPLS-VPN scenarios).\n- Without one, RPF uses the unicast RIB, which is usually fine."
           },
           {
             "cmd": "ip rpf-check interface-id",
             "desc": "Configure RPF Check. — Enables Reverse Path Forwarding checks to prevent loops in multicast traffic.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/0\nR1(config-if)# ip multicast rpf-check ingress\n\nR1# debug ip mpacket\n*Apr 1 12:00:01: IP-MPACKET: rcvd Gi0/0 src=10.99.0.5 dst=239.1.1.1 - RPF check passed\n\nWhat it means:\n- RPF check : verifies that incoming multicast came from the\n  expected upstream interface. Mismatched packets are dropped.\n- Drops show in \"show ip mroute count\" → \"RPF failures\".\n- Common cause of RPF failures: asymmetric routing or static\n  mroute / unicast routing inconsistency."
           },
           {
             "cmd": "ip pim rp-address rp-address [group-list]",
             "desc": "Static RP Configuration. — Defines the Rendezvous Point (RP) address for shared trees.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# access-list 10 permit 239.1.1.0 0.0.0.255\nR1(config)# ip pim rp-address 10.0.0.1 10\n\n# Now RP 10.0.0.1 only handles groups in 239.1.1.0/24:\nR1# show ip pim rp | head -3\nGroup: 239.1.1.5  RP: 10.0.0.1 (group-list 10)\n\nWhat it means:\n- \"group-list\" restricts the RP to specific multicast group ranges.\n- Allows different RPs to serve different sets of groups — useful\n  for tenant isolation or load distribution.\n- Without group-list, the RP serves ALL groups (224/4)."
           },
           {
             "cmd": "ip pim bsr-candidate router-id",
             "desc": "BSR Candidate Configuration. — Configures a router as a Bootstrap Router (BSR) candidate for dynamic RP discovery.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip pim bsr-candidate Loopback0 30\n\nR1# show ip pim bsr-router\nPIMv2 Bootstrap Router (BSR)\n   This system is the Bootstrap Router (BSR)\n   BSR address: 1.1.1.1 (?)\n   Uptime: 02:14:23, BSR Priority: 30, Hash mask length: 0\n\nWhat it means:\n- Configures this router as a BSR (Bootstrap Router) candidate.\n- BSR collects RP-set advertisements from candidate-RPs and\n  floods the consolidated RP→Group mapping to all PIM routers.\n- \"30\" = priority (higher wins among candidates). Hash mask length\n  controls RP load distribution.\n- Standards-based (RFC 5059); preferred over Cisco's Auto-RP."
           },
           {
             "cmd": "ip pim candidate-rp group-list rp-address",
             "desc": "Candidate RP Configuration. — Configures a router as a Candidate RP (C-RP) for specific group ranges.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# access-list 20 permit 239.1.0.0 0.0.255.255\nR1(config)# ip pim rp-candidate Loopback0 group-list 20 priority 10\n\nR1# show ip pim rp | include candidate\n1.1.1.1 (this router) is a candidate RP for groups 239.1.0.0/16, priority 10\n\nWhat it means:\n- Advertises this router as a candidate RP via BSR.\n- BSR collects candidate-RP advertisements and decides which\n  candidate handles which group range.\n- Lower priority wins (range 0-255). Same-priority candidates\n  use a hash to split groups."
           },
           {
             "cmd": "show ip mroute multicast-address",
             "desc": "View MRoute Table. — Displays the Multicast Routing Information Base (MRIB) entries.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip mroute 239.1.1.1\n\n(*, 239.1.1.1), 00:14:23/00:02:50, RP 10.0.0.1, flags: SC\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:14:23/00:02:50\n\n(10.99.0.5, 239.1.1.1), 00:00:14/00:02:46, flags: T\n  Incoming interface: GigabitEthernet0/0, RPF nbr 10.10.10.1\n  Outgoing interface list:\n    GigabitEthernet0/1, Forward/Sparse, 00:00:14/00:02:46\n\nWhat it means:\n- Filtered mroute view — only the (*, G) and (S, G) entries for\n  one specific group.\n- Use during incident response: \"is traffic for 239.1.1.1 actually\n  flowing through this router?\"\n- T flag in (S, G) = SPT switchover; receiver is now on the\n  shortest path tree (no longer via the RP)."
           }
         ],
         "NAT": [
@@ -17696,25 +17740,29 @@
             "cmd": "show ip nat statistics",
             "desc": "NAT counters: hits, misses, translations",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip nat statistics\n\nTotal active translations: 142 (5 static, 137 dynamic; 137 extended)\nOutside interfaces: GigabitEthernet0/0\nInside interfaces:  GigabitEthernet0/1, GigabitEthernet0/2\nHits: 245019  Misses: 12\nExpired translations: 4502\nDynamic mappings:\n  -- Inside Source\n  access-list 1 interface GigabitEthernet0/0 refcount 137\n\nWhat it means:\n- \"static\" : 1:1 translations (e.g. external-IP → internal-server).\n- \"dynamic\" / \"extended\" : NAT entries created on the fly per\n  (src-IP, src-port, proto) tuple — typical PAT/overload behaviour.\n- Hits / Misses : translations that matched vs ones that didn't —\n  Misses > 0 usually = traffic outside the NAT ACL.\n- \"refcount\" on the dynamic mapping = active sessions using that\n  pool entry; helps spot stuck translations."
           },
           {
             "cmd": "clear ip nat translation *",
             "desc": "Clear all NAT entries (testing)",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "R1# clear ip nat translation *\n\nR1# show ip nat translations | count any\n0\n\nWhat it means:\n- Wipes EVERY active translation. Existing flows reset (TCP RST or\n  silent timeout for UDP).\n- Use during emergency cleanup or after reconfiguring the inside-\n  source pool.\n- Surgical alternative: \"clear ip nat translation inside <local-ip>\n  <global-ip>\" for one entry only."
           },
           {
             "cmd": "ip nat inside source list 1 interface Gi0/0/1 overload",
             "desc": "PAT overload to outside interface",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# access-list 1 permit 10.0.0.0 0.255.255.255\nR1(config)# ip nat inside source list 1 interface GigabitEthernet0/0/1 overload\n\nR1# show ip nat translations | head\nPro Inside global         Inside local          Outside local         Outside global\ntcp 198.51.100.10:54321   10.0.1.5:54321        93.184.216.34:443     93.184.216.34:443\ntcp 198.51.100.10:54322   10.0.1.7:54322        93.184.216.34:443     93.184.216.34:443\n\nWhat it means:\n- Classic PAT: every inside host sharing the egress-interface IP\n  (here Gi0/0/1's address) for outbound traffic.\n- \"overload\" enables port-multiplexing — many internal hosts share\n  one external IP.\n- ACL 1 controls which sources are eligible. \"inside\" interfaces\n  must also be marked with \"ip nat inside\" and the egress with\n  \"ip nat outside\"."
           },
           {
             "cmd": "ip nat inside source static 10.0.0.10 198.51.100.10",
             "desc": "1:1 static NAT",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip nat inside source static 10.0.0.10 198.51.100.10\n\nR1# show ip nat translations\nPro Inside global   Inside local    Outside local   Outside global\n--- 198.51.100.10   10.0.0.10       ---             ---\n\nWhat it means:\n- 1:1 static mapping: traffic destined to 198.51.100.10 from outside\n  is forwarded to internal 10.0.0.10. Outbound from 10.0.0.10\n  reverses to 198.51.100.10.\n- Use for inbound services (web servers, mail relays) that need\n  a stable public IP.\n- Add \"extendable\" + \"no-alias\" for advanced VRF / multihoming\n  scenarios."
           }
         ],
         "DHCP / Services": [
@@ -17729,79 +17777,92 @@
             "cmd": "show ip dhcp server statistics",
             "desc": "DHCP server packet counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip dhcp server statistics\n\nMemory usage         8456\nAddress pools        2\nDatabase agents      0\nAutomatic bindings   142\nManual bindings      5\nExpired bindings     12\nMalformed messages   0\n\nMessage              Received  Sent\nDHCPDISCOVER         5430      0\nDHCPREQUEST          14523     0\nDHCPDECLINE          1         0\nDHCPRELEASE          421       0\nDHCPINFORM           120       0\nDHCPOFFER            0         5430\nDHCPACK              0         14523\nDHCPNAK              0         3\n\nWhat it means:\n- Per-message counters since last \"clear ip dhcp\" or boot.\n- DHCPNAK > 0 = clients trying to renew with a wrong IP (typically\n  after a subnet renumber or VRF change).\n- DHCPDECLINE > 0 = clients claim the offered IP is in use\n  (duplicate IP somewhere on the subnet).\n- \"Malformed messages\" should always be 0; spikes hint at attack\n  or buggy DHCP client."
           },
           {
             "cmd": "show ip dhcp pool",
             "desc": "Displays DHCP pool configuration and usage statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip dhcp pool\n\nPool DATA :\n Utilization mark (high/low)    : 100 / 0\n Subnet size (first/next)       : 0 / 0\n Total addresses                : 254\n Leased addresses               : 142\n Pending event                  : none\n 1 subnet is currently in the pool :\n Current index        IP address range                    Leased addresses\n 10.0.0.143           10.0.0.1   - 10.0.0.254              142\n\nWhat it means:\n- \"Total addresses\" : usable host addresses minus excluded ranges.\n- \"Leased addresses\" : currently in use. Compare against total to\n  watch for pool exhaustion.\n- \"Utilization mark high 100\" : fire syslog at 100% utilisation.\n  Lower (e.g. 80) for proactive warning."
           },
           {
             "cmd": "ip dhcp pool DATA\n network 10.0.0.0 255.255.255.0\n default-router 10.0.0.1\n dns-server 8.8.8.8",
             "desc": "Basic IOS DHCP pool",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip dhcp pool DATA\nR1(dhcp-config)# network 10.0.0.0 255.255.255.0\nR1(dhcp-config)# default-router 10.0.0.1\nR1(dhcp-config)# dns-server 8.8.8.8 1.1.1.1\nR1(dhcp-config)# domain-name corp.local\nR1(dhcp-config)# lease 7\n\nWhat it means:\n- Defines a DHCP scope on the router itself (no external server).\n- network : the subnet handed out (host mask = address range).\n- default-router : option 3 (gateway) sent to clients.\n- dns-server : option 6, can list multiple resolvers.\n- \"lease 7\" = 7-day lease (default 1 day). Add hh and mm parameters\n  for finer control: \"lease 1 12 0\" = 1 day 12 hours."
           },
           {
             "cmd": "ip dhcp excluded-address 10.0.0.1 10.0.0.10",
             "desc": "Reserve range from being handed out",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip dhcp excluded-address 10.0.0.1 10.0.0.10\nR1(config)# ip dhcp excluded-address 10.0.0.250 10.0.0.254\n\nR1# show ip dhcp pool DATA\n Total addresses             : 239    ← was 254, now 254 - 15 excluded\n\nWhat it means:\n- Reserves IPs for static use (gateways, printers, switches) so\n  DHCP doesn't hand them out.\n- Specify a single IP or a range (start end).\n- Excludes apply BEFORE the pool's network statement is parsed —\n  reservations stick across reboots."
           },
           {
             "cmd": "ip helper-address 10.99.0.10",
             "desc": "Forward broadcast DHCP to a server on another subnet",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface vlan 10\nR1(config-if)# ip helper-address 10.99.0.10\nR1(config-if)# ip helper-address 10.99.0.11\n\n# Client on VLAN 10 broadcasts DHCPDISCOVER:\n%DHCP-6-RELAY: relayed DHCPDISCOVER from 10.10.0.5 to 10.99.0.10\n\nWhat it means:\n- Converts client broadcast DHCP/BOOTP into unicast packets aimed\n  at the named server(s) — required when DHCP server is in a\n  different subnet from the clients.\n- Multiple helper-address commands send to multiple servers (most\n  enterprises configure 2 for HA).\n- Also relays other UDP-broadcast services (TFTP, NetBIOS, TACACS)\n  unless explicitly disabled with \"no ip forward-protocol udp\"."
           },
           {
             "cmd": "ip dhcp pool <name>",
             "desc": "Creates a DHCP pool and enters DHCP config mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip dhcp pool VOICE\nR1(dhcp-config)# network 10.20.0.0 255.255.255.0\nR1(dhcp-config)# default-router 10.20.0.1\nR1(dhcp-config)# option 150 ip 10.50.50.50\n\nWhat it means:\n- Generic syntax for creating a pool. Pool names are local-only\n  (not advertised to clients).\n- Multiple pools can coexist; the router picks the matching pool\n  based on the relayed/giaddr subnet.\n- Common pools: DATA / VOICE / GUEST with different option-150\n  TFTP servers per scope."
           },
           {
             "cmd": "network <ip> <mask>",
             "desc": "Specifies the subnet to serve DHCP addresses from",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(dhcp-config)# network 10.0.0.0 255.255.255.0\n\n# All IPs from 10.0.0.1 to 10.0.0.254 (minus any excluded ranges)\n# are now leasable.\n\nWhat it means:\n- Defines the subnet for this DHCP pool.\n- Can also use \"/24\" CIDR shorthand: \"network 10.0.0.0 /24\".\n- Use a /22 etc. for super-pools that span multiple VLANs (rare)."
           },
           {
             "cmd": "default-router <ip>",
             "desc": "Sets the default gateway advertised to DHCP clients",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(dhcp-config)# default-router 10.0.0.1\n\n# Clients receive DHCP option 3 = 10.0.0.1, set as their default\n# gateway.\n\nWhat it means:\n- Sets DHCP option 3 (router). Multiple gateways can be listed —\n  clients use the first reachable.\n- Most clients ignore secondary gateways unless configured to\n  rotate; primarily a backup."
           },
           {
             "cmd": "dns-server <ip1> <ip2>",
             "desc": "Sets up to two DNS servers advertised to DHCP clients",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(dhcp-config)# dns-server 8.8.8.8 1.1.1.1\n\n# Clients receive DHCP option 6 = 8.8.8.8, 1.1.1.1.\n\nWhat it means:\n- Sets DHCP option 6 (DNS). Up to 8 DNS servers can be listed,\n  but most clients only use the first 2.\n- Pair with \"domain-name corp.local\" to set the search suffix\n  (option 15)."
           },
           {
             "cmd": "lease <days> <hours> <mins>",
             "desc": "Sets the DHCP lease duration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(dhcp-config)# lease 7 0 0    ! 7 days\nR1(dhcp-config)# lease infinite ! reservation-style permanent\n\nWhat it means:\n- Lease duration in days/hours/minutes. Default is 1 day.\n- \"infinite\" = permanent lease (won't expire). Use cautiously —\n  consumes pool addresses forever.\n- Short leases (1-4 hours) for guest networks; long leases\n  (1-7 days) for internal corporate."
           },
           {
             "cmd": "ip dhcp excluded-address <start> <end>",
             "desc": "Reserves a range of IPs that DHCP will never assign",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip dhcp excluded-address 10.0.0.1 10.0.0.10\nR1(config)# ip dhcp excluded-address 10.0.0.250 10.0.0.254\n\nWhat it means:\n- Excludes a contiguous range. Single-IP form: \"ip dhcp\n  excluded-address 10.0.0.5\".\n- Apply BEFORE creating the pool — exclusions existing first\n  prevent any race where DHCP hands out a reserved IP momentarily."
           },
           {
             "cmd": "show ip dhcp conflict",
             "desc": "Lists IPs that caused address conflicts detected via ping",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip dhcp conflict\n\nIP address     Detection method   Detection time\n10.0.0.5       Ping               Wed May  1 09:00:00\n10.0.0.42      Gratuitous ARP     Wed May  1 09:14:22\n\nWhat it means:\n- IPs the DHCP server tried to lease but found in use (replied to\n  ping or gratuitous ARP).\n- These IPs are removed from the pool until you clear them via\n  \"clear ip dhcp conflict *\".\n- Spikes = a static device sneaked into the dynamic pool range —\n  add it to \"ip dhcp excluded-address\"."
           },
           {
             "cmd": "clear ip dhcp binding *",
             "desc": "Clears all active DHCP leases — use with caution on production",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear ip dhcp binding *\n\nR1# show ip dhcp binding\nBindings from all pools not associated with VRF:\nIP address          Client-ID/Hardware address    Lease expiration\n(none)\n\nWhat it means:\n- Wipes ALL active DHCP bindings. Clients lose their leases and\n  must re-DHCP on next renewal.\n- Disruptive — only run during planned maintenance.\n- Surgical version: \"clear ip dhcp binding <ip>\" for one entry."
           }
         ],
         "NTP / SNMP / Logging": [
@@ -17822,13 +17883,15 @@
             "cmd": "show snmp",
             "desc": "SNMP agent counters and uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show snmp\n\nChassis: FCW2245A0AB\nContact: noc@corp.local\nLocation: London-Rack-04\n0 SNMP packets input\n    0 Bad SNMP version errors\n    0 Unknown community name\n    0 Illegal operation for community name supplied\n    0 Encoding errors\n    0 Number of requested variables\n    0 Number of altered variables\n    0 Get-request PDUs\n    0 Get-next PDUs\n    0 Set-request PDUs\n\nSNMP logging: enabled\n    Logging to 10.50.50.50.162, 0/10, 0 sent, 0 dropped.\n\nWhat it means:\n- SNMP packet stats since boot. \"0 sent\" means no SNMP poller\n  has hit this device — verify the manager is configured.\n- \"Bad community\" / \"Illegal operation\" > 0 = unauthorised SNMP\n  attempts; tighten ACL or use SNMPv3.\n- \"Logging to <host>:162\" : trap destination + delivery success."
           },
           {
             "cmd": "show snmp engineID",
             "desc": "SNMPv3 engine ID",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show snmp engineID\n\nLocal SNMP engineID: 80000009030000C0FFEE1234\nRemote Engine ID                 IP-addr      Port\n80000009030000DEADBEEF5678       10.50.50.50  162\n\nWhat it means:\n- The engineID uniquely identifies an SNMPv3 entity. Local engineID\n  is generated from the chassis serial number on first boot.\n- Remote engineIDs are required for SNMPv3 authPriv trap delivery —\n  without them traps fail with \"engineID not found\".\n- Use \"snmp-server engineID remote <ip> <hex-id>\" to add a new\n  remote entry."
           },
           {
             "cmd": "show logging",
@@ -17841,67 +17904,78 @@
             "cmd": "ntp server 10.10.10.10 prefer",
             "desc": "Primary NTP server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp server 10.10.10.10 prefer\nR1(config)# ntp server 10.10.10.11\nR1(config)# ntp server time.nist.gov\n\nR1# show ntp associations\n address         ref clock         st   when   poll   reach\n*~10.10.10.10    .GPS.              1     12     64    377   ← prefer\n ~10.10.10.11    .GPS.              1     34     64    377\n ~129.6.15.28    .GPS.              1     45    128    377\n\nWhat it means:\n- \"prefer\" : NTP leans toward this peer when multiple have similar\n  quality. Doesn't override stratum-based selection; just breaks ties.\n- Configure 3+ peers for fault-tolerance (NTP needs ≥4 to detect\n  a falseticker mathematically).\n- ASN.1 dotted-quad = IP; FQDN works too (resolved via DNS at\n  config time)."
           },
           {
             "cmd": "ntp authenticate\nntp authentication-key 1 md5 <key>\nntp trusted-key 1",
             "desc": "Authenticated NTP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp authenticate\nR1(config)# ntp authentication-key 1 md5 SHARED-NTP-SECRET\nR1(config)# ntp trusted-key 1\nR1(config)# ntp server 10.10.10.10 key 1\n\nR1# show ntp associations detail | include auth\nsynchronized authenticated\n\nWhat it means:\n- 3-step authentication: enable auth subsystem, define a key,\n  trust it, then bind it to the peer with \"key N\".\n- MD5 is legacy; modern IOS XE supports SHA-1 / SHA-256 too.\n- Both ends must share the same key value AND key ID.\n- \"authenticated\" in show output confirms successful keyed sync."
           },
           {
             "cmd": "snmp-server community READONLY RO",
             "desc": "SNMPv2c read-only community (avoid in modern networks)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# snmp-server community READONLY RO 50\nR1(config)# access-list 50 permit host 10.50.50.50\n\n# Manager can now poll:\n$ snmpwalk -v 2c -c READONLY 10.10.10.10 sysUpTime\nSNMPv2-MIB::sysUpTime.0 = Timeticks: (12345678) 1 day, 10:17:36.78\n\nWhat it means:\n- \"RO\" = read-only access. Pair with ACL 50 to restrict source IPs.\n- Communities are sent in cleartext — use SNMPv3 for any production\n  network. v2c communities still common in lab / legacy environments.\n- \"RW\" exists but should rarely be used; if needed, restrict tightly."
           },
           {
             "cmd": "snmp-server group V3GROUP v3 priv read V3VIEW write V3VIEW\nsnmp-server view V3VIEW iso included\nsnmp-server user admin V3GROUP v3 auth sha <auth> priv aes 128 <priv>",
             "desc": "SNMPv3 read-write user",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# snmp-server view V3VIEW iso included\nR1(config)# snmp-server group V3GROUP v3 priv read V3VIEW write V3VIEW\nR1(config)# snmp-server user admin V3GROUP v3 auth sha AuthSecret2026 priv aes 128 PrivSecret2026\n\n# Manager can now poll with auth + privacy:\n$ snmpwalk -v 3 -l authPriv -u admin -a SHA -A AuthSecret2026 \\\n       -x AES -X PrivSecret2026 10.10.10.10 sysUpTime\n\nWhat it means:\n- Full SNMPv3 stack: view (what OIDs are visible) → group (access\n  rights) → user (credentials).\n- \"v3 priv\" = authPriv (auth + encryption). Other levels: noAuthNoPriv,\n  authNoPriv.\n- SHA + AES-128 = modern minimum; older boxes may default to MD5+DES.\n  Use SHA-256 + AES-256 where the IOS version supports it."
           },
           {
             "cmd": "logging host 10.50.50.50 transport tcp port 1514",
             "desc": "Send syslog to remote collector over TCP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# logging host 10.50.50.50 transport tcp port 1514\nR1(config)# logging trap informational\nR1(config)# logging origin-id hostname\n\nR1# show logging | include host\n   Logging to 10.50.50.50 on TCP port 1514, transport: tcp,\n   facility: local7, severity: informational\n\nWhat it means:\n- TCP transport (not the default UDP/514) gives reliable delivery\n  to syslog-NG / Splunk. Loss-less but adds back-pressure if the\n  collector is down.\n- \"trap informational\" : send severity 6 and below (info, notice,\n  warning, error, critical, alert, emergency).\n- \"origin-id hostname\" : prefix every message with the router\n  hostname — vital when multiple devices ship to one collector."
           },
           {
             "cmd": "logging buffered 65536 informational",
             "desc": "64K log buffer at informational severity",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# logging buffered 65536 informational\n\nR1# show logging | include Buffer\nBuffer logging: level informational, 65536 bytes\n                 0 messages logged, xml disabled, filtering disabled\n\nWhat it means:\n- Stores up to 65536 bytes of log messages in a ring buffer in\n  RAM. Read with \"show logging\".\n- Severity threshold \"informational\" = info(6) + notice(5) +\n  warning(4) + ... + emergency(0).\n- Buffer survives until reload — useful for post-mortem when no\n  external syslog is available."
           },
           {
             "cmd": "ntp server ip-address [prefer] [source interface-id]",
             "desc": "Configure a device as an NTP client with the IP address of the NTP server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp server 10.10.10.10 prefer source loopback0\n\nR1# show ntp associations | include 10.10.10.10\n*~10.10.10.10    .GPS.    1   12   64   377  24.521  0.142  0.221\n\nWhat it means:\n- \"source loopback0\" forces NTP packets to use loopback as the\n  source IP — symmetric reachability and cleaner ACLs on the\n  upstream peer.\n- \"prefer\" tilts the selection algorithm toward this peer.\n- Both flags optional; minimum form is \"ntp server <ip>\"."
           },
           {
             "cmd": "ntp master stratum-number",
             "desc": "Configure a device so that it can respond authoritatively to NTP requests when it does not have access to an atomic clock or an upstream NTP server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp master 5\n\nR1# show ntp status\nClock is unsynchronized, stratum 16  ← (was)\n... after 5 minutes ...\nClock is synchronized, stratum 5     ← internal master clock\n\nWhat it means:\n- Makes the router its own NTP master at the named stratum (here\n  5). Useful in lab / isolated networks with no external time source.\n- Stratum 1 is reserved for atomic-clock-backed sources; do NOT use\n  \"ntp master 1\" in production — confuses upstream peers.\n- Combine with \"ntp server <internet-ntp>\" so the local master falls\n  back to internet sync when reachable."
           },
           {
             "cmd": "ntp peer ip-address",
             "desc": "Configure the peering with another device with NTP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp peer 10.10.10.11\n\nR1# show ntp associations | include 10.10.10.11\n+~10.10.10.11    LOCL    8    23   64   377  1.214  -0.014  0.012\n\nWhat it means:\n- Symmetric peering between two NTP nodes — each sees the other\n  as a possible time source.\n- Use between two router redundant pair members so they remain\n  time-aligned even if external sources fail.\n- Asymmetric \"ntp server\" is more common; use \"peer\" only when\n  both sides should learn from each other."
           },
           {
             "cmd": "tracking",
             "desc": "Citation 1 (Chapter 15): Contains a section \"Use the Command Reference to Check Your Memory\" and specifically \"Table 15-5Command Reference\". This table lists tasks and command syntax for NTP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# track 1 ip route 10.99.0.0 255.255.255.0 reachability\nR1(config-track)# delay down 10 up 5\n\nR1# show track 1\nTrack 1\n  IP route 10.99.0.0 255.255.255.0 reachability\n  Reachability is Up\n  3 changes, last change 02:14:21\n\nWhat it means:\n- \"track\" objects monitor the state of an interface, route, IP SLA,\n  or list — used by HSRP, route preference, EEM and others.\n- \"delay down 10 up 5\" : flap-suppression. Wait 10 sec before\n  reporting Down; 5 sec before reporting Up.\n- Pair with \"standby track\" or \"ip route ... track\" for failover\n  triggers based on object state."
           },
           {
             "cmd": "ntp master",
             "desc": "Commands found: ntp server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp master   ! defaults to stratum 8\n\nR1# show ntp status | include stratum\nClock is synchronized, stratum 8\n\nWhat it means:\n- Stratum-8 internal master clock — the highest stratum that's\n  generally usable. Other peers will accept this router as a\n  fallback time source.\n- Same as \"ntp master 8\" with the stratum value omitted."
           },
           {
             "cmd": "show logging | include severity",
@@ -17914,49 +17988,57 @@
             "cmd": "ntp server <ip>",
             "desc": "Configures an NTP server for clock synchronisation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp server 10.10.10.10\n\nR1# show ntp associations | include 10.10.10.10\n ~10.10.10.10    .GPS.    1    12   64   377  24.521  0.142  0.221\n\nWhat it means:\n- Minimum syntax for adding an NTP source. Defaults: poll-interval\n  64 sec, no auth, source IP per egress route.\n- Sync state visible via \"show ntp status\" (synced / unsynced) once\n  reach reaches non-zero (initial probes succeed)."
           },
           {
             "cmd": "ntp server <ip> prefer",
             "desc": "Marks an NTP server as preferred",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp server 10.10.10.10 prefer\nR1(config)# ntp server 10.10.10.11\n\nR1# show ntp associations\n*~10.10.10.10    .GPS.    1   ...   ← preferred when quality is similar\n ~10.10.10.11    .GPS.    1   ...\n\nWhat it means:\n- \"prefer\" is a tie-breaker in the NTP selection algorithm — only\n  applied when multiple peers have roughly equivalent quality.\n- Doesn't force selection; if the preferred peer becomes unstable,\n  selection falls back to another candidate."
           },
           {
             "cmd": "ntp authenticate",
             "desc": "Enables NTP authentication (must also configure keys)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp authenticate\n\nR1# show running-config | include ntp authenticate\nntp authenticate\n\nWhat it means:\n- Enables the authentication subsystem. Required before any\n  \"ntp authentication-key\" / \"ntp trusted-key\" can take effect.\n- Once enabled, peers WITHOUT a key bound are still accepted UNLESS\n  you also use \"no ntp server <ip>\" + re-add with \"key N\"."
           },
           {
             "cmd": "ntp authentication-key <id> md5 <key>",
             "desc": "Creates an NTP authentication key",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp authentication-key 1 md5 SharedNtpSecret2026\n\nWhat it means:\n- Defines key #1 with MD5 digest. ID is referenced when binding to\n  peers (\"ntp server X.X.X.X key 1\").\n- Multiple keys can coexist (different IDs) for graceful rotation.\n- Modern alternative: \"ntp authentication-key 1 sha1 <key>\" or\n  \"sha2-256\" on supported platforms."
           },
           {
             "cmd": "ntp trusted-key <id>",
             "desc": "Marks an NTP key as trusted for peer authentication",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp trusted-key 1\n\nWhat it means:\n- Marks key 1 as trusted for INBOUND auth — packets signed with\n  this key will be accepted from peers.\n- Required step in the auth chain: define key → trust it → bind\n  to peer.\n- Can list multiple trusted keys, e.g. during a rotation overlap\n  period."
           },
           {
             "cmd": "ntp source <interface>",
             "desc": "Sets the source interface for NTP packets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ntp source loopback0\n\nR1# debug ntp packets\nNTP: src 10.99.0.10 (loopback0) → dst 10.10.10.10 (NTP server)\nNTP: rcv from 10.10.10.10 to 10.99.0.10 (loopback0)\n\nWhat it means:\n- Forces the source IP on outbound NTP packets to the named\n  interface (typically the loopback).\n- Cleaner upstream ACL — peers ACL just one /32 instead of every\n  potential egress IP.\n- Without this, source defaults to whichever interface routing\n  picks for the destination."
           },
           {
             "cmd": "clock timezone GMT 0",
             "desc": "Sets the system timezone",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# clock timezone GMT 0\nR1(config)# clock summer-time BST recurring last Sun Mar 1:00 last Sun Oct 2:00\n\nR1# show clock\n*11:22:18.123 GMT Wed May 1 2026\n\nWhat it means:\n- Sets the displayed timezone offset from UTC. Internal time is\n  always UTC; display only is affected.\n- \"summer-time recurring\" : automatic DST. Format: <abbr> recurring\n  <start-week> <start-dow> <start-month> <start-time> <end-...>.\n- Without this, timestamps display as UTC (\"UTC\")."
           },
           {
             "cmd": "clock set <hh:mm:ss> <day> <month> <year>",
             "desc": "Manually sets the hardware clock — use only when NTP is unavailable",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clock set 11:22:00 1 May 2026\n\nR1# show clock\n11:22:01.123 GMT Wed May 1 2026\n\nWhat it means:\n- Manually sets system time (privileged exec, NOT config mode).\n- Useful as a fallback when NTP isn't available — gets the clock\n  approximately correct so syslog timestamps make sense.\n- NTP overrides this once sync is established."
           }
         ],
         "Embedded Event Manager / Automation": [
@@ -17964,25 +18046,29 @@
             "cmd": "show event manager policy registered",
             "desc": "List EEM applets and TCL policies",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show event manager policy registered\n\nNo.  Type    Event Type      Trap  Time Registered           Name\n1    applet  syslog          Off   Wed May  1 09:00:00 2026  LOG-LINK-DOWN\n                              pattern {%LINK-3-UPDOWN}\n                              action 1.0 syslog msg \"Link state changed\"\n2    applet  timer cron      Off   Wed May  1 09:00:00 2026  AUTO-SAVE\n                              cron entry: \"0 4 * * *\"\n                              action 1.0 cli command \"enable\"\n                              action 2.0 cli command \"write memory\"\n\nWhat it means:\n- All registered EEM applets and policies. Each applet has an event\n  trigger (syslog pattern, timer cron, snmp trap, etc.) and a list\n  of numbered actions executed when fired.\n- \"Trap Off\" = applet does not also fire an SNMP trap on activation.\n- Useful pre-flight check before relying on automation in production."
           },
           {
             "cmd": "show event manager statistics",
             "desc": "EEM counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show event manager statistics\n\nEvent Manager Policy Statistics:\nevent server status     : Active\nqueue size              : 64\nmatched events          : 124\nrunning policies        : 0\nprocessed policies      : 124\nqueued events           : 0\n\nPer-policy:\nLOG-LINK-DOWN  matched 23  ran 23  errors 0  avg-time 12 ms\nAUTO-SAVE      matched 7   ran 7   errors 0  avg-time 240 ms\n\nWhat it means:\n- Per-applet match / run counters with average runtime and error\n  count.\n- \"errors > 0\" warrants drilling into \"show event manager history\n  events\" for the failure detail.\n- \"queued events\" should normally be 0 — sustained > 0 means EEM\n  can't keep up with event rate."
           },
           {
             "cmd": "event manager applet LOG-LINK-DOWN\n event syslog pattern \"%LINK-3-UPDOWN\"\n action 1.0 syslog msg \"Link state changed\"",
             "desc": "EEM applet that fires on syslog match",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# event manager applet LOG-LINK-DOWN\nR1(config-applet)# event syslog pattern \"%LINK-3-UPDOWN\"\nR1(config-applet)# action 1.0 syslog msg \"Link state changed\"\n\n# When an interface flaps:\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down\n%HA_EM-6-LOG: LOG-LINK-DOWN: Link state changed\n\nWhat it means:\n- Triggers when ANY syslog message matches the pattern\n  \"%LINK-3-UPDOWN\" (the canonical interface-state-change message).\n- Action 1.0 emits a follow-on syslog with the custom text — useful\n  for operational dashboards keying off a specific phrase.\n- Pattern is regex; escape % literally with %%. Common variations:\n  \"%LINK-3-UPDOWN.*GigabitEthernet0/0\" to scope to one port."
           },
           {
             "cmd": "event manager applet AUTO-SAVE\n event timer cron name daily cron-entry \"0 4 * * *\"\n action 1.0 cli command \"enable\"\n action 2.0 cli command \"write memory\"",
             "desc": "Daily auto-save at 04:00",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# event manager applet AUTO-SAVE\nR1(config-applet)# event timer cron name daily cron-entry \"0 4 * * *\"\nR1(config-applet)# action 1.0 cli command \"enable\"\nR1(config-applet)# action 2.0 cli command \"write memory\"\n\n# Every day at 04:00 router-local time:\n%HA_EM-6-LOG: AUTO-SAVE: action 2.0 wrote running-config to NVRAM\n\nWhat it means:\n- cron-entry \"0 4 * * *\" : minute=0 hour=4 = every day at 04:00\n  router local time.\n- Sequential CLI actions — applet enters enable mode, then runs\n  \"write memory\" to persist running config to NVRAM.\n- Common pattern: backup to network filesystem nightly, or\n  alert-on-CPU + capture diagnostics."
           }
         ],
         "Diagnostics": [
@@ -17990,19 +18076,22 @@
             "cmd": "ping 8.8.8.8 source loopback0",
             "desc": "Sourced ping",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# ping 8.8.8.8 source loopback0\n\nType escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\nPacket sent with a source address of 1.1.1.1\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 12/15/24 ms\n\nWhat it means:\n- Forces source IP = loopback0 instead of the egress interface IP.\n- Useful when:\n  - testing return-path routing (does upstream reach the loopback?)\n  - the destination ACL only permits the loopback /32\n- \"Packet sent with a source address of 1.1.1.1\" line confirms\n  the source IP that will appear on the wire."
           },
           {
             "cmd": "ping 8.8.8.8 size 1500 df-bit count 5",
             "desc": "Path-MTU test",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# ping 8.8.8.8 size 1500 df-bit count 5\n\nType escape sequence to abort.\nSending 5, 1500-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\nPacket sent with the DF bit set\n.....\nSuccess rate is 0 percent (0/5)\n\n# Retry with smaller MTU:\nR1# ping 8.8.8.8 size 1400 df-bit count 5\nSending 5, 1400-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)\n\nWhat it means:\n- Path MTU discovery technique. df-bit (Don't Fragment) prevents\n  intermediate routers from fragmenting the packet.\n- 1500 fails / 1400 succeeds = path MTU is between 1400 and 1499.\n  Typical cause: MPLS / GRE / VPN tunnel overhead.\n- Some intermediate routers drop ICMP Frag Needed messages — this\n  is the most common reason for hidden MTU bugs."
           },
           {
             "cmd": "traceroute 8.8.8.8 source loopback0",
             "desc": "Sourced traceroute",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# traceroute 8.8.8.8 source loopback0\n\nType escape sequence to abort.\nTracing the route to 8.8.8.8 (source: 1.1.1.1)\n  1 10.10.10.1   1 ms 1 ms 1 ms\n  2 198.51.100.1 4 ms 4 ms 4 ms\n  3 *  *  *\n  4 google-edge.bb.net (74.125.1.5) 12 ms 12 ms 12 ms\n  5 8.8.8.8 (8.8.8.8) 13 ms 13 ms 13 ms\n\nWhat it means:\n- Like ping, \"source loopback0\" forces the source IP in TTL-probing\n  packets.\n- \"* * *\" rows : router didn't reply (often blocks ICMP TTL-Exceeded).\n  Not a problem unless the trace stops there entirely.\n- Use for confirming asymmetric routing or pinpointing where loss\n  starts."
           },
           {
             "cmd": "show ip arp",
@@ -18015,7 +18104,8 @@
             "cmd": "show ip arp <ip>",
             "desc": "ARP entry for one IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip arp 10.10.10.50\n\nProtocol  Address      Age  Hardware Addr     Type   Interface\nInternet  10.10.10.50  142  001a.1e11.2233    ARPA   GigabitEthernet0/0\n\nWhat it means:\n- Single-IP ARP lookup. Confirms L2-resolution to the named host.\n- Age (sec) = time since last refresh. Default ARP timeout is 4 hours.\n- Type ARPA = standard Ethernet ARP. Other types: Cisco HDLC, X.25,\n  Frame Relay (legacy).\n- Missing entry = silent failure to resolve. Try ping to refresh."
           },
           {
             "cmd": "show cdp neighbors detail",
@@ -18035,31 +18125,36 @@
             "cmd": "monitor capture CAP interface Gi1/0/1 both match any buffer size 10 limit pps 1000",
             "desc": "EPC capture on an interface",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# monitor capture CAP interface gi1/0/1 both match any buffer size 10 limit pps 1000\nR1# monitor capture CAP start\nR1# show monitor capture CAP\n\nStatus Information for Capture CAP\n  Target Type:\n    Interface: gi1/0/1, Direction: BOTH\n    Status: Active\n    Filter Details: Capture all packets\n    Buffer Details: 10 MB, capture using policy buffer\n    Limits:\n      pps: 1000\n\nWhat it means:\n- EPC (Embedded Packet Capture) on gi1/0/1.\n- \"match any\" : capture all packets. Use ACL form for filtering:\n  \"match access-list 100\".\n- \"limit pps 1000\" : stops capture at 1000 packets per second to\n  avoid saturating the buffer.\n- 10 MB ring buffer; oldest packets overwritten when full."
           },
           {
             "cmd": "monitor capture CAP start",
             "desc": "Start the capture",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# monitor capture CAP start\n\nStarted capture point: CAP\n\nR1# show monitor capture CAP buffer brief\nBuffer state: Capturing\nPackets captured: 142\nBuffer size: 10 MB\n\nWhat it means:\n- Activates a previously-defined capture point.\n- \"buffer state: Capturing\" confirms the capture is live.\n- Run \"stop\" command before viewing the buffer or exporting."
           },
           {
             "cmd": "monitor capture CAP stop",
             "desc": "Stop the capture",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# monitor capture CAP stop\n\nStopped capture point: CAP\n\nR1# show monitor capture CAP buffer brief\nBuffer state: Stopped\nPackets captured: 4,502\nBytes captured: 6,402,341\n\nWhat it means:\n- Stops capture; the buffer is now safe to read or export.\n- Buffer contents persist until \"monitor capture CAP clear\" or\n  re-start.\n- Always stop before \"show monitor capture CAP buffer detailed\"\n  to avoid impacting the running capture."
           },
           {
             "cmd": "monitor capture CAP export flash:cap.pcap",
             "desc": "Export capture to flash",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# monitor capture CAP export flash:cap.pcap\n\nExporting capture to flash:cap.pcap (4,502 packets) ...\nDone. 6.4 MB written.\n\nR1# dir flash: | include cap.pcap\n   24  -rw-      6402341  May  1 2026 11:22:18 +00:00  cap.pcap\n\nWhat it means:\n- Writes the captured packets out as a standard pcap file.\n- scp / tftp the file off the router to read in Wireshark.\n- Same format as tcpdump output — fully cross-tool compatible."
           },
           {
             "cmd": "show platform hardware fed switch active fwd-asic resource tcam utilization",
             "desc": "TCAM utilisation on Cat 9k IOS-XE",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show platform hardware fed switch active fwd-asic resource tcam utilization\n\nResource              Total       Used        %Used   Avail\nACL TCAM (input)      1024        342         33%     682\nACL TCAM (output)     1024        145         14%     879\nQoS TCAM              512         88          17%     424\nNetFlow Sampler       64          12          18%     52\nMac TCAM              16384       2042        12%     14342\n\nWhat it means:\n- Hardware TCAM utilisation per resource class.\n- \"Avail\" running low (>80% used) = configure simpler ACLs / QoS\n  policies, or scale to a larger platform.\n- ACL TCAM is the most-watched resource on Catalyst — exhaustion\n  causes ACLs to fall back to software (slow path)."
           },
           {
             "cmd": "debug ip ospf adj",
@@ -18071,19 +18166,22 @@
             "cmd": "undebug all",
             "desc": "Disables all active debug sessions immediately",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# undebug all\n\nAll possible debugging has been turned off\n\nR1# show debug\n\n(no output)\n\nWhat it means:\n- Turns off ALL active debug commands at once.\n- Defensive practice: every debug session should end with this\n  command. Otherwise a forgotten debug at scale can crash the\n  CPU.\n- Per-feature off: \"no debug ip ospf adj\"."
           },
           {
             "cmd": "track object-number interface interface-id line-protocol",
             "desc": "Configure the tracking of an interface’s line protocol state",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# track 10 interface GigabitEthernet0/1 line-protocol\n\nR1# show track 10\nTrack 10\n  Interface GigabitEthernet0/1 line-protocol\n  Line protocol is Up\n  1 change, last change 02:14:21\n\nWhat it means:\n- Object 10 follows the line-protocol of Gi0/1. Up = data-link\n  protocol up; Down = interface admin down OR line protocol down.\n- Used by HSRP, route preference, IP SLA — when the tracked object\n  goes down, the consumer takes its action (lower HSRP priority,\n  remove static route, etc.)."
           },
           {
             "cmd": "track object-number ip route route/prefix-length reachability",
             "desc": "Configure a device to track the installation of a route in the routing table",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# track 20 ip route 10.99.0.0 255.255.255.0 reachability\n\nR1# show track 20\nTrack 20\n  IP route 10.99.0.0 255.255.255.0 reachability\n  Reachability is Up\n  1 change, last change 02:14:21\n\nR1(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.1 track 20\n\nWhat it means:\n- Object 20 watches whether 10.99.0.0/24 is reachable in the\n  routing table.\n- Combined with \"ip route ... track 20\" : the static default route\n  is installed only when the tracked object is reachable.\n- Common pattern: install default via ISP-A only when ISP-A's\n  loopback (or some upstream prefix) is reachable."
           },
           {
             "cmd": "ping <IP_ADDRESS>",
@@ -18096,25 +18194,29 @@
             "cmd": "ping <ip>",
             "desc": "ICMP ping test sourced from the switch management IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# ping 10.10.10.50\n\nType escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 10.10.10.50, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 1/2/4 ms\n\nWhat it means:\n- Default ping: 5 packets, 100 bytes, 2-second timeout.\n- \"!\" = success, \".\" = timeout, \"U\" = unreachable, \"M\" = MTU exceeded.\n- Min/avg/max latency in ms — sudden jumps in max indicate jitter\n  or queue-depth issues somewhere in the path."
           },
           {
             "cmd": "ping <ip> source <interface>",
             "desc": "Ping sourced from a specific interface or IP address",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# ping 10.99.0.5 source loopback0\n\nType escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 10.99.0.5, timeout is 2 seconds:\nPacket sent with a source address of 1.1.1.1\n!!!!!\nSuccess rate is 100 percent (5/5)\n\nWhat it means:\n- Same as basic ping but uses the named interface's IP as the\n  source.\n- Use to confirm specific source-IP reachability (e.g. tunnel\n  endpoint loopback can ping the peer via the underlay)."
           },
           {
             "cmd": "traceroute <ip>",
             "desc": "Traces the network path hop-by-hop to a destination IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# traceroute 8.8.8.8\n\nTracing the route to 8.8.8.8\n\n  1 10.10.10.1                       1 ms 1 ms 1 ms\n  2 edge-rtr.corp.local (10.0.0.1)   1 ms 1 ms 1 ms\n  3 isp-pe.global.net (203.0.113.1)  4 ms 4 ms 4 ms\n  4 *  *  *\n  5 google-edge.bb.net (74.125.1.5)  12 ms 12 ms 12 ms\n  6 8.8.8.8                          13 ms 13 ms 13 ms\n\nWhat it means:\n- TTL-probing trace. Three RTTs per hop = three probes.\n- \"* * *\" : router didn't reply. Common when a firewall blocks\n  ICMP TTL-Exceeded — usually not a problem unless trace stops\n  entirely there.\n- Use for confirming path through transit providers and detecting\n  asymmetric routing."
           },
           {
             "cmd": "terminal monitor",
             "desc": "Sends syslog and debug output to the current SSH or Telnet session",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# terminal monitor\n\n# Now log messages and \"debug\" output appear on this VTY session:\nR1#\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n\nR1# terminal no monitor   ! to stop\n\nWhat it means:\n- Enables real-time syslog output to your current SSH/console\n  session. Required to see debug output on a VTY (telnet/SSH)\n  session — console gets it by default.\n- ALWAYS run \"terminal no monitor\" before disconnecting to avoid\n  flooding the next session that connects."
           },
           {
             "cmd": "show logging",
@@ -18133,25 +18235,29 @@
             "cmd": "clear arp-cache",
             "desc": "Clears all entries from the ARP table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear arp-cache\n\nR1# show ip arp | count any\n0  ← all dynamic entries cleared\n# (After traffic resumes, table re-populates)\n\nWhat it means:\n- Flushes the entire dynamic ARP table.\n- Static entries are preserved.\n- Briefly disruptive — first packet to each destination triggers\n  fresh ARP request. Use after a topology change (gateway move) or\n  to recover from poisoned ARP."
           },
           {
             "cmd": "clear mac address-table dynamic",
             "desc": "Clears all dynamically learned MAC address entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# clear mac address-table dynamic\n\nSwitch# show mac address-table count\nTotal Mac Addresses for this criterion: 0   ← cleared\n\nWhat it means:\n- Wipes dynamic MAC entries from the L2 forwarding table.\n- Static / sticky entries preserved.\n- Use after significant topology change (port swap, switch\n  failover) to clear stale L2 paths.\n- The table re-populates automatically as traffic flows."
           },
           {
             "cmd": "show interface <name> counters errors",
             "desc": "Shows error counters for an interface: CRC, runts, giants, input/output errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interface gi1/0/1 counters errors\n\nPort      Align-Err  FCS-Err  Xmit-Err  Rcv-Err  UnderSize  OutDiscards\nGi1/0/1   0          12       0         12       0          0\n\nPort      Single-Col  Multi-Col  Late-Col  Excess-Col  Carri-Sen  Runts  Giants\nGi1/0/1   0           0          0         0           0          0      0\n\nWhat it means:\n- Per-port error counters.\n- FCS-Err / Align-Err > 0 = physical-layer errors. Replace cable,\n  swap port, or check duplex mismatch.\n- Late-Col / Excess-Col > 0 = duplex mismatch (one side full, one\n  half) or CSMA/CD problems on a hub-connected segment.\n- Runts / Giants : packets shorter/longer than expected — usually\n  cabling/transceiver issues."
           },
           {
             "cmd": "test cable-diagnostics tdr interface <name>",
             "desc": "Runs TDR cable diagnostics to detect cable faults and measure length",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# test cable-diagnostics tdr interface gi1/0/1\n\nTDR test started on interface Gi1/0/1\nA TDR test can take a few seconds to run. Wait...\nTDR test complete.\nPair Status   Length(meters)\nA    Pair OK  10\nB    Pair OK  10\nC    Pair OK  10\nD    Pair OK  10\n\nWhat it means:\n- Time-Domain Reflectometry — sends a pulse down each twisted pair\n  and measures reflections.\n- \"Pair OK\" + length = healthy cable. Other statuses:\n  - Open : break in the cable at the reported length.\n  - Short : two pairs shorted together.\n  - Impedance Mismatch : connector or transceiver issue.\n- Useful for diagnosing physical-layer problems before swapping\n  out hardware."
           }
         ],
         "Config Management": [
@@ -18173,13 +18279,15 @@
             "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg",
             "desc": "Backup config to TFTP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# copy running-config tftp://10.50.50.50/R1-router.cfg\n\nAddress or name of remote host [10.50.50.50]?\nDestination filename [R1-router.cfg]?\n!!!! [OK - 24521 bytes]\n\n24521 bytes copied in 1.234 secs (19872 bytes/sec)\n\nWhat it means:\n- Backs up running-config to a TFTP server. UDP/69 traffic, no\n  authentication — TFTP server should be on a trusted segment.\n- Filename embedded in URL keeps the upload deterministic.\n- Compare with \"scp\" form (encrypted, authenticated):\n    copy running-config scp://user@10.50.50.50/R1-router.cfg"
           },
           {
             "cmd": "archive\n path flash:archive-\n maximum 14\n write-memory\n time-period 1440",
             "desc": "Auto-archive config every 24h, keep 14",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# archive\nR1(config-archive)# path flash:archive-\nR1(config-archive)# maximum 14\nR1(config-archive)# write-memory\nR1(config-archive)# time-period 1440\n\nR1# show archive\nThe maximum archive configurations allowed is 14.\nArchive #  Name\n   1       flash:archive-1\n   ...\n\nWhat it means:\n- Enables config archiving with a ring of 14 files.\n- \"path flash:archive-\" : files named archive-1 ... archive-14 in\n  flash.\n- \"write-memory\" : also archive every time someone runs\n  \"write memory\" (capture explicit save events).\n- \"time-period 1440\" : take a snapshot every 1440 minutes (24h).\n- Combine with \"configure replace flash:archive-N force\" for\n  rollbacks."
           },
           {
             "cmd": "show archive",
@@ -18191,19 +18299,22 @@
             "cmd": "configure replace flash:archive-1",
             "desc": "Atomic rollback to a saved config",
             "type": "config",
-            "flagged": true
+            "flagged": true,
+            "example": "R1# configure replace flash:archive-1\n\nThis will apply all necessary additions and deletions to replace\nthe current running configuration with the contents of the\nspecified configuration file. Proceed? [y/n] y\n\nTotal number of passes: 1\nRollback Done\n\nR1# show running-config | head -3\n! ROLLBACK\n! Last configuration change at 09:00:00 GMT Wed May 1 2026\n\nWhat it means:\n- Atomically rolls running-config back to a saved archive.\n- Without \"force\", prompts for confirmation.\n- Computes a diff and applies the minimum changes needed —\n  efficient on large configs."
           },
           {
             "cmd": "reload in 5",
             "desc": "Schedule a reload in 5 minutes",
             "type": "config",
-            "flagged": true
+            "flagged": true,
+            "example": "R1# reload in 5\n\nReload scheduled for 11:27:18 GMT Wed May 1 2026 (in 5 minutes) by admin\nReload reason: scheduled maintenance\n\nR1# show reload\nReload scheduled in 4 minutes and 48 seconds by admin\n\nWhat it means:\n- Schedules a reload N minutes in the future. Common safety net\n  for remote changes — if a config breaks management access, the\n  device reboots back to startup-config.\n- Cancel before the timer fires with \"reload cancel\".\n- After successful changes, run \"reload cancel\" + \"write memory\"."
           },
           {
             "cmd": "reload cancel",
             "desc": "Cancels a previously scheduled reload",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# reload cancel\n\n%STORE-5-RELOAD_CANCELLED: Reload cancelled\n\nR1# show reload\nNo reload is scheduled.\n\nWhat it means:\n- Cancels a previously-scheduled reload.\n- Always runs after successful change verification when using\n  \"reload in N\" as a safety net.\n- Privileged exec command (not config mode)."
           },
           {
             "cmd": "switch 3 renumber 2",
@@ -18216,43 +18327,50 @@
             "cmd": "write erase",
             "desc": "Erases the startup config — factory reset takes effect on next reload",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# write erase\n\nErasing the nvram filesystem will remove all configuration files!\nContinue? [confirm]\n[OK]\nErase of nvram: complete\n\nR1# reload\nProceed with reload? [confirm]\n\nWhat it means:\n- Wipes startup-config from NVRAM. Running-config is unaffected.\n- Pair with \"reload\" for a factory-default boot.\n- DESTRUCTIVE — only run when intentionally rebuilding the device."
           },
           {
             "cmd": "reload",
             "desc": "Reboots the switch and loads the startup configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# reload\n\nSave the running config? [yes/no]: yes\nBuilding configuration...\n[OK]\nProceed with reload? [confirm]\n\n%SYS-5-RELOAD: Reload requested by admin. Reload Reason: Reload Command.\n\nWhat it means:\n- Reboots the router. Prompts to save running-config first.\n- After \"yes\" + confirm, the box reloads and reads startup-config\n  on boot.\n- Disruptive — connections drop until reload completes (typically\n  3-10 minutes for IOS XE)."
           },
           {
             "cmd": "reload in <minutes>",
             "desc": "Schedules an automatic reload after the specified number of minutes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# reload in 30\n\nReload scheduled for 12:00:00 GMT Wed May 1 2026 (in 30 minutes) by admin\n\nWhat it means:\n- Same as \"reload in 5\" but with custom minutes value.\n- Common values: 5 (quick safety net), 30 (allow time for testing),\n  60 (overnight maintenance window).\n- Beyond 60 min, prefer \"reload at HH:MM\" for absolute time."
           },
           {
             "cmd": "copy running-config tftp:",
             "desc": "Backs up the running config to a TFTP server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# copy running-config tftp:\n\nAddress or name of remote host []? 10.50.50.50\nDestination filename [r1-confg]? R1-2026-05-01.cfg\n!!!! [OK - 24521 bytes]\n\n24521 bytes copied in 1.234 secs\n\nWhat it means:\n- Interactive form — prompts for TFTP server IP and filename.\n- More common in scripted environments to use the URL form\n  (specifies destination inline)."
           },
           {
             "cmd": "copy tftp: running-config",
             "desc": "Restores a config from a TFTP server into running config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# copy tftp: running-config\n\nAddress or name of remote host []? 10.50.50.50\nSource filename []? R1-restore.cfg\nDestination filename [running-config]?\n!!!! [OK - 24521 bytes]\n\n%System running config is being modified...\n\nWhat it means:\n- MERGES the named TFTP file into running-config (does NOT replace).\n- Useful for adding chunks of config (e.g. a new VLAN block or\n  ACL).\n- For full replacement, use \"configure replace\" (atomic)."
           },
           {
             "cmd": "archive log config",
             "desc": "Enables configuration change logging to the archive",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# archive\nR1(config-archive)# log config\nR1(config-archive-log-cfg)# logging enable\nR1(config-archive-log-cfg)# logging size 200\nR1(config-archive-log-cfg)# notify syslog\n\nR1# show archive log config all\nidx  sess           user@line       Logged command\n1    1   admin@vty0  | hostname R1\n2    1   admin@vty0  | interface gi0/0\n3    1   admin@vty0  | ip address 10.10.10.1 255.255.255.0\n\nWhat it means:\n- Records every config-mode command in a per-session log.\n- \"size 200\" : keep last 200 entries.\n- \"notify syslog\" : also fire a syslog message for each command —\n  useful for SIEM ingestion.\n- Forensic audit trail of who changed what when."
           },
           {
             "cmd": "show archive log config all",
             "desc": "Displays the full history of configuration changes with timestamps and user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show archive log config all\n\nidx  sess  user@line     Logged command\n1    1    admin@vty0    | enable\n2    1    admin@vty0    | configure terminal\n3    1    admin@vty0    | interface gi0/1\n4    1    admin@vty0    | ip address 10.20.0.1 255.255.255.0\n5    1    admin@vty0    | no shutdown\n6    1    admin@vty0    | end\n7    1    admin@vty0    | write memory\n\nWhat it means:\n- Full chronological log of all config-mode commands across all\n  user sessions.\n- \"sess\" groups commands within a single config session — can\n  reconstruct exactly what one operator did from start to finish.\n- Combine with \"show clock\" + admin notebook for change-management\n  audit."
           }
         ],
         "OSPF": [
