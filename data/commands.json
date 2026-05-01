@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T18:44:20.568Z",
+  "updatedAt": "2026-05-01T20:04:28.055Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -7380,857 +7380,6 @@
         ]
       },
       "group": "Linux / Unix"
-    },
-    "cisco": {
-      "label": "Cisco IOS Switch",
-      "badge": "badge-sw",
-      "short": "Cisco IOS",
-      "sections": {
-        "Show & Status": [
-          {
-            "cmd": "show version",
-            "desc": "IOS version, uptime, hardware model, memory, flash storage",
-            "type": "show",
-            "flagged": false,
-            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
-          },
-          {
-            "cmd": "show running-config",
-            "desc": "Display the current active running configuration",
-            "type": "show",
-            "flagged": false,
-            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
-          },
-          {
-            "cmd": "show startup-config",
-            "desc": "Display the saved startup configuration from NVRAM",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show interfaces",
-            "desc": "Status and statistics for all interfaces",
-            "type": "show",
-            "flagged": false,
-            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
-          },
-          {
-            "cmd": "show interfaces status",
-            "desc": "Concise table: connected state, VLAN assignment, speed, duplex",
-            "type": "show",
-            "flagged": false,
-            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
-          },
-          {
-            "cmd": "show ip interface brief",
-            "desc": "Summary of all interfaces: IP, method, status, protocol state",
-            "type": "show",
-            "flagged": false,
-            "example": "Interface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     unassigned      YES NVRAM  administratively down down\nGigabitEthernet0/1     10.0.0.1        YES NVRAM  up                    up\nGigabitEthernet0/2     10.10.10.1      YES NVRAM  up                    up\nLoopback0              1.1.1.1         YES NVRAM  up                    up\nVlan1                  unassigned      YES NVRAM  administratively down down\nVlan10                 192.168.10.1    YES NVRAM  up                    up"
-          },
-          {
-            "cmd": "show ip route",
-            "desc": "Full routing table: connected, static, and dynamic routes",
-            "type": "show",
-            "flagged": false,
-            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
-          },
-          {
-            "cmd": "show arp",
-            "desc": "ARP cache: IP to MAC address mappings and age",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show mac address-table",
-            "desc": "MAC address table: learned addresses, VLANs, and ports",
-            "type": "show",
-            "flagged": false,
-            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
-          },
-          {
-            "cmd": "show vlan brief",
-            "desc": "Condensed VLAN summary: IDs, names, status, and assigned ports",
-            "type": "show",
-            "flagged": false,
-            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
-          },
-          {
-            "cmd": "show spanning-tree",
-            "desc": "STP state for all VLANs: root bridge, port states, timers",
-            "type": "show",
-            "flagged": false,
-            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
-          },
-          {
-            "cmd": "show spanning-tree vlan <id>",
-            "desc": "STP state for a specific VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show cdp neighbors",
-            "desc": "Cisco Discovery Protocol neighbours summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show cdp neighbors detail",
-            "desc": "Detailed CDP neighbour info including platform and IP addresses",
-            "type": "show",
-            "flagged": false,
-            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
-          },
-          {
-            "cmd": "show lldp neighbors",
-            "desc": "LLDP neighbours summary",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show etherchannel summary",
-            "desc": "Port-channel/EtherChannel group status and member ports",
-            "type": "show",
-            "flagged": false,
-            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
-          },
-          {
-            "cmd": "show ip ospf neighbor",
-            "desc": "OSPF neighbour adjacency table and states",
-            "type": "show",
-            "flagged": false,
-            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
-          },
-          {
-            "cmd": "show ip bgp summary",
-            "desc": "BGP peer summary: neighbour state and prefixes received",
-            "type": "show",
-            "flagged": false,
-            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
-          },
-          {
-            "cmd": "show processes cpu",
-            "desc": "CPU utilisation sorted by process",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show processes memory",
-            "desc": "Memory utilisation sorted by process",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show environment all",
-            "desc": "Fan, temperature, and power supply status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show inventory",
-            "desc": "Hardware inventory: chassis, modules, SFPs with PID and serial numbers",
-            "type": "show",
-            "flagged": false,
-            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
-          },
-          {
-            "cmd": "show platform tcam utilization",
-            "desc": "Shows TCAM (hardware table) utilisation for ACLs, routes, MACs",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "VLAN Configuration": [
-          {
-            "cmd": "vlan <id>",
-            "desc": "Creates a VLAN and enters VLAN config mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "name <vlan-name>",
-            "desc": "Assigns a name to the current VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "no vlan <id>",
-            "desc": "Deletes the specified VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "interface vlan <id>",
-            "desc": "Creates or enters the SVI (Switched Virtual Interface) for a VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip address <ip> <mask>",
-            "desc": "Assigns an IP to a VLAN SVI for Layer 3 routing",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "no shutdown",
-            "desc": "Brings the interface or SVI up administratively",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "shutdown",
-            "desc": "Administratively shuts down the interface or SVI",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show vlan id <id>",
-            "desc": "Detailed info for a specific VLAN: ports, state, and MTI",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Interface Configuration": [
-          {
-            "cmd": "interface <type> <number>",
-            "desc": "Enters config mode for a specific interface e.g. GigabitEthernet0/1",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "interface range <type> <start> - <end>",
-            "desc": "Configure multiple interfaces simultaneously",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "description <text>",
-            "desc": "Adds a human-readable description to the interface",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport mode access",
-            "desc": "Sets the port as an access port (untagged, single VLAN)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport access vlan <id>",
-            "desc": "Assigns the access port to a specific VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport mode trunk",
-            "desc": "Sets the port as a trunk (carries multiple tagged VLANs)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport trunk allowed vlan <vlan-list>",
-            "desc": "Specifies which VLANs are permitted on this trunk port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport trunk native vlan <id>",
-            "desc": "Sets the native (untagged) VLAN on a trunk port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport nonegotiate",
-            "desc": "Disables DTP (Dynamic Trunking Protocol) negotiation on the port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "speed <10|100|1000|auto>",
-            "desc": "Manually sets the interface speed in Mbps",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "duplex <full|half|auto>",
-            "desc": "Manually sets the interface duplex mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "spanning-tree portfast",
-            "desc": "Enables PortFast — bypasses STP listening and learning states",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "spanning-tree bpduguard enable",
-            "desc": "Enables BPDU Guard — error-disables port if a BPDU is received",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "storm-control broadcast level <percent>",
-            "desc": "Limits broadcast traffic to a percentage of total bandwidth",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "mtu <bytes>",
-            "desc": "Sets the interface MTU — use 9216 for jumbo frames",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "carrier-delay msec 0",
-            "desc": "Disables interface carrier delay for faster convergence on link changes",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Routing": [
-          {
-            "cmd": "ip routing",
-            "desc": "Enables IP routing globally on a Layer 3 switch",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip route <network> <mask> <nexthop>",
-            "desc": "Adds a static route via a specific next-hop IP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip route 0.0.0.0 0.0.0.0 <gateway>",
-            "desc": "Configures the default route (gateway of last resort)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "no ip route <network> <mask> <nexthop>",
-            "desc": "Removes a specific static route",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "router ospf <process-id>",
-            "desc": "Enters OSPF routing process configuration mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "network <ip> <wildcard> area <area-id>",
-            "desc": "Advertises a network prefix into OSPF",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "passive-interface <interface>",
-            "desc": "Suppresses OSPF hellos on an interface while still advertising it",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "router bgp <asn>",
-            "desc": "Enters BGP routing process configuration mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "neighbor <ip> remote-as <asn>",
-            "desc": "Defines a BGP peer by IP and remote AS number",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip helper-address <server-ip>",
-            "desc": "Enables DHCP relay — forwards broadcasts to the specified server",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip pim sparse-mode",
-            "desc": "Enables PIM Sparse Mode on the interface for multicast routing",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip multicast-routing",
-            "desc": "Enables multicast routing globally on the switch",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "EtherChannel": [
-          {
-            "cmd": "interface port-channel <id>",
-            "desc": "Creates a logical port-channel (LAG) interface",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "channel-group <id> mode active",
-            "desc": "Assigns the interface to an EtherChannel using LACP active mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "channel-group <id> mode on",
-            "desc": "Assigns the interface to a static EtherChannel (no LACP/PAgP)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "channel-group <id> mode desirable",
-            "desc": "Assigns the interface using PAgP desirable mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show etherchannel <id> summary",
-            "desc": "Summary status and port membership for a specific EtherChannel",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "lacp port-priority <value>",
-            "desc": "Sets LACP port priority — lower value is preferred",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "lacp system-priority <value>",
-            "desc": "Sets the LACP system priority for this switch",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Security": [
-          {
-            "cmd": "switchport port-security",
-            "desc": "Enables port security on the interface",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport port-security maximum <count>",
-            "desc": "Sets the maximum number of MAC addresses allowed on the port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport port-security violation <protect|restrict|shutdown>",
-            "desc": "Sets the action taken when a port security violation occurs",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "switchport port-security mac-address sticky",
-            "desc": "Enables sticky learning — dynamic MACs become static entries",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip dhcp snooping",
-            "desc": "Enables DHCP snooping globally on the switch",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip dhcp snooping vlan <id>",
-            "desc": "Enables DHCP snooping for a specific VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip dhcp snooping trust",
-            "desc": "Marks the interface as a trusted DHCP snooping port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip arp inspection vlan <id>",
-            "desc": "Enables Dynamic ARP Inspection (DAI) for a specific VLAN",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip arp inspection trust",
-            "desc": "Marks the interface as trusted for ARP inspection",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "spanning-tree guard root",
-            "desc": "Enables Root Guard to prevent unauthorised root bridge election",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip access-list extended <name>",
-            "desc": "Creates a named extended ACL",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip access-group <acl-name> in",
-            "desc": "Applies an ACL to the interface in the inbound direction",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip access-group <acl-name> out",
-            "desc": "Applies an ACL to the interface in the outbound direction",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "shutdown vlan <id>",
-            "desc": "Shuts down a VLAN globally across the switch without deleting it",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "login block-for <secs> attempts <n> within <secs>",
-            "desc": "Blocks login attempts after N failures — brute-force protection",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "QoS": [
-          {
-            "cmd": "mls qos",
-            "desc": "Enables MLS QoS globally on the switch (required on older IOS)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "mls qos trust dscp",
-            "desc": "Trusts incoming DSCP markings on the interface",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "mls qos trust cos",
-            "desc": "Trusts incoming 802.1p CoS markings on the interface",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "mls qos map cos-dscp <values>",
-            "desc": "Maps 802.1p CoS values to DSCP values",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "policy-map <name>",
-            "desc": "Creates a policy map for QoS classification and marking",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "class <class-map-name>",
-            "desc": "Enters a class within a policy map",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "set dscp <value>",
-            "desc": "Sets the DSCP value for traffic matching this class",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "bandwidth percent <value>",
-            "desc": "Allocates a percentage of bandwidth to this class queue",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "priority percent <value>",
-            "desc": "Configures a strict priority queue for low-latency traffic",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "service-policy input <policy-name>",
-            "desc": "Applies a QoS policy map to the interface in the inbound direction",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "service-policy output <policy-name>",
-            "desc": "Applies a QoS policy map to the interface in the outbound direction",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show policy-map interface <interface>",
-            "desc": "Shows QoS statistics per class for a specific interface",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "DHCP Server": [
-          {
-            "cmd": "ip dhcp pool <name>",
-            "desc": "Creates a DHCP pool and enters DHCP config mode",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "network <ip> <mask>",
-            "desc": "Specifies the subnet to serve DHCP addresses from",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "default-router <ip>",
-            "desc": "Sets the default gateway advertised to DHCP clients",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "dns-server <ip1> <ip2>",
-            "desc": "Sets up to two DNS servers advertised to DHCP clients",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "lease <days> <hours> <mins>",
-            "desc": "Sets the DHCP lease duration",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ip dhcp excluded-address <start> <end>",
-            "desc": "Reserves a range of IPs that DHCP will never assign",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ip dhcp binding",
-            "desc": "Shows all active DHCP leases: MAC, IP, and expiry time",
-            "type": "show",
-            "flagged": false,
-            "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
-          },
-          {
-            "cmd": "show ip dhcp pool",
-            "desc": "Displays DHCP pool configuration and usage statistics",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ip dhcp conflict",
-            "desc": "Lists IPs that caused address conflicts detected via ping",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clear ip dhcp binding *",
-            "desc": "Clears all active DHCP leases — use with caution on production",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "NTP": [
-          {
-            "cmd": "ntp server <ip>",
-            "desc": "Configures an NTP server for clock synchronisation",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ntp server <ip> prefer",
-            "desc": "Marks an NTP server as preferred",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ntp authenticate",
-            "desc": "Enables NTP authentication (must also configure keys)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ntp authentication-key <id> md5 <key>",
-            "desc": "Creates an NTP authentication key",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ntp trusted-key <id>",
-            "desc": "Marks an NTP key as trusted for peer authentication",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ntp source <interface>",
-            "desc": "Sets the source interface for NTP packets",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show ntp status",
-            "desc": "Displays NTP sync state, stratum, reference server, and clock offset",
-            "type": "show",
-            "flagged": false,
-            "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
-          },
-          {
-            "cmd": "show ntp associations",
-            "desc": "Lists all configured NTP peers and their sync status",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clock timezone GMT 0",
-            "desc": "Sets the system timezone",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clock set <hh:mm:ss> <day> <month> <year>",
-            "desc": "Manually sets the hardware clock — use only when NTP is unavailable",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Config Management": [
-          {
-            "cmd": "copy running-config startup-config",
-            "desc": "Saves running config to NVRAM — persists across reboots",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "write memory",
-            "desc": "Saves the running config to startup config (alias for copy run start)",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "write erase",
-            "desc": "Erases the startup config — factory reset takes effect on next reload",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "reload",
-            "desc": "Reboots the switch and loads the startup configuration",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "reload in <minutes>",
-            "desc": "Schedules an automatic reload after the specified number of minutes",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "reload cancel",
-            "desc": "Cancels a previously scheduled reload",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "copy running-config tftp:",
-            "desc": "Backs up the running config to a TFTP server",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "copy tftp: running-config",
-            "desc": "Restores a config from a TFTP server into running config",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "archive log config",
-            "desc": "Enables configuration change logging to the archive",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show archive log config all",
-            "desc": "Displays the full history of configuration changes with timestamps and user",
-            "type": "show",
-            "flagged": false
-          }
-        ],
-        "Diagnostics": [
-          {
-            "cmd": "ping <ip>",
-            "desc": "ICMP ping test sourced from the switch management IP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "ping <ip> source <interface>",
-            "desc": "Ping sourced from a specific interface or IP address",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "traceroute <ip>",
-            "desc": "Traces the network path hop-by-hop to a destination IP",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "undebug all",
-            "desc": "Disables all active debug sessions immediately",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "terminal monitor",
-            "desc": "Sends syslog and debug output to the current SSH or Telnet session",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show logging",
-            "desc": "Displays the contents of the syslog buffer",
-            "type": "show",
-            "flagged": false,
-            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
-          },
-          {
-            "cmd": "show ip dhcp snooping binding",
-            "desc": "Shows the DHCP snooping binding table: MAC, IP, VLAN, port",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clear arp-cache",
-            "desc": "Clears all entries from the ARP table",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "clear mac address-table dynamic",
-            "desc": "Clears all dynamically learned MAC address entries",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "show interface <name> counters errors",
-            "desc": "Shows error counters for an interface: CRC, runts, giants, input/output errors",
-            "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "test cable-diagnostics tdr interface <name>",
-            "desc": "Runs TDR cable diagnostics to detect cable faults and measure length",
-            "type": "show",
-            "flagged": false
-          }
-        ]
-      },
-      "group": "Cisco"
     },
     "wlc": {
       "label": "Cisco Catalyst 9800 WLC (IOS-XE)",
@@ -15838,6 +14987,102 @@
             "type": "show",
             "flagged": false,
             "example": "Interface GigabitEthernet0/0\n  Hardware is iGbE\n  Link is Up - 1Gbps Full Duplex"
+          },
+          {
+            "cmd": "interface <type> <number>",
+            "desc": "Enters config mode for a specific interface e.g. GigabitEthernet0/1",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface range <type> <start> - <end>",
+            "desc": "Configure multiple interfaces simultaneously",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "description <text>",
+            "desc": "Adds a human-readable description to the interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode access",
+            "desc": "Sets the port as an access port (untagged, single VLAN)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport access vlan <id>",
+            "desc": "Assigns the access port to a specific VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport mode trunk",
+            "desc": "Sets the port as a trunk (carries multiple tagged VLANs)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport trunk allowed vlan <vlan-list>",
+            "desc": "Specifies which VLANs are permitted on this trunk port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport trunk native vlan <id>",
+            "desc": "Sets the native (untagged) VLAN on a trunk port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport nonegotiate",
+            "desc": "Disables DTP (Dynamic Trunking Protocol) negotiation on the port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "speed <10|100|1000|auto>",
+            "desc": "Manually sets the interface speed in Mbps",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "duplex <full|half|auto>",
+            "desc": "Manually sets the interface duplex mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree portfast",
+            "desc": "Enables PortFast — bypasses STP listening and learning states",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree bpduguard enable",
+            "desc": "Enables BPDU Guard — error-disables port if a BPDU is received",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "storm-control broadcast level <percent>",
+            "desc": "Limits broadcast traffic to a percentage of total bandwidth",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mtu <bytes>",
+            "desc": "Sets the interface MTU — use 9216 for jumbo frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "carrier-delay msec 0",
+            "desc": "Disables interface carrier delay for faster convergence on link changes",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Routing": [
@@ -16103,6 +15348,78 @@
             "type": "show",
             "flagged": false,
             "example": "Routing entry for 10.10.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20\n  * 192.168.1.2, via GigabitEthernet0/0"
+          },
+          {
+            "cmd": "ip routing",
+            "desc": "Enables IP routing globally on a Layer 3 switch",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route <network> <mask> <nexthop>",
+            "desc": "Adds a static route via a specific next-hop IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route 0.0.0.0 0.0.0.0 <gateway>",
+            "desc": "Configures the default route (gateway of last resort)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "no ip route <network> <mask> <nexthop>",
+            "desc": "Removes a specific static route",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "router ospf <process-id>",
+            "desc": "Enters OSPF routing process configuration mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "network <ip> <wildcard> area <area-id>",
+            "desc": "Advertises a network prefix into OSPF",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "passive-interface <interface>",
+            "desc": "Suppresses OSPF hellos on an interface while still advertising it",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "router bgp <asn>",
+            "desc": "Enters BGP routing process configuration mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "neighbor <ip> remote-as <asn>",
+            "desc": "Defines a BGP peer by IP and remote AS number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip helper-address <server-ip>",
+            "desc": "Enables DHCP relay — forwards broadcasts to the specified server",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip pim sparse-mode",
+            "desc": "Enables PIM Sparse Mode on the interface for multicast routing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip multicast-routing",
+            "desc": "Enables multicast routing globally on the switch",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Security": [
@@ -16409,6 +15726,96 @@
             "desc": "Match on ACL. — Matches packets based on a standard/extended Access Control List.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "switchport port-security",
+            "desc": "Enables port security on the interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport port-security maximum <count>",
+            "desc": "Sets the maximum number of MAC addresses allowed on the port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport port-security violation <protect|restrict|shutdown>",
+            "desc": "Sets the action taken when a port security violation occurs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "switchport port-security mac-address sticky",
+            "desc": "Enables sticky learning — dynamic MACs become static entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp snooping",
+            "desc": "Enables DHCP snooping globally on the switch",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp snooping vlan <id>",
+            "desc": "Enables DHCP snooping for a specific VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp snooping trust",
+            "desc": "Marks the interface as a trusted DHCP snooping port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip arp inspection vlan <id>",
+            "desc": "Enables Dynamic ARP Inspection (DAI) for a specific VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip arp inspection trust",
+            "desc": "Marks the interface as trusted for ARP inspection",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "spanning-tree guard root",
+            "desc": "Enables Root Guard to prevent unauthorised root bridge election",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip access-list extended <name>",
+            "desc": "Creates a named extended ACL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip access-group <acl-name> in",
+            "desc": "Applies an ACL to the interface in the inbound direction",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip access-group <acl-name> out",
+            "desc": "Applies an ACL to the interface in the outbound direction",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown vlan <id>",
+            "desc": "Shuts down a VLAN globally across the switch without deleting it",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "login block-for <secs> attempts <n> within <secs>",
+            "desc": "Blocks login attempts after N failures — brute-force protection",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Troubleshooting": [
@@ -16603,34 +16010,34 @@
         "Show & Status": [
           {
             "cmd": "show version",
-            "desc": "Software version, image, uptime, last reload, register",
+            "desc": "IOS version, uptime, hardware model, memory, flash storage",
             "type": "show",
             "flagged": false,
             "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
           },
           {
             "cmd": "show running-config",
-            "desc": "Active in-memory configuration",
+            "desc": "Display the current active running configuration",
             "type": "show",
             "flagged": false,
             "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
           },
           {
             "cmd": "show startup-config",
-            "desc": "Saved configuration loaded at boot",
+            "desc": "Display the saved startup configuration from NVRAM",
             "type": "show",
             "flagged": false
           },
           {
             "cmd": "show inventory",
-            "desc": "Hardware inventory: chassis, modules, transceivers, serials",
+            "desc": "Hardware inventory: chassis, modules, SFPs with PID and serial numbers",
             "type": "show",
             "flagged": false,
             "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
           },
           {
             "cmd": "show environment all",
-            "desc": "Power supplies, fans, temperature",
+            "desc": "Fan, temperature, and power supply status",
             "type": "show",
             "flagged": false
           },
@@ -16813,7 +16220,7 @@
           },
           {
             "cmd": "show interfaces status",
-            "desc": "View Condensed Interface Status. — Displays Port",
+            "desc": "Concise table: connected state, VLAN assignment, speed, duplex",
             "type": "show",
             "flagged": false,
             "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
@@ -17032,6 +16439,112 @@
             "type": "show",
             "flagged": false,
             "example": "Processor Pool Total: 987654321 Used: 456789012 Free: 530865309"
+          },
+          {
+            "cmd": "show interfaces",
+            "desc": "Status and statistics for all interfaces",
+            "type": "show",
+            "flagged": false,
+            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
+          },
+          {
+            "cmd": "show ip interface brief",
+            "desc": "Summary of all interfaces: IP, method, status, protocol state",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     unassigned      YES NVRAM  administratively down down\nGigabitEthernet0/1     10.0.0.1        YES NVRAM  up                    up\nGigabitEthernet0/2     10.10.10.1      YES NVRAM  up                    up\nLoopback0              1.1.1.1         YES NVRAM  up                    up\nVlan1                  unassigned      YES NVRAM  administratively down down\nVlan10                 192.168.10.1    YES NVRAM  up                    up"
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "Full routing table: connected, static, and dynamic routes",
+            "type": "show",
+            "flagged": false,
+            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
+          },
+          {
+            "cmd": "show arp",
+            "desc": "ARP cache: IP to MAC address mappings and age",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show mac address-table",
+            "desc": "MAC address table: learned addresses, VLANs, and ports",
+            "type": "show",
+            "flagged": false,
+            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
+          },
+          {
+            "cmd": "show vlan brief",
+            "desc": "Condensed VLAN summary: IDs, names, status, and assigned ports",
+            "type": "show",
+            "flagged": false,
+            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
+          },
+          {
+            "cmd": "show spanning-tree",
+            "desc": "STP state for all VLANs: root bridge, port states, timers",
+            "type": "show",
+            "flagged": false,
+            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
+          },
+          {
+            "cmd": "show spanning-tree vlan <id>",
+            "desc": "STP state for a specific VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cdp neighbors",
+            "desc": "Cisco Discovery Protocol neighbours summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show cdp neighbors detail",
+            "desc": "Detailed CDP neighbour info including platform and IP addresses",
+            "type": "show",
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
+          },
+          {
+            "cmd": "show lldp neighbors",
+            "desc": "LLDP neighbours summary",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show etherchannel summary",
+            "desc": "Port-channel/EtherChannel group status and member ports",
+            "type": "show",
+            "flagged": false,
+            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
+          },
+          {
+            "cmd": "show ip ospf neighbor",
+            "desc": "OSPF neighbour adjacency table and states",
+            "type": "show",
+            "flagged": false,
+            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
+          },
+          {
+            "cmd": "show ip bgp summary",
+            "desc": "BGP peer summary: neighbour state and prefixes received",
+            "type": "show",
+            "flagged": false,
+            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
+          },
+          {
+            "cmd": "show processes memory",
+            "desc": "Memory utilisation sorted by process",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show platform tcam utilization",
+            "desc": "Shows TCAM (hardware table) utilisation for ACLs, routes, MACs",
+            "type": "show",
+            "flagged": false
           }
         ],
         "VLANs": [
@@ -17329,6 +16842,54 @@
             "desc": "Enable IGMP Snooping on VLANs. — Optimizes forwarding by examining IGMP joins and maintaining interface-to-group tables.",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "vlan <id>",
+            "desc": "Creates a VLAN and enters VLAN config mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "name <vlan-name>",
+            "desc": "Assigns a name to the current VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "no vlan <id>",
+            "desc": "Deletes the specified VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "interface vlan <id>",
+            "desc": "Creates or enters the SVI (Switched Virtual Interface) for a VLAN",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip address <ip> <mask>",
+            "desc": "Assigns an IP to a VLAN SVI for Layer 3 routing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "no shutdown",
+            "desc": "Brings the interface or SVI up administratively",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown",
+            "desc": "Administratively shuts down the interface or SVI",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show vlan id <id>",
+            "desc": "Detailed info for a specific VLAN: ports, state, and MTI",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Switching & STP": [
@@ -17604,6 +17165,48 @@
             "desc": "Configure the EtherChannel Load-Balancing Hash Algorithm. — Common options: `src-dst-mixed-ip-port`",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "interface port-channel <id>",
+            "desc": "Creates a logical port-channel (LAG) interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "channel-group <id> mode active",
+            "desc": "Assigns the interface to an EtherChannel using LACP active mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "channel-group <id> mode on",
+            "desc": "Assigns the interface to a static EtherChannel (no LACP/PAgP)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "channel-group <id> mode desirable",
+            "desc": "Assigns the interface using PAgP desirable mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show etherchannel <id> summary",
+            "desc": "Summary status and port membership for a specific EtherChannel",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lacp port-priority <value>",
+            "desc": "Sets LACP port priority — lower value is preferred",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lacp system-priority <value>",
+            "desc": "Sets the LACP system priority for this switch",
+            "type": "show",
+            "flagged": false
           }
         ],
         "QoS": [
@@ -17639,8 +17242,8 @@
           },
           {
             "cmd": "mls qos",
-            "desc": "Globally enable MLS QoS",
-            "type": "config",
+            "desc": "Enables MLS QoS globally on the switch (required on older IOS)",
+            "type": "show",
             "flagged": false
           },
           {
@@ -17719,6 +17322,72 @@
             "cmd": "police [cir]cir-in-bps[bc]committed-burst-size-in-bytes [be]excess-burst-size-in-bytes[conform-action action] [exceed-actionaction] [violate-actionaction]",
             "desc": "Configure Traffic Policing. — Rate-limits traffic and defines actions for conforming/exceeding/violating packets.",
             "type": "config",
+            "flagged": false
+          },
+          {
+            "cmd": "mls qos trust dscp",
+            "desc": "Trusts incoming DSCP markings on the interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mls qos trust cos",
+            "desc": "Trusts incoming 802.1p CoS markings on the interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mls qos map cos-dscp <values>",
+            "desc": "Maps 802.1p CoS values to DSCP values",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "policy-map <name>",
+            "desc": "Creates a policy map for QoS classification and marking",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "class <class-map-name>",
+            "desc": "Enters a class within a policy map",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set dscp <value>",
+            "desc": "Sets the DSCP value for traffic matching this class",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bandwidth percent <value>",
+            "desc": "Allocates a percentage of bandwidth to this class queue",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "priority percent <value>",
+            "desc": "Configures a strict priority queue for low-latency traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "service-policy input <policy-name>",
+            "desc": "Applies a QoS policy map to the interface in the inbound direction",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "service-policy output <policy-name>",
+            "desc": "Applies a QoS policy map to the interface in the outbound direction",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show policy-map interface <interface>",
+            "desc": "Shows QoS statistics per class for a specific interface",
+            "type": "show",
             "flagged": false
           }
         ],
@@ -17869,7 +17538,7 @@
         "DHCP / Services": [
           {
             "cmd": "show ip dhcp binding",
-            "desc": "DHCP server leases",
+            "desc": "Shows all active DHCP leases: MAC, IP, and expiry time",
             "type": "show",
             "flagged": false,
             "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
@@ -17882,7 +17551,7 @@
           },
           {
             "cmd": "show ip dhcp pool",
-            "desc": "Configured DHCP pools",
+            "desc": "Displays DHCP pool configuration and usage statistics",
             "type": "show",
             "flagged": false
           },
@@ -17903,19 +17572,67 @@
             "desc": "Forward broadcast DHCP to a server on another subnet",
             "type": "config",
             "flagged": false
+          },
+          {
+            "cmd": "ip dhcp pool <name>",
+            "desc": "Creates a DHCP pool and enters DHCP config mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "network <ip> <mask>",
+            "desc": "Specifies the subnet to serve DHCP addresses from",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "default-router <ip>",
+            "desc": "Sets the default gateway advertised to DHCP clients",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dns-server <ip1> <ip2>",
+            "desc": "Sets up to two DNS servers advertised to DHCP clients",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lease <days> <hours> <mins>",
+            "desc": "Sets the DHCP lease duration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip dhcp excluded-address <start> <end>",
+            "desc": "Reserves a range of IPs that DHCP will never assign",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show ip dhcp conflict",
+            "desc": "Lists IPs that caused address conflicts detected via ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear ip dhcp binding *",
+            "desc": "Clears all active DHCP leases — use with caution on production",
+            "type": "show",
+            "flagged": false
           }
         ],
         "NTP / SNMP / Logging": [
           {
             "cmd": "show ntp status",
-            "desc": "NTP sync state, stratum, reference",
+            "desc": "Displays NTP sync state, stratum, reference server, and clock offset",
             "type": "show",
             "flagged": false,
             "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
           },
           {
             "cmd": "show ntp associations",
-            "desc": "NTP peers / servers + offset",
+            "desc": "Lists all configured NTP peers and their sync status",
             "type": "show",
             "flagged": false
           },
@@ -18010,6 +17727,54 @@
             "type": "show",
             "flagged": false,
             "example": "%SYS-5-CONFIG_I: Configured from console\n%LINK-3-UPDOWN: Interface Gi0/1, changed state to up"
+          },
+          {
+            "cmd": "ntp server <ip>",
+            "desc": "Configures an NTP server for clock synchronisation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp server <ip> prefer",
+            "desc": "Marks an NTP server as preferred",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp authenticate",
+            "desc": "Enables NTP authentication (must also configure keys)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp authentication-key <id> md5 <key>",
+            "desc": "Creates an NTP authentication key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp trusted-key <id>",
+            "desc": "Marks an NTP key as trusted for peer authentication",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ntp source <interface>",
+            "desc": "Sets the source interface for NTP packets",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clock timezone GMT 0",
+            "desc": "Sets the system timezone",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clock set <hh:mm:ss> <day> <month> <year>",
+            "desc": "Manually sets the hardware clock — use only when NTP is unavailable",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Embedded Event Manager / Automation": [
@@ -18122,8 +17887,8 @@
           },
           {
             "cmd": "undebug all",
-            "desc": "Disable all debugs",
-            "type": "troubleshooting",
+            "desc": "Disables all active debug sessions immediately",
+            "type": "show",
             "flagged": false
           },
           {
@@ -18144,6 +17909,67 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
+          },
+          {
+            "cmd": "ping <ip>",
+            "desc": "ICMP ping test sourced from the switch management IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping <ip> source <interface>",
+            "desc": "Ping sourced from a specific interface or IP address",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute <ip>",
+            "desc": "Traces the network path hop-by-hop to a destination IP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "terminal monitor",
+            "desc": "Sends syslog and debug output to the current SSH or Telnet session",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show logging",
+            "desc": "Displays the contents of the syslog buffer",
+            "type": "show",
+            "flagged": false,
+            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
+          },
+          {
+            "cmd": "show ip dhcp snooping binding",
+            "desc": "Shows the DHCP snooping binding table: MAC, IP, VLAN, port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear arp-cache",
+            "desc": "Clears all entries from the ARP table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "clear mac address-table dynamic",
+            "desc": "Clears all dynamically learned MAC address entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show interface <name> counters errors",
+            "desc": "Shows error counters for an interface: CRC, runts, giants, input/output errors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "test cable-diagnostics tdr interface <name>",
+            "desc": "Runs TDR cable diagnostics to detect cable faults and measure length",
+            "type": "show",
+            "flagged": false
           }
         ],
         "Config Management": [
@@ -18193,8 +18019,8 @@
           },
           {
             "cmd": "reload cancel",
-            "desc": "Cancel a scheduled reload",
-            "type": "config",
+            "desc": "Cancels a previously scheduled reload",
+            "type": "show",
             "flagged": false
           },
           {
@@ -18203,6 +18029,48 @@
             "type": "config",
             "flagged": true,
             "example": "WARNING: Renumbering will take effect after reload"
+          },
+          {
+            "cmd": "write erase",
+            "desc": "Erases the startup config — factory reset takes effect on next reload",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "reload",
+            "desc": "Reboots the switch and loads the startup configuration",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "reload in <minutes>",
+            "desc": "Schedules an automatic reload after the specified number of minutes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "copy running-config tftp:",
+            "desc": "Backs up the running config to a TFTP server",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "copy tftp: running-config",
+            "desc": "Restores a config from a TFTP server into running config",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "archive log config",
+            "desc": "Enables configuration change logging to the archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "show archive log config all",
+            "desc": "Displays the full history of configuration changes with timestamps and user",
+            "type": "show",
+            "flagged": false
           }
         ],
         "OSPF": [
