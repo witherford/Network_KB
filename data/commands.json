@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:11:05.239Z",
+  "updatedAt": "2026-05-01T20:36:48.405Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -1708,13 +1708,15 @@
             "cmd": "show ha node <node-id>",
             "desc": "Detailed HA info for a specific node: IP, state, health, last failover reason",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ha node 1\n\n1)      Node ID:        1\n        IP:             10.10.10.11\n        Node State:     UP\n        Master State:   Secondary\n        SSL Card Status: UP\n        Sync State:     ENABLED  (SUCCESS)\n        Hello Interval: 200 msec\n        Dead Interval:  3 sec\n        Last Transition Time: Wed May  1 09:22:10 2026\n\nWhat it means:\n- Node State UP : the peer is reachable on the HA heartbeat.\n- Master State : Primary or Secondary. The one currently servicing\n  VIPs is Primary.\n- Sync State SUCCESS : config sync between nodes is current. ENABLED\n  + FAILED would be a serious problem worth investigating immediately.\n- Hello/Dead intervals : the heartbeat tuning. Defaults work fine on\n  L2-adjacent pairs."
           },
           {
             "cmd": "add ha node <id> <ip>",
             "desc": "Adds a peer node to form an HA pair — use the Secondary NSIP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add ha node 1 10.10.10.11\nDone\n\n> show ha node\n1)      Node ID: 0  IP: 10.10.10.10  State: UP  Master State: Primary\n2)      Node ID: 1  IP: 10.10.10.11  State: UP  Master State: Secondary\n\nWhat it means:\n- Adds a peer node to this ADC's HA cluster. Run on BOTH nodes — each\n  must add the other.\n- Initial sync starts immediately. Watch \"show ha node\" for sync\n  state to settle.\n- Pre-requisites: rpcNode passwords must match between the two\n  nodes (see \"set ns rpcNode\") or sync will fail with auth errors."
           },
           {
             "cmd": "force ha failover",
@@ -1727,43 +1729,50 @@
             "cmd": "set ha node -haStatus ENABLED",
             "desc": "Enables HA participation on the local node",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set ha node -haStatus ENABLED\nDone\n\n> show ha node | include haStatus\n        HA Status: ENABLED\n\nWhat it means:\n- Default state. Node participates in HA election and can become\n  Primary if the peer goes down.\n- Compare with STAYSECONDARY (never become primary, even if peer\n  is down) and STAYPRIMARY (always primary)."
           },
           {
             "cmd": "set ha node -haStatus STAYSECONDARY",
             "desc": "Forces local node to remain Secondary permanently",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set ha node -haStatus STAYSECONDARY\nDone\n\n# This node will NEVER take over, even if the peer is DOWN.\n> show ha node 0 | grep \"Master State\"\n        Master State:   Secondary\n\nWhat it means:\n- Node refuses to ever become Primary, even if its peer disappears.\n- Used during planned maintenance on the secondary so a network\n  blip doesn't cause it to take over halfway through an upgrade.\n- IMPORTANT: returns to ENABLED automatically only on reboot;\n  remember to revert with \"set ha node -haStatus ENABLED\" afterwards."
           },
           {
             "cmd": "sync ha files all",
             "desc": "Manually synchronises all config files from Primary to Secondary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> sync ha files all\nSending files to peer 10.10.10.11...\n  /nsconfig/ssl/server.crt        ... ok\n  /nsconfig/ssl/server.key        ... ok\n  /nsconfig/ssl/intermediate.pem  ... ok\n  /var/download/license/Plat.lic  ... ok\nSync completed. 47 files transferred, 0 errors.\n\nWhat it means:\n- Forces an immediate sync of NON-config files (SSL certs/keys, DH\n  params, license files, custom bot signatures, custom AppFW data,\n  etc.) from this node to the peer.\n- Configuration sync runs continuously when \"Sync State: ENABLED\"\n  but file sync only runs on this command (or after a failover).\n- \"all\" includes every syncable file. Specific subsets: \"ssl\",\n  \"imports\", \"misc\"."
           },
           {
             "cmd": "show ha sync",
             "desc": "Displays current HA synchronisation status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ha sync\n\nHA Synchronization Status:\n        State                     : ENABLED\n        Last sync attempt         : Wed May  1 11:22:18 2026\n        Last sync result          : SUCCESS\n        Failover engine sync count: 1845\n        Last failover at          : Mon Apr 28 14:20:33 2026\n\nWhat it means:\n- Confirms config sync is actively running between the HA pair and\n  reporting healthy.\n- \"Last sync result: SUCCESS\" should be steady-state. FAILED almost\n  always means rpcNode password mismatch or network reachability\n  between NSIPs.\n- Failover engine sync count : how many config diffs have been\n  pushed to the peer over the lifetime of the HA pair."
           },
           {
             "cmd": "add clusternode <id> -ip <ip> -backplane <interface>",
             "desc": "Adds a node to a NetScaler cluster",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add clusternode 1 -ip 10.10.10.11 -backplane 1/1\nCluster instance does not exist. Please add cluster instance first.\n\n# Configure cluster on the CLIP first:\n> add cluster instance 1 -clusterIP 10.10.10.50\n> enable cluster instance 1\n> add clusternode 1 -ip 10.10.10.11 -backplane 1/1\nDone\n\nWhat it means:\n- Cluster mode is the n-node alternative to 2-node HA.\n- \"backplane 1/1\" : the dedicated interface used for cluster control\n  traffic and steering. MUST be on a separate physical link to avoid\n  splits.\n- Each node ID is unique within the cluster. CLIP is the cluster\n  management IP — used for config and management of the whole cluster\n  as one entity."
           },
           {
             "cmd": "join cluster -clip <cluster-ip> -password <pass>",
             "desc": "Joins the local appliance to an existing cluster",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> join cluster -clip 10.10.10.50 -password ClusterSecret2026\nSuccessfully joined cluster instance 1\nNode id: 2\nRestoring cluster configuration on this node...\nDone. Reboot recommended.\n\nWhat it means:\n- Run on a NEW node to enrol it into an existing cluster. The CLIP\n  is the cluster-wide management IP; the password is the shared\n  cluster instance password.\n- After joining, the node receives the full cluster config from\n  the master via the backplane.\n- Reboot is recommended (not strictly required) so dataplane\n  state is fully aligned with the rest of the cluster."
           },
           {
             "cmd": "show cluster",
             "desc": "Displays cluster topology, node states, and health",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show cluster\n\nCluster Information:\n        Cluster ID                : 1\n        CLIP                      : 10.10.10.50\n        Cluster Health            : OK\n        Quorum Type               : MAJORITY\n        Backplane Steering        : MAC-Based\n\nCluster Nodes:\n        ID   IP            State    Health    Master  Op-State\n        0    10.10.10.10   ACTIVE   OK        Yes     Active\n        1    10.10.10.11   ACTIVE   OK        No      Active\n        2    10.10.10.12   ACTIVE   OK        No      Active\n\nWhat it means:\n- Cluster Health OK : all members reachable on the backplane and\n  config-synced.\n- Quorum Type MAJORITY : default — needs (N/2 + 1) nodes alive to\n  remain operational.\n- Master flag : the cluster master coordinates config and steering;\n  losing it triggers a re-election among remaining nodes.\n- Op-State Active : node is forwarding traffic. INACTIVE = drained\n  (still in cluster but not handling traffic)."
           },
           {
             "cmd": "show ns rpcNode",
@@ -2858,25 +2867,29 @@
             "cmd": "add stream identifier <name> HTTP.REQ.URL -type REQUEST -interval 1 -sampleCount 1",
             "desc": "Creates a stream identifier that tracks rate by URL per second",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add stream identifier ID_PerURL HTTP.REQ.URL -type REQUEST -interval 1 -sampleCount 1\nDone\n\n> show stream identifier\nName : ID_PerURL\n        Selector Rule       : HTTP.REQ.URL\n        Type                : REQUEST\n        Sample Time         : 1 sec\n        Sample Count        : 1\n        Sort By             : ResponseTime\n\nWhat it means:\n- Stream identifiers count events grouped by the selector key (here\n  HTTP.REQ.URL — i.e. one bucket per unique URL).\n- type REQUEST : count by inbound request. Other types: RESPONSE,\n  RESPONSEONLY (count only when application replied), MIRROR.\n- interval 1 / sampleCount 1 : 1 second sliding window with 1 sample.\n  Smaller windows react faster but use more memory.\n- Used as input to action policies (responder, AppQoE) to throttle\n  on per-URL request rate."
           },
           {
             "cmd": "set stream identifier <name> -selectorName <selector> -interval <secs>",
             "desc": "Sets the selector and polling interval for a stream identifier",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add stream selector Sel_ClientIP HTTP.REQ.CLIENT.IP\n> set stream identifier ID_PerURL -selectorName Sel_ClientIP -interval 60\nDone\n\n> show stream identifier ID_PerURL\n        Selector Name : Sel_ClientIP\n        Sample Time   : 60 sec\n\nWhat it means:\n- Switches the stream identifier from a bare expression to a named\n  \"stream selector\" (allows multi-key selectors that are reusable\n  across multiple identifiers).\n- 60-second window smooths out short bursts but reacts more slowly\n  to sustained attacks. Common values: 1s for DoS detection, 60s\n  for client-fairness throttling."
           },
           {
             "cmd": "add ns limitIdentifier <name> -threshold <n> -timeSlice 1000 -mode REQUEST_RATE",
             "desc": "Creates a rate limit identifier: max N requests per second",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add ns limitIdentifier limit_login -threshold 5 -timeSlice 1000 -mode REQUEST_RATE -limitType BURSTY -selectorName Sel_ClientIP\nDone\n\n> show ns limitIdentifier limit_login\nName : limit_login\n        Mode               : REQUEST_RATE\n        Threshold          : 5\n        Time Slice         : 1000 ms\n        Limit Type         : BURSTY\n        Selector           : Sel_ClientIP\n        Current matches    : 12\n\nWhat it means:\n- Threshold + Time Slice define a token bucket: 5 requests per\n  1000 ms (= 1 second) per selector key.\n- mode REQUEST_RATE : counts requests. Alternative: CONNECTION (TCP\n  connections per second).\n- limitType BURSTY : allows short bursts above threshold then refills.\n  SMOOTH would enforce strict rate over the window.\n- Pair with a responder policy that calls sys.check_limit(\"limit_login\")\n  to take action (DROP, RESET, RESPONDWITH)."
           },
           {
             "cmd": "add responder policy <name> sys.check_limit(\"<limitID>\") DROP",
             "desc": "Creates a policy that drops requests exceeding the rate limit",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add responder policy pol_throttle_login 'sys.check_limit(\"limit_login\")' DROP\nDone\n\n> bind responder global pol_throttle_login 100 END -type REQ_OVERRIDE\nDone\n\n# At runtime, sixth+ login attempt within 1s from same client IP is dropped:\n> show ns limitIdentifier limit_login\n        Threshold exceeded count   : 142\n        Action                     : DROP\n\nWhat it means:\n- Wires the rate-limit identifier to a responder policy.\n- sys.check_limit() returns TRUE when the request would push the\n  bucket over threshold — at which point the policy fires.\n- DROP silently discards the packet (TCP connection times out).\n  Alternatives: RESET (TCP RST), RESPONDWITH (custom error page).\n- bind ... type REQ_OVERRIDE : evaluated BEFORE the matched LB\n  decision so legitimate requests aren't impacted."
           },
           {
             "cmd": "show ns limitIdentifier",
@@ -2889,7 +2902,8 @@
             "cmd": "show stream identifier <name>",
             "desc": "Shows real-time counters for a stream identifier",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show stream identifier ID_PerURL\n\nName             : ID_PerURL\n        Selector Rule         : HTTP.REQ.URL\n        Type                  : REQUEST\n        Sample Time           : 1 sec\n        Sample Count          : 1\n\nTop entries:\n        Key                                    Hits      Rate (req/s)\n        /api/login                             4502      75\n        /api/search                            12039     201\n        /static/logo.png                       8901      148\n\nWhat it means:\n- Top-N table of selector-key buckets currently being tracked.\n- \"Rate\" is the smoothed rate over the configured window — what\n  responder/AppQoE policies see in sys.check_limit().\n- Useful for tuning thresholds: see real traffic distribution\n  before setting \"threshold N\" in a limitIdentifier."
           },
           {
             "cmd": "show stream selector",
@@ -2967,55 +2981,64 @@
             "cmd": "add gslb site <name> <ip>",
             "desc": "Creates a GSLB site object",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add gslb site DC_London 10.50.1.5 -siteType LOCAL -metricExchange ENABLED -nwMetricExchange ENABLED\nDone\n\n> show gslb site\nSite Name : DC_London\n        Site Type           : LOCAL\n        Site IP             : 10.50.1.5\n        Public IP           : 10.50.1.5\n        Metric Exchange     : ENABLED\n        Status              : ACTIVE\n\nWhat it means:\n- \"siteType LOCAL\" means the GSLB instance physically lives at this\n  ADC. \"REMOTE\" sites describe peer ADCs in other datacentres.\n- The site IP is the SNIP through which Metric Exchange Protocol\n  (MEP) talks to peer GSLB sites — opens TCP/3011.\n- metricExchange/nwMetricExchange : enables sharing of LB stats and\n  network RTT data between sites for intelligent decisions."
           },
           {
             "cmd": "add gslb vserver <name> <protocol>",
             "desc": "Creates a GSLB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add gslb vserver GSLB_VS SSL -dnsRecordType A -lbMethod LEASTCONNECTION\nDone\n\n> show gslb vserver\nName : GSLB_VS\n        State              : UP\n        Effective State    : UP\n        Type               : SSL\n        DNS Record Type    : A\n        LB Method          : LEASTCONNECTION\n        Persistence        : NONE\n        Bound Services     : 0\n\nWhat it means:\n- The GSLB vserver is a logical container — it holds the FQDN, the\n  load-balancing method, and the list of GSLB services (one per DC).\n- dnsRecordType : A for IPv4, AAAA for IPv6, MX for mail, etc.\n- lbMethod      : ROUNDROBIN, LEASTCONNECTION, RTT, STATICPROXIMITY,\n                  DYNAMICCONNECTION, etc. Drives which back-end site\n                  gets returned to a DNS query.\n- \"Bound Services 0\" — vserver is not yet wired up; bind GSLB\n  services next."
           },
           {
             "cmd": "add gslb service <name> <server-ip> <protocol> <port> -siteName <site>",
             "desc": "Creates a GSLB service and associates it with a site",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add gslb service GSLB_SVC_Web1 10.10.10.50 SSL 443 -siteName DC_London -publicIP 203.0.113.10 -publicPort 443 -monitorBound HTTP-ECV\nDone\n\n> show gslb service\nName             : GSLB_SVC_Web1\n        IP Address       : 10.10.10.50:443 (SSL)\n        Public IP:Port   : 203.0.113.10:443\n        Site Name        : DC_London\n        State            : UP\n        Last Reason      : Probe Successful\n\nWhat it means:\n- The \"service IP\" is the back-end LB VIP at the local DC.\n- \"publicIP/publicPort\" is what GSLB returns to DNS clients — the\n  externally-routable VIP. Often equals the service IP if no NAT is\n  in the way.\n- Monitor binding (HTTP-ECV here) decides whether the service is\n  considered UP for GSLB-decision purposes."
           },
           {
             "cmd": "bind gslb vserver <name> -serviceName <service>",
             "desc": "Binds a GSLB service to a GSLB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind gslb vserver GSLB_VS -serviceName GSLB_SVC_Web1\nDone\n> bind gslb vserver GSLB_VS -serviceName GSLB_SVC_Web2\nDone\n\n> show gslb vserver GSLB_VS\n        Bound Services     : 2\n            GSLB_SVC_Web1 (DC_London)  : UP\n            GSLB_SVC_Web2 (DC_NewYork) : UP\n\nWhat it means:\n- Multiple GSLB services bind to a single GSLB vserver — each\n  represents a copy of the application running in a different DC.\n- The vserver's lbMethod chooses BETWEEN them on each DNS query\n  (e.g. RTT picks the closest to the resolver)."
           },
           {
             "cmd": "set gslb vserver <name> -lbMethod ROUNDROBIN",
             "desc": "Sets the GSLB load balancing method",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set gslb vserver GSLB_VS -lbMethod ROUNDROBIN\nDone\n\n> show gslb vserver GSLB_VS | grep Method\n        LB Method          : ROUNDROBIN\n\nWhat it means:\n- ROUNDROBIN cycles GSLB services in order on each DNS request.\n- Simple, predictable, no telemetry needed.\n- DOES NOT account for server load, DC capacity, or RTT — fine for\n  active-active sites of equal weight, weak choice for DR scenarios."
           },
           {
             "cmd": "set gslb vserver <name> -lbMethod RTT",
             "desc": "Sets GSLB to use Round Trip Time for dynamic proximity-based routing",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set gslb vserver GSLB_VS -lbMethod RTT\nDone\n\n# DNS query from London resolver:\n$ dig www.global.com\n;; ANSWER SECTION:\nwww.global.com.   60   IN   A   203.0.113.10   ← DC_London VIP\n\n# DNS query from NY resolver:\n$ dig www.global.com\n;; ANSWER SECTION:\nwww.global.com.   60   IN   A   198.51.100.10   ← DC_NewYork VIP\n\nWhat it means:\n- RTT mode measures Round Trip Time from the LDNS (resolver) to\n  each candidate site, then returns the closest.\n- Requires the ADCs to actively probe LDNSes (LDNS Probe Order).\n- Best general-purpose method for global active-active deployments.\n- First few queries from a new LDNS may use a fallback method while\n  RTT data is being gathered."
           },
           {
             "cmd": "show gslb runningconfig",
             "desc": "Displays the complete GSLB configuration in running state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show gslb runningconfig\n\nadd gslb site DC_London 10.50.1.5 -siteType LOCAL\nadd gslb site DC_NewYork 10.60.1.5 -siteType REMOTE\nadd gslb service GSLB_SVC_Web1 10.10.10.50 SSL 443 -siteName DC_London\nadd gslb service GSLB_SVC_Web2 10.10.20.50 SSL 443 -siteName DC_NewYork\nadd gslb vserver GSLB_VS SSL -dnsRecordType A -lbMethod RTT\nbind gslb vserver GSLB_VS -serviceName GSLB_SVC_Web1\nbind gslb vserver GSLB_VS -serviceName GSLB_SVC_Web2\nadd gslb domain GSLB_VS www.global.com\n\nWhat it means:\n- Filtered runningConfig containing ONLY GSLB-related statements.\n- Useful for diffing GSLB config between two ADCs in the same domain\n  before running \"sync gslb config\".\n- Does not include underlying LB/SSL/networking that the GSLB\n  services depend on."
           },
           {
             "cmd": "sync gslb config -preview",
             "desc": "Previews pending GSLB config sync to remote sites without applying",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> sync gslb config -preview\n\nSync preview - changes that would be pushed to remote sites:\n\n  add gslb service GSLB_SVC_Web3 10.10.30.50 SSL 443 -siteName DC_Tokyo\n  bind gslb vserver GSLB_VS -serviceName GSLB_SVC_Web3\n  set gslb parameter -ldnsProbOrder TCP PING DNS\n\nWhat it means:\n- Dry-run of \"sync gslb config\" — shows the diff that would be\n  applied to other GSLB sites, without making any changes.\n- Always run preview FIRST in production before the real sync.\n- Sync is bidirectional: changes from remote sites would also be\n  pulled in by the next sync from those sites."
           },
           {
             "cmd": "sync gslb config",
             "desc": "Triggers immediate GSLB configuration sync to all remote sites",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> sync gslb config\nAre you sure you want to overwrite the GSLB config on remote sites? [Y/N] Y\nSending config to DC_NewYork (10.60.1.5)... Done\nSending config to DC_Tokyo   (10.70.1.5)... Done\nGSLB sync completed: 2 sites updated, 0 errors\n\nWhat it means:\n- Pushes the local GSLB-feature config to every remote GSLB site\n  defined in this site's \"show gslb site\" list.\n- Site-to-site sync uses TCP/3010 (sync protocol).\n- DESTRUCTIVE on remote sites — they get overwritten with this\n  site's view. Use -preview first, and only run from your designated\n  \"master\" site."
           },
           {
             "cmd": "show gslb domain",
