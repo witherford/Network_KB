@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T21:08:41.688Z",
+  "updatedAt": "2026-05-01T21:17:30.710Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -14914,61 +14914,71 @@
             "cmd": "show interfaces trunk",
             "desc": "Shows trunking interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces trunk\n\nPort      Mode             Encapsulation  Status        Native vlan\nGi1/0/24  on               802.1q         trunking      99\nPo1       on               802.1q         trunking      99\n\nPort      Vlans allowed on trunk\nGi1/0/24  10,20,30,99\nPo1       1-4094\n\nPort      Vlans allowed and active in management domain\nGi1/0/24  10,20,30,99\n\nPort      Vlans in spanning tree forwarding state and not pruned\nGi1/0/24  10,20,30\n\nWhat it means:\n- \"Mode on\" = manually-configured trunk (no DTP). \"Encapsulation\n  802.1q\" = standard tagging.\n- \"Native vlan 99\" = untagged frames on the trunk land in VLAN 99.\n- \"Vlans allowed\" = configured permission. \"active\" = exists in\n  VLAN database. \"forwarding\" = passing traffic right now.\n- Mismatched native VLANs cause an immediate %SPANTREE-2-PVSTSIM\n  warning at the upstream switch."
           },
           {
             "cmd": "show interfaces switchport",
             "desc": "Shows switchport configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces switchport\n\nName: Gi1/0/24\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nNegotiation of Trunking: Off\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 99 (PRUNE-LIST)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\nTrunking VLANs Enabled: 10,20,30,99\nPruning VLANs Enabled: 2-1001\nCapture Mode: Disabled\n\nWhat it means:\n- One block per L2-capable port. Combines admin (configured) and\n  operational (actual) state.\n- \"Negotiation of Trunking: Off\" = DTP disabled — required by\n  most enterprise security baselines.\n- \"Pruning VLANs\" = VLANs eligible for VTP pruning to reduce\n  unnecessary broadcast traffic."
           },
           {
             "cmd": "show interfaces counters errors",
             "desc": "Shows interface error counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces counters errors\n\nPort      Align-Err  FCS-Err  Xmit-Err  Rcv-Err  UnderSize  OutDiscards\nGi1/0/1   0          12       0         12       0          0\nGi1/0/2   0          0        0         0        0          0\nGi1/0/24  0          0        0         0        0          0\n\nPort      Single-Col  Multi-Col  Late-Col  Excess-Col  Carri-Sen  Runts  Giants\nGi1/0/1   0           0          0         0           0          0      0\nGi1/0/2   0           0          0         0           0          0      0\n\nWhat it means:\n- All-port error summary. Quick triage tool for physical-layer\n  problems.\n- FCS-Err / Align-Err > 0 = bit errors on the wire. Replace cable\n  / clean fibre / verify SFP seating.\n- Late-Col / Excess-Col > 0 = duplex mismatch.\n- Multi-Col / Single-Col on full-duplex ports = should always be 0;\n  non-zero means the port is in half-duplex."
           },
           {
             "cmd": "show interfaces transceiver detail",
             "desc": "Shows SFP/optics details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces transceiver detail\n\nTransceiver monitoring is enabled for all interfaces.\n\nIf device is externally calibrated, only calibrated values are printed.\n++ : high alarm, +  : high warning, -  : low warning, -- : low alarm.\nNA or N/A: not applicable, Tx: transmit, Rx: receive.\nmA: milliamperes, dBm: decibels (milliwatts).\n\n                                       Optical   Optical\n              Temperature  Voltage  Tx Power  Rx Power\nPort          (Celsius)    (Volts)  (dBm)    (dBm)\n---------     -----------  -------  -------- ----------\nGi1/0/24      32.4         3.31     -3.5     -7.2\nTe1/0/1       45.2         3.30     -2.1     -8.4 -\n\nWhat it means:\n- Per-port transceiver telemetry. \"-\" / \"+\" indicate threshold\n  crossings.\n- Rx Power \"-\" warning means signal is weak — fibre dirty, bend\n  too tight, distance too long, or far-end transmitter weak.\n- Temperature > 70°C = airflow problem; check fans and ambient.\n- Tx Power should be near the SFP datasheet value (~-3 dBm typical\n  for 1000BASE-LX, ~-2 dBm for 10GBASE-LR)."
           },
           {
             "cmd": "show interfaces vlan",
             "desc": "Shows VLAN interface status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show interfaces vlan 10\n\nVlan10 is up, line protocol is up\n  Hardware is Ethernet SVI, address is 0c0c.dead.beef\n  Internet address is 10.10.0.1/24\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:01, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0\n\nWhat it means:\n- SVI (Switched Virtual Interface) — the L3 logical interface for\n  a VLAN. State follows whether at least one access port in the\n  VLAN is up + the VLAN exists in the database.\n- \"BW 1000000 Kbit/sec\" = 1 Gbps default for SVIs (hardcoded;\n  doesn't reflect real port speed).\n- \"Output drops 0\" — increases here = QoS or buffer exhaustion\n  on the SVI."
           },
           {
             "cmd": "show interfaces summary",
             "desc": "Shows interface summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces summary\n\n *: interface is up\n IHQ: pkts in input hold queue     IQD: pkts dropped from input queue\n OHQ: pkts in output hold queue    OQD: pkts dropped from output queue\n RXBS: rx rate (bits/sec)          RXPS: rx rate (pkts/sec)\n TXBS: tx rate (bits/sec)          TXPS: tx rate (pkts/sec)\n TRTL: throttle count\n\n  Interface             IHQ   IQD  OHQ   OQD  RXBS RXPS TXBS TXPS TRTL\n* GigabitEthernet0/0    0     0    0     0    9000 12   45000 35    0\n* GigabitEthernet0/1    0     0    0     0    180000 200 24000 30   0\n  GigabitEthernet0/2    0     0    0     0    0      0   0     0    0\n\nWhat it means:\n- Per-interface byte/packet rates and queue stats in one table.\n- Quick spot of bandwidth hogs and dropped queues.\n- IQD/OQD > 0 = queue exhaustion. Look at QoS policy or upgrade\n  link speed.\n- \"*\" = interface is up; no \"*\" = down/admin-down."
           },
           {
             "cmd": "show interfaces accounting",
             "desc": "Shows per?interface traffic accounting",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces accounting Gi0/0\n\nGigabitEthernet0/0\n  Protocol           Pkts In   Chars In   Pkts Out   Chars Out\n  Other              50        21000      40         18000\n  IP                 12,453,012  9.8 GB   12,490,000  10.1 GB\n  ARP                4,502     360,160    4,500       360,000\n  STP                14,503    1.16 MB    0           0\n\nWhat it means:\n- Per-protocol packet/byte counters since last \"clear counters\".\n- Useful for protocol-distribution analysis.\n- \"Other\" usually = ICMP, IGMP, internal control traffic.\n- Disable globally if not needed: \"no ip accounting-list\" — small\n  CPU saving on busy boxes."
           },
           {
             "cmd": "show interfaces <int> transceiver detail",
             "desc": "SFP DOM readings: Tx/Rx power, temperature, voltage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces gi1/0/24 transceiver detail\n\nGigabitEthernet1/0/24:\n  Transceiver type: 1000BASE-LX\n  Vendor:           CISCO-FINISAR\n  Vendor part num:  FTLF1318P3BTL-CS\n  Vendor serial:    FNS192410AC\n  Wavelength:       1310 nm\n\n  Temperature   Voltage   Tx Power   Rx Power\n  (Celsius)    (Volts)   (dBm)     (dBm)\n  32.4         3.31      -3.5       -7.2\n\n  Thresholds:\n  Temperature  Vcc      Tx Power  Rx Power\n  -10/+85      3.0/3.6  -9.5/-3.0 -23/-3.0\n\nWhat it means:\n- Per-port transceiver data — DDM (Digital Diagnostic Monitoring).\n- Compare current values against the threshold ranges. \"-3.5 dBm Tx\"\n  is at the low warning of -9.5/-3.0.\n- \"Vendor part num\" + \"serial\" : useful for warranty / RMA cases.\n- 1310 nm wavelength = single-mode fibre (LX/LH SFP)."
           },
           {
             "cmd": "show mac address-table interface <int>",
             "desc": "MAC addresses learned on a specific interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mac address-table interface gi1/0/1\n\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 10     001a.1e11.2233    DYNAMIC     Gi1/0/1\n 10     001a.1e44.5566    DYNAMIC     Gi1/0/1\n 20     001a.1e77.8899    DYNAMIC     Gi1/0/1\n\nTotal Mac Addresses for this criterion: 3\n\nWhat it means:\n- All MAC addresses learned on the named port.\n- Multiple MACs per port = port is a trunk OR a downstream\n  switch / IP phone with PC behind it.\n- DYNAMIC = learned from observed frames. STATIC = manually\n  configured / sticky. SECURE = learned via port-security.\n- Empty list on an active port = bad cabling or upstream device\n  isn't transmitting."
           },
           {
             "cmd": "show interfaces <int> counters etherchannel",
             "desc": "Per-member traffic distribution in a LAG",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces gi1/0/1 counters etherchannel\n\nPort        InOctets         InUcastPkts   InMcastPkts   InBcastPkts\nGi1/0/1     12,045,302       142,012       4,502         12\n\nPort        OutOctets        OutUcastPkts  OutMcastPkts  OutBcastPkts\nGi1/0/1     31,890,142       890,012       12,003        45\n\nWhat it means:\n- Counters specific to the port's role within an EtherChannel\n  bundle.\n- \"InMcastPkts\" / \"InBcastPkts\" should be similar across all\n  members of the bundle (same broadcast traffic seen on all ports)\n  — large differences indicate hash imbalance.\n- Use to verify the channel is actually load-balancing instead of\n  hashing all flows to one port."
           },
           {
             "cmd": "show etherchannel summary",
@@ -14988,37 +14998,43 @@
             "cmd": "clear counters <int>",
             "desc": "Reset interface counters before reproducing a test",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# clear counters gi1/0/1\n\nClear \"show interface\" counters on this interface [confirm]\n\nSwitch# show interfaces gi1/0/1 | include packets\n     0 packets input, 0 bytes, 0 no buffer\n     0 packets output, 0 bytes, 0 underruns\n\nWhat it means:\n- Resets all packet / byte / error counters on the named interface\n  to zero.\n- Useful before reproducing an issue — establishes a clean baseline.\n- \"clear counters\" with no interface clears ALL interfaces.\n- Does NOT affect counter accumulation in NetFlow / SNMP MIBs;\n  only the locally-displayed counters."
           },
           {
             "cmd": "test cable-diagnostics tdr interface <int>",
             "desc": "Physical-layer TDR on copper ports",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# test cable-diagnostics tdr interface gi1/0/1\n\nTDR test started on interface Gi1/0/1\nA TDR test can take a few seconds to run on an interface\nUse 'show cable-diagnostics tdr' to read the TDR results.\n\nSwitch# show cable-diagnostics tdr interface gi1/0/1\nTDR test last run on: May  1 11:22:18.123\nInterface Speed   Local pair  Pair length  Remote pair  Pair status\nGi1/0/1   1000Mb  1-2         32 m  +/- 4  3-6          Normal\n                  3-6         32 m  +/- 4  1-2          Normal\n                  4-5         32 m  +/- 4  7-8          Normal\n                  7-8         32 m  +/- 4  4-5          Normal\n\nWhat it means:\n- TDR (Time-Domain Reflectometry) sends a pulse down each twisted\n  pair and times the reflection.\n- \"Normal\" + length consistent across pairs = healthy cable.\n- \"Open\" : break in cable at the reported length.\n- \"Short\" : two pairs shorted together.\n- \"Impedance Mismatch\" : connector/cable defect."
           },
           {
             "cmd": "interface range <range>\\n description <text>\\n switchport mode access\\n switchport access vlan <id>",
             "desc": "Bulk-configure a range of access ports",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface range gi1/0/1 - 24\nSwitch(config-if-range)# description User-Access-Ports\nSwitch(config-if-range)# switchport mode access\nSwitch(config-if-range)# switchport access vlan 10\nSwitch(config-if-range)# spanning-tree portfast\nSwitch(config-if-range)# spanning-tree bpduguard enable\nSwitch(config-if-range)# no shutdown\n\nWhat it means:\n- \"interface range\" applies the same config to multiple ports at\n  once — saves typing on switch deployments.\n- Range format: \"gi1/0/1 - 24\" = ports 1 through 24 on switch 1\n  module 0.\n- \"switchport mode access\" forces the port to be untagged\n  (single-VLAN); without this, the port might auto-negotiate to\n  a trunk via DTP (security risk).\n- Combine portfast + bpduguard on access ports — fast STP up plus\n  protection if a switch is plugged in."
           },
           {
             "cmd": "show interfaces counters",
             "desc": "Bytes/packets in/out per interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces counters\n\nPort      InOctets         InUcastPkts   InMcastPkts  InBcastPkts\nGi1/0/1   12,045,302       142,012       4,502        12\nGi1/0/24  890,123,456      8,901,234     142,003      4\n\nPort      OutOctets        OutUcastPkts  OutMcastPkts OutBcastPkts\nGi1/0/1   31,890,142       890,012       12,003       45\nGi1/0/24  1,245,678,901    12,400,123    412,012      120\n\nWhat it means:\n- All-port traffic counters. RX vs TX byte/packet split per port.\n- High broadcast / multicast on a user-access port = possible\n  L2 loop or misconfigured client.\n- Compare aggregate uplink throughput to capacity — sustained\n  >70% utilisation is a planning trigger."
           },
           {
             "cmd": "show power inline",
             "desc": "PoE budget, per-port draw, operational state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show power inline\n\nAvailable:740.0(w)  Used:142.0(w)  Remaining:598.0(w)\n\nInterface Admin  Oper       Power   Device              Class Max\n                            (Watts)\n--------- ------ ---------- ------- ------------------- ----- ----\nGi1/0/1   auto   on         15.4    IP-Phone-7945       3     30.0\nGi1/0/2   auto   on         7.0     AP-CB1042I          1     15.4\nGi1/0/3   auto   off        0.0     n/a                 n/a   30.0\n\nWhat it means:\n- PoE power budget. \"Available\" = total PSU PoE capacity.\n- \"Class\" 0-4 follows IEEE 802.3af/at convention:\n  - Class 1: 4W, Class 2: 7W, Class 3: 15.4W, Class 4: 30W (PoE+),\n  - \"Class 6/7/8\" : UPOE (60W/90W/100W) on supporting platforms.\n- \"Used / Remaining\" : monitor before adding new PDs to avoid\n  PoE budget exhaustion."
           },
           {
             "cmd": "show interfaces <int> controller",
             "desc": "SFP/Phy details (useful for SFP-DOM issues)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces gi1/0/1 controller\n\nInterface gi1/0/1, Hardware: BCM5616 ASIC, address: 001a.1e11.2233\nDescription: User-Access\nMTU: 1500, BW: 1000Mbps, Speed: 1000Mbps, Duplex: Full\nDriver: ucs-ether\nRX queues: 2, TX queues: 4\nStatistics:\n  RX: 12,045,302 packets, 12,402,045,123 bytes\n  RX dropped: 0\n  TX: 8,901,234 packets, 5,123,400,000 bytes\n  TX dropped: 0\n  Misses: 0\n\nWhat it means:\n- Low-level controller-specific data. Useful for hardware-vendor\n  troubleshooting or matching driver versions.\n- \"Misses\" = times the ASIC couldn't queue a packet (buffer\n  exhaustion). > 0 = capacity issue.\n- \"Driver: ucs-ether\" identifies the IOS driver name for support\n  case correlation."
           },
           {
             "cmd": "show vlan brief",
@@ -15038,7 +15054,8 @@
             "cmd": "show spanning-tree inconsistentports",
             "desc": "Ports currently in an inconsistent STP state",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree inconsistentports\n\nName                 Interface              Inconsistency\n-------------------- ---------------------- ------------------\nVLAN0010             GigabitEthernet1/0/24  Type Inconsistent\nVLAN0010             GigabitEthernet1/0/24  PVID Inconsistent\n\nNumber of inconsistent ports (segments) in the system : 2\n\nWhat it means:\n- Lists ports STP put into BLOCKING due to a detected inconsistency.\n- \"Type Inconsistent\" : trunk on one end, access on the other\n  (configuration mismatch).\n- \"PVID Inconsistent\" : different native VLANs on the two ends\n  of the trunk.\n- These are *guard* mechanisms: STP refuses to forward to prevent\n  a loop. Fix the config mismatch and the port recovers."
           },
           {
             "cmd": "show cdp neighbors detail",
@@ -15051,103 +15068,120 @@
             "cmd": "show ip interface brief | exclude unassigned",
             "desc": "L3 interfaces with addresses",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip interface brief | exclude unassigned\n\nInterface              IP-Address      OK?  Method  Status                Protocol\nGigabitEthernet0/0     10.10.10.1      YES  manual  up                    up\nGigabitEthernet0/1     198.51.100.5    YES  manual  up                    up\nLoopback0              1.1.1.1         YES  manual  up                    up\n\nWhat it means:\n- Hides interfaces with no IP assigned (which would otherwise\n  flood the output on a busy switch).\n- \"Method manual\" : statically configured via \"ip address\".\n  Other methods: DHCP, NVRAM (unrolled from startup), TFTP.\n- Most-used quick-status command for L3 interfaces."
           },
           {
             "cmd": "show controllers Te0/0/0 phy detail",
             "desc": "PHY-level link diagnostics on a 10GE port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Router# show controllers Te0/0/0 phy detail\n\nTenGigabitEthernet0/0/0 - 10G PHY: Marvell 88X2042\nPHY status:\n  Mode: 10GBASE-LR\n  Operating temperature: 42 C\n  Link status: up\n  Auto-negotiation: completed\n  Power level: -2.4 dBm Tx, -5.7 dBm Rx\n  CRC errors: 12\n  Symbol errors: 0\n  Frame loss seconds: 0\n\nWhat it means:\n- Per-PHY detail for 10G/40G/100G interfaces. Shows transceiver\n  status from the silicon's point of view.\n- \"CRC errors\" / \"Symbol errors\" climbing > 0 = physical-layer\n  issues (cable, transceiver, fibre dirty).\n- Power levels should match SFP datasheet ranges; \"low Rx\" warns\n  of weak signal."
           },
           {
             "cmd": "interface range Gi1/0/1-24",
             "desc": "Configure a contiguous range of interfaces",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface range Gi1/0/1 - 24\n\nSwitch(config-if-range)# description User-Access-Ports\nSwitch(config-if-range)# switchport mode access\nSwitch(config-if-range)# switchport access vlan 10\n\nWhat it means:\n- Selects a range of interfaces for bulk configuration.\n- Range syntax: \"Gi1/0/1 - 24\" (with spaces around the hyphen) for\n  contiguous ports, or comma-separated lists: \"Gi1/0/1, Gi1/0/3, Gi1/0/5\".\n- All commands within (config-if-range) apply to every interface\n  in the selection."
           },
           {
             "cmd": "interface Gi1/0/1\n description UPLINK\n switchport mode access\n switchport access vlan 10\n no shutdown",
             "desc": "Access port template",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface Gi1/0/1\nSwitch(config-if)# description UPLINK\nSwitch(config-if)# switchport mode access\nSwitch(config-if)# switchport access vlan 10\nSwitch(config-if)# no shutdown\n\nSwitch# show running-config interface Gi1/0/1\ninterface GigabitEthernet1/0/1\n description UPLINK\n switchport access vlan 10\n switchport mode access\n no shutdown\nend\n\nWhat it means:\n- Standard access-port template for a user device on VLAN 10.\n- \"no shutdown\" : last step — interface comes online once L1/L2 is\n  ready.\n- Add \"spanning-tree portfast\" + \"spanning-tree bpduguard enable\"\n  for production access ports (skip STP delay + protect from\n  rogue switches)."
           },
           {
             "cmd": "interface Gi1/0/24\n description TRUNK\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30\n switchport trunk native vlan 99",
             "desc": "Trunk port template",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface Gi1/0/24\nSwitch(config-if)# description TRUNK\nSwitch(config-if)# switchport mode trunk\nSwitch(config-if)# switchport trunk allowed vlan 10,20,30\nSwitch(config-if)# switchport trunk native vlan 99\nSwitch(config-if)# switchport nonegotiate\n\nSwitch# show interfaces Gi1/0/24 trunk | head -3\nPort      Mode  Encapsulation  Status        Native vlan\nGi1/0/24  on    802.1q         trunking      99\n\nWhat it means:\n- Standard trunk template — three data VLANs + a \"dummy\" native\n  VLAN (99) so untagged frames don't accidentally land in a real\n  user VLAN.\n- \"switchport nonegotiate\" disables DTP — required by most\n  enterprise security baselines.\n- Always set \"trunk allowed vlan\" explicitly; default is 1-4094\n  which makes it harder to track which ports carry which VLAN."
           },
           {
             "cmd": "interface Po1\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30",
             "desc": "Port-channel logical interface",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface Port-channel1\nSwitch(config-if)# switchport mode trunk\nSwitch(config-if)# switchport trunk allowed vlan 10,20,30\n\nSwitch# show interfaces Po1 trunk\nPort      Mode  Encapsulation  Status     Native vlan\nPo1       on    802.1q         trunking   1\nPo1       Vlans allowed on trunk: 10,20,30\n\nWhat it means:\n- L2 EtherChannel (Port-channel) interface — same trunk semantics\n  as a physical interface.\n- Configure trunk parameters on the Port-channel, NOT individual\n  members; member ports inherit.\n- Members must agree on key settings (speed, duplex, trunk mode)\n  or the bundle won't form."
           },
           {
             "cmd": "interface Gi1/0/1\n channel-group 1 mode active\n channel-protocol lacp",
             "desc": "Add interface to a LACP port-channel",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface Gi1/0/1\nSwitch(config-if)# channel-group 1 mode active\nSwitch(config-if)# channel-protocol lacp\n\nSwitch(config)# interface Gi1/0/2\nSwitch(config-if)# channel-group 1 mode active\n\nSwitch# show etherchannel 1 summary | include 1\\s\n1      Po1(SU)         LACP      Gi1/0/1(P)  Gi1/0/2(P)\n\nWhat it means:\n- Adds physical interfaces to channel-group 1, becoming Po1.\n- \"mode active\" : actively send LACPDU. Pair with \"active\" or\n  \"passive\" on the other end. \"active+active\" = fastest, safest.\n- \"(SU)\" status = Layer-2 + In-Use. \"(P)\" per-member = bundled\n  successfully."
           },
           {
             "cmd": "shutdown",
             "desc": "Disable an interface administratively",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# shutdown\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to administratively down\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to down\n\nR1# show interfaces gi0/1 | include line protocol\nGigabitEthernet0/1 is administratively down, line protocol is down\n\nWhat it means:\n- Administratively disables the interface. Power on the port stays\n  but no traffic flows.\n- Reverse with \"no shutdown\".\n- Default state on most platforms is shutdown — must explicitly\n  \"no shutdown\" newly-configured interfaces."
           },
           {
             "cmd": "no shutdown",
             "desc": "Re-enable an interface",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# no shutdown\n\n%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n\nR1# show interfaces gi0/1 | include line protocol\nGigabitEthernet0/1 is up, line protocol is up\n\nWhat it means:\n- Brings the interface administratively up. L1/L2 negotiation runs;\n  \"line protocol up\" confirms the data link is operational.\n- \"no shutdown\" with no L1 = \"interface is up, line protocol is\n  down\" (admin up, but cable/transceiver problem)."
           },
           {
             "cmd": "speed 1000",
             "desc": "Force 1G speed",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# speed 1000\n\nR1# show interfaces gi0/1 | include speed\n  Auto Speed (1000 Mbps), 1000BaseTX, link type is auto, media type is RJ45\n\nWhat it means:\n- Forces 1 Gbps. Other values: 10, 100, 1000, 10000, auto.\n- Use \"auto\" unless you have a specific reason — modern equipment\n  negotiates correctly.\n- Hardcoding speed disables auto-negotiation on some platforms;\n  if you hardcode, hardcode duplex too."
           },
           {
             "cmd": "duplex full",
             "desc": "Force full duplex",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# duplex full\n\nR1# show interfaces gi0/1 | include duplex\n  Full-duplex, 1000Mb/s, link type is force-up, media type is RJ45\n\nWhat it means:\n- Forces full-duplex (simultaneous TX + RX). The default and only\n  reasonable choice for switch-to-switch / switch-to-router links.\n- \"half-duplex\" exists for legacy hub connections — extremely\n  rare in modern networks.\n- Mismatched duplex = late collisions on the half-duplex side and\n  silent packet loss."
           },
           {
             "cmd": "mtu 9216",
             "desc": "Set jumbo MTU on an L3 interface",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# mtu 9216\n\nR1# show interfaces gi0/0 | include MTU\n  MTU 9216 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n\nWhat it means:\n- Sets jumbo-frame MTU (max payload). 9216 = 9000 byte payload +\n  jumbo Ethernet header overhead.\n- All devices on the L2 segment MUST support the same MTU,\n  otherwise larger frames are silently dropped.\n- Common values: 1500 (standard), 9000 (jumbo), 9216 (max jumbo).\n- Per-protocol MTU may differ: \"ip mtu 9000\" sets just the IP\n  payload limit on the same interface."
           },
           {
             "cmd": "errdisable recovery cause all",
             "desc": "Auto-recover all err-disabled causes",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# errdisable recovery cause all\n\nSwitch# show errdisable recovery\nErrDisable Reason            Timer Status\n-----------------            --------------\nudld                         Enabled\nbpduguard                    Enabled\nloopback                     Enabled\npsecure-violation            Enabled\n... (all causes)             Enabled\n\nWhat it means:\n- Enables auto-recovery from any err-disable condition. Without\n  this, a triggered port stays errdisabled until manual\n  \"shut/no shut\".\n- Default recovery interval = 300 seconds.\n- For specific causes only: \"errdisable recovery cause bpduguard\".\n- Best practice: enable recovery for the common causes (BPDU\n  guard, security violations, UDLD), but NOT for all (some causes\n  represent persistent hardware faults)."
           },
           {
             "cmd": "errdisable recovery interval 60",
             "desc": "Recovery interval in seconds",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# errdisable recovery interval 60\n\nSwitch# show errdisable recovery | include Timer\nTimer interval: 60 seconds\n\nWhat it means:\n- Sets how long a port stays errdisabled before auto-recovery\n  attempts. Default 300 sec; 60 = aggressive 1-min recovery.\n- Lower = faster recovery from transient issues (e.g. switch\n  briefly plugged into wrong port).\n- Higher = give operator time to diagnose before port returns\n  on its own."
           },
           {
             "cmd": "show errdisable recovery",
             "desc": "Which causes are auto-recovering and the timer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show errdisable recovery\n\nErrDisable Reason            Timer Status\n-----------------            --------------\nudld                         Enabled\nbpduguard                    Enabled\nloopback                     Disabled\npsecure-violation            Enabled\n\nTimer interval: 300 seconds\n\nInterfaces that will be enabled at the next timeout:\nInterface     Errdisable reason     Time left(sec)\n---------     ----------------      --------------\nGi1/0/1       bpduguard             142\n\nWhat it means:\n- Top: which causes trigger automatic recovery and which require\n  manual intervention.\n- Bottom: ports CURRENTLY errdisabled and seconds until they\n  re-enable.\n- \"Disabled\" causes (loopback above) leave the port errdisabled\n  permanently — operator must manually intervene."
           },
           {
             "cmd": "ipv6 address ipv6-address/prefix-length",
             "desc": "Assign an IPv6 Address to an Interface. — Can be repeated multiple times; requires `no shutdown` if not auto-enabled.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/0\nR1(config-if)# ipv6 address 2001:db8:1::1/64\nR1(config-if)# ipv6 enable\n\nR1# show ipv6 interface brief gi0/0\nGigabitEthernet0/0     [up/up]\n    FE80::1\n    2001:DB8:1::1\n\nWhat it means:\n- Adds a global-scope IPv6 address. \"/64\" is the de-facto standard\n  IPv6 LAN prefix length.\n- \"ipv6 enable\" enables IPv6 processing AND auto-configures a\n  link-local (FE80::*) address — required for any IPv6\n  functionality.\n- Multiple IPv6 addresses per interface are normal: link-local +\n  one or more global-scope addresses."
           },
           {
             "cmd": "errdisable recovery interval time-seconds",
             "desc": "Change the Automatic Error Recovery Time. — Modifies the timer from default 5 minutes to a value of 30-86400 seconds.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# errdisable recovery interval 120\n\nSwitch# show errdisable recovery | include interval\nTimer interval: 120 seconds\n\nWhat it means:\n- Generic syntax for setting recovery interval. Range: 30-86400\n  seconds (30 sec to 24 hours).\n- Same setting as \"errdisable recovery interval 60\" above; 120 sec\n  is a common compromise between fast recovery and operator\n  reaction time."
           },
           {
             "cmd": "show interface GigabitEthernet1/0/1 transceiver detail",
@@ -15174,97 +15208,113 @@
             "cmd": "interface <type> <number>",
             "desc": "Enters config mode for a specific interface e.g. GigabitEthernet0/1",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface GigabitEthernet 0/0\nR1(config-if)#\n\nR1(config)# interface vlan 10\nR1(config-if)#\n\nR1(config)# interface loopback 0\nR1(config-if)#\n\nWhat it means:\n- Generic syntax for entering an interface configuration mode.\n- Common types: GigabitEthernet, TenGigE, Loopback, Vlan, Tunnel,\n  Port-channel, Serial.\n- Shorthand abbreviations work: \"int gi0/0\" = \"interface\n  GigabitEthernet0/0\"."
           },
           {
             "cmd": "interface range <type> <start> - <end>",
             "desc": "Configure multiple interfaces simultaneously",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface range GigabitEthernet 1/0/1 - 24\n\nSwitch(config-if-range)# description User-Access\nSwitch(config-if-range)# switchport mode access\n\nWhat it means:\n- Generic syntax for selecting a contiguous range of interfaces.\n- Saves significant config volume on switch deployments —\n  configure 24 ports in one block.\n- Spaces around the hyphen ARE required: \"1/0/1 - 24\" not \"1/0/1-24\".\n- Mix and match multiple ranges: \"interface range gi1/0/1 - 12,\n  gi1/0/24\" combines both."
           },
           {
             "cmd": "description <text>",
             "desc": "Adds a human-readable description to the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/0\nR1(config-if)# description WAN-uplink-to-ISP-A_circuit_12345\n\nR1# show interfaces gi0/0 | include Description\n  Description: WAN-uplink-to-ISP-A_circuit_12345\n\nWhat it means:\n- Free-form description (max 240 chars). Visible in show output\n  and SNMP \"ifAlias\".\n- Best practice: include circuit ID, peer device name, link role —\n  saves time during incident response.\n- Avoid spaces if you'll grep it later; underscores or hyphens\n  are easier to filter."
           },
           {
             "cmd": "switchport mode access",
             "desc": "Sets the port as an access port (untagged, single VLAN)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode access\n\nSwitch# show interfaces gi1/0/1 switchport | include Mode\nAdministrative Mode: static access\nOperational Mode: static access\n\nWhat it means:\n- Forces a single-VLAN access port. Untagged frames only.\n- Disables DTP negotiation — port won't accidentally become a\n  trunk because someone connected a switch.\n- Always set this explicitly on user-facing ports; relying on\n  default (\"dynamic auto\") is a security weakness."
           },
           {
             "cmd": "switchport access vlan <id>",
             "desc": "Assigns the access port to a specific VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport access vlan 10\n\nSwitch# show interfaces gi1/0/1 switchport | include Access\nAccess Mode VLAN: 10 (DATA)\n\nWhat it means:\n- Assigns the access port to VLAN 10. All untagged ingress is\n  classified as VLAN 10; VLAN 10 frames are sent untagged.\n- VLAN must already exist in the VLAN database (or \"vlan 10\n  name DATA\" gets auto-created on most modern IOS).\n- Pair with \"voice vlan N\" to make this a \"data + voice\" port for\n  IP phones."
           },
           {
             "cmd": "switchport mode trunk",
             "desc": "Sets the port as a trunk (carries multiple tagged VLANs)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode trunk\n\nSwitch# show interfaces gi1/0/24 switchport | include Mode\nAdministrative Mode: trunk\nOperational Mode: trunk\n\nWhat it means:\n- Forces 802.1q trunk mode. Frames carry VLAN tags except for the\n  native VLAN.\n- Disables DTP — required by most enterprise security baselines.\n- Pair with \"switchport trunk allowed vlan\" to restrict the trunk\n  to specific VLANs."
           },
           {
             "cmd": "switchport trunk allowed vlan <vlan-list>",
             "desc": "Specifies which VLANs are permitted on this trunk port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport trunk allowed vlan 10,20,30\n\nSwitch# show interfaces gi1/0/24 trunk | include 10,20,30\nGi1/0/24  Vlans allowed on trunk: 10,20,30\n\n# Add to existing list (don't overwrite):\nSwitch(config-if)# switchport trunk allowed vlan add 40\n\n# Remove specific:\nSwitch(config-if)# switchport trunk allowed vlan remove 20\n\nWhat it means:\n- Restricts which VLANs traverse the trunk. Default: 1-4094 (all).\n- Use \"add\" / \"remove\" to modify without re-typing the full list.\n- Best practice: explicit list per trunk — easier to track which\n  VLANs each link carries during incident response."
           },
           {
             "cmd": "switchport trunk native vlan <id>",
             "desc": "Sets the native (untagged) VLAN on a trunk port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport trunk native vlan 99\n\nSwitch# show interfaces gi1/0/24 trunk | head -3\nPort      Mode  Encapsulation  Status     Native vlan\nGi1/0/24  on    802.1q         trunking   99\n\nWhat it means:\n- The native VLAN carries untagged traffic on a trunk. Both ends\n  must agree.\n- Best practice: use a dummy unused VLAN (here 99) for native —\n  prevents untagged management/control traffic from accidentally\n  flooding into a user data VLAN.\n- Enable \"vlan dot1q tag native\" globally to force tagging of\n  native VLAN traffic for additional security."
           },
           {
             "cmd": "switchport nonegotiate",
             "desc": "Disables DTP (Dynamic Trunking Protocol) negotiation on the port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport nonegotiate\n\nSwitch# show interfaces gi1/0/24 switchport | include Negotiation\nNegotiation of Trunking: Off\n\nWhat it means:\n- Disables DTP (Dynamic Trunking Protocol). Port will NOT\n  advertise itself or react to negotiation messages.\n- Required step in security hardening — prevents an attacker\n  plugging into an access port and forming a rogue trunk.\n- Run on every access port AND on every manually-configured\n  trunk."
           },
           {
             "cmd": "speed <10|100|1000|auto>",
             "desc": "Manually sets the interface speed in Mbps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# speed auto                ! recommended\nR1(config-if)# speed 1000                ! force 1 Gbps\nR1(config-if)# speed 100 100             ! preferred 100, fallback 100\n\nWhat it means:\n- Forces a specific link speed. \"auto\" lets the PHY negotiate.\n- 99% of deployments should use \"auto\" — modern equipment\n  negotiates correctly.\n- Hardcode only when peer doesn't support auto-negotiation\n  (extremely rare on modern gear).\n- If you hardcode speed, also hardcode duplex."
           },
           {
             "cmd": "duplex <full|half|auto>",
             "desc": "Manually sets the interface duplex mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# duplex auto              ! recommended\nR1(config-if)# duplex full               ! force full-duplex\n\nWhat it means:\n- Default is \"auto\". \"full\" = simultaneous TX/RX (modern); \"half\"\n  = legacy hub-style.\n- Mismatched duplex = late collisions, silent packet loss.\n- Hardcode only if peer doesn't auto-negotiate."
           },
           {
             "cmd": "spanning-tree portfast",
             "desc": "Enables PortFast — bypasses STP listening and learning states",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree portfast\n\n%Warning: portfast should only be enabled on ports connected to a single\nhost. Connecting hubs, concentrators, switches, bridges, etc... to this\ninterface when portfast is enabled, can cause temporary bridging loops.\n\nWhat it means:\n- Skips the listening + learning STP states. Port goes straight\n  from BLOCKING to FORWARDING when link comes up.\n- Saves ~30 sec on user-port boot — important for DHCP / PXE.\n- ONLY use on edge ports facing PCs / phones / printers — NEVER\n  on switch-to-switch links.\n- Pair with \"spanning-tree bpduguard enable\" to err-disable the\n  port if a switch is accidentally plugged in."
           },
           {
             "cmd": "spanning-tree bpduguard enable",
             "desc": "Enables BPDU Guard — error-disables port if a BPDU is received",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree bpduguard enable\n\n# If a switch is plugged into this port:\n%SPANTREE-2-BLOCK_BPDUGUARD: Received BPDU on port Gi1/0/1 with BPDU Guard enabled.\n                              Disabling port.\n%PM-4-ERR_DISABLE: bpduguard error detected on Gi1/0/1, putting Gi1/0/1\n                   in err-disable state\n\nWhat it means:\n- If ANY BPDU arrives on this port, immediately err-disable it.\n- Stops a rogue switch from joining STP via this port (risk: it\n  could become root and reroute traffic).\n- Recover via \"shut/no shut\" or auto-recovery if configured.\n- Always pair with \"spanning-tree portfast\" on access ports."
           },
           {
             "cmd": "storm-control broadcast level <percent>",
             "desc": "Limits broadcast traffic to a percentage of total bandwidth",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# storm-control broadcast level 10\nSwitch(config-if)# storm-control multicast level 30\nSwitch(config-if)# storm-control action shutdown\n\n# When broadcast traffic exceeds 10% of interface bandwidth:\n%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on Gi1/0/1.\n                            A packet filter action has been applied.\n\nWhat it means:\n- Rate-limits broadcast / multicast / unknown-unicast traffic to\n  the named percentage of link capacity.\n- Action options: filter (default — drop excess), shutdown\n  (errdisable port), trap (snmp notify only).\n- Critical on edge switch ports — a BUM storm on one port can\n  consume the entire fabric without storm-control."
           },
           {
             "cmd": "mtu <bytes>",
             "desc": "Sets the interface MTU — use 9216 for jumbo frames",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# mtu 9000\n\nR1# show interfaces gi0/0 | include MTU\n  MTU 9000 bytes, BW 1000000 Kbit/sec\n\nWhat it means:\n- Sets MTU at the L2 layer. 1500 = standard, 9000 = jumbo, 9216 =\n  max jumbo on most platforms.\n- All devices on the same L2 segment must agree on MTU. Mismatch\n  = silent drops of larger frames.\n- For IP-only MTU control, use \"ip mtu N\" — affects only the IP\n  payload limit and doesn't cascade to other L2 protocols."
           },
           {
             "cmd": "carrier-delay msec 0",
             "desc": "Disables interface carrier delay for faster convergence on link changes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# carrier-delay msec 0\n\nR1# show interfaces gi0/1 | include Carrier\n  Carrier delay is 0 msec\n\nWhat it means:\n- Time the router waits after a link-down event before declaring\n  the line protocol down. Default = 2 sec.\n- \"msec 0\" = react immediately — important on routing-protocol\n  links where 2 sec of perceived UP after a real failure adds\n  to convergence time.\n- Pair with BFD for sub-second failure detection on critical\n  L3 links."
           }
         ],
         "Routing": [
@@ -15972,7 +16022,8 @@
             "cmd": "spanning-tree guard root",
             "desc": "Enables Root Guard to prevent unauthorised root bridge election",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/24\nSwitch(config-if)# spanning-tree guard root\n\n# If a \"better\" BPDU (would make peer the root) arrives:\n%SPANTREE-2-ROOTGUARD_BLOCK: Root guard blocking port Gi1/0/24 on VLAN0010.\n\nWhat it means:\n- Prevents the connected switch from becoming the STP root.\n- Use on ports facing other administrative domains (e.g. partner\n  / customer switch) where you don't want their topology changes\n  to alter your root.\n- If a \"superior\" BPDU arrives, port goes into \"root-inconsistent\"\n  blocking state — recovers automatically when the offending\n  BPDU stops."
           },
           {
             "cmd": "ip access-list extended <name>",
@@ -17115,19 +17166,22 @@
             "cmd": "show spanning-tree summary",
             "desc": "Per-VLAN STP root + protect/loopguard counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree summary\n\nSwitch is in rapid-pvst mode\nRoot bridge for: VLAN0001, VLAN0010, VLAN0020\nExtended system ID                      is enabled\nPortfast Default                        is disabled\nPortFast BPDU Guard Default             is disabled\nPortfast BPDU Filter Default            is disabled\nLoopguard Default                       is disabled\nEtherChannel misconfig guard            is enabled\nUplinkFast                              is disabled\nBackboneFast                            is disabled\nConfigured Pathcost method used is short\n\nName        Blocking Listening Learning Forwarding STP Active\nVLAN0001    0        0         0         8          8\nVLAN0010    0        0         0         12         12\nVLAN0020    1        0         0         11         12\n----------  -------- --------- --------- ---------- ----------\n3 vlans     1        0         0         31         32\n\nWhat it means:\n- One-line-per-VLAN STP state summary.\n- \"Forwarding\" = passing traffic. \"Blocking\" = STP put it into\n  blocking to prevent loops.\n- \"Root bridge for: VLAN0001...\" = this switch is root for those\n  VLANs.\n- mode \"rapid-pvst\" : RSTP per VLAN (Cisco default on Catalyst)."
           },
           {
             "cmd": "show spanning-tree blockedports",
             "desc": "STP-blocked ports across all VLANs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree blockedports\n\nName                 Blocked Interfaces List\n-------------------- ------------------------------------\nVLAN0020             Gi1/0/24\nVLAN0030             Gi1/0/24\n\nNumber of blocked ports (segments) in the system: 2\n\nWhat it means:\n- Quickly lists ports STP is blocking — helps spot redundancy\n  paths and confirm STP topology is what you expect.\n- A port appearing in multiple VLANs (Gi1/0/24 above) is a trunk\n  blocking for some VLANs but possibly forwarding for others\n  (PVST / RPVST per-VLAN root)."
           },
           {
             "cmd": "show spanning-tree mst",
             "desc": "MST instances + member VLANs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree mst\n\n##### MST0    vlans mapped:   1-9,11-19,21-4094\nBridge        address 0050.5612.3456  priority      32768 (32768 sysid 0)\nRoot          this switch for the CIST\n\nInterface       Role Sts Cost      Prio.Nbr Type\n--------------- ---- --- --------- -------- --------------------------------\nGi1/0/1         Desg FWD 200000    128.1    P2p\nGi1/0/24        Desg FWD 20000     128.24   P2p\n\n##### MST1    vlans mapped:   10\nBridge        address 0050.5612.3456  priority      24586 (24576 sysid 10)\nRoot          this switch for MST1\n\nWhat it means:\n- MSTP (Multiple Spanning Tree) reduces STP overhead by mapping\n  multiple VLANs to a single instance.\n- \"MST0\" : default instance — every VLAN not mapped elsewhere.\n- \"vlans mapped: 10\" on MST1 : only VLAN 10 in this instance.\n- \"Role Desg\" / \"Sts FWD\" : designated, forwarding (healthy)."
           },
           {
             "cmd": "show etherchannel summary",
@@ -17140,7 +17194,8 @@
             "cmd": "show etherchannel load-balance",
             "desc": "Active EtherChannel hash algorithm",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show etherchannel load-balance\n\nEtherChannel Load-Balancing Configuration:\n        src-dst-ip\n\nEtherChannel Load-Balancing Addresses Used Per-Protocol:\nNon-IP: Source XOR Destination MAC address\n  IPv4: Source XOR Destination IP address\n  IPv6: Source XOR Destination IP address\n\nWhat it means:\n- Hash algorithm used to distribute flows across bundle members.\n- \"src-dst-ip\" : symmetric hashing of source + destination IPs.\n  Ensures bidirectional traffic of one flow stays on the same\n  member port.\n- Other options: src-mac, dst-mac, src-dst-mac, src-port,\n  dst-port, src-dst-port (L4 hashing).\n- Use src-dst-ip for routed traffic, src-dst-mac for L2-only\n  switching."
           },
           {
             "cmd": "show mac address-table",
@@ -17153,91 +17208,106 @@
             "cmd": "show mac address-table address 0050.5612.3456",
             "desc": "Find which port a MAC is on",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mac address-table address 0050.5612.3456\n\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 10     0050.5612.3456    DYNAMIC     Gi1/0/1\n\nWhat it means:\n- Locates a specific MAC in the L2 forwarding table — critical\n  for \"where is this device plugged in?\" investigations.\n- Use after \"arp -a\" on Windows or \"ip neigh\" on Linux to track\n  a complaining user's MAC back to a switch port.\n- DYNAMIC = learned from traffic. Consider sticky / static for\n  known devices that should never move."
           },
           {
             "cmd": "show mac address-table dynamic vlan 10",
             "desc": "MAC table for one VLAN, dynamic only",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mac address-table dynamic vlan 10\n\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 10     0050.5612.3456    DYNAMIC     Gi1/0/1\n 10     0050.5612.3457    DYNAMIC     Gi1/0/2\n 10     001a.1e11.2233    DYNAMIC     Gi1/0/24\n\nTotal Mac Addresses for this criterion: 3\n\nWhat it means:\n- All dynamically-learned MACs in VLAN 10 — a per-VLAN census.\n- Useful for capacity planning (how many devices in each VLAN)\n  and investigating broadcast/multicast bursts.\n- Compare with \"show mac address-table count\" for aggregate\n  numbers per VLAN."
           },
           {
             "cmd": "show mac address-table count",
             "desc": "Total / dynamic / static MAC counts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mac address-table count\n\nMac Entries for Vlan : 1\n---------------------------\nDynamic Address Count    : 4\nStatic Address Count     : 0\nTotal Mac Addresses      : 4\n\nMac Entries for Vlan : 10\n---------------------------\nDynamic Address Count    : 142\nStatic Address Count     : 2\nTotal Mac Addresses      : 144\n\nTotal Mac Address Space Available: 16384\n\nWhat it means:\n- Per-VLAN MAC count + global capacity.\n- \"Total Mac Address Space Available\" : remaining capacity. On\n  Catalyst 3850/9300 typical limit is 32k.\n- A single VLAN consuming most of the table = potential L2 loop\n  or excessive broadcast domain."
           },
           {
             "cmd": "spanning-tree mode rapid-pvst",
             "desc": "Use RPVST+ (modern default)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree mode rapid-pvst\n\nSwitch# show spanning-tree summary | include mode\nSwitch is in rapid-pvst mode\n\nWhat it means:\n- Rapid PVST+ (RPVST+) : Cisco's per-VLAN RSTP. Default on most\n  Catalyst since the early 2000s.\n- Fast convergence (< 1 sec on properly-configured port roles)\n  vs classic STP's 30-50 sec.\n- Other options: pvst (legacy classic STP per VLAN), mst (Multiple\n  STP for large environments)."
           },
           {
             "cmd": "spanning-tree portfast bpduguard default",
             "desc": "Globally enable PortFast BPDU Guard on access ports",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree portfast bpduguard default\n\n# Now any port with portfast also has bpduguard:\nSwitch(config)# interface gi1/0/1\nSwitch(config-if)# spanning-tree portfast\n%Warning: BPDU guard is automatically enabled on this port\n\nWhat it means:\n- Globally enables BPDU guard on ALL portfast-enabled ports.\n- One-shot config: don't have to remember \"spanning-tree\n  bpduguard enable\" on every access port — portfast implies it.\n- Best-practice safety net for access-layer switches."
           },
           {
             "cmd": "spanning-tree extend system-id",
             "desc": "Use 12-bit MAC reduction (default on modern IOS)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree extend system-id\n\nSwitch# show spanning-tree vlan 10 | include Bridge\nBridge ID  Priority  24586 (priority 24576 sys-id-ext 10)\n           Address   0050.5612.3456\n\nWhat it means:\n- Embeds the VLAN-ID into the STP bridge-priority field, leaving\n  only the high 4 bits (multiples of 4096) settable as priority.\n- Required when running PVST+ on networks with > 16 VLANs.\n- Default ON in IOS 12.1+ — usually nothing to do."
           },
           {
             "cmd": "spanning-tree vlan 1 root primary",
             "desc": "Become STP root for VLAN 1",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree vlan 1 root primary\n\nSwitch# show spanning-tree vlan 1 | head -8\nVLAN0001\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24577\n             Address     0050.5612.3456    ← this switch\n             This bridge is the root\n\nBridge ID    Priority    24577 (priority 24576 sys-id-ext 1)\n             Address     0050.5612.3456\n\nWhat it means:\n- Macro that lowers this switch's bridge priority to make it the\n  STP root for VLAN 1.\n- Sets priority to 24576 (default 32768) — low enough to win\n  election against neighbours.\n- For redundancy, configure another switch with \"root secondary\"\n  (priority 28672)."
           },
           {
             "cmd": "udld aggressive",
             "desc": "Enable UDLD aggressive mode globally",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# udld aggressive\n\n# When UDLD detects a unidirectional link:\n%UDLD-3-AGGRESSIVE_MODE: Port gi1/0/1 in aggressive mode does not have\n                          UDLD echoes from neighbor.\n%PM-4-ERR_DISABLE: udld error detected on Gi1/0/1, putting Gi1/0/1 in\n                   err-disable state\n\nWhat it means:\n- Globally enables UDLD aggressive mode on all UDLD-capable ports.\n- Aggressive mode also triggers err-disable when probing fails\n  for 7 consecutive UDLD echoes (8 sec total).\n- Critical on fibre links — unidirectional link is otherwise\n  invisible to STP and causes silent traffic loss.\n- \"udld enable\" (non-aggressive) only logs a syslog."
           },
           {
             "cmd": "standby instance-id ip vip-address",
             "desc": "Configure the VIP for the HSRP instance",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface vlan 10\nSwitch(config-if)# standby 1 ip 10.10.0.1\nSwitch(config-if)# standby 1 priority 110\nSwitch(config-if)# standby 1 preempt\n\nSwitch# show standby vlan 10 | include State|Priority|Virtual\n  State is Active\n  Priority 110 (configured 110)\n  Virtual IP address is 10.10.0.1\n\nWhat it means:\n- HSRP (Hot Standby Router Protocol) — first-hop redundancy.\n- 10.10.0.1 = the virtual IP clients use as their default gateway.\n- \"priority 110\" + \"preempt\" : higher-priority router wins and\n  preempts when it returns from a failure.\n- One router in the pair is Active (forwards traffic), the other\n  Standby (ready to take over)."
           },
           {
             "cmd": "standby instance-id preempt",
             "desc": "Enable preemption for the HSRP instance",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# standby 1 preempt\nSwitch(config-if)# standby 1 preempt delay minimum 60\n\nWhat it means:\n- \"preempt\" = higher-priority router takes over Active role when\n  it comes back online (after a reboot, etc.).\n- \"delay minimum 60\" : wait 60 sec after coming up before\n  preempting — gives routing protocols time to converge so\n  traffic doesn't black-hole.\n- Without preempt, the surviving Standby keeps Active role even\n  after the original Primary recovers."
           },
           {
             "cmd": "standby instance-id mac-address mac-address",
             "desc": "Specify the MAC address for the HSRP VIP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# standby 1 mac-address 0000.0c07.ac01\n\nSwitch# show standby vlan 10 | include MAC\n  MAC address is 0000.0c07.ac01 (configured)\n\nWhat it means:\n- Manually overrides the HSRP virtual MAC. Default is\n  0000.0c07.acXX where XX = group-id.\n- Useful when migrating from another vendor's first-hop redundancy\n  protocol (VRRP, GLBP) where the virtual MAC needs to stay\n  consistent so existing client ARP cache doesn't need to relearn."
           },
           {
             "cmd": "standby instance-id ipv ip-address",
             "desc": "Configure the VIP for the HSRP instance",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# standby 1 ipv6 autoconfig\n\nSwitch# show standby vlan 10 | include IPv6\n  IPv6 link-local address is FE80::5:73FF:FEA0:1\n\nWhat it means:\n- HSRPv6 — the IPv6 equivalent of HSRP. \"autoconfig\" creates\n  a link-local address based on the HSRPv6 MAC.\n- Used as the default IPv6 gateway by clients via Router\n  Advertisement (RA) discovery.\n- Standby router takes over RA generation on failover, so\n  clients don't lose connectivity."
           },
           {
             "cmd": "standby instance-id ipv vip-address",
             "desc": "Row 6: Configure the VIP for the HSRP instance",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# standby 1 ipv6 2001:DB8:10::1/64\nSwitch(config-if)# standby 1 ipv6 fe80::1 link-local\n\nSwitch# show standby vlan 10 | include IPv6\n  IPv6 group 1 with virtual addresses:\n    2001:DB8:10::1\n    FE80::1\n\nWhat it means:\n- Sets explicit IPv6 virtual addresses for HSRPv6.\n- Both global-scope and link-local addresses can be specified.\n- Clients use the link-local for first-hop routing; global for\n  applications that target the gateway IP directly."
           },
           {
             "cmd": "show spanning-tree root",
             "desc": "Display the STP Root Bridge and Cost. — Shows the current root bridge",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree root\n\n                                        Root  Hello Max Fwd\nVlan                  Root ID            Cost  Time  Age Dly  Root Port\n---------------- -------------------- --------- ----- --- --- ------------\nVLAN0001         24577 0050.5612.3456         0  2     20  15 (this switch)\nVLAN0010         24586 0050.5612.7777        20  2     20  15 Gi1/0/24\nVLAN0020         24596 0050.5612.7777        20  2     20  15 Gi1/0/24\n\nWhat it means:\n- Per-VLAN root bridge identity and the local port that leads\n  toward it (Root Port).\n- \"Root Cost\" : path cost to the root. Higher = farther from\n  root in the topology.\n- \"(this switch)\" = local switch IS the root for that VLAN.\n- Sanity check: root for management VLANs should be your core\n  switches, not a random access switch."
           },
           {
             "cmd": "spanning-tree pathcost method long",
             "desc": "Configure Long-Mode Interface Cost. — Uses 32-bit value with reference speed of 20 Tbps. Requires audit to ensure consistency across environment.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree pathcost method long\n\nSwitch# show spanning-tree summary | include Pathcost\nConfigured Pathcost method used is long\n\nWhat it means:\n- \"long\" = 32-bit path costs, enabling fine-grained values up to\n  10 Gbps and beyond. Required for any modern network.\n- \"short\" = 16-bit (legacy). Saturates at 1 Gbps — every faster\n  link gets cost 1, defeating path selection.\n- Set globally; all switches in the STP region must agree."
           },
           {
             "cmd": "spanning-tree guard root",
@@ -17249,175 +17319,204 @@
             "cmd": "spanning-tree portfast default / spanning-tree portfast",
             "desc": "Enable STP Portfast Globally or for a Specific Port. — Bypasses listening/learning states and disables TCN generation. Recommended for access ports connected to hosts.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# Globally make all access ports portfast:\nSwitch(config)# spanning-tree portfast default\n\n# Per-port override:\nSwitch(config-if)# spanning-tree portfast trunk    ! exceptional\nSwitch(config-if)# spanning-tree portfast disable  ! disable on this port\n\nWhat it means:\n- \"default\" globally enables portfast on every NON-trunk port.\n- Overrides per-port: \"spanning-tree portfast disable\" if you\n  want to turn it off for a specific access port (rare).\n- \"spanning-tree portfast trunk\" : forces portfast on a trunk —\n  dangerous, only use when trunk faces a server/host that won't\n  generate BPDUs."
           },
           {
             "cmd": "spanning-tree portfast bpduguard default / spanning-tree bpduguard {enable | disable}",
             "desc": "Enable BPDU Guard Globally or for a Specific Switch Port. — Places port into `err-disabled` state upon receipt of a BPDU on a portfast-enabled interface.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# Global:\nSwitch(config)# spanning-tree portfast bpduguard default\n\n# Per-port override:\nSwitch(config-if)# spanning-tree bpduguard enable     ! force on\nSwitch(config-if)# spanning-tree bpduguard disable    ! force off\n\nWhat it means:\n- Global default + per-port override pattern.\n- \"spanning-tree portfast bpduguard default\" : enable BPDU guard\n  on every portfast port automatically.\n- Per-port \"enable\" can force BPDU guard on a non-portfast port\n  (e.g. a trunk)."
           },
           {
             "cmd": "spanning-tree bpdufilter enable / spanning-tree portfast bpdufilter default",
             "desc": "Enable BPDU Filter Globally or for a Specific Interface. — Blocks BPDUs from being transmitted out a port. Use with caution to avoid topology issues.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree bpdufilter enable\n\nSwitch# show spanning-tree interface gi1/0/1 | include filter\n  BPDU filter is enabled\n\nWhat it means:\n- \"bpdufilter\" : do NOT send BPDUs on this port (and ignore\n  received BPDUs).\n- DANGEROUS — disables STP on the port. Used only on ports\n  facing third parties where exchanging STP info is undesirable.\n- Most environments use \"bpduguard\" instead, which leaves STP\n  on but err-disables on rogue BPDU."
           },
           {
             "cmd": "errdisable recovery cause bpduguard",
             "desc": "Enable Automatic Error Recovery for BPDU Guard. — Reactivates ports shut down by BPDU guard after the configured interval (default 300s).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# errdisable recovery cause bpduguard\nSwitch(config)# errdisable recovery interval 300\n\nSwitch# show errdisable recovery\nErrDisable Reason            Timer Status\n-----------------            --------------\nbpduguard                    Enabled\n\nWhat it means:\n- Auto-recovers ports err-disabled by BPDU guard after 300 sec.\n- Lets accidentally err-disabled ports come back without\n  operator intervention.\n- Combine with monitoring: a port that keeps cycling between\n  errdisable and recovery is signalling a real problem (rogue\n  switch / persistent BPDU)."
           },
           {
             "cmd": "spanning-tree loopguard default / spanning-tree guard loop",
             "desc": "Enable STP Loop Guard Globally or for a Specific Interface. — Prevents alternative/root ports from becoming designated ports due to loss of BPDUs on the root port (places in `loop inconsistent` state).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree loopguard default\n\n# Per-port:\nSwitch(config-if)# spanning-tree guard loop\n\n# When BPDUs stop arriving on a non-designated port:\n%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port Gi1/0/24 on VLAN0010.\n\nWhat it means:\n- Detects unidirectional link failures (BPDUs stopped flowing in\n  one direction). Puts the port into loop-inconsistent state.\n- Critical on point-to-point links between switches — without\n  loopguard, an asymmetric failure can cause STP to think a\n  blocked port should now forward (loop!).\n- Recovers automatically when BPDUs resume."
           },
           {
             "cmd": "udld enable [aggressive] / udld port [aggressive]",
             "desc": "Enable UDLD Globally or for a Specific Port. — Allows bidirectional monitoring of fiber-optic cables. Aggressive mode places port in error state if not acknowledged after 8 retries.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# Global default (only for fibre ports):\nSwitch(config)# udld enable\n\n# Per-port (fibre or copper):\nSwitch(config-if)# udld port aggressive\n\nSwitch# show udld interface Gi1/0/24\nInterface Gi1/0/24\n  Port enable administrative configuration setting: Enabled / Aggressive\n\nWhat it means:\n- UDLD detects unidirectional links by exchanging keep-alive\n  echoes between switch ports.\n- \"aggressive\" mode err-disables the port after 7 consecutive\n  failed echoes (~8 sec).\n- Non-aggressive only logs a warning. Aggressive is preferred\n  for fibre links."
           },
           {
             "cmd": "show udld neighbors",
             "desc": "Display the List of Neighbor Devices Running UDLD. — Verifies bidirectional link status and device IDs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show udld neighbors\n\nPort      Device Name      Device ID       Port-id           OperState\nGi1/0/24  switch2.corp     0050.5612.7777  Gi1/0/24          Bidirectional\nGi1/0/23  switch3.corp     0050.5612.8888  Gi1/0/23          Bidirectional\n\nWhat it means:\n- All ports running UDLD with their detected neighbour.\n- \"Bidirectional\" : healthy. Both ends see each other's UDLD\n  echoes.\n- \"Unidirectional\" : only one direction is working. UDLD will\n  err-disable in aggressive mode; in passive mode just logs.\n- Empty line for a port = no UDLD neighbour detected."
           },
           {
             "cmd": "show udld interface-id",
             "desc": "View More Detailed Information on UDLD Interface Status. — Includes current state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show udld Gi1/0/24\n\nInterface Gi1/0/24\n  Port enable administrative configuration setting: Enabled / Aggressive\n  Port enable operational state: Enabled / Aggressive\n  Current bidirectional state: Bidirectional\n  Message interval: 15 sec\n  Time out interval: 5 sec\n  Entry 1\n   Expiration time: 36 sec\n   Device ID: 1\n   Current neighbor state: Bidirectional\n   Device name: switch2.corp\n   Port ID: Gi1/0/24\n\nWhat it means:\n- Per-port UDLD state + neighbour detail.\n- \"Bidirectional\" = healthy. Use to verify before sending traffic\n  across a newly-installed fibre link.\n- \"Message interval 15s\" = how often UDLD echoes are sent.\n  Aggressive timeout = 5s × 3 retries."
           },
           {
             "cmd": "spanning-tree mst configuration revision version",
             "desc": "Change the MST Version Number. — Must match for all switches in the same MST region.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree mst configuration\nSwitch(config-mst)# name CORP_REGION\nSwitch(config-mst)# revision 1\nSwitch(config-mst)# instance 1 vlan 10,20\nSwitch(config-mst)# instance 2 vlan 30,40\n\nSwitch# show spanning-tree mst configuration\nName      [CORP_REGION]\nRevision  1\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------\n0         1-9,11-19,21-29,31-39,41-4094\n1         10,20\n2         30,40\n\nWhat it means:\n- Defines the MST configuration: name + revision + VLAN-to-instance\n  mapping.\n- ALL switches in the same MST region MUST have identical name +\n  revision + VLAN mapping.\n- Bumping \"revision\" without changing mapping silently breaks the\n  region — every region member must be updated together."
           },
           {
             "cmd": "show spanning-tree mst interface interface-id",
             "desc": "View Interface-Specific MST Settings. — Shows detailed info including optional features like BPDU filter/guard",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree mst interface gi1/0/24\n\nGi1/0/24 of MST0 is designated forwarding\nEdge port: no                              (default)\nLink type: point-to-point                  (auto)\nBoundary: internal                         Bpdu guard enabled\nBpdus sent 4502, received 0\n\nInstance Role  Sts  Cost      Prio.Nbr Vlans mapped\n-------- ---- ---  --------- -------- -------------------\n0        Desg FWD  20000     128.24   1-9,11-19,21-4094\n1        Desg FWD  20000     128.24   10,20\n\nWhat it means:\n- Per-interface MST state across all instances.\n- Same port can be Designated Forwarding for one instance and\n  Backup or Alternate for another — load-balancing via MSTP.\n- \"Boundary: internal\" = port stays inside the MST region.\n  \"Boundary: boundary\" = port faces a different region or\n  classic STP."
           },
           {
             "cmd": "spanning-tree mst instance-number cost cost / spanning-tree mst instance-number port-priority priority",
             "desc": "Modify a Switch's MSTI Priority or Make it the Root Bridge for the MSTI / Change Port Cost/Priority. — Tuning commands specific to MST instances (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree mst 1 cost 100\nSwitch(config-if)# spanning-tree mst 1 port-priority 64\n\nSwitch# show spanning-tree mst 1 interface gi1/0/24 | include cost\n1        Desg FWD 100       64.24   10,20\n\nWhat it means:\n- Per-instance, per-port path cost and priority.\n- Lower cost = preferred path. Lower port-priority = preferred\n  port among equal-cost paths.\n- Use to load-balance traffic across MST instances — VLAN 10's\n  path cost 100 here means it'd prefer this port; another\n  instance might have a different preference."
           },
           {
             "cmd": "channel-group etherchannel-id mode {on | active | passive | auto | desirable} [non-silent]",
             "desc": "Configure the Member Ports for an EtherChannel. — `On`: Static; `Active/Passive`: LACP; `Auto/Desirable`: PAgP.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# LACP active (recommended):\nSwitch(config-if)# channel-group 1 mode active\n\n# PAgP (Cisco-proprietary):\nSwitch(config-if)# channel-group 1 mode desirable\n\n# Static (no negotiation):\nSwitch(config-if)# channel-group 1 mode on\n\n# Mode summary:\n#   active+active   = LACP (most-used, fastest negotiation)\n#   passive+active  = LACP (works, slower)\n#   passive+passive = NO BUNDLE (neither side starts)\n#   desirable+desirable = PAgP\n#   on+on           = static EtherChannel (no negotiation)\n#   on+active       = NO BUNDLE (mismatch)\n\nWhat it means:\n- LACP modes: \"active\" (sends LACPDUs) vs \"passive\" (only replies).\n- PAgP modes: \"desirable\" (active) vs \"auto\" (passive).\n- \"on\" = manual / no protocol — both sides must be \"on\".\n- \"non-silent\" : require seeing PAgP messages from the peer\n  before bundling. Use on EtherChannel between two strictly-PAgP\n  peers."
           },
           {
             "cmd": "interface port-channel port-channel-id",
             "desc": "Create a Port-Channel Interface. — Logical interface representing the bundle of physical links.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface port-channel 1\nSwitch(config-if)# switchport mode trunk\nSwitch(config-if)# switchport trunk allowed vlan 10,20,30\nSwitch(config-if)# spanning-tree guard root\n\nSwitch# show etherchannel 1 summary | head -3\nGroup  Port-channel  Protocol    Ports\n1      Po1(SU)       LACP        Gi1/0/1(P) Gi1/0/2(P)\n\nWhat it means:\n- Configure trunk parameters, ACLs, descriptions on the\n  Port-channel — they cascade to all member ports.\n- Member ports must agree on speed, duplex, trunk mode for the\n  bundle to form.\n- Po1's status (SU = Layer2 + In-Use) reflects the bundle as a\n  whole."
           },
           {
             "cmd": "lacp rate fast / lacp rate slow",
             "desc": "Configure the LACP Packet Rate on Member Interfaces. — `Fast`: Advertises every 1 sec (vs default 30s). All interfaces must match.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# lacp rate fast\n\nSwitch# show lacp interface gi1/0/1 | include LACPDUs\nLACPDUs send rate: 1 second\n\nWhat it means:\n- \"fast\" : LACPDUs every 1 second (and timeout 3 sec).\n- \"slow\" (default) : LACPDUs every 30 seconds (timeout 90 sec).\n- Use \"fast\" on critical core links for sub-second failure detection.\n- BOTH peers must agree on rate; mismatch = bundle bounces."
           },
           {
             "cmd": "port-channel min-linksmin-links",
             "desc": "Configure the Minimum Number of Member Links for the LACP EtherChannel to Become Active. — Ensures at least `min-links` are up before bundle activates.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# port-channel min-links 2\n\n# When fewer than 2 LACP members are bundled, Po1 goes down:\n%LINK-3-UPDOWN: Port-channel1, changed state to down\n\nWhat it means:\n- Sets the minimum number of bundled LACP members required for\n  the Port-channel to come up.\n- Default 1 — Po up with any single member working.\n- Set to half-or-more of total members to ensure the bundle has\n  at least the bandwidth you signed up for."
           },
           {
             "cmd": "lacp max-bundlemax-links",
             "desc": "Configure the Maximum Number of Member Interfaces in an LACP EtherChannel. — Limits active member interfaces (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# lacp max-bundle 4\n\n# 5 LACP members configured but only 4 in the active bundle:\nSwitch# show etherchannel 1 detail | include Hot|Active|Standby\n   ports in Po1: 4 active, 1 standby\n\nWhat it means:\n- Caps the number of active LACP members in the bundle.\n- Excess members are kept on standby — automatic failover when\n  an active member fails.\n- Useful for hardware that supports more LACP members than the\n  upstream Po-channel platform allows."
           },
           {
             "cmd": "lacp system-prioritypriority / lacp port-prioritypriority",
             "desc": "Configure a Switch's LACP System Priority or Port Priority. — System priority identifies primary switch; lower is preferred. Port priority selects specific interface when max links set.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# lacp system-priority 1000\n\nSwitch(config-if)# lacp port-priority 32768\n\nSwitch# show lacp sys-id\n1000, 0050.5612.3456\n\nSwitch# show lacp interface gi1/0/1 | include Priority\nLocal port priority: 32768\n\nWhat it means:\n- \"system-priority\" : tie-breaker between the two ends. The\n  lower-priority side decides which ports become bundled.\n- \"port-priority\" : among multiple member ports of the bundle,\n  lower priority is preferred (used when \"max-bundle\" or\n  \"min-links\" forces a choice).\n- Defaults: system 32768, port 32768 — change if you need\n  deterministic bundling order."
           },
           {
             "cmd": "show interface port-channel port-channel-id",
             "desc": "View Detailed Information for the Local EtherChannel Interface. — Displays traditional interface stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interface port-channel 1\n\nPort-channel1 is up, line protocol is up\n  Hardware is EtherChannel, address is 0050.5612.3456\n  Description: TRUNK-TO-CORE\n  MTU 1500 bytes, BW 2000000 Kbit/sec, DLY 10 usec\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  No. of active members in this channel: 2\n\nWhat it means:\n- Aggregated stats for the bundle. \"BW 2000000\" = sum of member\n  speeds (2 × 1 Gbps).\n- \"active members\" = ports currently forwarding traffic.\n- Counters are summed across all members (per-member counters\n  via \"show interface gi1/0/1\")."
           },
           {
             "cmd": "show lacp neighbor [detail] / show pagp neighbor",
             "desc": "Display Information About LACP or PAgP Neighbors. — Includes neighbor system ID",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show lacp neighbor\n\n                  LACP port             Admin     Oper     Port      Port\nPort    Flags     Priority OperKey  Key Priority  Key      State     ID\nGi1/0/1 SA        32768    0x1      0x1   32768    0x18    0x3F      Gi1/0/1\nGi1/0/2 SA        32768    0x1      0x1   32768    0x18    0x3F      Gi1/0/2\n\nFlags: S - Device is requesting Slow LACPDUs   F - Device is requesting Fast LACPDUs\n       A - Device is in Active mode            P - Device is in Passive mode\n\nWhat it means:\n- Per-member view of the LACP neighbour.\n- Flags \"SA\" = Slow rate + Active mode.\n- All members of the same bundle should have the same Admin Key\n  / Oper Key — mismatch = bundle won't form."
           },
           {
             "cmd": "show lacp sys-id / show pagp sys-id",
             "desc": "Display the Local LACP System Identifier and Priority. — Verifies local system ID for consistency checks.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show lacp sys-id\n32768, 0050.5612.3456\n\n# Equivalent for PAgP:\nSwitch# show pagp 1 internal | include MAC|sys\nPAgP system identifier: 0050.5612.3456\n\nWhat it means:\n- The LACP \"system id\" = system-priority + chassis MAC.\n- Identifies the LACP-speaker uniquely on the bundle.\n- Chassis MAC stays the same across reboots; if it changes (RMA),\n  the LACP partner sees a new system id and bundle bounces."
           },
           {
             "cmd": "show lacp counters / show pagp counters",
             "desc": "Display the LACP or PAgP Counters for Configured Interfaces. — Shows packets sent/received",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show lacp counters\n\n           LACPDUs           Marker    Marker Response  LACPDUs\nPort      Sent       Recv     Sent      Recv      Sent      Recv      Pkts Err\nGi1/0/1   45,012     45,010   0         0         0         0         0\nGi1/0/2   45,012     45,012   0         0         0         0         0\n\nWhat it means:\n- Per-member LACP packet counters.\n- \"Pkts Err > 0\" = malformed LACPDU — hardware or peer bug.\n- Sent/Recv mismatch on one port but not the other = unidirectional\n  link issue. Investigate UDLD / cable."
           },
           {
             "cmd": "port-channel load-balancehash",
             "desc": "Configure the EtherChannel Load-Balancing Hash Algorithm. — Common options: `src-dst-mixed-ip-port`",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# port-channel load-balance src-dst-ip\n\nSwitch# show etherchannel load-balance\nEtherChannel Load-Balancing Configuration: src-dst-ip\n\nWhat it means:\n- Hash function used to distribute flows across bundle members.\n- src-dst-ip : symmetric (both directions of one flow take same\n  port). Best general-purpose default.\n- src-dst-mac : L2-only switching environments.\n- src-dst-port : adds L4 ports to the hash for finer granularity.\n- Picking the wrong hash = uneven distribution; one member at\n  100%, others idle."
           },
           {
             "cmd": "interface port-channel <id>",
             "desc": "Creates a logical port-channel (LAG) interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface port-channel 1\nSwitch(config-if)#\n\nWhat it means:\n- Enters Port-channel logical interface configuration mode.\n- All trunk / IP / ACL config goes here, NOT on member ports.\n- The Po interface is auto-created when the first member is\n  bound via \"channel-group <id> mode <X>\"."
           },
           {
             "cmd": "channel-group <id> mode active",
             "desc": "Assigns the interface to an EtherChannel using LACP active mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/1\nSwitch(config-if)# channel-group 1 mode active\n\nSwitch# show etherchannel 1 summary | head -5\nGroup  Port-channel  Protocol    Ports\n1      Po1(SU)       LACP        Gi1/0/1(P)\n\nWhat it means:\n- Adds the interface to LACP-bundled Po1.\n- \"active\" = actively send LACPDUs. Pair with \"active\" or\n  \"passive\" on the other end. \"active+active\" forms the bundle\n  fastest and is most-used."
           },
           {
             "cmd": "channel-group <id> mode on",
             "desc": "Assigns the interface to a static EtherChannel (no LACP/PAgP)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface range gi1/0/1 - 2\nSwitch(config-if-range)# channel-group 1 mode on\n\n# Both sides must be \"on\" — no negotiation:\nSwitch# show etherchannel 1 summary\nGroup  Port-channel  Protocol    Ports\n1      Po1(SU)       -           Gi1/0/1(P) Gi1/0/2(P)\n\nWhat it means:\n- Static EtherChannel — no LACP / PAgP. Both ends must agree to\n  bundle without protocol assistance.\n- DANGEROUS: a misconfiguration on one side creates a loop without\n  the protocol catching it.\n- Use only when protocol negotiation is impossible (some legacy\n  VPC / vMotion fabrics)."
           },
           {
             "cmd": "channel-group <id> mode desirable",
             "desc": "Assigns the interface using PAgP desirable mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface range gi1/0/1 - 2\nSwitch(config-if-range)# channel-group 1 mode desirable\n\nSwitch# show etherchannel 1 summary\nGroup  Port-channel  Protocol    Ports\n1      Po1(SU)       PAgP        Gi1/0/1(P) Gi1/0/2(P)\n\nWhat it means:\n- PAgP (Port Aggregation Protocol) — Cisco proprietary.\n- \"desirable\" = actively negotiates. Pair with \"desirable\" or\n  \"auto\" on the other side.\n- Most modern designs use LACP (industry standard); PAgP is\n  Cisco-only."
           },
           {
             "cmd": "show etherchannel <id> summary",
             "desc": "Summary status and port membership for a specific EtherChannel",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show etherchannel 1 summary\n\nFlags:  D - down        P - bundled in port-channel\n        I - stand-alone  s - suspended\n        H - Hot-standby  R - Layer3   S - Layer2\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+----------------------------------------\n1      Po1(SU)       LACP        Gi1/0/1(P) Gi1/0/2(P)\n\nWhat it means:\n- \"(SU)\" : Layer-2 + In-Use = bundle is up and forwarding.\n- \"(P)\" per-member : bundled (working).\n- \"(I)\" or \"(s)\" per-member : stand-alone or suspended — port\n  isn't actually bundled (LACP key mismatch, etc.)."
           },
           {
             "cmd": "lacp port-priority <value>",
             "desc": "Sets LACP port priority — lower value is preferred",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# lacp port-priority 32768\n\nSwitch# show lacp interface gi1/0/1 | include Priority\nLocal port priority: 32768\n\nWhat it means:\n- Per-port LACP priority for tie-breaking when more members are\n  configured than allowed by max-bundle.\n- Lower priority = preferred (more likely to be active).\n- Default 32768. Use lower values (e.g. 100) to designate\n  \"preferred\" members vs \"standby\" members."
           },
           {
             "cmd": "lacp system-priority <value>",
             "desc": "Sets the LACP system priority for this switch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# lacp system-priority 100\n\nSwitch# show lacp sys-id\n100, 0050.5612.3456\n\nWhat it means:\n- LACP system-priority across the device. Combines with chassis\n  MAC to form the system ID.\n- Lower priority = \"winner\" of the LACP partner role decisions.\n- Default 32768. Adjust only when one side explicitly should\n  control bundle decisions (rarely needed)."
           }
         ],
         "QoS": [
