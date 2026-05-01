@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T21:23:46.564Z",
+  "updatedAt": "2026-05-01T21:32:39.933Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -15329,7 +15329,8 @@
             "cmd": "show ip route <prefix>",
             "desc": "Displays route for a specific prefix",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip route 10.20.0.0\n\nRouting entry for 10.20.0.0/24\n  Known via \"ospf 1\", distance 110, metric 2, type intra area\n  Last update from 192.168.1.2 on GigabitEthernet0/0, 02:14:21 ago\n  Routing Descriptor Blocks:\n  * 192.168.1.2, from 2.2.2.2, 02:14:21 ago, via GigabitEthernet0/0\n      Route metric is 2, traffic share count is 1\n\nWhat it means:\n- Detail for one specific prefix in the RIB.\n- \"Known via X, distance N\" : the protocol that won the AD battle.\n- \"Routing Descriptor Blocks\" : actual next-hops being used. \"*\"\n  marks the active path; multiple = ECMP.\n- \"from 2.2.2.2\" : the originator's router-id (for OSPF/BGP)."
           },
           {
             "cmd": "show ip ospf neighbor",
@@ -15342,7 +15343,8 @@
             "cmd": "show ip ospf interface",
             "desc": "Shows OSPF interface details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip ospf interface\n\nGigabitEthernet0/0 is up, line protocol is up\n  Internet Address 192.168.1.1/24, Area 0, Attached via Network Statement\n  Process ID 1, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1\n  Topology-MTID  Cost  Disabled  Shutdown  Topology Name\n        0           1     no        no        Base\n  Transmit Delay is 1 sec, State BDR, Priority 1\n  Designated Router (ID) 2.2.2.2, Interface address 192.168.1.2\n  Backup Designated Router (ID) 1.1.1.1, Interface address 192.168.1.1\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n\nWhat it means:\n- Per-interface OSPF state. Network Type drives whether DR/BDR\n  election runs.\n- \"State BDR\" : this router is the Backup Designated Router on\n  this segment.\n- Hello/Dead intervals : must match exactly between neighbours.\n- \"Cost: 1\" : OSPF metric for this interface (lower is better)."
           },
           {
             "cmd": "show ip ospf database",
@@ -15362,7 +15364,8 @@
             "cmd": "show ip bgp neighbors",
             "desc": "Shows BGP neighbour details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp neighbors\n\nBGP neighbor is 10.10.10.2, remote AS 65002, external link\n BGP version 4, remote router ID 2.2.2.2\n BGP state = Established, up for 02:14:21\n Last read 00:00:14, last write 00:00:14, hold time is 180, keepalive is 60\n Neighbor sessions:\n   1 active, is not multisession capable\n Neighbor capabilities:\n   Route refresh: advertised and received(new)\n   Four-octets ASN Capability: advertised and received\n   Address family IPv4 Unicast: advertised and received\n\nWhat it means:\n- Detailed peer state. \"Established\" + uptime > 0 = healthy.\n- \"hold time 180, keepalive 60\" : peer sends keepalives every\n  60s; if no traffic for 180s the session drops.\n- \"Route refresh advertised and received\" : both ends support\n  RFC 2918 refresh — soft reconfiguration without dropping\n  the session."
           },
           {
             "cmd": "show ip bgp",
@@ -15389,19 +15392,22 @@
             "cmd": "show ip protocols",
             "desc": "Summary of every routing protocol configured and its state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip protocols\n\nRouting Protocol is \"ospf 1\"\n  Outgoing update filter list for all interfaces is not set\n  Incoming update filter list for all interfaces is not set\n  Router ID 1.1.1.1\n  Number of areas: 1 normal, 0 stub, 0 nssa\n  Maximum path: 4\n  Routing for Networks:\n    10.0.0.0 0.255.255.255 area 0\n  Passive Interface(s):\n    Loopback0\n  Routing Information Sources:\n    Gateway     Distance  Last Update\n    2.2.2.2          110  02:14:21\n  Distance: (default is 110)\n\nRouting Protocol is \"bgp 65001\"\n  ...\n\nWhat it means:\n- Summary of every active routing protocol with config + state.\n- \"Maximum path: 4\" : ECMP capacity for this protocol.\n- \"Routing for Networks\" : which networks the protocol advertises.\n- \"Routing Information Sources\" : neighbours actively contributing\n  routes — empty list = no peers."
           },
           {
             "cmd": "show ip cef <prefix>",
             "desc": "CEF FIB entry, outgoing interface and next-hop for a prefix",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip cef 8.8.8.8\n\n8.8.8.8/32, version 142\n  nexthop 198.51.100.1 GigabitEthernet0/0\n\nWhat it means:\n- CEF (Cisco Express Forwarding) entry for the prefix — the\n  hardware-fast-path lookup result.\n- \"version 142\" : CEF table revision (incremented on changes).\n- \"nexthop X\" : where packets to this destination are sent.\n- Different from \"show ip route\" which shows the RIB; CEF is\n  the FIB (forwarding table actually used by hardware)."
           },
           {
             "cmd": "show adjacency <int> detail",
             "desc": "L2 rewrite info CEF uses to forward out a given interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show adjacency gi0/0 detail\n\nProtocol  Interface           Address\nIP        GigabitEthernet0/0  198.51.100.1(7)\n                              0 packets, 0 bytes\n                              epoch 0\n                              sourced in sev-epoch 0\n                              Encap length 14\n                              001A1E11223300C0FFEE12340800\n\nWhat it means:\n- Per-interface CEF adjacency table — pre-computed L2 rewrite\n  info ready for fast-path forwarding.\n- \"Encap length 14\" : Ethernet header (6 dst + 6 src + 2 EtherType).\n- \"001A1E11223300C0FFEE12340800\" : full L2 header bytes ready\n  to prepend to outbound packets.\n- Empty / incomplete adjacency = ARP not resolved → packets\n  punted to CPU."
           },
           {
             "cmd": "show ip ospf interface brief",
@@ -15421,31 +15427,36 @@
             "cmd": "show ipv6 route",
             "desc": "IPv6 routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 route\n\nIPv6 Routing Table - default - 8 entries\nCodes: C - Connected, L - Local, S - Static, R - RIP, B - BGP\n       O - OSPF Intra, OI - OSPF Inter, OE1 - OSPF ext 1, OE2 - OSPF ext 2\n\nC   2001:DB8::/64 [0/0]\n     via GigabitEthernet0/0, directly connected\nL   2001:DB8::1/128 [0/0]\n     via GigabitEthernet0/0, receive\nO   2001:DB8:10::/64 [110/2]\n     via FE80::2, GigabitEthernet0/0\nB   2001:DB8:200::/40 [20/0]\n     via FE80::3, GigabitEthernet0/0\n\nWhat it means:\n- IPv6 RIB. Codes match the IPv4 equivalents (O = OSPF, B = BGP,\n  S = static, C = connected).\n- \"via FE80::2\" : IPv6 next-hops are typically link-local\n  (peer's link-local address) — no need for global routing\n  to reach the peer.\n- \"[110/2]\" : AD/metric pair, same semantics as IPv4."
           },
           {
             "cmd": "ip route <net> <mask> <next-hop> [name <tag>] [track <obj>]",
             "desc": "Static route with optional IP SLA track",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.99.0 255.255.255.0 10.10.10.1 name BACKUP_ROUTE track 10\n\nR1# show ip route 192.168.99.0 | include name|track\n   route name: BACKUP_ROUTE\n   route is tracked: track-10\n\nWhat it means:\n- \"name TAG\" : free-form documentation; visible in show output.\n- \"track N\" : conditional install — route only programmed when\n  track-object N reports Up.\n- Use track-objects + tracked routes to implement IP SLA-based\n  failover (e.g. install ISP-A default only when ISP-A's\n  loopback is reachable)."
           },
           {
             "cmd": "show ip route summary",
             "desc": "Route-count summary by protocol",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip route summary\n\nIP routing table name is default (0x0)\nIP routing table maximum-paths is 4\n\nRoute Source    Networks    Subnets    Replicates    Memory(b)\nconnected       0           5          0             1280\nstatic          1           4          0             1024\nospf 1          0           42         0             10752\nbgp 65001       8           4502       0             1153536\ninternal        12          0          0             3072\nTotal           21          4553       0             1169664\n\nWhat it means:\n- Per-protocol prefix counts in the routing table.\n- \"Networks\" = classful summary entries; \"Subnets\" = subnets\n  (most entries on modern networks).\n- \"Memory(b)\" = bytes consumed per protocol — useful for\n  capacity planning on large BGP routers.\n- \"Total Memory\" approaching platform RIB limit = action time."
           },
           {
             "cmd": "show ip bgp neighbors <ip> advertised-routes",
             "desc": "Prefixes being advertised to a specific BGP peer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp neighbors 10.10.10.2 advertised-routes\n\nBGP table version is 142, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i internal\nOrigin codes: i - IGP, e - EGP, ? - incomplete\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 10.0.0.0/8       0.0.0.0           0  32768       i\n*> 10.10.0.0/24     0.0.0.0           0  32768       i\n*> 192.168.0.0/16   0.0.0.0           0  32768       i\n\nTotal number of prefixes 3\n\nWhat it means:\n- Routes the local router is currently advertising TO this peer.\n- Useful for \"is the peer seeing X?\" troubleshooting — confirms\n  what's leaving this side.\n- \"*>\" : valid + best. \"i\" Origin = learned via IGP/connected.\n- Compare with \"received-routes\" (what the peer sent to us)."
           },
           {
             "cmd": "show ip bgp <prefix>",
             "desc": "Best-path and all paths for a specific BGP prefix",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp 198.51.100.0/24\n\nBGP routing table entry for 198.51.100.0/24, version 142\nPaths: (2 available, best #1, table default)\n  Advertised to update-groups:\n     1\n  Refresh Epoch 1\n  65002 65003\n    10.10.10.2 from 10.10.10.2 (2.2.2.2)\n      Origin IGP, metric 0, localpref 100, valid, external, best\n      rx pathid: 0, tx pathid: 0x0\n  65004 65003\n    10.10.20.2 from 10.10.20.2 (3.3.3.3)\n      Origin IGP, metric 0, localpref 100, valid, external\n\nWhat it means:\n- All BGP paths for one prefix with full attribute breakdown.\n- \"best\" : the one BGP picked (won the path-selection algorithm).\n- \"AS_PATH\" : the AS hops (here 65002 65003 vs 65004 65003).\n- Use during best-path investigations: why was THIS path chosen\n  over the other?"
           },
           {
             "cmd": "show vrf",
@@ -15458,7 +15469,8 @@
             "cmd": "show ip route vrf <name>",
             "desc": "Routing table for a specific VRF",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip route vrf CUSTOMER-A\n\nRouting Table: CUSTOMER-A\nCodes: C - Connected, S - Static, B - BGP, O - OSPF, R - RIP\n\nC    10.99.0.0/24 is directly connected, GigabitEthernet0/0.10\nB    10.99.10.0/24 [200/0] via 1.1.1.1, 02:14:21\nS    0.0.0.0/0 [1/0] via 10.99.0.1\n\nWhat it means:\n- Per-VRF routing table. \"show ip route\" alone shows global only.\n- \"Routing Table: CUSTOMER-A\" header confirms the VRF context.\n- \"[200/0]\" : AD 200 typical for iBGP-over-MPLS-VPN routes.\n- Useful in MPLS-VPN PE routers managing multiple customer VRFs."
           },
           {
             "cmd": "show ip mroute",
@@ -15471,103 +15483,120 @@
             "cmd": "show ip route 8.8.8.8",
             "desc": "Best route lookup for a single destination",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip route 8.8.8.8\n\nRouting entry for 0.0.0.0/0, supernet\n  Known via \"static\", distance 1, metric 0, candidate default path\n  Routing Descriptor Blocks:\n  * 198.51.100.1\n      Route metric is 0, traffic share count is 1\n\nWhat it means:\n- Resolves a single destination to its longest-prefix-match route.\n- \"0.0.0.0/0, supernet\" : matched the default route.\n- Common debugging step — confirms which route the router would\n  actually use to reach a destination.\n- For ECMP scenarios, multiple Routing Descriptor Blocks shown."
           },
           {
             "cmd": "show ip ospf",
             "desc": "OSPF process state, router-id, areas",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip ospf\n\nRouting Process \"ospf 1\" with ID 1.1.1.1\nStart time: 00:00:14.142, Time elapsed: 1d 12:14:21\nSupports only single TOS(TOS0) routes\nSupports opaque LSA\nSupports Link-local Signaling (LLS)\nSupports area transit capability\nEvent-log enabled, Maximum number of events: 1000, Mode: cyclic\nIt is an autonomous system boundary router\nRedistributing External Routes from,\n   bgp 65001 with metric 100, includes subnets in redistribution\nNumber of areas in this router: 1 normal, 0 stub, 0 nssa\nNumber of areas transit capable: 0\n\nWhat it means:\n- Process-level OSPF state. \"ASBR\" status, redistribution config,\n  area counts, opaque-LSA support.\n- \"It is an autonomous system boundary router\" = this router\n  imports routes from another protocol via redistribute.\n- \"Redistributing External Routes\" : confirms what's being\n  redistributed and the seed metric."
           },
           {
             "cmd": "show ip cef",
             "desc": "CEF FIB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip cef\n\nPrefix              Next Hop             Interface\n0.0.0.0/0           198.51.100.1         GigabitEthernet0/0\n0.0.0.0/8           drop\n10.10.10.0/24       attached             GigabitEthernet0/0\n10.10.10.0/32       receive              GigabitEthernet0/0\n10.10.10.1/32       receive              GigabitEthernet0/0\n10.10.10.255/32     receive              GigabitEthernet0/0\n198.51.100.0/24     attached             GigabitEthernet0/0\n...\n\nWhat it means:\n- The full CEF table (FIB) — what hardware actually uses to\n  forward packets.\n- \"attached\" : direct subnet (resolved via ARP per-host).\n- \"receive\" : packets to this address are punted to the CPU\n  (router's own IP, broadcast, multicast).\n- \"drop\" : black-hole entries (e.g. 0.0.0.0/8 is anti-bogon)."
           },
           {
             "cmd": "show ip cef <prefix> internal",
             "desc": "CEF entry internals (rewrite, adjacency)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip cef 8.8.8.8 internal\n\n8.8.8.8/32, epoch 0, flags [att, sc]\n  recursive via 198.51.100.1\n    nexthop 198.51.100.1 GigabitEthernet0/0\n  output chain:\n    IP adj out of GigabitEthernet0/0, addr 198.51.100.1\n    encap chain: 0xCAFE0000\n\nWhat it means:\n- Internal CEF detail — recursive lookups, output-chain rewrite\n  info.\n- \"recursive via 198.51.100.1\" : route is via a recursive\n  next-hop (typical for static routes pointing at a non-attached\n  IP).\n- Used by Cisco TAC to debug FIB-corruption bugs."
           },
           {
             "cmd": "ip route 0.0.0.0 0.0.0.0 1.1.1.1 name DEFAULT_TO_ISP",
             "desc": "Static default route",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 0.0.0.0 0.0.0.0 1.1.1.1 name DEFAULT_TO_ISP\n\nR1# show ip route static | include 0.0.0.0\nS*   0.0.0.0/0 [1/0] via 1.1.1.1\n   route name: DEFAULT_TO_ISP\n\nWhat it means:\n- Default route with descriptive name. \"name TAG\" provides\n  documentation in show output.\n- AD 1 : higher trust than dynamic protocols. Use AD 200+ for\n  \"floating\" backup defaults that should only kick in when\n  primary is gone."
           },
           {
             "cmd": "ip route 192.168.99.0 255.255.255.0 10.10.10.1 100",
             "desc": "Static route with admin distance 100 (floating)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.99.0 255.255.255.0 10.10.10.1 100\n\nR1# show ip route 192.168.99.0\nRouting entry for 192.168.99.0/24\n  Known via \"static\", distance 100, metric 0\n   * 10.10.10.1\n       Route metric is 0, traffic share count is 1\n\nWhat it means:\n- \"100\" trailing the next-hop sets administrative distance to 100.\n- AD 100 puts this static behind OSPF (110) and EIGRP-internal\n  (90), letting dynamic protocols win — \"floating static\" backup.\n- Useful for fail-over: dynamic route fails → static AD 100\n  becomes the active path."
           },
           {
             "cmd": "router ospf 1\n router-id 1.1.1.1\n network 10.0.0.0 0.255.255.255 area 0",
             "desc": "Single-area OSPF process",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router ospf 1\nR1(config-router)# router-id 1.1.1.1\nR1(config-router)# network 10.0.0.0 0.255.255.255 area 0\nR1(config-router)# passive-interface Loopback0\n\nR1# show ip ospf neighbor\nNeighbor ID  Pri State           Dead Time  Address      Interface\n2.2.2.2      1   FULL/BDR        00:00:34   192.168.1.2  Gi0/0/0\n\nWhat it means:\n- Standard 3-line OSPF startup.\n- Process ID \"1\" is local-only.\n- Router-ID 1.1.1.1 : 32-bit identity. Manual config recommended\n  so it doesn't change when interfaces flap.\n- \"network 10.0.0.0 0.255.255.255\" : matches all interfaces with\n  IPs in 10/8."
           },
           {
             "cmd": "router bgp 65001\n bgp router-id 1.1.1.1\n neighbor 1.2.3.4 remote-as 65002\n address-family ipv4 unicast\n  neighbor 1.2.3.4 activate",
             "desc": "eBGP peer baseline",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# bgp router-id 1.1.1.1\nR1(config-router)# neighbor 1.2.3.4 remote-as 65002\nR1(config-router)# address-family ipv4 unicast\nR1(config-router-af)# neighbor 1.2.3.4 activate\n\nR1# show ip bgp summary | include 1.2.3.4\n1.2.3.4   4    65002      14      12       142    0    0  00:08:14    142\n\nWhat it means:\n- Standard BGP peer setup. ASN 65001 is in the private 16-bit\n  range (64512-65535).\n- IPv4 AF \"activate\" : explicitly enable IPv4 unicast for this\n  peer. Without it, peer comes up but no IPv4 routes flow.\n- Default behaviour pre-IOS 12.4 was implicit activation; modern\n  IOS requires explicit."
           },
           {
             "cmd": "ip address ip-address subnet-mask",
             "desc": "Assign an IPv4 Address to an Interface. — Injects the associated network into the Routing Information Base (RIB) with Administrative Distance (AD) of 0.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/0\nR1(config-if)# ip address 10.10.10.1 255.255.255.0\n\nR1# show ip interface brief gi0/0\nGigabitEthernet0/0   10.10.10.1   YES manual  up  up\n\nWhat it means:\n- Generic syntax. Replace existing IP with \"no ip address\" first.\n- Add a secondary IP: \"ip address 192.168.10.1 255.255.255.0\n  secondary\".\n- For point-to-point links, /30 and /31 are common (saves\n  addresses)."
           },
           {
             "cmd": "ip route network subnet-mask next-hop-interface-id",
             "desc": "Configure a Directly Attached Static Route. — Uses outbound interface ID; requires interface to be up.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.99.0 255.255.255.0 GigabitEthernet0/0\n\nR1# show ip route static | include 192.168.99.0\nS    192.168.99.0/24 is directly connected, GigabitEthernet0/0\n\nWhat it means:\n- Static route via outgoing interface (no next-hop IP).\n- Useful on point-to-point links where there's no need to\n  resolve a next-hop IP via ARP.\n- DANGER on multi-access (Ethernet) links: causes the router to\n  ARP for EVERY destination via this route, exhausting ARP cache."
           },
           {
             "cmd": "ip route network subnet-mask next-hop-ip",
             "desc": "Configure a Recursive Static Route. — Specifies IP address of next hop; requires route to exist in RIB.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.99.0 255.255.255.0 10.10.10.1\n\nR1# show ip route static | include 192.168.99\nS    192.168.99.0/24 [1/0] via 10.10.10.1\n\nWhat it means:\n- Standard static route with next-hop IP.\n- \"[1/0]\" : AD 1 (preferred over most dynamic protocols), metric 0.\n- The next-hop must be reachable via another route. If the\n  next-hop becomes unreachable, the static route is removed\n  from the RIB."
           },
           {
             "cmd": "ip route network subnet-mask interface-id next-hop-ip",
             "desc": "Configure a Fully Specified Static Route. — Combines interface and next-hop IP for precise control (removes recursive lookup).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.99.0 255.255.255.0 GigabitEthernet0/0 10.10.10.1\n\nR1# show ip route static | include 192.168.99\nS    192.168.99.0/24 [1/0] via 10.10.10.1, GigabitEthernet0/0\n\nWhat it means:\n- Combines outgoing interface + next-hop IP. Fully-resolved\n  static — pre-evaluated, no recursive lookup needed.\n- Best of both worlds: explicit next-hop IP (proper ARP only for\n  one host) + explicit interface (deterministic egress).\n- Useful when the path between this router and the next-hop must\n  use a specific link (multi-NIC routers)."
           },
           {
             "cmd": "ipv6 route network/prefix-length {next-hop-interface-id | [next-hop-interface-id] next-ip-address}",
             "desc": "Configure an IPv6 Static Route. — Similar to IPv4 but supports link-local next-hops with fully specified syntax.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ipv6 route 2001:DB8:99::/48 GigabitEthernet0/0 FE80::1\nR1(config)# ipv6 route ::/0 2001:DB8:1::1\n\nR1# show ipv6 route static\nS   2001:DB8:99::/48 [1/0]\n     via FE80::1, GigabitEthernet0/0\nS   ::/0 [1/0]\n     via 2001:DB8:1::1\n\nWhat it means:\n- IPv6 static route. Next-hop can be link-local (requires\n  outgoing interface) or global-scope (interface optional).\n- Default route uses ::/0.\n- Best practice: use link-local next-hops so the route survives\n  global-prefix changes on the upstream link."
           },
           {
             "cmd": "vrf definition vrf-name",
             "desc": "Create a Multiprotocol VRF Instance. — Creates separate virtual router with isolated routing tables and interfaces.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# vrf definition CUSTOMER-A\nR1(config-vrf)# rd 65001:1\nR1(config-vrf)# route-target both 65001:1\nR1(config-vrf)# address-family ipv4\nR1(config-vrf-af)#\n\nWhat it means:\n- VRF (Virtual Routing and Forwarding) — isolated routing\n  context. Each VRF has its own RIB / FIB / ARP tables.\n- RD (Route Distinguisher) : prepended to prefixes to keep them\n  unique in the global VPNv4 BGP table.\n- RT (Route Target) : controls which VRFs share which prefixes\n  via VPNv4 import/export."
           },
           {
             "cmd": "address-family {ipv4 | ipv6}",
             "desc": "Initialize the Appropriate Address Family for the VRF. — Can be IPv4",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# vrf definition CUSTOMER-A\nR1(config-vrf)# address-family ipv4\nR1(config-vrf-af)# route-target both 65001:1\n\nR1(config-vrf)# address-family ipv6\nR1(config-vrf-af)# route-target both 65001:1\n\nWhat it means:\n- Sub-mode under \"vrf definition\" or BGP / OSPF for protocol-\n  specific configuration.\n- Same VRF can carry both IPv4 and IPv6 — separate AFs.\n- Each AF has its own RT / route-map / redistribute settings."
           },
           {
             "cmd": "interface interface-id",
             "desc": "Enter Interface Configuration Submode to Associate with VRF. — Required step before assigning VRF forwarding command.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gigabitethernet 0/0\nR1(config-if)# vrf forwarding CUSTOMER-A\nR1(config-if)# ip address 10.99.0.1 255.255.255.0\nR1(config-if)# no shutdown\n\nWhat it means:\n- Generic interface entry syntax. Common types: GigabitEthernet,\n  TenGigE, Loopback, Vlan, Tunnel, Port-channel.\n- Shorthand abbreviations work: \"int gi0/0\".\n- Order of commands matters: VRF binding usually FIRST (clears\n  any existing IP), then IP address."
           },
           {
             "cmd": "vrf forwarding vrf-name",
             "desc": "Associate the VRF Instance to an Interface or Subinterface. — Moves interface from global table into specific VRF routing table.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# vrf forwarding CUSTOMER-A\n% Interface GigabitEthernet0/0 IPv4 disabled and address(es) removed due to enabling VRF CUSTOMER-A\n\nR1(config-if)# ip address 10.99.0.1 255.255.255.0\n\nWhat it means:\n- Binds the interface to the named VRF. Existing IP config is\n  WIPED (you must re-add it after binding).\n- Order: bind VRF first, then \"ip address\".\n- Compare with old \"ip vrf forwarding\" — same effect, deprecated\n  syntax."
           },
           {
             "cmd": "show ipv6 neighbors",
@@ -15587,61 +15616,71 @@
             "cmd": "ip routing",
             "desc": "Enables IP routing globally on a Layer 3 switch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip routing\n\nSwitch# show ip protocols | head -3\n*** IP Routing is NSF aware ***\n\nWhat it means:\n- Globally enables IP routing. Required on multilayer switches\n  before SVI / routed-port traffic is forwarded between VLANs.\n- Enabled by default on IOS routers.\n- Without this, a multilayer switch acts as an L2-only switch.\n- Disable with \"no ip routing\" — turns box back into a pure L2\n  switch."
           },
           {
             "cmd": "ip route <network> <mask> <nexthop>",
             "desc": "Adds a static route via a specific next-hop IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 192.168.100.0 255.255.255.0 10.10.10.1\n\nR1# show ip route static | include 192.168.100\nS    192.168.100.0/24 [1/0] via 10.10.10.1\n\nWhat it means:\n- Most common static-route syntax. Network + mask + next-hop IP.\n- \"[1/0]\" : AD 1 (high trust), metric 0.\n- Use AD adjustment (e.g. \"ip route X Y Z 100\") for floating\n  backup statics."
           },
           {
             "cmd": "ip route 0.0.0.0 0.0.0.0 <gateway>",
             "desc": "Configures the default route (gateway of last resort)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.1\n\nR1# show ip route 0.0.0.0\nRouting entry for 0.0.0.0/0, supernet\n  Known via \"static\", distance 1, metric 0, candidate default path\n   * 198.51.100.1\n\nWhat it means:\n- The default route. \"0.0.0.0/0\" matches everything not in the\n  RIB.\n- \"candidate default path\" : if this route is in RIB, it's the\n  default.\n- Typical edge-router config — point at the ISP's gateway."
           },
           {
             "cmd": "no ip route <network> <mask> <nexthop>",
             "desc": "Removes a specific static route",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# no ip route 192.168.100.0 255.255.255.0 10.10.10.1\n\nR1# show ip route static | include 192.168.100\n% No matches for \"192.168.100\"\n\nWhat it means:\n- Removes a specific static route. Must include exact\n  network/mask/next-hop trio.\n- \"no ip route 192.168.100.0 255.255.255.0\" (without next-hop)\n  removes ALL routes for that prefix."
           },
           {
             "cmd": "router ospf <process-id>",
             "desc": "Enters OSPF routing process configuration mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router ospf 1\nR1(config-router)#\n\nR1# show ip protocols | include ospf\nRouting Protocol is \"ospf 1\"\n\nWhat it means:\n- Enters OSPF process configuration. Process-id is locally-\n  significant (doesn't need to match neighbours' IDs).\n- Multiple OSPF processes can run on one router (each has its\n  own LSDB) — useful for separating customer VRFs or different\n  routing domains."
           },
           {
             "cmd": "network <ip> <wildcard> area <area-id>",
             "desc": "Advertises a network prefix into OSPF",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# network 10.0.0.0 0.255.255.255 area 0\n\nR1# show ip ospf interface brief\nInterface  PID  Area  IP Address/Mask  Cost  State Nbrs F/C\nGi0/0      1    0     10.10.10.1/24    1     BDR   1/1\nGi0/1      1    0     10.20.0.1/24     1     P2P   1/1\n\nWhat it means:\n- Wildcard mask (inverse of subnet mask) selects which interface\n  IPs to include in OSPF.\n- 0.255.255.255 = match the first octet only (10.x.x.x).\n- \"area 0\" = backbone area (mandatory in OSPF).\n- More specific networks: \"network 10.10.10.1 0.0.0.0 area 0\"\n  matches just one IP."
           },
           {
             "cmd": "passive-interface <interface>",
             "desc": "Suppresses OSPF hellos on an interface while still advertising it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# passive-interface GigabitEthernet0/2\n\nR1# show ip ospf interface gi0/2 | include passive\n  Suppress hello for 0 Neighbor(s)\n\nWhat it means:\n- Stops sending Hellos / advertising on the interface.\n- Subnet of the interface is STILL advertised in OSPF — useful\n  on user-facing LAN segments.\n- Pair with \"passive-interface default\" + selective \"no passive\"\n  to invert the default (most secure)."
           },
           {
             "cmd": "router bgp <asn>",
             "desc": "Enters BGP routing process configuration mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router bgp 65001\nR1(config-router)#\n\nWhat it means:\n- Enters BGP process configuration. Only one BGP process per\n  router (unlike OSPF which supports multiple).\n- ASN 1-64511 = public range. 64512-65535 = private. 4-byte ASNs\n  available since RFC 4893."
           },
           {
             "cmd": "neighbor <ip> remote-as <asn>",
             "desc": "Defines a BGP peer by IP and remote AS number",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 remote-as 65002\n\nR1# show ip bgp summary | include 10.10.10.2\n10.10.10.2  4   65002      14      12       142   0    0  00:08:14    142\n\nWhat it means:\n- Defines a BGP peer. \"remote-as\" same as local ASN = iBGP;\n  different = eBGP.\n- iBGP requires full-mesh OR route-reflectors / confederations.\n- eBGP TTL=1 by default (single-hop). Use \"ebgp-multihop N\" for\n  multi-hop scenarios."
           },
           {
             "cmd": "ip helper-address <server-ip>",
             "desc": "Enables DHCP relay — forwards broadcasts to the specified server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ip helper-address 10.99.0.10\nR1(config-if)# ip helper-address 10.99.0.11\n\n# Client broadcast DHCPDISCOVER →\n%DHCP-6-RELAY: relayed DHCPDISCOVER from 10.10.0.5 to 10.99.0.10\n\nWhat it means:\n- Converts UDP broadcast (DHCP/BOOTP/TFTP/etc.) to unicast aimed\n  at the named server.\n- Multiple helpers = HA. Most production deployments configure\n  2+ for redundancy.\n- Also catches other UDP-broadcast services (NetBIOS, TACACS) —\n  selectively disable with \"no ip forward-protocol udp\"."
           },
           {
             "cmd": "ip pim sparse-mode",
@@ -15654,7 +15693,8 @@
             "cmd": "ip multicast-routing",
             "desc": "Enables multicast routing globally on the switch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip multicast-routing\nR1(config)# ip multicast-routing distributed   ! hardware-accelerated\n\nR1# show ip mroute | head -3\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, ...\n\nWhat it means:\n- Globally enables IPv4 multicast routing. Required before\n  per-interface PIM commands take effect.\n- \"distributed\" : hardware acceleration (most modern Cisco\n  platforms — improves multicast forwarding rate).\n- After enabling, also configure \"ip pim sparse-mode\" on each\n  interface that should participate."
           }
         ],
         "Security": [
@@ -15662,55 +15702,64 @@
             "cmd": "show access-lists",
             "desc": "Displays all ACLs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show access-lists\n\nStandard IP access list 10\n    10 permit 10.10.10.0 wildcard bits 0.0.0.255 (45 matches)\n    20 deny any (12 matches)\n\nExtended IP access list BLOCK_ADMIN\n    10 deny tcp any host 10.10.10.50 eq 23 (8 matches) log\n    20 permit ip any any (102341 matches)\n\nWhat it means:\n- All IP/IPv6/MAC access lists with per-line match counts.\n- Standard ACLs : source IP only. Extended ACLs : full 5-tuple.\n- \"matches\" : how many packets each rule processed since last\n  clear. Useful for tuning — rules with 0 matches over a long\n  period may be removable."
           },
           {
             "cmd": "show ip access-lists",
             "desc": "Displays IPv4 ACLs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip access-lists\n\nStandard IP access list 10\n    10 permit 10.10.10.0 wildcard bits 0.0.0.255 (45 matches)\n    20 deny any (12 matches)\n\nExtended IP access list ALLOW_WEB\n    10 permit tcp any any eq 80 (102341 matches)\n    20 permit tcp any any eq 443 (245019 matches)\n    30 deny ip any any (12 matches) log\n\nWhat it means:\n- IPv4 ACLs only (no IPv6 or MAC).\n- Numeric ranges: 1-99 / 1300-1999 = standard; 100-199 / 2000-2699\n  = extended; 700-799 = MAC.\n- Named ACLs (modern best practice) — descriptive names instead\n  of opaque numbers."
           },
           {
             "cmd": "show ipv6 access-lists",
             "desc": "Displays IPv6 ACLs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ipv6 access-lists\n\nIPv6 access list ALLOW_HTTPS\n    permit tcp any any eq 443 (45012 matches)\n    permit tcp any any eq 80 (12003 matches)\n    deny ipv6 any any log (3 matches)\n\nWhat it means:\n- IPv6 ACLs are always named (no numeric range).\n- Apply with \"ipv6 traffic-filter NAME in/out\" on the interface\n  — different command from IPv4's \"ip access-group\".\n- Default-deny at the end is implicit; explicit \"deny + log\"\n  helps with auditing."
           },
           {
             "cmd": "show control-plane host open-ports",
             "desc": "Shows open management ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show control-plane host open-ports\n\nActive internet connections (servers and established)\nProt       Local Address      Foreign Address       Service             State\ntcp        *:179               *:0                   BGP                 LISTEN\ntcp        *:22                *:0                   SSH-Server          LISTEN\ntcp        *:80                *:0                   HTTP CORE           LISTEN\ntcp        10.10.10.1:179      10.10.10.2:51223      BGP                 ESTABLIS\nudp        *:161               *:0                   SNMP                LISTEN\nudp        *:514               *:0                   syslog              LISTEN\n\nWhat it means:\n- All listening ports + active connections to the control plane.\n- Critical for security review: any service running here is\n  exposed to traffic destined to the router itself.\n- Common cleanup: \"no ip http server\" / \"no ip http secure-server\"\n  if web management isn't used; \"transport input ssh\" to block\n  telnet (port 23)."
           },
           {
             "cmd": "show login failures",
             "desc": "Shows failed login attempts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show login failures\n\nInformation about login failure's with the device\n-----------------------------------------------------------------\nUsername       Source IPAddr  lPort Count   TimeStamp\nadmin          203.0.113.45   12345    14   May  1 11:22:18 2026 GMT\noperator       198.51.100.20  54321     2   May  1 09:14:22 2026 GMT\n\nWhat it means:\n- Audit trail of failed login attempts. \"Count\" = consecutive\n  failures from one (user, source-IP) pair.\n- A high count from one IP = brute-force attempt.\n- Pair with \"login block-for\" to auto-quarantine after threshold."
           },
           {
             "cmd": "show login on-success",
             "desc": "Shows successful logins",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show login on-success\n\nUser: admin\nSource IP: 10.50.50.50\nLogin Time: 11:22:18 GMT Wed May 1 2026\n\nUser: operator\nSource IP: 10.50.50.51\nLogin Time: 09:14:22 GMT Wed May 1 2026\n\nWhat it means:\n- Successful login audit log. Critical for change-management:\n  who logged in when, from where.\n- Pair \"login on-success\" + \"login on-failure\" globally to\n  ensure both are logged.\n- Forward to syslog server for long-term retention."
           },
           {
             "cmd": "show crypto isakmp sa",
             "desc": "Shows IPsec IKE SAs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show crypto isakmp sa\n\nIPv4 Crypto ISAKMP SA\ndst             src             state          conn-id status\n198.51.100.50   10.10.10.1      QM_IDLE          1001 ACTIVE\n\nWhat it means:\n- IKE Phase 1 SAs. State QM_IDLE = healthy (Phase 1 done, ready\n  for Phase 2 negotiations).\n- Other states during negotiation: MM_NO_STATE, MM_SA_SETUP,\n  MM_KEY_EXCH, MM_KEY_AUTH, AG_INIT_EXCH, AG_AUTH.\n- conn-id : tracking ID; useful for \"debug crypto isakmp\" output."
           },
           {
             "cmd": "show crypto ipsec sa",
             "desc": "Shows IPsec tunnel SAs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show crypto ipsec sa | head -20\n\ninterface: GigabitEthernet0/0\n    Crypto map tag: VPN_MAP, local addr 10.10.10.1\n\n   protected vrf: (none)\n   local  ident (addr/mask/prot/port): (10.10.0.0/255.255.0.0/0/0)\n   remote ident (addr/mask/prot/port): (10.20.0.0/255.255.0.0/0/0)\n   current_peer 198.51.100.50 port 500\n     PERMIT, flags={origin_is_acl,}\n    #pkts encaps: 142,012, #pkts encrypt: 142,012, #pkts digest: 142,012\n    #pkts decaps: 142,003, #pkts decrypt: 142,003, #pkts verify: 142,003\n\nWhat it means:\n- IPsec Phase 2 SAs with packet counters.\n- \"encaps / encrypt / digest\" : outbound (encryption + auth).\n- \"decaps / decrypt / verify\" : inbound.\n- Mismatch between encrypt and decrypt counters = unidirectional\n  problem (firewall blocking, MTU)."
           },
           {
             "cmd": "show crypto pki certificates",
             "desc": "Shows installed certificates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show crypto pki certificates\n\nCertificate\n  Status: Available\n  Certificate Serial Number (hex): 0123456789ABCDEF\n  Certificate Usage: General Purpose\n  Issuer:\n    cn=corp-CA\n    o=Corp\n    c=GB\n  Subject:\n    Name: R1.corp.local\n    cn=R1.corp.local\n  Validity Date:\n    start date: 09:00:00 GMT Apr 1 2026\n    end   date: 09:00:00 GMT Apr 1 2027\n  Associated Trustpoints: corp-CA-trustpoint\n\nWhat it means:\n- All installed PKI certificates on the router. Used for IKEv2\n  + RSA-sig auth, mGRE+IPsec, REST API authentication.\n- \"Status: Available\" = usable. \"Pending\" = enrollment in flight.\n- Renew certs BEFORE expiry — expired cert = VPN tunnels drop."
           },
           {
             "cmd": "show ssh",
@@ -15737,13 +15786,15 @@
             "cmd": "show dot1x all",
             "desc": "Per-port 802.1x authentication state and session info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show dot1x all\n\nSysauthcontrol                 Enabled\nDot1x Protocol Version             3\n\nDot1x Info for GigabitEthernet1/0/1\n-----------------------------------\nPAE                       = AUTHENTICATOR\nQuietPeriod               = 60\nServerTimeout             = 0\nSuppTimeout               = 30\nReAuthMax                 = 2\nMaxReq                    = 2\nTxPeriod                  = 30\n\nWhat it means:\n- 802.1X authentication state per port. PAE = Port Access Entity.\n- AUTHENTICATOR = switch acting as 802.1X gatekeeper for the\n  connected supplicant (laptop/phone).\n- Timers: TxPeriod (resend), QuietPeriod (after fail), SuppTimeout\n  (wait for client)."
           },
           {
             "cmd": "show authentication sessions interface <int> details",
             "desc": "MAB / 802.1x session details including VLAN and ACL",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show authentication sessions interface gi1/0/1 details\n\nInterface:  GigabitEthernet1/0/1\nMAC Address: 0050.5612.3456\nIPv4 Address: 10.10.10.50\nIPv6 Address: Unknown\nUser-Name: corp\\\\jsmith\nStatus: Authorized\nDomain: DATA\nOper host mode: multi-auth\nOper control dir: both\nSession timeout: N/A\nCommon Session ID: 0A0A0A0A00000142\nAcct Session ID: 0x00000142\nHandle: 0xCD000142\nCurrent Policy: POLICY_Gi1/0/1\n\nWhat it means:\n- Per-port detailed 802.1X / MAB / WebAuth session info.\n- \"Status: Authorized\" = host passed authentication; ports forward\n  traffic.\n- Session ID : handle for RADIUS accounting and dynamic policy\n  push (CoA).\n- Use during user complaints: did 802.1X complete? What VLAN\n  was assigned via dynamic VLAN?"
           },
           {
             "cmd": "show ip dhcp snooping binding",
@@ -15756,49 +15807,57 @@
             "cmd": "show ip arp inspection",
             "desc": "Dynamic ARP Inspection stats per VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip arp inspection\n\nSource Mac Validation     : Disabled\nDestination Mac Validation: Disabled\nIP Address Validation     : Enabled\n\n Vlan     Configuration    Operation   ACL Match          Static ACL\n ----     -------------    ---------   ---------          ----------\n   10     Enabled           Active      ARP_VALIDATE       No\n\n Vlan     ACL Logging      DHCP Logging  Probe Logging\n ----     -----------      ------------  -------------\n   10     Deny             Deny          Off\n\n Vlan      Forwarded        Dropped     DHCP Drops      ACL Drops\n ----      ---------        -------     ----------      ---------\n   10      245019           12          12              0\n\nWhat it means:\n- DAI (Dynamic ARP Inspection) state — validates ARP packets\n  against the DHCP-snooping binding database.\n- \"Dropped > 0\" = invalid ARP packets blocked (typical attacker:\n  ARP spoofing).\n- Critical L2 security feature; pair with DHCP snooping to\n  prevent man-in-the-middle attacks at the access layer."
           },
           {
             "cmd": "show ip source binding",
             "desc": "IP source guard bindings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip source binding\n\nMacAddress          IpAddress     Lease(sec)  Type            VLAN  Interface\n00:1A:1E:11:22:33   10.10.0.50    86400       dhcp-snooping   10    Gi1/0/1\n00:1A:1E:44:55:66   10.10.0.51    72000       static          10    Gi1/0/2\n\nWhat it means:\n- IP Source Guard binding table — IP-MAC-port-VLAN tuples\n  enforced for ingress filtering.\n- \"dhcp-snooping\" : auto-learned from DHCP exchanges on trusted\n  ports.\n- \"static\" : manually configured for known servers.\n- Combined with IPSG, prevents IP spoofing at the access layer."
           },
           {
             "cmd": "interface <int>\\n switchport port-security maximum 2\\n switchport port-security violation restrict",
             "desc": "Basic port-security config",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/1\nSwitch(config-if)# switchport mode access\nSwitch(config-if)# switchport port-security\nSwitch(config-if)# switchport port-security maximum 2\nSwitch(config-if)# switchport port-security violation restrict\n\nSwitch# show port-security interface gi1/0/1\nPort Security              : Enabled\nPort Status                : Secure-up\nViolation Mode             : Restrict\nMaximum MAC Addresses      : 2\nTotal MAC Addresses        : 2\nSticky MAC Addresses       : 0\nLast Source Address:Vlan   : 0050.5612.3456:10\nSecurity Violation Count   : 0\n\nWhat it means:\n- Limits MAC addresses per port. \"maximum 2\" = phone + PC behind\n  the phone (typical IP-phone setup).\n- Violation modes: protect (drop, no log), restrict (drop + log),\n  shutdown (errdisable port).\n- \"restrict\" is the common compromise — alert without disrupting\n  legitimate users."
           },
           {
             "cmd": "ip dhcp snooping\\n ip dhcp snooping vlan <vlans>\\n interface <uplink>\\n ip dhcp snooping trust",
             "desc": "Enable DHCP snooping with a trusted uplink",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip dhcp snooping\nSwitch(config)# ip dhcp snooping vlan 10,20,30\nSwitch(config)# interface gi1/0/24\nSwitch(config-if)# ip dhcp snooping trust\n\n# Untrusted ports (default) only allow DHCP responses TO be received,\n# not transmitted (blocks rogue DHCP servers).\n\nSwitch# show ip dhcp snooping | head -10\nSwitch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs: 10,20,30\nDHCP snooping trust on the following interfaces:\n   GigabitEthernet1/0/24\n\nWhat it means:\n- DHCP snooping prevents rogue DHCP servers (Layer-2 attack\n  prevention).\n- \"trust\" : interface where the legitimate DHCP server lives —\n  allows DHCPOFFER/DHCPACK responses through.\n- Untrusted (default) : only allows DHCPDISCOVER/REQUEST from\n  clients; blocks responses originating from this port."
           },
           {
             "cmd": "ip arp inspection vlan <vlans>",
             "desc": "Enable Dynamic ARP Inspection on selected VLANs",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip arp inspection vlan 10,20,30\n\nSwitch# show ip arp inspection vlan 10\nSource Mac Validation     : Disabled\nDestination Mac Validation: Disabled\nIP Address Validation     : Enabled\n\n Vlan     Configuration    Operation\n ----     -------------    ---------\n   10     Enabled           Active\n\nWhat it means:\n- Activates Dynamic ARP Inspection on the named VLANs.\n- Requires DHCP snooping bindings (or static ARP-ACLs) to know\n  what's legitimate.\n- Trust the port where the gateway lives (\"ip arp inspection\n  trust\" interface command)."
           },
           {
             "cmd": "show ip access-lists <name>",
             "desc": "Single named/numbered ACL with per-line hits",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip access-lists ALLOW_WEB\n\nExtended IP access list ALLOW_WEB\n    10 permit tcp any any eq 80 (102341 matches)\n    20 permit tcp any any eq 443 (245019 matches)\n    30 deny ip any any log (12 matches)\n\nWhat it means:\n- Single-ACL view with per-line match counts.\n- Use to verify a specific ACL after applying or modifying it.\n- Match counters reset on \"clear ip access-list counters NAME\"."
           },
           {
             "cmd": "show ip access-lists EXAMPLE",
             "desc": "Single named ACL detail",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip access-lists EXAMPLE\n\nExtended IP access list EXAMPLE\n    10 permit tcp 10.10.0.0 0.0.255.255 any eq 22 (4502 matches)\n    20 permit tcp 10.10.0.0 0.0.255.255 any eq 80 (45012 matches)\n    30 deny ip any any log\n\nWhat it means:\n- Same as \"show ip access-lists <name>\" — example ACL named\n  EXAMPLE.\n- \"0.0.255.255\" wildcard mask matches 10.10.0.0/16.\n- ACEs evaluated top-to-bottom; first match wins. Implicit\n  \"deny ip any any\" at the end (without log)."
           },
           {
             "cmd": "show port-security interface Gi1/0/1",
             "desc": "Per-interface port-security state and learned MACs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show port-security interface gi1/0/1\n\nPort Security              : Enabled\nPort Status                : Secure-up\nViolation Mode             : Restrict\nAging Time                 : 0 mins\nAging Type                 : Absolute\nSecureStatic Address Aging : Disabled\nMaximum MAC Addresses      : 2\nTotal MAC Addresses        : 2\nConfigured MAC Addresses   : 0\nSticky MAC Addresses       : 2\nLast Source Address:Vlan   : 0050.5612.3456:10\nSecurity Violation Count   : 0\n\nWhat it means:\n- Port-security state for one port.\n- \"Sticky MAC Addresses 2\" : MACs learned dynamically and saved\n  to running-config — survive reboot if \"write memory\" is run.\n- Violation Count > 0 = security incident triggered (typically\n  someone unplugging device + plugging in a different one)."
           },
           {
             "cmd": "show ip dhcp snooping",
@@ -15818,205 +15877,239 @@
             "cmd": "show aaa servers",
             "desc": "TACACS+/RADIUS server reachability + counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show aaa servers\n\nRADIUS: id 1, priority 1, host 10.40.0.5, auth-port 1812, acct-port 1813\n     State: current UP, duration 1d12h, previous duration 0s\n     Dead: total time 0s, count 0\n     Quarantined: No\n     Authen: request 4502, timeouts 0, failover 0\n     Author: request 0, timeouts 0\n     Account: request 4500, timeouts 0\n     Server_State_Statistics:\n        UP: 4502\n        DEAD: 0\n\nTACACS+: id 2, priority 1, host 10.40.0.6, port 49\n     State: current UP, duration 1d12h\n     Authen: request 142, timeouts 0\n     Author: request 245, timeouts 0\n     Account: request 142, timeouts 0\n\nWhat it means:\n- AAA server state and counters.\n- \"current UP\" = reachable. \"DEAD\" = marked unreachable\n  (responds with \"previous duration\").\n- Timeouts/failover non-zero = pursuing dead server too long;\n  tune \"radius-server timeout\" / \"deadtime\".\n- Auth/Author/Account split shows which AAA functions are in\n  use."
           },
           {
             "cmd": "show login",
             "desc": "Login enhancements / quiet-mode state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show login\n\nA login delay of 1 seconds is applied.\n   Quiet-Mode access list has not been configured.\n\nRouter enabled to watch for login Attacks.\n   If more than 4 login failures occur in 60 seconds or less,\n   logins will be disabled for 120 seconds.\n\n   Router presently in Watch-Mode, will remain in Watch-Mode for 0 seconds.\n   Present login failure count 0.\n\nWhat it means:\n- \"login block-for\" anti-brute-force config status.\n- \"Watch-Mode\" = monitoring; \"Quiet-Mode\" = logins blocked\n  (returns to Watch-Mode after the configured timeout).\n- \"Quiet-Mode access list\" : exempt list — admin IPs that bypass\n  the lockout."
           },
           {
             "cmd": "aaa new-model",
             "desc": "Enable AAA framework",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa new-model\n\nSwitch# show running-config | include aaa\naaa new-model\n\nWhat it means:\n- Required FIRST step to enable any AAA configuration.\n- Without \"aaa new-model\", legacy \"username\" / \"enable secret\" /\n  \"line login\" still work — but the modern \"aaa authentication\"\n  framework does not.\n- Cannot be cleanly disabled — once turned on, plan to use AAA\n  going forward."
           },
           {
             "cmd": "aaa authentication login default group radius local",
             "desc": "Login auth: RADIUS first, fall back to local",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa authentication login default group radius local\n\n# Login flow:\n# 1. Try RADIUS first.\n# 2. Fall back to local (router's username database) if RADIUS fails.\n\nR1# show running-config | include authentication login\naaa authentication login default group radius local\n\nWhat it means:\n- Multi-method auth list. \"default\" applies to ALL login lines\n  unless overridden.\n- \"group radius\" : try every RADIUS server in the group in order.\n- \"local\" fallback : critical safety net — if RADIUS is dead, you\n  can still log in via local account.\n- ALWAYS configure local fallback on production."
           },
           {
             "cmd": "aaa authorization commands 15 default group tacacs+ none",
             "desc": "Per-command authz at priv 15",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa authorization commands 15 default group tacacs+ none\n\n# When operator runs a privileged command:\nR1# configure terminal\n%TACACS+: AUTHOR_REQ for cmd \"configure terminal\" by user 'admin' from 10.50.50.50\nR1#\n\nWhat it means:\n- Authorises individual commands at privilege level 15 against\n  TACACS+.\n- \"none\" fallback : if TACACS+ is unreachable, ALLOW the command\n  (to prevent lockout). Use carefully — security/availability\n  trade-off.\n- TACACS+ servers can return per-command authz decisions\n  (e.g. operator can run \"show\" but not \"configure\")."
           },
           {
             "cmd": "aaa accounting commands 15 default start-stop group tacacs+",
             "desc": "Command accounting",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa accounting commands 15 default start-stop group tacacs+\n\n# Each priv-15 command logged:\n%AAA-6-CMDACCT: User=admin Cmd=\"show running-config\" Status=stop\n\nWhat it means:\n- \"start-stop\" : log both command start and completion.\n- Priv-15 : log every privileged-mode command — full audit trail.\n- Required by SOX / PCI-DSS for change accountability.\n- TACACS+ accounting records sent to server in real-time."
           },
           {
             "cmd": "username admin privilege 15 secret <pwd>",
             "desc": "Local fallback admin",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# username admin privilege 15 secret CorpAdmin2026!\n\nR1# show running-config | include username\nusername admin privilege 15 secret 9 $9$abcd...   ! type-9 hash\n\nWhat it means:\n- Local user with full privilege (level 15).\n- \"secret\" stores HASHED password (one-way). Modern IOS uses\n  type-9 (scrypt) — strong against brute-force.\n- \"password\" (vs \"secret\") stores plaintext — DANGEROUS, never use.\n- \"service password-encryption\" applies type-7 (weak) encryption\n  to other passwords — primarily obscurity, not security."
           },
           {
             "cmd": "enable secret <pwd>",
             "desc": "Set the enable password (irreversible hash)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# enable secret CorpEnable2026!\n\nR1# show running-config | include enable\nenable secret 9 $9$abcd...\n\nWhat it means:\n- The privileged-mode (enable) password. Hashed with type-9\n  (scrypt) by default on modern IOS.\n- Required to escalate from user-mode to privileged-mode unless\n  AAA bypass is configured.\n- \"enable password\" (vs \"secret\") stores plaintext — DEPRECATED."
           },
           {
             "cmd": "service password-encryption",
             "desc": "Type-7 encrypt all plaintext passwords (legacy obfuscation)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# service password-encryption\n\nR1# show running-config | include username\nusername operator password 7 094F471A1A0A    ! type-7 hash\n\nWhat it means:\n- Encrypts ALL plaintext passwords in running-config using type-7\n  (Vigenère cipher) — TRIVIAL to reverse online.\n- Provides obscurity, not security. Real protection comes from\n  type-9 (scrypt) hashes via \"secret\" command.\n- Best practice: use \"secret\" for everything; \"service password-\n  encryption\" is a defence-in-depth nicety only."
           },
           {
             "cmd": "ip ssh version 2\nip ssh time-out 60\nip ssh authentication-retries 3",
             "desc": "Harden SSH server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip ssh version 2\nR1(config)# ip ssh time-out 60\nR1(config)# ip ssh authentication-retries 3\nR1(config)# crypto key generate rsa modulus 2048\n\nR1# show ip ssh\nSSH Enabled - version 2.0\nAuthentication timeout: 60 secs; Authentication retries: 3\nMinimum expected Diffie Hellman key size : 1024 bits\n\nWhat it means:\n- SSH v2 ONLY (v1 has known vulnerabilities — never enable).\n- 60-sec timeout for the auth phase. 3 retries before disconnect.\n- Requires RSA keys ≥ 1024 bits (2048+ recommended for modern\n  threat model).\n- Generate RSA keys ONCE per device — they survive reload."
           },
           {
             "cmd": "crypto ipsec transform-set",
             "desc": "Remove duplicates (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# crypto ipsec transform-set MODERN_TS esp-aes 256 esp-sha256-hmac\nR1(config)# crypto ipsec transform-set FIPS_TS esp-aes 256 esp-sha384-hmac\nR1(config)# mode tunnel\n\nR1# show crypto ipsec transform-set MODERN_TS\nTransform set MODERN_TS: { esp-256-aes esp-sha256-hmac  }\n   will negotiate = { Tunnel,  },\n\nWhat it means:\n- IPsec Phase 2 transform-set : encryption + HMAC algorithms.\n- AES-256 + SHA-256 = modern; AES-128 + SHA-1 = legacy/avoid;\n  AES-256 + SHA-384 = FIPS 140-2.\n- \"mode tunnel\" (default) : full encapsulation. \"transport\" :\n  preserve original IP header (only IP payload protected)."
           },
           {
             "cmd": "ip access-group {access-list-number | name} {in|out}",
             "desc": "Apply an ACL to an Interface. — Filters traffic entering or leaving a specific interface based on ACL rules.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/0\nR1(config-if)# ip access-group 100 in\nR1(config-if)# ip access-group ALLOW_WEB out\n\nR1# show ip interface gi0/0 | include access list\n  Inbound  access list is 100\n  Outgoing access list is ALLOW_WEB\n\nWhat it means:\n- Applies an ACL to traffic on the interface.\n- \"in\" : ingress (incoming to the router from this interface).\n- \"out\" : egress (going out via this interface).\n- Best-practice: filter as close to the source as possible (use\n  \"in\" on customer-facing interfaces)."
           },
           {
             "cmd": "access-class {access-list-number|name} {in|out}",
             "desc": "Apply an ACL to VTY Lines for AAA Access Control. — Restricts source IPs allowed to establish remote management sessions (Telnet/SSH).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# access-list 5 permit 10.50.50.0 0.0.0.255\nR1(config)# line vty 0 4\nR1(config-line)# access-class 5 in\nR1(config-line)# transport input ssh\n\n# Now only 10.50.50.0/24 can SSH to the router.\n\nWhat it means:\n- Restricts which source IPs can connect to the VTY (telnet/SSH)\n  lines.\n- \"in\" : applies to incoming connection requests. Always use this\n  on management lines.\n- Best practice: management subnet ACL on every router/switch."
           },
           {
             "cmd": "username {username} algorithm-type {md5 | sha256 | scrypt} secret {password}",
             "desc": "Create a username with type 8 and type 9 password option. — Defines the authentication method (MD5/SHA256/scrypt) for AAA.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# username admin algorithm-type scrypt secret CorpAdmin2026!\n\nR1# show running-config | include username admin\nusername admin secret 9 $9$abcd...   ! type-9 (scrypt)\n\nWhat it means:\n- Explicitly chooses the password hash algorithm.\n- scrypt (type-9) : MODERN, slow + memory-hard, recommended.\n- sha256 (type-8) : decent, faster than scrypt.\n- md5 (type-5) : legacy. Available on older IOS without type-8/9.\n- Without \"algorithm-type\", IOS uses type-5 by default on older\n  versions — modern releases default to type-9."
           },
           {
             "cmd": "transport input ssh",
             "desc": "Allow only SSH for a vty line without using an ACL. — Restricts remote management protocol to SSH on the VTY lines.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# line vty 0 4\nR1(config-line)# transport input ssh\n\nR1# show running-config | section vty\nline vty 0 4\n transport input ssh\n\nWhat it means:\n- Restricts incoming connections to SSH only — no telnet, rlogin\n  or others.\n- Hardening best practice: telnet sends credentials in cleartext.\n- \"transport input none\" : blocks all incoming connections (use\n  on AUX line)."
           },
           {
             "cmd": "crypto key generate rsa",
             "desc": "Enable SSHv2 on a router. — Generates RSA keys (minimum 768 bits recommended) for SSH authentication.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# crypto key generate rsa modulus 2048\n\nThe name for the keys will be: R1.corp.local\n% The key modulus size is 2048 bits\n% Generating 2048 bit RSA keys, keys will be non-exportable...\n[OK] (elapsed time was 12 seconds)\n\nR1# show crypto key mypubkey rsa\nKey name: R1.corp.local\nKey type: RSA KEYS\nStorage Device: not specified\nUsage: General Purpose Key\nKey is not exportable.\nKey Data: 30820122 300D0609 ...\n\nWhat it means:\n- Generates RSA key pair. Required before SSH works.\n- \"modulus 2048\" : key size. 2048 = current minimum; 4096 for\n  high-security environments.\n- \"non-exportable\" (default) : private key cannot be extracted —\n  best practice for security-critical RSA keys."
           },
           {
             "cmd": "aaa authorization console",
             "desc": "Enable AAA authorization for the console line. — Requires AAA authentication before executing commands on the console port.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa authorization console\n\nR1# show running-config | include aaa authorization\naaa authorization console\naaa authorization commands 15 default group tacacs+ local\n\nWhat it means:\n- By default, AAA authorisation commands DON'T apply to console\n  logins — convenient escape hatch but a security gap.\n- \"aaa authorization console\" applies authz to the console too,\n  ensuring uniform enforcement.\n- Best paired with a strong physical-security policy on the\n  console port itself."
           },
           {
             "cmd": "if-authenticated",
             "desc": "AAA fallback authorization method that authorizes commands if a user is successfully authenticated. — Allows any command execution after successful authentication (less secure than specific authorization).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa authorization commands 15 default if-authenticated\n\n# Any authenticated user can run any command (no per-cmd authz).\n\nWhat it means:\n- Method that succeeds if the user is authenticated. NO per-command\n  authz check.\n- Simpler than TACACS+ command authorisation but loses granular\n  control.\n- Use as fallback when TACACS+ is unreachable (better than\n  none-method which permits everything regardless)."
           },
           {
             "cmd": "aaa authorization config-commands",
             "desc": "Enable AAA authorization for config commands. — Restricts configuration changes to authorized users only.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# aaa authorization config-commands\n\n# Now even (config) mode commands go through authz:\nR1(config)# interface gi0/0\n%TACACS+: AUTHOR_REQ for cmd \"interface gi0/0\" by user 'admin'\n\nWhat it means:\n- By default, configuration-mode commands are NOT subject to\n  command authorisation (only privileged exec commands are).\n- Enabling this captures every config change in the audit trail.\n- Critical for compliance environments — auditors expect every\n  config change to be authorised."
           },
           {
             "cmd": "ip prefix-list ...",
             "desc": "Define prefix list for filtering. — Matches network prefixes with optional length constraints (`ge`",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip prefix-list MY_PREFIXES seq 10 permit 10.0.0.0/16\nR1(config)# ip prefix-list MY_PREFIXES seq 20 permit 192.168.0.0/16 ge 24\nR1(config)# ip prefix-list MY_PREFIXES seq 30 deny 0.0.0.0/0 le 32\n\nR1# show ip prefix-list MY_PREFIXES\nip prefix-list MY_PREFIXES: 3 entries\n   seq 10 permit 10.0.0.0/16\n   seq 20 permit 192.168.0.0/16 ge 24\n   seq 30 deny 0.0.0.0/0 le 32\n\nWhat it means:\n- Prefix-lists are more efficient and clearer than ACLs for\n  route filtering (BGP, OSPF redistribution).\n- \"ge 24\" : also match more-specific prefixes >= /24.\n- \"le 32\" : match prefixes up to /32.\n- Implicit deny at the end like ACLs."
           },
           {
             "cmd": "route-map route-map-name [permit | deny] [sequence-number]",
             "desc": "Route map definition. — Combines conditional matching and optional actions (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# route-map FILTER_OUT permit 10\nR1(config-route-map)# match ip address prefix-list MY_PREFIXES\nR1(config-route-map)# set local-preference 200\n\nR1(config)# route-map FILTER_OUT deny 20\nR1(config-route-map)# match ip address prefix-list BAD_PREFIXES\n\nR1(config)# route-map FILTER_OUT permit 30\n! catch-all: permit anything not denied above\n\nWhat it means:\n- Conditional logic for routing decisions. Each statement has\n  match (filter) + set (action) clauses.\n- \"permit 10\" : if match succeeds, apply set actions and\n  permit. If match fails, fall through to next sequence.\n- Default is \"deny\" at the end — explicit \"permit 30\" with no\n  match makes it a catch-all permit."
           },
           {
             "cmd": "match ip address prefix-list prefix-list-name",
             "desc": "Conditional match on Prefix List. — Selects prefixes using a configured prefix list (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# match ip address prefix-list MY_PREFIXES\n\nR1# show route-map FILTER_OUT | include Match\n  Match clauses:\n    ip address prefix-list MY_PREFIXES\n\nWhat it means:\n- Inside a route-map, matches IPv4 prefixes against a named\n  prefix-list.\n- Multiple match clauses on the same statement form an AND;\n  multiple match clauses with the same keyword form an OR.\n- For BGP, \"match ip address prefix-list\" is preferred over\n  \"match ip address ACL\" — more efficient."
           },
           {
             "cmd": "neighbor ip-address distribute-list {acl-number | acl-name} {in|out}",
             "desc": "Apply Distribute List Filtering. — Filters routes inbound/outbound using standard/extended ACLs.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 distribute-list 100 in\n\nR1# show ip bgp neighbor 10.10.10.2 | include policy\n  Inbound updates filtered by access-list 100\n\nWhat it means:\n- Filters BGP routes received from a peer.\n- \"in\" : applies to incoming Updates (filter what we accept).\n- \"out\" : applies to outgoing Updates (filter what we send).\n- Compare with \"neighbor ... prefix-list\" (preferred — more\n  efficient with prefix-list syntax)."
           },
           {
             "cmd": "neighbor ip-address prefix-list prefix-list-name {in | out}",
             "desc": "Apply Prefix List Filtering. — Filters routes inbound/outbound using a configured prefix list.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip prefix-list ACCEPT_FROM_ISP seq 10 permit 0.0.0.0/0\n\nR1(config-router)# neighbor 1.2.3.4 prefix-list ACCEPT_FROM_ISP in\n\nR1# show ip bgp neighbor 1.2.3.4 | include filter\n  Inbound prefix list: ACCEPT_FROM_ISP\n\nWhat it means:\n- Filters BGP routes via a prefix-list (preferred over ACL).\n- Use to limit accepted routes (e.g. only accept default route\n  from ISP, not full Internet table).\n- Critical safety: Limit AS-path acceptance + max-prefix limit\n  to defend against accidental BGP leaks."
           },
           {
             "cmd": "match access-group",
             "desc": "Match on ACL. — Matches packets based on a standard/extended Access Control List.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match access-group 100\n\n# Or named ACL:\nR1(config-cmap)# match access-group name ALLOW_WEB\n\nR1# show class-map | include access-group\n   Match access-group 100\n\nWhat it means:\n- Inside a QoS class-map, matches against an ACL.\n- The ACL describes the traffic to classify (typical 5-tuple\n  match).\n- More flexible than match-direct-attribute (DSCP/CoS) because\n  ACLs can match on src/dst IP, port, protocol."
           },
           {
             "cmd": "switchport port-security",
             "desc": "Enables port security on the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode access\nSwitch(config-if)# switchport port-security\n\nSwitch# show port-security interface gi1/0/1 | include Port Security\nPort Security              : Enabled\n\nWhat it means:\n- Enables port-security on the access port. Default behaviour:\n  - max 1 MAC, learned dynamically.\n  - violation mode \"shutdown\" (errdisable on second MAC).\n- Tighten / loosen with \"maximum\" + \"violation\" + \"mac-address\"\n  sub-commands."
           },
           {
             "cmd": "switchport port-security maximum <count>",
             "desc": "Sets the maximum number of MAC addresses allowed on the port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport port-security maximum 2\n\nSwitch# show port-security interface gi1/0/1 | include Maximum\nMaximum MAC Addresses      : 2\n\nWhat it means:\n- Allows up to 2 MACs on the port. Common for IP-phone setups\n  (phone + PC behind the phone).\n- Higher counts (e.g. 254) are common on hypervisor-facing ports\n  where many VMs share one physical port.\n- Keep the number tight to detect accidental hub plug-ins."
           },
           {
             "cmd": "switchport port-security violation <protect|restrict|shutdown>",
             "desc": "Sets the action taken when a port security violation occurs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport port-security violation restrict\n\n# When violation occurs:\n%PORT_SECURITY-2-PSECURE_VIOLATION: Security violation occurred,\n        caused by MAC address 0050.bad0.bad0 on port Gi1/0/1.\n\nWhat it means:\n- protect  : silent drop. No log, no err-disable.\n- restrict : drop + syslog + counter. Port stays UP.\n- shutdown : err-disable port (default).\n- Most environments use \"restrict\" — alerts without disrupting."
           },
           {
             "cmd": "switchport port-security mac-address sticky",
             "desc": "Enables sticky learning — dynamic MACs become static entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport port-security mac-address sticky\n\n# After a device connects, its MAC is auto-learned + saved:\nSwitch# show running-config interface gi1/0/1 | include sticky\n switchport port-security mac-address sticky 0050.5612.3456\n\nWhat it means:\n- \"sticky\" : dynamically learn MACs but persist them in\n  running-config.\n- Combine with \"write memory\" to persist to NVRAM — locks the\n  port to the originally-connected device.\n- Auto-locks ports for asset tracking compliance."
           },
           {
             "cmd": "ip dhcp snooping",
             "desc": "Enables DHCP snooping globally on the switch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip dhcp snooping\n\nSwitch# show ip dhcp snooping | head -3\nSwitch DHCP snooping is enabled\n\nWhat it means:\n- Globally enables DHCP snooping. Ports default to UNTRUSTED —\n  rogue DHCP servers are blocked.\n- Mark legitimate DHCP-server-facing ports with \"ip dhcp\n  snooping trust\" interface command.\n- Pair with \"no ip dhcp snooping information option\" if your\n  DHCP server doesn't understand option-82 (Cisco-injected)."
           },
           {
             "cmd": "ip dhcp snooping vlan <id>",
             "desc": "Enables DHCP snooping for a specific VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip dhcp snooping vlan 10,20,30\n\nSwitch# show ip dhcp snooping | include VLAN\nDHCP snooping is configured on following VLANs: 10,20,30\n\nWhat it means:\n- Specifies which VLANs participate in DHCP snooping.\n- Without this, snooping is enabled globally but applies to no\n  VLANs.\n- DHCP packets in non-snooped VLANs flow normally (no protection)."
           },
           {
             "cmd": "ip dhcp snooping trust",
             "desc": "Marks the interface as a trusted DHCP snooping port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/24\nSwitch(config-if)# ip dhcp snooping trust\n\nSwitch# show ip dhcp snooping | include trust\ntrusted: GigabitEthernet1/0/24\n\nWhat it means:\n- Marks the interface as trusted for DHCP snooping.\n- Trusted ports allow DHCPOFFER/DHCPACK (server-side messages)\n  through.\n- Untrusted (default) only allows DHCPDISCOVER/REQUEST (client\n  messages).\n- ALWAYS trust uplinks toward your legitimate DHCP server."
           },
           {
             "cmd": "ip arp inspection vlan <id>",
             "desc": "Enables Dynamic ARP Inspection (DAI) for a specific VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip arp inspection vlan 10\n\nSwitch# show ip arp inspection vlan 10 | head -3\n Vlan     Configuration    Operation\n ----     -------------    ---------\n   10     Enabled           Active\n\nWhat it means:\n- Enables Dynamic ARP Inspection on the named VLAN.\n- DAI uses the DHCP-snooping binding table to validate ARP\n  packets — drops mismatched IP-MAC pairs.\n- Critical L2 security feature; pair with DHCP snooping for\n  layered access-layer protection."
           },
           {
             "cmd": "ip arp inspection trust",
             "desc": "Marks the interface as trusted for ARP inspection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/24\nSwitch(config-if)# ip arp inspection trust\n\nSwitch# show ip arp inspection interfaces | include 1/0/24\n Gi1/0/24                Trusted          None         N/A\n\nWhat it means:\n- Marks the interface as trusted for DAI. Trusted ports skip\n  binding-table validation.\n- Trust uplinks (toward gateway / core) — those carry many\n  legitimate ARP entries from a single port.\n- Untrusted (default) on user-facing ports : every ARP packet\n  validated against DHCP-snooping bindings."
           },
           {
             "cmd": "spanning-tree guard root",
@@ -16029,31 +16122,36 @@
             "cmd": "ip access-list extended <name>",
             "desc": "Creates a named extended ACL",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip access-list extended ALLOW_WEB\nR1(config-ext-nacl)# permit tcp any any eq 80\nR1(config-ext-nacl)# permit tcp any any eq 443\nR1(config-ext-nacl)# deny ip any any log\n\nR1# show ip access-lists ALLOW_WEB\nExtended IP access list ALLOW_WEB\n    10 permit tcp any any eq 80\n    20 permit tcp any any eq 443\n    30 deny ip any any log\n\nWhat it means:\n- Modern named ACL syntax — auto-numbers entries 10, 20, 30 for\n  easy mid-list inserts.\n- \"deny ip any any log\" : explicit deny + log for security\n  auditing.\n- Apply with \"ip access-group ALLOW_WEB in/out\" on an interface."
           },
           {
             "cmd": "ip access-group <acl-name> in",
             "desc": "Applies an ACL to the interface in the inbound direction",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ip access-group ALLOW_WEB in\n\nR1# show ip interface gi0/0 | include access list\n  Inbound  access list is ALLOW_WEB\n\nWhat it means:\n- Applies the named ACL to ingress traffic on this interface.\n- Filter close to the source : use \"in\" on customer-facing\n  interfaces to drop bad traffic before it consumes resources.\n- Same ACL can be applied to multiple interfaces."
           },
           {
             "cmd": "ip access-group <acl-name> out",
             "desc": "Applies an ACL to the interface in the outbound direction",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ip access-group ALLOW_HTTPS out\n\nR1# show ip interface gi0/0 | include access list\n  Outgoing access list is ALLOW_HTTPS\n\nWhat it means:\n- Applies the ACL to egress traffic.\n- \"out\" filters traffic LEAVING the interface — useful for\n  preventing leaks of internal traffic onto public links.\n- Egress ACLs don't filter the router's own self-originated\n  traffic by default (\"ip access-group X out\" affects only\n  transit)."
           },
           {
             "cmd": "shutdown vlan <id>",
             "desc": "Shuts down a VLAN globally across the switch without deleting it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# shutdown vlan 99\n\nSwitch# show vlan id 99 | include Status\n99   QUARANTINE  act/lshut\n\nWhat it means:\n- Administratively shuts the VLAN — all access ports in it\n  stop forwarding.\n- Useful for emergency containment (e.g. infected VLAN).\n- Reverse with \"no shutdown vlan 99\".\n- \"act/lshut\" status = active in DB but locally shut down."
           },
           {
             "cmd": "login block-for <secs> attempts <n> within <secs>",
             "desc": "Blocks login attempts after N failures — brute-force protection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# login block-for 120 attempts 4 within 60\n\n# After 4 failed logins in 60 seconds, all logins blocked for 120 sec.\n\nR1# show login | include Watch\nRouter presently in Watch-Mode, will remain in Watch-Mode for 0 seconds.\n\nWhat it means:\n- Brute-force defence : block all login attempts for 120 sec\n  after 4 failures within 60 sec.\n- \"block-for\" applies network-wide (not per-source-IP) —\n  legitimate users can't log in during quiet-mode either.\n- Configure \"quiet-mode access-class\" to exempt admin IPs from\n  the lockout."
           }
         ],
         "Troubleshooting": [
