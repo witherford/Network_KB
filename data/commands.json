@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:04:28.055Z",
+  "updatedAt": "2026-05-01T20:11:05.239Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -54,7 +54,8 @@
             "cmd": "show interface <slot/port>",
             "desc": "Detailed stats for a specific interface e.g. show interface 0/1",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show interface 0/1\n\n   Interface 0/1 (Gig Ethernet 10/100/1000 MBits) #2\n        flags=0x4084c020 <ENABLED, UP, AUTONEG_ON, HEARTBEAT, 802.1q>\n        Link state: UP, MTU: 9000, downtime 17:44:21, autoneg result: success\n        Actual: media FIBER, speed 1000, duplex FULL, fctl OFF, throughput 1000\n        Hangs: Never\n        LLDP Mode: NONE                  Clear Stats: 1m1s\n        TX Pkts: 12,453,012  Rx Pkts: 14,780,123\n        TX Bytes: 9.8 GB     Rx Bytes: 11.2 GB\n        Errors: 0            Drops: 0\n        VLAN: 1, Trunking: ON\n\nWhat it means:\n- ENABLED, UP : interface is administratively up and L2 link is good.\n- MTU 9000   : jumbo frames enabled.\n- speed 1000, duplex FULL, fctl OFF : 1 Gbps full-duplex, flow-control off.\n- TX/Rx Pkts/Bytes : lifetime counters since last \"clear interface\".\n- Errors / Drops 0 : healthy. Non-zero values point to physical-layer\n  problems (CRC errors, runts) or buffer exhaustion respectively.\n- VLAN 1, Trunking ON : interface is a trunk; native VLAN is 1."
           },
           {
             "cmd": "show vlan",
@@ -102,7 +103,8 @@
             "cmd": "show ns stats -detail",
             "desc": "Detailed global throughput, connection rate, and SSL transaction stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns stats -detail\n\nNetScaler Performance Statistics\n  CPU usage (%)                            : 12\n  Memory usage (%)                         : 28\n  System throughput (Mbps)                 : 1840\n  HTTP requests/sec                        : 4502\n  Total HTTP requests                      : 14,502,341\n  Total connections                        : 1,245,902\n  Active client connections                : 8,502\n  Active server connections                : 7,431\n  SSL transactions/sec                     : 2,101\n  SSL handshakes (cur/total)               : 320 / 145,021\n\nWhat it means:\n- CPU/Memory usage : aggregate across all packet engines. Sustained\n  >70% is the warning line on most platforms.\n- Throughput Mbps : current dataplane bandwidth, both directions.\n- HTTP req/sec : application-layer request rate. Compare to the\n  licensed L7 ceiling on the appliance.\n- Active client/server connections : open TCP flows in each direction.\n  A big imbalance hints at half-open or stuck-CLOSE_WAIT problems.\n- SSL transactions/sec, handshakes : load on SSL hardware. Sustained\n  high numbers may indicate a need for session-reuse tuning."
           },
           {
             "cmd": "show ns capacity",
@@ -136,7 +138,8 @@
             "cmd": "show ns runningconfig | grep -v \"^#\"",
             "desc": "Running config without comment lines",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ns runningconfig | grep -v \"^#\"\n\nset ns config -IPAddress 10.10.10.10 -netmask 255.255.255.0\nset ns hostname NS-ADC-PROD-01\nadd ns ip 10.10.10.11 255.255.255.0 -type SNIP\nadd lb vserver lb-web HTTP 10.20.0.10 80\nadd service svc-web1 192.168.1.10 HTTP 80\nbind lb vserver lb-web svc-web1\nenable ns feature LB SSL CS GSLB\n\nWhat it means:\n- \"grep -v '^#'\" strips out the auto-generated comment lines (which\n  document OS version, build number, and section dividers). The\n  filtered output is just the imperative config statements.\n- Useful for diffing two ADCs or feeding a backup into \"batch -f\".\n- The order of the output matches the order operations would be\n  replayed if the file were used to rebuild config."
           },
           {
             "cmd": "show dns parameter",
@@ -816,55 +819,64 @@
             "cmd": "clear config full",
             "desc": "Wipes entire running config back to factory defaults — use with extreme caution",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> clear config full\nAre you sure you want to clear the configuration completely? [Y/N] Y\nDone\n\nWhat it means:\n- Wipes EVERY config statement back to factory state — VIPs, SSL\n  certs, custom users, monitors, services, ACLs, NSIP itself: all\n  removed.\n- After this, the ADC behaves as a freshly-shipped appliance and\n  must be re-IPed via the console.\n- DANGEROUS — only ever issued during a planned full-rebuild. Always\n  back up first with \"create system backup\"."
           },
           {
             "cmd": "clear config basic",
             "desc": "Clears config but preserves network connectivity settings (NSIP, routes)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> clear config basic\nDone\n\n> show ns ip\n        IP                  Type       Mode    State\n        10.10.10.10         NSIP       Active  Enabled    ← preserved\n        10.10.10.11         SNIP       Active  Enabled    ← preserved\n\nWhat it means:\n- Removes feature configuration (LB / SSL / CS / GSLB / monitors etc.)\n  but PRESERVES network reachability (NSIP, SNIP, default route, VLANs).\n- Lets you wipe service-layer config without losing remote access.\n- Typical use: handing the appliance to a new tenant/customer."
           },
           {
             "cmd": "batch -f /nsconfig/<filename>",
             "desc": "Executes a file of CLI commands in batch",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> batch -f /nsconfig/migration.conf\n\nExecuting batch file /nsconfig/migration.conf...\nDone. 142 commands executed, 0 errors.\n\nWhat it means:\n- Reads a text file of CLI commands and replays them in sequence.\n- Errors in one line do NOT abort the batch by default — review the\n  error count carefully.\n- Common workflow: build new config in a text editor or generate\n  via script, scp to /nsconfig/, then \"batch -f\" to apply.\n- Compare with \"save ns config\" which only persists the current\n  in-memory state."
           },
           {
             "cmd": "export ns config -scope full -fileName <file>",
             "desc": "Exports full running configuration for backup or transfer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> export ns config -scope full -fileName backup-2026-05-01.conf\nDone\n\n> shell ls /var/nsconfig/backup/\nbackup-2026-05-01.conf\n\nWhat it means:\n- Writes the running config to a flat .conf file under\n  /var/nsconfig/backup/.\n- \"scope full\" includes every feature; \"scope partial\" can be used\n  to export only specific feature blocks.\n- Output is plain text and editable; can be imported back via\n  \"import ns config\" or replayed via \"batch -f\" on another ADC."
           },
           {
             "cmd": "import ns config -scope full -fileName <file>",
             "desc": "Imports a previously exported configuration file",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> import ns config -scope full -fileName backup-2026-05-01.conf\n\nAre you sure you want to apply imported configuration? [Y/N] Y\nDone. 142 commands applied.\n\nWhat it means:\n- Reads a .conf file from /var/nsconfig/backup/ and applies it to\n  the running config.\n- Conflicting objects (same name) are OVERWRITTEN — make sure the\n  source is what you expect.\n- Pair with \"export ns config\" on the source ADC for a clone-style\n  migration. Always \"save ns config\" afterwards to persist."
           },
           {
             "cmd": "shell cat /nsconfig/ns.conf",
             "desc": "Prints the raw ns.conf file content from the FreeBSD shell",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# shell cat /nsconfig/ns.conf\n#NS13.1 Build 42.47.nc, Date: Apr 30 2026, 18:12:34\n#\n# Last modified by 'save config', Wed May 1 09:22:18 2026\n#\nset ns config -IPAddress 10.10.10.10 -netmask 255.255.255.0\nset ns hostname NS-ADC-PROD-01\nadd ns ip 10.10.10.11 255.255.255.0 -type SNIP\n...\n\nWhat it means:\n- ns.conf is the persisted running config. \"save ns config\" writes\n  to this file; the system reads it on boot.\n- The header comments record build, last save, and modifying user.\n- Run from \"shell\" prompt — does NOT require leaving the ADC CLI:\n    > shell cat /nsconfig/ns.conf\n- Compare with \"show ns runningConfig\" which reads from in-memory\n  state (may differ if config has been changed without saving)."
           },
           {
             "cmd": "create system backup <filename>",
             "desc": "Creates full system backup (config + certs + licences) to /var/nsbackup/",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> create system backup nightly-2026-05-01 -level full\nDone\n\n> show system backup\n        Name                       Type     Date                Size\n        nightly-2026-05-01.tgz     full     2026-05-01 03:00    18.4 MB\n\nWhat it means:\n- \"level full\" bundles ns.conf + SSL keys/certs + licence files +\n  feature data files into a single .tgz under /var/ns_sys_backup/.\n- \"level basic\" excludes SSL keys (smaller, but useless for DR).\n- Restore via \"restore system backup <filename>\".\n- Best practice: schedule via cron to run nightly and ship the .tgz\n  off-box (scp to backup server)."
           },
           {
             "cmd": "restore system backup <filename>",
             "desc": "Restores a previously created system backup",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> restore system backup nightly-2026-05-01.tgz\nAre you sure you want to restore? Existing config will be replaced. [Y/N] Y\nRestoring config and SSL artifacts ...\nDone. Reboot required to complete restoration.\n\n> reboot\n\nWhat it means:\n- Replaces the running config + SSL keys + licences with the\n  backup's contents.\n- A reboot is REQUIRED for the restored kernel-level state (licences,\n  feature toggles) to fully take effect.\n- DR workflow: ship a fresh ADC, set NSIP via console, scp the .tgz\n  into /var/ns_sys_backup/, run restore, reboot."
           },
           {
             "cmd": "show techsupport",
             "desc": "Generates a comprehensive technical support bundle to /var/tmp/support/",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show techsupport\nGenerating tech support bundle. This may take several minutes...\ncollecting:\n  /nsconfig/ns.conf                      [ok]\n  /var/log/ns.log                        [ok]\n  /var/log/newnslog                      [ok]\n  /var/nslog/snmpd.log                   [ok]\n  show ns connectiontable -detail full   [ok]\n  show ns stats -detail                  [ok]\n  ...\nDone. Bundle: /var/tmp/support/collector_NS-ADC_31May2026_09_15.tar.gz\n\nWhat it means:\n- Runs a curated set of show commands AND collects log files into a\n  single tarball under /var/tmp/support/.\n- Citrix TAC asks for this output as the FIRST diagnostic on any\n  case — bundle includes ns.log, newnslog binary stats, conntable,\n  ARP/route tables, license info.\n- Bundle size ranges from ~10 MB (idle box) to ~500 MB (busy box\n  with verbose logging). scp the file to the TAC case."
           },
           {
             "cmd": "show ns runningConfig | grep -i \"snip\"",
