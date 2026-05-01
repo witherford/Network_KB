@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T20:43:32.342Z",
+  "updatedAt": "2026-05-01T20:47:25.185Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -933,115 +933,134 @@
             "cmd": "show lb vserver <name>",
             "desc": "Detailed config for a specific LB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show lb vserver lb-web\n\nName             : lb-web\n        State            : UP\n        Effective State  : UP\n        IP : 10.20.0.10:443 (SSL)\n        Persistence      : COOKIEINSERT (Timeout: 2 min)\n        LB Method        : LEASTCONNECTION\n        Bound Services   : 4\n            svc_web1 (192.168.1.10:443)  : UP\n            svc_web2 (192.168.1.11:443)  : UP\n            svc_web3 (192.168.1.12:443)  : UP\n            svc_web4 (192.168.1.13:443)  : DOWN  ← unhealthy\n\nWhat it means:\n- \"Effective State UP\" means at least one service is UP and traffic\n  is being served.\n- LBMethod LEASTCONNECTION : sends new requests to the service with\n  the fewest active connections.\n- Persistence COOKIEINSERT : ADC injects a cookie so the same client\n  keeps hitting the same back-end on subsequent requests.\n- One service DOWN doesn't take the VIP down (still 3 UP) — but\n  fix it before more services fail."
           },
           {
             "cmd": "add lb vserver <name> <protocol> <VIP> <port>",
             "desc": "Creates a new load balancing virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add lb vserver lb-api SSL 10.20.0.20 443 -lbMethod LEASTCONNECTION -persistenceType SOURCEIP -timeout 30\nDone\n\n> bind ssl vserver lb-api -certkeyName api-cert\nDone\n\n> show lb vserver lb-api | head -5\nName             : lb-api\n        State            : DOWN  ← no services bound yet\n\nWhat it means:\n- Creates the front-end VIP. State DOWN until at least one healthy\n  service is bound.\n- Persistence SOURCEIP / COOKIEINSERT / SSLSESSION are the most\n  common; pick SOURCEIP if cookies aren't reliable (mobile NATs).\n- Bind SSL cert for HTTPS VIPs immediately after creation, otherwise\n  the handshake fails."
           },
           {
             "cmd": "set lb vserver <name> -lbMethod <method>",
             "desc": "Changes the LB algorithm: ROUNDROBIN, LEASTCONNECTION, SOURCEIPHASH etc.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set lb vserver lb-web -lbMethod LEASTRESPONSETIME\nDone\n\n> show lb vserver lb-web | grep Method\n        LB Method        : LEASTRESPONSETIME\n\n# Common methods:\n#   ROUNDROBIN          : simple, predictable\n#   LEASTCONNECTION     : fewest active connections\n#   LEASTRESPONSETIME   : fastest response\n#   LEASTBANDWIDTH      : lowest BW used\n#   URLHASH / DOMAINHASH: deterministic by URL/domain\n#   TOKEN               : custom token-based\n\nWhat it means:\n- Choice of LB method drives how new requests are distributed.\n- LEASTCONNECTION suits long-lived connections (websockets, SSH).\n- LEASTRESPONSETIME suits short-lived HTTP requests where back-ends\n  may have varying capacity.\n- ROUNDROBIN suits homogeneous back-ends with predictable workload."
           },
           {
             "cmd": "set lb vserver <name> -persistenceType <type>",
             "desc": "Configures session persistence: SOURCEIP, COOKIEINSERT, SSLSESSION",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set lb vserver lb-web -persistenceType SOURCEIP -timeout 30\nDone\n\n> show lb vserver lb-web | grep -E \"Persistence|Timeout\"\n        Persistence      : SOURCEIP\n        Timeout          : 30 min\n\n# Persistence types:\n#   SOURCEIP        : same client IP → same back-end\n#   COOKIEINSERT    : ADC injects identifying cookie\n#   SSLSESSION      : same SSL session ID\n#   RULE            : custom PI-expression-based\n#   URLPASSIVE      : uses URL parameter\n#   CUSTOMSERVERID  : back-end sends server ID header\n\nWhat it means:\n- Keeps a client mapped to the same back-end during a session.\n- Required for stateful apps (shopping carts, session affinity).\n- Timeout is in MINUTES — match it to your application's session\n  expiry.\n- SOURCEIP fails behind large NAT / proxy populations; prefer\n  COOKIEINSERT for most modern HTTP apps."
           },
           {
             "cmd": "enable lb vserver <name>",
             "desc": "Brings a disabled LB virtual server back into service",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> enable lb vserver lb-web\nDone\n\n> show lb vserver lb-web | grep State\n        State            : UP\n\nWhat it means:\n- Brings an administratively-disabled vserver back online.\n- Pair with \"save ns config\" to persist the change.\n- Compare with \"enable service\" — enabling the vserver does NOT\n  re-enable any individually-disabled services bound to it."
           },
           {
             "cmd": "disable lb vserver <name>",
             "desc": "Takes an LB virtual server out of service without deleting it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> disable lb vserver lb-web\nDone\n\n> show lb vserver lb-web | grep State\n        State            : OUT OF SERVICE\n\n# Existing connections continue; new connection attempts get TCP RST\n# (or no response, depending on the network design).\n\nWhat it means:\n- Administratively disables a VIP. Existing connections drain\n  naturally; new SYNs are rejected.\n- \"OUT OF SERVICE\" state is distinct from \"DOWN\" (no healthy\n  services). Use during planned maintenance to bleed traffic\n  before changes."
           },
           {
             "cmd": "stat lb vserver <name>",
             "desc": "Real-time traffic statistics for a specific LB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat lb vserver lb-web\n\nLB Vserver Statistics for lb-web\n        Hits                       : 1,245,392\n        Requests                   : 1,245,392\n        Responses                  : 1,245,392\n        Current Client Conn        : 8\n        Total Client Conn          : 502,341\n        Current Server Conn        : 6\n        Bytes In                   : 18.2 MB\n        Bytes Out                  : 124.6 MB\n        Persistence Hits           : 102,341\n        Spillover Hits             : 0\n\nWhat it means:\n- Per-VIP performance counters. \"Hits\" is the dominant top-line\n  metric.\n- \"Spillover Hits\" : connections rejected because vserver hit\n  its configured threshold (set via -soMethod / -soThreshold).\n  Should normally be 0 — non-zero means capacity tuning needed."
           },
           {
             "cmd": "show service <name>",
             "desc": "Config and health state of a specific back-end service",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show service svc_web1\n\nName             : svc_web1\n        IP : 192.168.1.10\n        Port             : 443\n        Protocol         : SSL\n        State            : UP\n        Last State Change: Wed May  1 09:00:00 2026\n        Monitors         : tcp_default (UP), https-ecv (UP)\n        Bound Vservers   : lb-web, cs-edge-https\n        Current Conn     : 142\n\nWhat it means:\n- Detail of one back-end service. State UP requires every bound\n  monitor to pass.\n- \"Last State Change\" : useful when investigating recent flap\n  events.\n- \"Bound Vservers\" : every VIP that uses this service in its\n  load-balancing pool."
           },
           {
             "cmd": "add service <name> <server-ip> <protocol> <port>",
             "desc": "Creates a new back-end service",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add service svc_web1 192.168.1.10 SSL 443 -gslb NONE -maxClient 5000 -maxReq 0 -cip ENABLED -cipHeader X-Forwarded-For -cltTimeout 180 -svrTimeout 360\nDone\n\n> show service svc_web1 | grep State\n        State            : UP\n\nWhat it means:\n- maxClient 5000 : cap concurrent connections per service to protect\n  the back-end app.\n- maxReq 0 : no per-connection request limit.\n- cip ENABLED + cipHeader X-Forwarded-For : insert the original\n  client IP in the named header on every request — back-end app\n  can log the real source.\n- cltTimeout / svrTimeout : idle timeouts for the client and server\n  legs respectively."
           },
           {
             "cmd": "enable service <name>",
             "desc": "Brings a disabled service back to UP state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> enable service svc_web1\nDone\n\n> show service svc_web1 | grep State\n        State            : UP   (was DISABLED)\n\nWhat it means:\n- Brings a service back online after maintenance. State transitions\n  through CHECKING (re-running monitors) before reaching UP.\n- Pair with the LB-vserver-level enable/disable for full control."
           },
           {
             "cmd": "disable service <name> -graceful YES -delay <seconds>",
             "desc": "Gracefully drains connections from a service before disabling",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> disable service svc_web1 -graceful YES -delay 60\nDone\n\n# Existing connections drain over 60 seconds. After that, residual\n# connections are forcibly closed.\n\n> show service svc_web1 | grep State\n        State            : OUT OF SERVICE (graceful, 42 sec remaining)\n\nWhat it means:\n- \"graceful YES\" : new connections rejected, existing flows allowed\n  to complete naturally.\n- \"-delay 60\" : maximum drain time. After 60 sec, surviving connections\n  are force-closed.\n- Best practice for rolling-restart deployments — drain the back-end\n  one service at a time without dropping in-flight requests."
           },
           {
             "cmd": "bind lb vserver <vserver-name> <service-name>",
             "desc": "Binds a back-end service to an LB virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind lb vserver lb-web svc_web1\nDone\n> bind lb vserver lb-web svc_web2 -weight 2\nDone\n\n> show lb vserver lb-web | grep -A 5 \"Bound Services\"\n        Bound Services :\n          svc_web1 (weight 1) : UP\n          svc_web2 (weight 2) : UP   ← gets 2x more traffic with weighted methods\n\nWhat it means:\n- Adds a service to the LB pool of a vserver.\n- Optional \"-weight N\" : skews load distribution under weighted\n  algorithms (LEASTCONNECTION-WEIGHT, ROUNDROBIN-WEIGHT etc.).\n- A vserver can have many services bound; LB method decides which\n  one each new request goes to."
           },
           {
             "cmd": "add servicegroup <name> <protocol>",
             "desc": "Creates a service group (logical pool of servers)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add servicegroup sg_web SSL -monitorThreshold 0 -maxClient 0 -cltTimeout 180\nDone\n\n> bind servicegroup sg_web 192.168.1.10 443\n> bind servicegroup sg_web 192.168.1.11 443\n> bind servicegroup sg_web 192.168.1.12 443\nDone\n\nWhat it means:\n- Service groups are the modern alternative to per-server \"service\"\n  objects — one definition holds many member IPs.\n- Easier to manage: add/remove servers via \"bind servicegroup\".\n- monitor + LB-method config lives on the group; each member gets\n  evaluated separately for health but shares the same configuration\n  template."
           },
           {
             "cmd": "bind servicegroup <name> <server-ip> <port>",
             "desc": "Adds a server as a member of a service group",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind servicegroup sg_web 192.168.1.13 443\nDone\n\n> show servicegroup sg_web | grep -A 10 Members\n        Members:\n          192.168.1.10:443  UP\n          192.168.1.11:443  UP\n          192.168.1.12:443  UP\n          192.168.1.13:443  UP   ← just added, monitors passing\n\nWhat it means:\n- Adds a server (IP:port) as a member of the named service group.\n- Inherits LB method, monitor bindings, timeouts from the group.\n- Health-check state is per-member; one failing server doesn't\n  affect the others."
           },
           {
             "cmd": "set lb monitor <monitor-name> -type HTTP -httpRequest \"GET /health\"",
             "desc": "Configures an HTTP health monitor with a custom request path",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add lb monitor mon_health HTTP -httpRequest \"GET /health\" -respCode 200 -interval 5 -resptimeout 3 -retries 3\nDone\n\n> bind service svc_web1 -monitorName mon_health\nDone\n\n> show service svc_web1 | grep mon_health\n          mon_health (HTTP /health) : UP, last probe 2 sec ago\n\nWhat it means:\n- Active health check: ADC sends GET /health every 5 sec, expects\n  HTTP 200 within 3 sec.\n- 3 consecutive failures before marking service DOWN.\n- The /health endpoint should be lightweight (no DB query, no auth)\n  — it runs every 5 sec on every member.\n- Common patterns: /health, /healthz, /ping, /actuator/health."
           },
           {
             "cmd": "add lb monitor <name> TCP",
             "desc": "Creates a basic TCP health monitor",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add lb monitor mon_tcp443 TCP -destPort 443 -interval 5 -resptimeout 2 -retries 3\nDone\n\n> show lb monitor mon_tcp443\nName : mon_tcp443\n        Type        : TCP\n        Dest Port   : 443\n        Interval    : 5 sec\n        Timeout     : 2 sec\n        Retries     : 3\n\nWhat it means:\n- Pure L4 health check — opens a TCP connection, immediately closes.\n- Lightweight (no app-layer payload). Suitable when no /health\n  endpoint exists or for stateful protocols (SSH, SMTP).\n- Doesn't detect application bugs (a hung Tomcat with a listening\n  socket would still show TCP UP). Pair with an L7 monitor for\n  full coverage."
           },
           {
             "cmd": "show lb monitor <name>",
             "desc": "Displays monitor config, bound services, and last probe result",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show lb monitor mon_health\n\nName             : mon_health\n        Type        : HTTP\n        HTTP Request: GET /health\n        Resp Code   : 200\n        Interval    : 5 sec\n        Timeout     : 3 sec\n        Retries     : 3\n        Bound Services   : svc_web1 (UP), svc_web2 (UP), svc_web3 (UP)\n        Current State    : healthy on all bound services\n\nWhat it means:\n- Detail of one monitor. Confirms request, expected response code,\n  timing parameters.\n- \"Bound Services\" : every service this monitor is attached to.\n- One monitor can be bound to many services; one service can have\n  many monitors (all must pass for the service to be UP)."
           },
           {
             "cmd": "set lb vserver <name> -backupVServer <backup-name>",
             "desc": "Configures a backup virtual server when all services are down",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set lb vserver lb-web -backupVServer lb-web-DR\nDone\n\n> show lb vserver lb-web | grep Backup\n        Backup VServer   : lb-web-DR\n\n# When all services on lb-web go DOWN, the ADC seamlessly fails\n# traffic over to lb-web-DR's services.\n\nWhat it means:\n- Cascading failover: if every service on lb-web is unhealthy,\n  traffic redirects to lb-web-DR's services.\n- Backup vserver can have its own backup (chain), or the chain can\n  loop back to the original primary once it recovers.\n- Useful for active/standby DR within the same ADC."
           },
           {
             "cmd": "set lb vserver <name> -soMethod CONNECTION -soThreshold <num>",
             "desc": "Configures spillover to backup when connection count exceeds threshold",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set lb vserver lb-web -soMethod CONNECTION -soThreshold 8000 -soPersistence ENABLED -soPersistenceTimeout 2\nDone\n\n# Once 8001 concurrent connections are reached, new connections\n# spill over to the backup vserver.\n\n> show lb vserver lb-web | grep -i spillover\n        Spillover Method     : CONNECTION\n        Threshold            : 8000\n\nWhat it means:\n- Spillover protects the primary vserver from overload by deflecting\n  excess traffic to a backup (configured via -backupVServer).\n- soMethod CONNECTION : threshold counts active connections.\n  Alternatives: BANDWIDTH, DYNAMICCONNECTION, HEALTH.\n- Persistence ENABLED : already-connected clients keep going to the\n  primary even after threshold is crossed (no flapping)."
           },
           {
             "cmd": "show lb vserver -summary",
@@ -1061,7 +1080,8 @@
             "cmd": "bind lb vserver <vs> <service>",
             "desc": "Bind an existing service to a VIP",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind lb vserver lb-web svc_web5\nDone\n\n> show lb vserver lb-web | grep \"Bound Services\"\n        Bound Services : 5    ← was 4\n\nWhat it means:\n- Equivalent to \"bind lb vserver <vserver-name> <service-name>\";\n  the shorter syntax is what the GUI's add-flow generates.\n- Adds the service to the LB pool. Health-state evaluation begins\n  immediately — the service may briefly show CHECKING before\n  reaching its real state."
           },
           {
             "cmd": "show lb vserver -full",
@@ -1428,79 +1448,92 @@
             "cmd": "show ssl vserver <name>",
             "desc": "SSL config for a virtual server: bound certs, protocols, cipher suites, client auth",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ssl vserver vs_https\n\nName : vs_https\n        Type           : SSL\n        State          : UP\n        IP : 203.0.113.10:443\n        SSL Profile    : ns_default_ssl_profile_frontend\n        Certs bound    : 1 (wildcard.global.com)\n        Cipher Groups  : DEFAULT\n        Protocols      : TLSv1.2 ENABLED, TLSv1.3 ENABLED\n        SSLv3/TLSv1/TLSv1.1 : DISABLED\n\nWhat it means:\n- Per-VIP SSL config snapshot. Confirms enabled protocols, bound\n  cert/key pairs, applied SSL profile.\n- Modern best practice: TLS 1.2 + TLS 1.3 only; SSLv3/TLS1.0/1.1\n  disabled (deprecated).\n- \"Certs bound\" should be at least 1 (the server cert) and may\n  include intermediate CA certs as additional binds."
           },
           {
             "cmd": "show ssl certkey",
             "desc": "Lists all SSL cert-key pairs: names, file paths, expiry dates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ssl certkey\n\n1)  Name              : wildcard.global.com\n       Cert Path        : /nsconfig/ssl/wildcard.global.com.crt\n       Key Path         : /nsconfig/ssl/wildcard.global.com.key\n       Days to Expiry   : 412\n       Issuer           : DigiCert SHA2 Secure Server CA\n       Status           : Valid\n\n2)  Name              : api.global.com\n       Days to Expiry   : 32           ← warning, renew soon\n       Issuer           : Let's Encrypt R3\n       Status           : Valid\n\nWhat it means:\n- Inventory of every SSL certkey pair on the appliance.\n- Days to Expiry < 30 should trigger urgent renewal.\n- Let's Encrypt certs typically have 90-day validity — automate\n  renewal via certbot or ACME tooling."
           },
           {
             "cmd": "show ssl certkey <name>",
             "desc": "Detailed info for a cert-key pair: subject, issuer, validity dates, binding",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ssl certkey wildcard.global.com\n\nName             : wildcard.global.com\n        Cert Path        : /nsconfig/ssl/wildcard.global.com.crt\n        Key Path         : /nsconfig/ssl/wildcard.global.com.key\n        Subject Common Name : *.global.com\n        Subject Alternative Names : *.global.com, global.com\n        Issuer           : DigiCert SHA2 Secure Server CA\n        Valid From       : 2025-04-01 00:00:00 GMT\n        Valid To         : 2027-05-01 23:59:59 GMT\n        Days to Expiry   : 412\n        Serial Number    : 0xABCDEF1234\n        Signature Algo   : sha256RSA\n        Public Key       : RSA, 2048 bits\n        Bound Vservers   : vs_https, cs-edge-https\n\nWhat it means:\n- Detailed view of one cert. Confirms SAN entries (critical — the\n  cert is only valid for the listed names).\n- \"Bound Vservers\" tells you which VIPs are using this cert —\n  important before deleting / replacing it.\n- Signature Algo : sha256RSA is current standard. SHA-1 is deprecated\n  and rejected by modern browsers."
           },
           {
             "cmd": "add ssl certkey <name> -cert <certfile> -key <keyfile>",
             "desc": "Installs a new SSL cert-key pair from files in /nsconfig/ssl/",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add ssl certkey wildcard.global.com -cert /nsconfig/ssl/wildcard.crt -key /nsconfig/ssl/wildcard.key -password\nEnter password for the key: ********\nDone\n\n> show ssl certkey wildcard.global.com | grep Status\n        Status           : Valid\n\nWhat it means:\n- Imports a cert + private key into the SSL keystore.\n- Files must already be in /nsconfig/ssl/. Upload via SCP, GUI,\n  or the NITRO API.\n- If the key is password-protected, \"-password\" prompts; for unattended\n  imports add \"-passcrypt <encrypted_password>\".\n- After import, bind to a vserver with \"bind ssl vserver -certkeyName\"."
           },
           {
             "cmd": "update ssl certkey <name> -cert <certfile> -key <keyfile>",
             "desc": "Replaces an existing cert-key pair without rebinding to virtual servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> update ssl certkey wildcard.global.com -cert /nsconfig/ssl/new-wildcard.crt -key /nsconfig/ssl/new-wildcard.key\nDone\n\n# Bound vservers automatically pick up the new cert without rebind.\n\nWhat it means:\n- Replaces the cert/key files for an existing keypair WITHOUT\n  unbinding from vservers — zero-downtime renewal.\n- Common workflow: upload renewed cert files alongside the old ones,\n  then \"update ssl certkey\" with the new file paths.\n- Active SSL sessions continue with the OLD cert until they\n  renegotiate; new sessions immediately use the NEW cert."
           },
           {
             "cmd": "bind ssl vserver <vserver-name> -certkeyName <certkey-name>",
             "desc": "Binds an SSL cert-key pair to a virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind ssl vserver vs_https -certkeyName wildcard.global.com\nDone\n\n> bind ssl vserver vs_https -certkeyName intermediate-ca -CA\nDone\n\n> show ssl vserver vs_https | grep Cert\n        Bound Certs:\n          wildcard.global.com  (Server)\n          intermediate-ca      (CA Intermediate)\n\nWhat it means:\n- Binds a cert/key pair to an SSL VIP — the VIP serves this cert in\n  its TLS handshakes.\n- Bind intermediate CAs with the \"-CA\" flag so they're sent to clients\n  during the handshake, completing the cert chain.\n- A vserver can have ONE server cert bound (default) plus multiple\n  CA / SNI alternates."
           },
           {
             "cmd": "bind ssl vserver <vserver-name> -cipherName <cipher-group>",
             "desc": "Applies a cipher group to an SSL virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind ssl vserver vs_https -cipherName MODERN-TLS13\nDone\n\n> show ssl vserver vs_https | grep Cipher\n        Cipher Groups:\n          MODERN-TLS13   (priority 1)\n          DEFAULT        (priority 2 — fallback)\n\nWhat it means:\n- Replaces or augments the cipher group on a vserver.\n- Cipher groups are ordered lists of cipher suites; the first match\n  during the handshake wins.\n- Build modern groups via \"add ssl cipher MODERN-TLS13\" then add\n  individual cipher names; or use built-in groups like \"DEFAULT\",\n  \"PFS\", \"EECDH\"."
           },
           {
             "cmd": "set ssl vserver <name> -ssl3 DISABLED -tls1 DISABLED -tls11 DISABLED -tls12 ENABLED -tls13 ENABLED",
             "desc": "Configure SSL/TLS protocol versions on a virtual server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set ssl vserver vs_https -ssl3 DISABLED -tls1 DISABLED -tls11 DISABLED -tls12 ENABLED -tls13 ENABLED\nDone\n\n> show ssl vserver vs_https | grep -E \"SSLv3|TLSv1\"\n        SSLv3            : DISABLED\n        TLSv1            : DISABLED\n        TLSv1.1          : DISABLED\n        TLSv1.2          : ENABLED\n        TLSv1.3          : ENABLED\n\nWhat it means:\n- Modern best practice: ONLY TLS 1.2 + TLS 1.3 enabled.\n- SSLv3 (POODLE), TLS1.0/1.1 (BEAST, weak ciphers) disabled per\n  PCI-DSS 4.0 and most enterprise security policies.\n- Verify post-change with \"openssl s_client -connect VIP:443 -tls1_1\"\n  — should fail handshake."
           },
           {
             "cmd": "set ssl profile <name> -tls13 ENABLED",
             "desc": "Enables TLS 1.3 on an SSL profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> set ssl profile secure_prof -tls13 ENABLED -tls13SessionTicketsPerAuthContext 1 -ssl3 DISABLED -tls1 DISABLED -tls11 DISABLED\nDone\n\n> show ssl profile secure_prof | grep -i tls\n        TLSv1.3                       : ENABLED\n        TLSv1.2                       : ENABLED\n        TLSv1.1 / TLSv1 / SSLv3       : DISABLED\n        TLS 1.3 session tickets       : 1 per auth context\n\nWhat it means:\n- Profiles centralise SSL settings — applied to many vservers via\n  a single \"set ssl vserver -sslProfile <name>\".\n- Easier than configuring each vserver individually; ensures\n  consistency across many VIPs.\n- TLS 1.3 session tickets enable session resumption with forward\n  secrecy — speeds up reconnects."
           },
           {
             "cmd": "show ssl cipher <group-name>",
             "desc": "Displays cipher suites in a cipher group in priority order",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ssl cipher DEFAULT\n\nDEFAULT (built-in)\n        TLS_AES_256_GCM_SHA384       (TLSv1.3)  Strength: HIGH\n        TLS_CHACHA20_POLY1305_SHA256 (TLSv1.3)  Strength: HIGH\n        TLS_AES_128_GCM_SHA256       (TLSv1.3)  Strength: HIGH\n        ECDHE-RSA-AES256-GCM-SHA384  (TLSv1.2)  Strength: HIGH\n        ECDHE-RSA-AES128-GCM-SHA256  (TLSv1.2)  Strength: HIGH\n        ...\n\nWhat it means:\n- Lists every cipher suite in the named group, with TLS version\n  and security strength.\n- ECDHE-* ciphers provide forward secrecy (per-session keys).\n- AES-GCM and ChaCha20-Poly1305 are AEAD ciphers (authenticated\n  encryption) — modern preference.\n- Avoid: anything with \"EXPORT\", \"DES\", \"RC4\", \"MD5\", \"NULL\"."
           },
           {
             "cmd": "create ssl rsakey <keyfile> <bits>",
             "desc": "Generates a new RSA private key and saves to /nsconfig/ssl/",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> create ssl rsakey /nsconfig/ssl/new-server.key 2048 -exponent F4 -keyForm PEM\nDone\n\n# Then create a CSR using the new key:\n> create ssl certreq /nsconfig/ssl/new-server.csr -keyFile /nsconfig/ssl/new-server.key \\\n       -countryName GB -stateName London -organizationName \"Global Ltd\" \\\n       -commonName \"*.global.com\"\nDone\n\nWhat it means:\n- Generates a fresh RSA private key on the appliance.\n- 2048 bits is the minimum modern; 3072 or 4096 for higher-security\n  applications. EC keys (create ssl eckey) are smaller and faster\n  but less universally supported.\n- exponent F4 = 65537 (standard). PEM is text-encoded; DER is binary.\n- Keep generated keys in /nsconfig/ssl/ with file permissions 0600."
           },
           {
             "cmd": "rm ssl certkey <name>",
             "desc": "Permanently removes a cert-key pair (only if not bound to any virtual server)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> rm ssl certkey old-wildcard.global.com\nAre you sure you want to delete this certkey object? [Y/N] Y\nCannot delete: certkey is bound to vserver(s):\n  vs_https, cs-edge-https\n\n# Unbind first:\n> unbind ssl vserver vs_https -certkeyName old-wildcard.global.com\n> unbind ssl vserver cs-edge-https -certkeyName old-wildcard.global.com\n> rm ssl certkey old-wildcard.global.com\nDone\n\nWhat it means:\n- Cert/key cannot be deleted while bound to any vserver — typical\n  precaution to prevent accidentally orphaning a VIP.\n- Workflow: bind the new cert first, unbind the old, then delete.\n- The underlying .crt/.key files in /nsconfig/ssl/ are NOT removed —\n  delete them manually if no longer needed."
           },
           {
             "cmd": "stat ssl vserver <name>",
             "desc": "Real-time SSL stats: handshakes/sec, session reuse, cipher breakdown",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat ssl vserver vs_https\n\nSSL Vserver Statistics for vs_https\n        SSL Sessions               : 8,502\n        Total Handshakes           : 145,021\n        Successful Handshakes      : 144,989\n        Failed Handshakes          : 32\n        SSL Renegotiations         : 4\n        SSL Session Reuses         : 102,341\n        SNI Connections            : 145,012\n        OCSP Stapling Stats:\n          Stapled responses        : 142,901\n          Cache hits               : 142,800\n\nWhat it means:\n- Per-vserver SSL counters.\n- Failed/Total handshake ratio under 1% is normal; spikes indicate\n  a compatibility problem with a major client population.\n- Session reuses : how many resumptions skipped a full handshake.\n  High ratio = good (faster reconnects, lower CPU).\n- SNI : Server Name Indication — modern clients send the hostname\n  in cleartext during ClientHello. Required for multi-cert vservers."
           },
           {
             "cmd": "show ssl profile",
@@ -1513,13 +1546,15 @@
             "cmd": "add ssl profile <name> -sslProfileType BackEnd",
             "desc": "Creates a back-end SSL profile for re-encryption to back-end servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> add ssl profile backend_strict -sslProfileType BackEnd -tls12 ENABLED -tls13 ENABLED -ssl3 DISABLED -tls1 DISABLED -tls11 DISABLED -serverAuth ENABLED\nDone\n\n> bind service ssl_backend_svc -sslProfile backend_strict\nDone\n\nWhat it means:\n- \"BackEnd\" profile applies when the ADC initiates SSL TO back-end\n  servers (for re-encryption / SSL bridging deployments).\n- \"FrontEnd\" (default) applies to client-facing connections.\n- serverAuth ENABLED : the ADC validates the back-end server's cert\n  against a CA trust store — essential for proper end-to-end SSL."
           },
           {
             "cmd": "bind ssl profile <name> -cipherName <group>",
             "desc": "Binds a cipher group to an SSL profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> bind ssl profile secure_prof -cipherName MODERN-TLS13 -cipherPriority 1\nDone\n\n> show ssl profile secure_prof | grep -A 5 Cipher\n        Cipher Groups:\n          MODERN-TLS13   (priority 1)\n\nWhat it means:\n- Binds a cipher group to a profile — the profile then applies that\n  cipher group to every vserver using the profile.\n- Lower priority = evaluated FIRST in the cipher selection.\n- Centralises cipher policy: one bind here propagates to every\n  vserver bound to the profile."
           },
           {
             "cmd": "show ssl ocspResponder",
@@ -1532,7 +1567,8 @@
             "cmd": "show ssl fipsKey",
             "desc": "FIPS key entries (SDX/FIPS builds)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show ssl fipsKey\n\nFIPS Key Storage:\n        FIPS Card Status   : Not Present (Standard appliance)\n\n# On a FIPS-edition MPX:\n        FIPS Card Status   : ACTIVE\n        Stored Keys        :\n          fips_server_key (RSA 2048)\n          fips_signing_key (EC P-256)\n\nWhat it means:\n- FIPS-edition appliances have a tamper-resistant HSM that stores\n  private keys in hardware — keys never leave the card.\n- Standard MPX/VPX appliances store keys in software and report\n  \"Not Present\".\n- Compliance use case: FIPS 140-2 Level 3 deployments (govt, finance)."
           },
           {
             "cmd": "show ssl policy",
