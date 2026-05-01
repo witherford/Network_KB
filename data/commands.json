@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T21:17:30.710Z",
+  "updatedAt": "2026-05-01T21:23:46.564Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -16821,61 +16821,71 @@
             "cmd": "show vlan id 10",
             "desc": "Single-VLAN detail incl. member ports + status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show vlan id 10\n\nVLAN Name    Status   Ports\n---- ------- -------- ----------------------------------\n10   DATA    active   Gi1/0/1, Gi1/0/2, Gi1/0/3, Gi1/0/4\n\nVLAN Type  SAID       MTU   Parent  RingNo  BridgeNo  Stp   BrdgMode  Trans1  Trans2\n---- ----- ---------- ----- ------- ------ --------- ----- --------- ------- -------\n10   enet  100010     1500  -       -      -          -     -         0       0\n\nWhat it means:\n- Per-VLAN summary: name, state, member ports, MTU, type.\n- \"active\" = VLAN exists in DB and is forwarding. \"suspended\"\n  / \"act/unsup\" indicate VLAN exists but isn't usable.\n- Ports listed are ACCESS ports in this VLAN (trunks not shown\n  here — see \"show interfaces trunk\")."
           },
           {
             "cmd": "show vtp status",
             "desc": "VTP mode, version, domain, revision, last modifier",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show vtp status\n\nVTP Version capable             : 1 to 3\nVTP version running              : 3\nVTP Domain Name                  : CORP\nVTP Pruning Mode                 : Disabled\nVTP Traps Generation             : Disabled\nDevice ID                        : 0050.5612.3456\nConfiguration last modified by 10.10.10.1 at 5-1-26 11:22:18\n\nFeature VLAN:\n--------------\nVTP Operating Mode                : Server\nMaximum VLANs supported locally   : 1005\nNumber of existing VLANs          : 12\nConfiguration Revision            : 142\nPrimary ID                        : 0050.5612.3456\nPrimary Description               : core1.corp\n\nWhat it means:\n- VTP propagates VLAN database between switches.\n- Mode Server : can create/delete VLANs and propagates.\n  Client : receives only. Transparent : standalone.\n- Configuration Revision : higher = newer. A switch with higher\n  revision overrides older ones — DANGEROUS when adding a switch\n  with stale config.\n- Always set \"vtp mode transparent\" on a fresh switch BEFORE\n  connecting it to the existing VTP domain."
           },
           {
             "cmd": "show vtp counters",
             "desc": "VTP advertisement / pruning counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show vtp counters\n\nVTP statistics:\nSummary advertisements received    : 1245\nSubset advertisements received     : 12\nRequest advertisements received    : 0\nSummary advertisements transmitted : 0\nSubset advertisements transmitted  : 0\nNumber of config revision errors   : 0\nNumber of config digest errors     : 0\nNumber of V1 summary errors        : 0\n\nWhat it means:\n- Counters since boot or last clear.\n- \"Config digest errors > 0\" : VTP password mismatch with\n  neighbour — common after a domain join with wrong password.\n- \"Config revision errors\" : received an advertisement with a\n  lower revision than current — usually benign but worth checking."
           },
           {
             "cmd": "vlan 10\n name DATA",
             "desc": "Create a VLAN",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vlan 10\nSwitch(config-vlan)# name DATA\nSwitch(config-vlan)# state active\n\nSwitch# show vlan id 10\nVLAN Name    Status   Ports\n---- ------- -------- ----------------------------------\n10   DATA    active\n\nWhat it means:\n- Creates VLAN 10 with name \"DATA\" in the local VLAN database.\n- VLAN range 1-4094; 1002-1005 reserved (legacy ATM/FDDI).\n- VLANs 1-1005 propagated by VTP; 1006-4094 stay local.\n- \"state active\" is default. Use \"state suspend\" for VLANs not\n  yet ready for traffic."
           },
           {
             "cmd": "vtp mode transparent",
             "desc": "Disable participation in VTP (recommended modern default)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vtp mode transparent\n\nSetting device to VTP Transparent mode for VLANS.\n\nSwitch# show vtp status | include Mode\nVTP Operating Mode                : Transparent\n\nWhat it means:\n- Disables VTP database participation. Switch creates / deletes\n  local VLANs but doesn't propagate or accept changes from peers.\n- Best practice on most modern networks — limits blast radius\n  of accidental VTP-database wipes.\n- VTP advertisements still RELAYED through the switch (transit\n  function preserved)."
           },
           {
             "cmd": "vtp domain CORP\n vtp mode server",
             "desc": "Configure VTP server",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vtp domain CORP\nSwitch(config)# vtp mode server\nSwitch(config)# vtp password sharedSecret2026\n\nSetting VTP password to: sharedSecret2026\n\nSwitch# show vtp status | include Domain|Mode|Pass\nVTP Domain Name                  : CORP\nVTP Operating Mode                : Server\nVTP Password                       : sharedSecret2026\n\nWhat it means:\n- Joins the VTP domain \"CORP\" in Server mode.\n- Server can create/delete/modify VLANs; changes propagate to\n  Clients in the same domain.\n- Password protects against accidentally joining a foreign\n  domain — both sides must agree.\n- BEFORE running this on a new switch, ALWAYS verify its VTP\n  config revision is 0, otherwise it could overwrite the\n  domain's existing VLAN database."
           },
           {
             "cmd": "switchport access vlan 10",
             "desc": "Assign access port to VLAN",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface gi1/0/1\nSwitch(config-if)# switchport mode access\nSwitch(config-if)# switchport access vlan 10\n\nSwitch# show interfaces gi1/0/1 switchport | include Access\nAccess Mode VLAN: 10 (DATA)\n\nWhat it means:\n- Assigns access port to VLAN 10. Untagged traffic only.\n- VLAN must exist in the database. On modern IOS the VLAN gets\n  auto-created if missing.\n- Pair with \"switchport voice vlan N\" for IP-phone deployments\n  (PC plus phone share one cable)."
           },
           {
             "cmd": "switchport voice vlan 200",
             "desc": "Add voice VLAN on the same access port",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport access vlan 10\nSwitch(config-if)# switchport voice vlan 200\n\nSwitch# show interfaces gi1/0/1 switchport | include voice\nVoice VLAN: 200 (VOICE)\n\nWhat it means:\n- Sets the voice VLAN on a multi-VLAN access port. Phone discovers\n  via CDP/LLDP and tags voice frames with VLAN 200; data from PC\n  stays untagged in VLAN 10.\n- Trust DSCP/CoS at the switch with \"mls qos trust device cisco-phone\"\n  to preserve QoS markings from the phone.\n- Without \"voice vlan\", phone falls back to dot1p/0 untagged."
           },
           {
             "cmd": "vlan vlan-id",
             "desc": "Create a new Virtual LAN (VLAN) in global configuration mode. — Defines the VLAN ID for logical segmentation. VLAN 0 is reserved",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vlan 100\nSwitch(config-vlan)# name MGMT\n\nWhat it means:\n- Generic syntax for entering VLAN configuration mode.\n- VLAN range 1-4094. VLANs 1006-4094 require VTP v3 to propagate.\n- Use \"no vlan 100\" to delete (also removes from any access\n  ports — those revert to VLAN 1)."
           },
           {
             "cmd": "name vlan-name",
             "desc": "Assign a friendly name to a VLAN (in submode). — Associates a 32-character name with the numeric VLAN ID for easier identification.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-vlan)# name CORP-DATA\n\nSwitch# show vlan id 10 | include DATA\n10   CORP-DATA  active\n\nWhat it means:\n- Free-form text up to 32 chars (no spaces). Documentation\n  only — no functional impact.\n- Best practice: meaningful names like SALES-DATA, BLDG-A-VOICE,\n  MGMT-OOB."
           },
           {
             "cmd": "switchport mode access",
@@ -16887,7 +16897,8 @@
             "cmd": "switchport access vlan {vlan-id | name vlan-name}",
             "desc": "Assign a specific VLAN to an Access Port. — Stores the VLAN in numeric form even if configured by name.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport access vlan 10        ! by ID\nSwitch(config-if)# switchport access vlan name DATA  ! by name (3.x+)\n\nWhat it means:\n- \"name DATA\" form (IOS XE 3.x+) lets you reference a VLAN by\n  its symbolic name — handy for templated config.\n- Both forms produce the same running-config: assignment by ID.\n- Auto-created VLANs land in the DB at \"state active\"."
           },
           {
             "cmd": "switchport mode trunk",
@@ -16899,13 +16910,15 @@
             "cmd": "switchport trunk native vlan vlan-id",
             "desc": "Set the Native VLAN on a Trunk Port. — Traffic associated with this VLAN flows untagged across the trunk link. Default is VLAN 1 (security best practice: change to unused VLAN).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport trunk native vlan 99\n\nSwitch# show interfaces gi1/0/24 trunk | head -3\nPort      Mode  Encapsulation  Status     Native vlan\nGi1/0/24  on    802.1q         trunking   99\n\nWhat it means:\n- Native VLAN carries untagged traffic on the trunk. Both ends\n  must agree.\n- Use a dummy VLAN (e.g. 99) so untagged management/control\n  traffic doesn't accidentally land in a real user VLAN.\n- \"vlan dot1q tag native\" globally tags even native VLAN frames\n  for additional security."
           },
           {
             "cmd": "switchport trunk allowed vlan {vlan-ids | all | none | add | remove | except}",
             "desc": "Filter which VLANs are allowed on a Trunk Link. — `all`: All VLANs; `none`: Removes all; `add/remove`: Modifies existing list without overwriting (best for scripting).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport trunk allowed vlan 10,20,30\nSwitch(config-if)# switchport trunk allowed vlan add 40\nSwitch(config-if)# switchport trunk allowed vlan remove 20\nSwitch(config-if)# switchport trunk allowed vlan except 100,200\nSwitch(config-if)# switchport trunk allowed vlan all     ! 1-4094 (default)\nSwitch(config-if)# switchport trunk allowed vlan none\n\nWhat it means:\n- Restricts VLAN traffic on the trunk.\n- \"add\" / \"remove\" : modify without re-typing the full list.\n- \"except\" : everything except the listed VLANs.\n- \"all\" : 1-4094 (the default).\n- \"none\" : nothing — useful as a safe default before adding\n  specific VLANs."
           },
           {
             "cmd": "show interfaces trunk",
@@ -16917,169 +16930,197 @@
             "cmd": "show mac address-table [address | dynamic | vlan]",
             "desc": "View the MAC Address Table (Layer 2 Forwarding). — Identifies switch ports/VLANs associated with devices. `dynamic`: Learned entries; `static`: Manually added. Reduces unknown unicast flooding.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mac address-table\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 10     001a.1e11.2233    DYNAMIC     Gi1/0/1\n 20     001a.1e44.5566    STATIC      CPU\n 99     001a.1e77.8899    DYNAMIC     Gi1/0/24\n\n# Filtered:\nSwitch# show mac address-table address 0050.5612.3456\nSwitch# show mac address-table dynamic vlan 10\nSwitch# show mac address-table count\n\nWhat it means:\n- L2 forwarding table — MAC ↔ port mappings.\n- DYNAMIC : learned from ingress frames. STATIC : manually\n  configured or \"CPU\" entries (router's own MAC for SVIs).\n- Filter by address / VLAN / type for targeted lookups."
           },
           {
             "cmd": "mac address-table static mac-address vlan vlan-id {drop | interface}",
             "desc": "Add a Manual Static MAC Entry. — Associates a specific MAC to a port or drops traffic upon receipt (useful for load balancing).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# mac address-table static 0050.5612.3456 vlan 10 interface gi1/0/1\n\nSwitch# show mac address-table address 0050.5612.3456\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 10     0050.5612.3456    STATIC      Gi1/0/1\n\n# Drop variant:\nSwitch(config)# mac address-table static 0050.bad0.bad0 vlan 10 drop\n\nWhat it means:\n- STATIC entry pins a MAC to a port (or \"drop\" — black-hole).\n- Use \"interface\" form for permanent server / printer pinning.\n- \"drop\" is an instant block — useful for quarantining a known\n  malicious MAC during incident response."
           },
           {
             "cmd": "clear mac address-table dynamic [{address | interface | vlan}]",
             "desc": "Flush Dynamic MAC Address Entries. — Clears the entire table or specific entries (MAC",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# clear mac address-table dynamic               ! all\nSwitch# clear mac address-table dynamic interface gi1/0/1\nSwitch# clear mac address-table dynamic vlan 10\nSwitch# clear mac address-table dynamic address 0050.5612.3456\n\nWhat it means:\n- Wipes dynamic entries. Static / sticky preserved.\n- Useful after a topology change (gateway move, port swap) to\n  drop stale L2 paths.\n- Per-port / per-VLAN forms minimise disruption to unaffected\n  traffic."
           },
           {
             "cmd": "show interfaces interface-id switchport",
             "desc": "View Layer 2 Configuration for a Specific Port. — Shows operational mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interfaces gi1/0/1 switchport\n\nName: Gi1/0/1\nSwitchport: Enabled\nAdministrative Mode: static access\nOperational Mode: static access\nNegotiation of Trunking: Off\nAccess Mode VLAN: 10 (DATA)\nVoice VLAN: 200 (VOICE)\nTrunking VLANs Enabled: ALL\nPruning VLANs Enabled: 2-1001\nCapture Mode: Disabled\nProtected: false\n\nWhat it means:\n- Per-port L2 configuration snapshot — admin (configured) and\n  operational (actual) modes.\n- \"Negotiation of Trunking: Off\" = DTP disabled (best practice).\n- \"Voice VLAN: 200\" = phone tagged frames go here; PC frames\n  stay untagged in VLAN 10."
           },
           {
             "cmd": "interface vlan vlan-id",
             "desc": "Create a Switched Virtual Interface (SVI). — Enables routing between VLANs on a Multilayer Switch without external routers. Requires at least one active port in that VLAN.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface vlan 10\nSwitch(config-if)# ip address 10.10.0.1 255.255.255.0\nSwitch(config-if)# no shutdown\n\nSwitch# show ip interface brief vlan 10\nVlan10    10.10.0.1   YES manual  up   up\n\nWhat it means:\n- Creates/enters a Switched Virtual Interface (SVI) — L3 logical\n  interface for the VLAN.\n- VLAN must exist in DB and have at least one access port up\n  for the SVI line-protocol to come up.\n- Used as the default gateway for hosts in the VLAN."
           },
           {
             "cmd": "no switchport",
             "desc": "Convert Layer 2 Port to Routed Port. — Changes the interface from L2 switching mode to L3 routed mode for point-to-point links (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# interface gi0/1\nR1(config-if)# no switchport\nR1(config-if)# ip address 10.10.10.1 255.255.255.252\n\nWhat it means:\n- Converts an L2 (switchport) interface to L3 (routed) mode on\n  multilayer switches.\n- After this, the port acts like a router interface — needs IP\n  address, no VLAN membership.\n- Reverse with \"switchport\". Some platforms require shut/no shut\n  to apply the change cleanly."
           },
           {
             "cmd": "show ip interface [brief | interface-id | vlan]",
             "desc": "View IPv4 Interface Details. — Displays MTU",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip interface brief\nInterface          IP-Address    OK?  Method  Status      Protocol\nGigabitEthernet0/0 10.10.10.1    YES  manual  up           up\nVlan10             10.10.0.1     YES  manual  up           up\nVlan99             unassigned    YES  unset   down         down\n\nSwitch# show ip interface vlan 10 | head -10\nVlan10 is up, line protocol is up\n  Internet address is 10.10.0.1/24\n  Broadcast address is 255.255.255.255\n  Address determined by setup command\n  MTU is 1500 bytes\n  Helper address is not set\n  Directed broadcast forwarding is disabled\n  Outgoing access list is not set\n  Inbound  access list is not set\n\nWhat it means:\n- \"brief\" : one-line summary per interface. Most-used for quick\n  state check.\n- \"vlan 10\" : detailed L3 config for SVI 10 (helpers, ACLs, ARP\n  timers, NAT-inside flag)."
           },
           {
             "cmd": "show ipv6 interface [brief | interface-id | vlan]",
             "desc": "View IPv6 Interface Details. — Similar to IPv4 but for IPv6 addressing (e.g.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ipv6 interface brief\nGigabitEthernet0/0     [up/up]\n    FE80::1\n    2001:DB8:1::1\nVlan10                 [up/up]\n    FE80::5\n    2001:DB8:10::1\n\nSwitch# show ipv6 interface vlan 10 | head -10\nVlan10 is up, line protocol is up\n  IPv6 is enabled, link-local address is FE80::5\n  No Virtual link-local address(es)\n  Description: User-VLAN\n  Global unicast address(es):\n    2001:DB8:10::1, subnet is 2001:DB8:10::/64\n\nWhat it means:\n- IPv6 equivalent of \"show ip interface\".\n- Every active IPv6 interface has a link-local (FE80::*) address;\n  global addresses optional.\n- \"[up/up]\" = admin up + line protocol up."
           },
           {
             "cmd": "show ip arp [mac-address | ip-address | vlan | interface]",
             "desc": "View the ARP Table. — Maps Layer 3 IP addresses to Layer 2 MAC addresses for hosts/devices on the same subnet. Entries become stale if communication stops.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show ip arp\nProtocol  Address      Age  Hardware Addr     Type   Interface\nInternet  10.10.0.1    -    0050.5612.3456    ARPA   Vlan10  ← own SVI\nInternet  10.10.0.50   142  001a.1e11.2233    ARPA   Vlan10\nInternet  10.10.0.51   24   001a.1e44.5566    ARPA   Vlan10\n\n# Filtered:\nSwitch# show ip arp 10.10.0.50\nSwitch# show ip arp 0050.5612.3456\nSwitch# show ip arp interface vlan 10\n\nWhat it means:\n- ARP table — IP ↔ MAC ↔ interface mappings.\n- Age (sec) since last refresh. Default ARP timeout is 14400\n  (4 hours). \"Age -\" = own (router-owned) IP.\n- Combine with \"show mac address-table\" to chase a complaining\n  user back to a switch port: ARP gives the MAC, MAC table gives\n  the port."
           },
           {
             "cmd": "show sdm prefer {vlan | advanced}",
             "desc": "View/Configure Switching Database Manager (SDM) Template. — Allocates TCAM resources between L2/L3 features (e.g.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show sdm prefer\n\nShowing SDM Template Info:\nThis is the Advanced template:\n  number of VLANs:                                4096\n  Unicast MAC addresses:                          32K\n  Active Directory Numerical Indexes (ARP):       16K\n  Layer 2 Adjacency Numerical Indexes:            16K\n  IPv4 unicast routes:                            16K\n  IPv4 multicast routes:                          1K\n  Length of MAC adjacency:                        16K\n  Layer 3 Multicast:                              1K\n  IPv6 unicast routes:                            8K\n  ...\n\nWhat it means:\n- SDM (Switch Database Management) template defines TCAM /\n  resource allocation.\n- \"vlan\" : optimised for L2 deployments, more MAC addresses.\n- \"advanced\" : balanced L2 + L3 + multicast.\n- Change requires reload: \"sdm prefer advanced\" then \"reload\"."
           },
           {
             "cmd": "show vlan [{brief | id vlan-id | name vlan-name | summary}]",
             "desc": "View VLAN Assignments and Status. — Displays port-to-VLAN mappings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show vlan brief\nVLAN Name      Status   Ports\n---- --------- -------- ------------------------\n1    default   active   Gi1/0/3, Gi1/0/4\n10   DATA      active   Gi1/0/1, Gi1/0/2\n99   NATIVE    active\n\nSwitch# show vlan summary\nNumber of existing VLANs           : 4\nNumber of existing VTP VLANs       : 4\nNumber of existing extended VLANs  : 0\n\nWhat it means:\n- \"brief\" : compact list. \"id N\" : single VLAN detail.\n  \"name X\" : look up by name. \"summary\" : counts only.\n- \"Status active\" = forwarding. \"act/unsup\" = exists but\n  unsupported on this platform (e.g. extended VLAN on legacy\n  hardware)."
           },
           {
             "cmd": "spanning-tree vlan vlan-id max-age",
             "desc": "Set the STP Max Age timer for a VLAN. — Default is 20 seconds; can be configured to adjust convergence time.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree vlan 10 max-age 30\n\nSwitch# show spanning-tree vlan 10 | include Max\n  Max age 30 sec\n\nWhat it means:\n- Maximum age (sec) BPDUs are stored before being aged out.\n  Default 20.\n- Increasing helps in large STP domains where BPDU propagation\n  takes longer.\n- Range: 6-40. ALL switches in the same STP domain should agree."
           },
           {
             "cmd": "spanning-tree vlan vlan-id hello-time hello-time",
             "desc": "Set the STP Hello Interval for a VLAN. — Default is 2 seconds; range 1-10 seconds.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree vlan 10 hello-time 1\n\nSwitch# show spanning-tree vlan 10 | include Hello\n  Hello time 1 sec\n\nWhat it means:\n- Frequency of BPDU transmission. Default 2 sec.\n- Range: 1-10. Lower = faster failure detection but more BPDU\n  traffic.\n- Mainly affects STP root election + topology change propagation\n  speed."
           },
           {
             "cmd": "spanning-tree vlan vlan-id forward-time forward-time",
             "desc": "Set the STP Forwarding Delay for a VLAN. — Default is 15 seconds; range 4-30 seconds.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree vlan 10 forward-time 10\n\nSwitch# show spanning-tree vlan 10 | include Forward\n  Forward Delay 10 sec\n\nWhat it means:\n- Time spent in Listening + Learning STP states (15 + 15 =\n  30 sec default total transition time).\n- Range 4-30. Lower = faster port-up but more risk of transient\n  loops.\n- Largely irrelevant in RSTP / RPVST+ — those skip\n  Listening/Learning entirely on edge ports."
           },
           {
             "cmd": "show spanning-tree [vlan vlan-id]",
             "desc": "Display STP Information for One or More VLANs. — Shows local bridge info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     0050.5612.3456\n             Cost        0\n             Port        0 (-)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    24586  (priority 24576 sys-id-ext 10)\n             Address     0050.5612.3456 (this switch is the root)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface          Role Sts Cost      Prio.Nbr Type\n------------------ ---- --- --------- -------- --------------------------------\nGi1/0/1            Desg FWD 4         128.1    P2p Edge\nGi1/0/24           Desg FWD 4         128.24   P2p\n\nWhat it means:\n- Per-VLAN STP detail — root info, bridge info, per-port roles.\n- Roles: Root (best path to root), Desg (forwards segment traffic),\n  Altn (alternate, blocked), Backup (backup, blocked), Edge (host\n  port, portfast).\n- \"this switch is the root\" indicates this device is root for the\n  VLAN."
           },
           {
             "cmd": "show spanning-tree [vlan vlan-id] detail",
             "desc": "Identify When the Last TCN Occurred and Which Port Was the Reason. — Shows detailed STP state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree vlan 10 detail | head -25\n\nVLAN0010 is executing the rstp compatible Spanning Tree protocol\n  Bridge Identifier has priority 24586, sysid 10, address 0050.5612.3456\n  Configured hello time 2, max age 20, forward delay 15\n  ...\n  Number of topology changes 14 last change occurred 02:14:21 ago\n        from GigabitEthernet1/0/24\n  Times:  hold 1, topology change 35, notification 2\n          hello 2, max age 20, forward delay 15\n\nPort 1 (GigabitEthernet1/0/1) of VLAN0010 is forwarding\n  Port path cost 4, Port priority 128, Port Identifier 128.1.\n  Designated root has priority 24586, address 0050.5612.3456\n  ...\n\nWhat it means:\n- Verbose per-port + per-VLAN STP state with topology change\n  counters and timestamps.\n- \"Number of topology changes 14\" : how many TCNs have flooded.\n  Frequent TCs indicate flapping link.\n- \"from GigabitEthernet1/0/24\" : the port that triggered the\n  most recent TC — first stop for \"what flapped?\" diagnosis."
           },
           {
             "cmd": "spanning-tree vlan vlan-id priority priority",
             "desc": "Configure the STP Priority for a Switch so that it is a Root Bridge or Backup Root Bridge. — Priority is 0-61440 in increments of 4096. `root primary` sets to 24576",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree vlan 10 priority 0    ! definitely root\nSwitch(config)# spanning-tree vlan 10 priority 24576 ! manual root\nSwitch(config)# spanning-tree vlan 10 priority 32768 ! default\n\nSwitch# show spanning-tree vlan 10 | include Bridge\n  Bridge ID  Priority    24586  (priority 24576 sys-id-ext 10)\n\nWhat it means:\n- Lower priority wins root election.\n- Must be a multiple of 4096 (priority field has only 4 high\n  bits available; sys-id-ext fills the rest).\n- 0 = highest possible (forces root). 32768 = default.\n- Macros \"spanning-tree vlan N root primary\" / \"secondary\" set\n  appropriate values automatically."
           },
           {
             "cmd": "spanning-tree [vlan vlan-id] costcost",
             "desc": "Configure the STP Port Cost for a Specific Interface. — Modifies the forwarding path by changing the metric (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree vlan 10 cost 100\n\nSwitch# show spanning-tree vlan 10 interface gi1/0/24 | include cost\n   Port path cost 100\n\nWhat it means:\n- Per-port path cost override. Lower = preferred path.\n- Default depends on speed: 1 Gbps = 4 (long mode) or 19 (short\n  mode); 10 Gbps = 2 / 2; 100 Mbps = 19 / 100.\n- Used to force STP to prefer one trunk over another in a\n  redundant topology."
           },
           {
             "cmd": "spanning-tree [vlan vlan-id] port-priority priority",
             "desc": "Configure the STP Port Priority on the Downstream Port. — Impacts which port is an alternate port when multiple links are used between switches. Default 128",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree vlan 10 port-priority 64\n\nSwitch# show spanning-tree vlan 10 interface gi1/0/24 | include priority\n   Port priority 64\n\nWhat it means:\n- Port-priority is a tie-breaker between equal-cost paths.\n- Lower priority wins. Default 128.\n- Useful when two same-speed parallel trunks need a\n  deterministic active/standby selection."
           },
           {
             "cmd": "spanning-tree portfast trunk",
             "desc": "Enable STP Portfast on Trunk Links. — Should be used only with ports connecting to a single host (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# spanning-tree portfast trunk\n\n%Warning: portfast should only be enabled on ports connected to a single\nhost. ...\n\nWhat it means:\n- Forces portfast on a trunk port — DANGEROUS unless the trunk\n  faces a server (VMware ESX, Hyper-V) that's effectively a\n  multi-VLAN host with no STP-aware downstream switches.\n- For switch-to-switch trunks, NEVER use this — exposes the\n  network to STP loops during convergence.\n- Best paired with \"spanning-tree bpdufilter enable\" on the\n  same trunk."
           },
           {
             "cmd": "spanning-tree mode mst",
             "desc": "Configure the Switch for a Basic MST Region that Includes All VLANs and Version Number 1. — Switches to Multiple Spanning Tree Protocol (MST) mode.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree mode mst\n\nSwitch# show spanning-tree summary | include mode\nSwitch is in mst mode\n\nWhat it means:\n- Switch to MSTP (IEEE 802.1s/Q).\n- Multiple VLANs can share one STP instance — vastly fewer BPDUs\n  on networks with hundreds of VLANs.\n- Define MST regions via \"spanning-tree mst configuration\" with\n  matching name + revision + VLAN-instance mapping on every\n  switch in the region."
           },
           {
             "cmd": "spanning-tree mst configuration / instance instance-number vlan vlan-id",
             "desc": "Specify Additional VLANs to an MSTI. — Associates specific VLANs to different MST instances (IST is always Instance 0).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# spanning-tree mst configuration\nSwitch(config-mst)# name CORP_REGION\nSwitch(config-mst)# revision 1\nSwitch(config-mst)# instance 1 vlan 10,20\nSwitch(config-mst)# instance 2 vlan 30,40,50\n\nSwitch# show spanning-tree mst configuration\nName      [CORP_REGION]\nRevision  1\nInstance  Vlans mapped\n--------  -------------------------------------\n0         1-9,11-19,21-29,31-39,41-49,51-4094\n1         10,20\n2         30,40,50\n\nWhat it means:\n- Maps VLANs into MST instances. ALL switches in the region must\n  agree on name + revision + mapping.\n- VLANs not explicitly mapped go to instance 0 (CIST).\n- Bumping revision must be coordinated — out-of-sync revisions\n  silently break the region."
           },
           {
             "cmd": "show spanning-tree mst [instance-number]",
             "desc": "View the STP Topology for the MST. — Displays consolidated view of MST topology table with VLANs mapped to instances.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree mst 1\n\n##### MST1    vlans mapped:   10,20\nBridge        address 0050.5612.3456  priority      24586 (24576 sysid 10)\nRoot          this switch for MST1\n\nInterface       Role  Sts Cost      Prio.Nbr Type\n--------------- ----- --- --------- -------- --------------------------------\nGi1/0/1         Desg  FWD 200000    128.1    P2p Edge\nGi1/0/24        Desg  FWD 20000     128.24   P2p\n\nWhat it means:\n- Per-MST-instance STP state. Each instance has its own root,\n  bridge ID, port roles.\n- \"this switch for MST1\" = local switch is root for instance 1\n  (and thus for VLANs 10 + 20).\n- Useful for verifying MSTP load-balancing — different instances\n  may use different physical paths."
           },
           {
             "cmd": "vtp version {1 | 2 | 3}",
             "desc": "Configure the VTP Version. — Version 3 allows full range of VLANs (1-4094) and supports primary server role.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vtp version 3\n\nSwitch# show vtp status | include version\nVTP version running              : 3\n\nWhat it means:\n- v1 / v2 : legacy. v2 supports Token Ring (defunct) and propagates\n  unrecognized advertisements (forward-compatible).\n- v3 : adds password authentication, MST-database propagation,\n  primary-server concept, extended VLAN range (1006-4094)\n  propagation.\n- Match version across all switches in the domain."
           },
           {
             "cmd": "vtp domain domain-name",
             "desc": "Configure the VTP Domain Name. — Changing resets local switch's VTP database revision to 0.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vtp domain CORP\n\nSetting VTP domain name to CORP\n\nSwitch# show vtp status | include Domain\nVTP Domain Name                  : CORP\n\nWhat it means:\n- Logical domain that VTP advertisements scope to. Switches in\n  different domains don't exchange databases.\n- Set BEFORE \"vtp mode server\" to avoid the new switch absorbing\n  a remote domain's config.\n- Empty domain (\"NULL\") exists by default; first VTP advert\n  received auto-sets the domain name."
           },
           {
             "cmd": "vtp mode {server | client | transparent | off}",
             "desc": "Configure the VTP Mode for a Switch. — `Server`: Creates/modifies VLANs; `Client`: Receives updates; `Transparent`: Forwards but doesn't modify; `Off`: No participation.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vtp mode server      ! manage VLANs\nSwitch(config)# vtp mode client      ! receive only\nSwitch(config)# vtp mode transparent ! standalone, just relay\nSwitch(config)# vtp mode off         ! disabled (don't relay either)\n\nWhat it means:\n- Server : full participant — can create/delete/modify VLANs;\n  propagates changes.\n- Client : receive-only. Can't create VLANs locally.\n- Transparent : standalone. Local VLAN DB only; relays VTP\n  advertisements through.\n- Off : disabled, doesn't even relay."
           },
           {
             "cmd": "vtp primary",
             "desc": "Designate a VTP Server as Primary Server (VTP Version 3 only). — Only the primary server can add/remove VLANs in VTP v3.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# vtp primary vlan\nThis system is becoming primary server for feature vlan\nNo conflicting VTP3 devices found.\nDo you want to continue? [confirm]\nSwitch has been set as primary server for feature vlan.\n\nWhat it means:\n- VTPv3 only — designates this switch as the PRIMARY server for\n  a feature (vlan / mst / unknown).\n- Only the primary can modify the database; secondaries can have\n  the database but only the primary updates it.\n- Eliminates the classic VTPv1/v2 risk of a stale-revision\n  switch wiping the entire VLAN database."
           },
           {
             "cmd": "switchport mode dynamic desirable / switchport mode dynamic auto",
             "desc": "Configure a Switch Port to Actively Attempt or Respond to Establish a Trunk Link. — `Desirable`: Initiates negotiation; `Auto`: Responds to negotiation. Default is `dynamic auto`.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode dynamic desirable  ! actively negotiate\nSwitch(config-if)# switchport mode dynamic auto       ! passively negotiate\n\nWhat it means:\n- DTP (Dynamic Trunking Protocol) modes:\n  - dynamic desirable : actively offers to trunk.\n  - dynamic auto      : trunks if peer offers.\n  - auto+auto         = no trunk forms (neither offers).\n- DANGEROUS: leaves ports vulnerable to rogue trunk negotiation.\n  Production should use explicit \"switchport mode access\" or\n  \"trunk\" + \"switchport nonegotiate\"."
           },
           {
             "cmd": "switchport nonegotiate",
@@ -17091,49 +17132,57 @@
             "cmd": "show interface [interface-id] trunk",
             "desc": "Display the Switch Port DTP Settings — Native VLANs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show interface gi1/0/24 trunk\n\nPort      Mode  Encapsulation  Status        Native vlan\nGi1/0/24  on    802.1q         trunking      99\n\nPort      Vlans allowed on trunk\nGi1/0/24  10,20,30,99\n\nWhat it means:\n- Per-interface trunk detail (or ALL trunks if no interface).\n- Confirms trunk negotiation result, native VLAN, and which VLANs\n  are allowed/active/forwarding.\n- \"Status trunking\" = healthy. \"not-trunking\" = port came up\n  in access mode (likely DTP failure or wrong mode)."
           },
           {
             "cmd": "switchport mode access/trunk/routed",
             "desc": "Configure the Port-Channel Interface Mode. — Defines whether the EtherChannel operates at Layer 2 or Layer 3.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# switchport mode access  ! L2 access port\nSwitch(config-if)# switchport mode trunk   ! L2 trunk port\nR1(config-if)# no switchport               ! L3 routed port\n\nWhat it means:\n- Three primary L2 modes:\n  - access : single VLAN, untagged.\n  - trunk  : multiple VLANs, 802.1q-tagged (except native).\n  - routed : \"no switchport\" — L3 IP interface.\n- Rule of thumb: explicitly set the mode rather than relying on\n  \"dynamic auto\" defaults."
           },
           {
             "cmd": "ip igmp snooping vlan vlan-id",
             "desc": "Enable IGMP Snooping on VLANs. — Optimizes forwarding by examining IGMP joins and maintaining interface-to-group tables.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# ip igmp snooping vlan 10\n\nSwitch# show ip igmp snooping vlan 10\nGlobal IGMP Snooping configuration:\n-----------------------------------\nIGMP snooping              : Enabled\nVlan 10:\n--------\nIGMP snooping              : Enabled\nIGMPv2 immediate leave     : Disabled\nMulticast router learning  : pim-dvmrp\n\nWhat it means:\n- Enables IGMP snooping on a specific VLAN (default is enabled\n  globally + per-VLAN).\n- \"no ip igmp snooping vlan N\" : disables for one VLAN.\n- Without snooping, multicast floods to every port in the VLAN\n  (defeats much of the point of multicast)."
           },
           {
             "cmd": "vlan <id>",
             "desc": "Creates a VLAN and enters VLAN config mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# vlan 100\n\nSwitch(config-vlan)# name MGMT\nSwitch(config-vlan)# state active\n\nWhat it means:\n- Generic syntax. VLAN-ID range 1-4094. 1002-1005 reserved\n  (legacy ATM/FDDI).\n- Drops you into VLAN config sub-mode for name / state / etc.\n- Auto-created in transparent / off VTP modes; in server mode,\n  also propagates to VTP clients."
           },
           {
             "cmd": "name <vlan-name>",
             "desc": "Assigns a name to the current VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-vlan)# name SALES_DATA\n\nSwitch# show vlan id 10 | include SALES\n10   SALES_DATA  active\n\nWhat it means:\n- 32-char VLAN name. No spaces. Alphanumeric + underscore /\n  hyphen common.\n- Documentation only — no functional impact. But useful for\n  per-port reference: \"switchport access vlan name SALES_DATA\"\n  on IOS XE 3.x+."
           },
           {
             "cmd": "no vlan <id>",
             "desc": "Deletes the specified VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# no vlan 100\n\nVLAN 100 deleted.\n\n# Access ports that were in VLAN 100 fall back to VLAN 1.\n\nWhat it means:\n- Deletes the VLAN from the database.\n- Access ports in the deleted VLAN remain \"in\" it (so to speak)\n  until you re-assign — they stop forwarding traffic until\n  reassigned to another VLAN.\n- Don't delete production VLANs without verifying which ports\n  are members first (\"show vlan id N\" before deletion)."
           },
           {
             "cmd": "interface vlan <id>",
             "desc": "Creates or enters the SVI (Switched Virtual Interface) for a VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# interface vlan 10\nSwitch(config-if)# ip address 10.10.0.1 255.255.255.0\nSwitch(config-if)# no shutdown\n\nSwitch# show ip interface brief vlan 10\nVlan10    10.10.0.1   YES manual  up   up\n\nWhat it means:\n- Generic SVI creation syntax. VLAN must exist in DB and have\n  ≥1 access port up for SVI line-protocol to come up.\n- Also works for routed VLAN (multilayer switch acting as L3\n  gateway for the VLAN)."
           },
           {
             "cmd": "ip address <ip> <mask>",
             "desc": "Assigns an IP to a VLAN SVI for Layer 3 routing",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# ip address 10.10.0.1 255.255.255.0\n\n# Or with secondary:\nSwitch(config-if)# ip address 192.168.10.1 255.255.255.0 secondary\n\nSwitch# show ip interface vlan 10 | include address\n  Internet address is 10.10.0.1/24\n\nWhat it means:\n- Assigns IP + mask to the interface.\n- \"secondary\" : add an additional IP. Useful for migration\n  scenarios where two subnets share one VLAN temporarily.\n- Replace existing IP with \"no ip address\" first, then \"ip\n  address NEW.NEW.NEW.NEW MASK\"."
           },
           {
             "cmd": "no shutdown",
@@ -17151,7 +17200,8 @@
             "cmd": "show vlan id <id>",
             "desc": "Detailed info for a specific VLAN: ports, state, and MTI",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show vlan id 10\n\nVLAN Name    Status   Ports\n---- ------- -------- ---------------------------------\n10   DATA    active   Gi1/0/1, Gi1/0/2, Gi1/0/3\n\nWhat it means:\n- Per-VLAN summary — name, status, member access ports.\n- Same info as \"show vlan brief\" but filtered to one VLAN.\n- Trunks aren't listed here — see \"show interfaces trunk\" for\n  which trunks carry this VLAN."
           }
         ],
         "Switching & STP": [
@@ -17524,181 +17574,211 @@
             "cmd": "show policy-map interface Gi1/0/1",
             "desc": "Per-interface QoS policy counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show policy-map interface gi1/0/1\n\nGigabitEthernet1/0/1\n  Service-policy output: MARK_TRAFFIC\n\n    Class-map: VOICE (match-any)\n      45,012 packets\n      Match: dscp ef (46)\n      QoS Set\n        dscp ef\n          Marker statistics: Disabled\n\n    Class-map: class-default (match-any)\n      102,341 packets\n      Match: any\n\nWhat it means:\n- Per-interface policy-map stats — how many packets matched each\n  class.\n- \"Service-policy output\" = applied on egress. \"input\" = ingress.\n- Match counters help confirm classification is working — if a\n  class has 0 packets, the match criterion is likely wrong."
           },
           {
             "cmd": "show class-map",
             "desc": "Configured class-maps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show class-map\n\n Class Map match-any VOICE (id 1)\n   Match  dscp ef (46)\n   Match  cos  5\n\n Class Map match-any DATA (id 2)\n   Match  any\n\n Class Map match-all CRITICAL_DATA (id 3)\n   Match access-group 100\n   Match  dscp af31\n\nWhat it means:\n- All defined class-maps.\n- \"match-any\" : OR logic — one match satisfies.\n- \"match-all\" : AND logic — all matches must succeed.\n- Each class-map can have multiple match criteria; combine for\n  granular traffic identification."
           },
           {
             "cmd": "show policy-map",
             "desc": "Configured policy-maps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show policy-map\n\n  Policy Map MARK_TRAFFIC\n    Class VOICE\n     set dscp ef\n    Class DATA\n     bandwidth percent 30\n    Class class-default\n     fair-queue\n\n  Policy Map LIMIT_GUEST\n    Class class-default\n     police cir 10000000\n\nWhat it means:\n- All defined policy-maps with their class actions.\n- Actions include set (mark), police (rate-limit), bandwidth\n  (CBWFQ), priority (LLQ).\n- Each policy-map applies via \"service-policy {input|output}\"\n  on an interface or VLAN."
           },
           {
             "cmd": "show mls qos",
             "desc": "Global MLS QoS state and per-port trust",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mls qos\n\nQoS is enabled\nQoS ip packet dscp rewrite is enabled\n\nWhat it means:\n- Catalyst MLS QoS feature toggle. Required before QoS commands\n  take effect on most Catalyst platforms.\n- \"dscp rewrite is enabled\" : switch can modify DSCP markings\n  on transit packets (vs trust-and-pass-through).\n- Modern IOS XE doesn't use the \"mls qos\" framework — uses\n  MQC (Modular QoS CLI) class-maps + policy-maps directly."
           },
           {
             "cmd": "show mls qos interface Gi1/0/1",
             "desc": "Per-interface QoS trust + DSCP/CoS maps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show mls qos interface gi1/0/1\n\nGigabitEthernet1/0/1\ntrust state: trust dscp\ntrust mode: trust dscp\ntrust enabled flag: ena\nCOS override: dis\ndefault COS: 0\nDSCP Mutation Map: Default DSCP Mutation Map\nTrust device: cisco-phone\n\nWhat it means:\n- Per-port QoS trust state.\n- \"trust dscp\" : preserve DSCP markings from incoming packets.\n- \"trust device cisco-phone\" : trust QoS only when a Cisco IP\n  phone is detected via CDP/LLDP (defends against hosts faking\n  high-priority markings)."
           },
           {
             "cmd": "mls qos",
             "desc": "Enables MLS QoS globally on the switch (required on older IOS)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# mls qos\n\nSwitch# show mls qos | head -2\nQoS is enabled\n\nWhat it means:\n- Globally enables MLS QoS on Catalyst (legacy platforms).\n- Required before any \"mls qos\" interface commands take effect.\n- IOS XE uses MQC instead — this command may not exist on newer\n  IOS XE versions."
           },
           {
             "cmd": "class-map match-any VOICE\n match dscp ef\n match cos 5",
             "desc": "Match voice traffic by DSCP EF or CoS 5",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# class-map match-any VOICE\nR1(config-cmap)# match dscp ef\nR1(config-cmap)# match cos 5\n\nR1# show class-map VOICE\n Class Map match-any VOICE (id 1)\n   Match  dscp ef (46)\n   Match  cos  5\n\nWhat it means:\n- Defines a class for voice traffic. \"match-any\" = OR — packet\n  matches if it has DSCP EF (46) OR L2 CoS 5.\n- Voice typically gets DSCP EF + CoS 5 from IP phones; matching\n  both catches both directions.\n- Reference this class in a policy-map's \"class VOICE\" block."
           },
           {
             "cmd": "policy-map MARK\n class VOICE\n  set dscp ef\n class class-default\n  set dscp default",
             "desc": "Re-mark policy",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# policy-map MARK\nR1(config-pmap)# class VOICE\nR1(config-pmap-c)# set dscp ef\nR1(config-pmap-c)# exit\nR1(config-pmap)# class class-default\nR1(config-pmap-c)# set dscp default\n\nR1# show policy-map MARK\n  Policy Map MARK\n    Class VOICE\n     set dscp ef (46)\n    Class class-default\n     set dscp default (0)\n\nWhat it means:\n- Re-marks voice traffic to DSCP EF and everything else to\n  DSCP default (0).\n- Apply with \"service-policy input MARK\" on the interface where\n  traffic enters the network (typically a user-access port).\n- Re-marking at the edge ensures consistent QoS treatment in\n  the core."
           },
           {
             "cmd": "service-policy type inspect policy-name",
             "desc": "Apply an inspection policy map to a zone pair. — Defines traffic inspection rules between source and destination zones.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-zone-pair)# service-policy type inspect ZP_INSIDE_OUTSIDE\n\nR1# show policy-map type inspect zone-pair\npolicy exists on zone-pair\n  Service-policy inspect: ZP_INSIDE_OUTSIDE\n    Class-map: TRUSTED_TRAFFIC (match-any)\n      pass\n\nWhat it means:\n- Applies a Zone-Based Firewall (ZBFW) policy to a zone-pair.\n- Different from QoS service-policy — this controls which traffic\n  is permitted between zones.\n- ZBFW is the modern Cisco IOS firewall replacement for the\n  legacy CBAC (ip inspect) feature."
           },
           {
             "cmd": "control plane service-policy {input|output} policy-name",
             "desc": "Apply a CoPP policy map to the control plane (two commands). — Protects CPU from excessive traffic by rate-limiting specific protocols/flows.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# control-plane\nR1(config-cp)# service-policy input COPP\n\nR1# show policy-map control-plane\nControl Plane\n\n  Service-policy input: COPP\n    Class-map: SSH (match-any)\n      45,012 packets, 6,402,341 bytes\n      30 second offered rate 4000 bps, drop rate 0 bps\n      Match: access-group 110\n\nWhat it means:\n- CoPP (Control Plane Policing) — protects the route-processor\n  CPU from being overwhelmed by control-plane traffic (BGP, OSPF,\n  SNMP, SSH, ICMP).\n- Each class gets a rate limit; exceeding traffic is dropped.\n- \"drop rate\" > 0 in steady state = legitimate traffic being\n  dropped — re-tune the policy."
           },
           {
             "cmd": "class-map [match-any | match-all] class-map-name",
             "desc": "Define Traffic Class. — Creates a map to classify traffic based on criteria (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# class-map match-any VOICE_AND_VIDEO\nR1(config-cmap)# match dscp ef\nR1(config-cmap)# match dscp af41\n\nR1(config)# class-map match-all CRITICAL_BUSINESS\nR1(config-cmap)# match access-group 100\nR1(config-cmap)# match dscp af31\n\nWhat it means:\n- match-any : OR — packet matches if any criterion matches.\n- match-all : AND — packet must match ALL criteria.\n- Combine class-maps for hierarchical classification."
           },
           {
             "cmd": "policy-map policy-map-name",
             "desc": "Define QoS Policy Map. — Groups traffic classes with specific actions (queuing",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# policy-map QOS_OUT\n\nR1(config-pmap)# class VOICE\nR1(config-pmap-c)# priority percent 30\nR1(config-pmap-c)# class DATA\nR1(config-pmap-c)# bandwidth percent 50\n\nWhat it means:\n- Defines a QoS policy. Inside, list class-maps and per-class\n  actions.\n- Apply via \"service-policy {input|output} POLICY_NAME\" on an\n  interface."
           },
           {
             "cmd": "service-policy {input | output} policy-map-name",
             "desc": "Apply Policy to Interface. — Attaches the policy map to an interface for inbound or outbound processing.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# service-policy input MARK_INGRESS\nR1(config-if)# service-policy output QOS_EGRESS\n\nR1# show policy-map interface gi0/0\nGigabitEthernet0/0\n  Service-policy input: MARK_INGRESS\n  Service-policy output: QOS_EGRESS\n\nWhat it means:\n- input : applied on ingress (used for marking + classification).\n- output : applied on egress (used for queueing + shaping).\n- One input + one output per interface (or sub-interface)."
           },
           {
             "cmd": "match cos cos-value-list",
             "desc": "Match Layer 2 CoS. — Matches one or more Class of Service (CoS) values in the frame header.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match cos 5 6 7\n\nWhat it means:\n- Matches L2 CoS values (priority bits in 802.1q headers).\n- Range 0-7. Common: 5 = voice, 6 = control, 7 = network-control.\n- Only relevant for L2 frames (trunks); access ports without\n  802.1q tags don't carry CoS."
           },
           {
             "cmd": "match [ip] dscp dscp-value-list",
             "desc": "Match DSCP Value. — Matches Differentiated Services Code Point (DSCP) values for IPv4/IPv6 packets.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match dscp ef\nR1(config-cmap)# match dscp af31 af32 af33  ! AF3x family\nR1(config-cmap)# match dscp 46              ! numeric\n\nWhat it means:\n- Matches DSCP (Differentiated Services Code Point) values.\n- Common DSCP names: ef (46) voice, af41 (34) interactive video,\n  af31-33 (26-30) call-signaling, default (0) best-effort.\n- Multiple values OR each other within a single match line."
           },
           {
             "cmd": "set qos-group qos-group-id",
             "desc": "Set Internal QoS Group ID. — Marks traffic with an internal router-specific group ID.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# set qos-group 5\n\nWhat it means:\n- Internal-only marking — qos-group is NOT carried in packet\n  headers. Used as a hand-off between input and output policies\n  in a hierarchical service-policy.\n- Convenient for separating classification (input) from\n  queueing (output) without using DSCP/CoS markers that could\n  affect downstream devices."
           },
           {
             "cmd": "set cos cos-value",
             "desc": "Set Layer 2 CoS Value. — Modifies the Class of Service (CoS) value in the frame header.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# set cos 5\n\nWhat it means:\n- Re-marks the L2 CoS field. Range 0-7.\n- Only takes effect on 802.1q-tagged egress (trunks).\n- Common pairing: input policy \"set dscp ef + set cos 5\" so both\n  L2 and L3 markings are consistent."
           },
           {
             "cmd": "set [ip] dscp ip-dscp-value",
             "desc": "Set DSCP Value. — Modifies the Differentiated Services Code Point (DSCP) value for IPv4/IPv6 packets.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# set dscp ef        ! voice\nR1(config-pmap-c)# set dscp af41      ! interactive video\nR1(config-pmap-c)# set dscp default   ! best-effort (0)\n\nWhat it means:\n- Re-marks DSCP on egress (or input if used on ingress).\n- Standard markings (RFC 4594):\n  ef    : voice (46)\n  af4x  : interactive video\n  af3x  : call-signaling\n  af2x  : transactional data\n  af1x  : bulk data\n  cs0/default : best-effort."
           },
           {
             "cmd": "police [cir]cir-in-bps[bc]committed-burst-size-in-bytes [be]excess-burst-size-in-bytes[conform-action action] [exceed-actionaction] [violate-actionaction]",
             "desc": "Configure Traffic Policing. — Rate-limits traffic and defines actions for conforming/exceeding/violating packets.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# police cir 10000000 bc 12500 be 25000 \\\n        conform-action transmit \\\n        exceed-action set-dscp-transmit af11 \\\n        violate-action drop\n\nR1# show policy-map interface gi0/0 | include police\n      police: cir 10000000 bps, bc 12500 bytes, be 25000 bytes\n      conformed 102,341 packets\n      exceeded 4,502 packets\n      violated 142 packets, drop\n\nWhat it means:\n- Two-rate three-color policer (RFC 2698).\n- conform : packets within CIR — usually transmit unchanged.\n- exceed  : packets between CIR and PIR — usually re-mark down.\n- violate : packets above PIR — usually drop.\n- Use to implement bandwidth contracts (e.g. \"max 10 Mbps\")."
           },
           {
             "cmd": "mls qos trust dscp",
             "desc": "Trusts incoming DSCP markings on the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# mls qos trust dscp\n\nSwitch# show mls qos interface gi1/0/1 | include trust\ntrust state: trust dscp\n\nWhat it means:\n- Trust the DSCP markings on incoming packets (don't re-mark to\n  default).\n- Use on uplink ports between trusted devices that already mark\n  correctly.\n- On user-access ports, do NOT trust by default — users could\n  mark their own traffic as voice/EF and steal priority."
           },
           {
             "cmd": "mls qos trust cos",
             "desc": "Trusts incoming 802.1p CoS markings on the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config-if)# mls qos trust cos\n\nWhat it means:\n- Trust the L2 CoS markings on incoming 802.1q frames.\n- Cisco IP phones mark voice as CoS 5 — pair with\n  \"mls qos trust device cisco-phone\" so trust only kicks in\n  when a phone is detected (anti-spoofing)."
           },
           {
             "cmd": "mls qos map cos-dscp <values>",
             "desc": "Maps 802.1p CoS values to DSCP values",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch(config)# mls qos map cos-dscp 0 8 16 24 32 40 46 56\n\nSwitch# show mls qos map cos-dscp\n   Cos-dscp map:\n        cos:   0  1  2  3  4  5  6  7\n       -----------------------------------\n        dscp:  0  8 16 24 32 40 46 56\n\nWhat it means:\n- Maps L2 CoS to DSCP. Eight values, one per CoS class.\n- Default Cisco map: 0 8 16 24 32 40 48 56.\n- The example above adjusts CoS 6 → DSCP 46 (EF) — for\n  environments where the phone marks CoS 6 instead of 5."
           },
           {
             "cmd": "policy-map <name>",
             "desc": "Creates a policy map for QoS classification and marking",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# policy-map QOS_OUTPUT\nR1(config-pmap)# class VOICE\nR1(config-pmap-c)# priority percent 30\nR1(config-pmap-c)# class CRITICAL\nR1(config-pmap-c)# bandwidth percent 30\nR1(config-pmap-c)# class class-default\nR1(config-pmap-c)# fair-queue\n\nWhat it means:\n- Defines a QoS policy. Inside, reference class-maps and apply\n  per-class actions.\n- Three-class hierarchy: priority (LLQ for voice), bandwidth\n  (CBWFQ guarantee), fair-queue (everything else)."
           },
           {
             "cmd": "class <class-map-name>",
             "desc": "Enters a class within a policy map",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap)# class VOICE\nR1(config-pmap-c)#\n\nWhat it means:\n- References a previously-defined class-map within a policy-map.\n- Subsequent commands (set / bandwidth / police) apply to traffic\n  matching this class.\n- Always end the policy with \"class class-default\" — catches\n  everything else."
           },
           {
             "cmd": "set dscp <value>",
             "desc": "Sets the DSCP value for traffic matching this class",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# set dscp ef\n\nWhat it means:\n- Re-marks DSCP for traffic matching the parent class.\n- Common values: ef (46) voice, af41 (34) interactive video,\n  af31 (26) call-signaling, default (0) best-effort.\n- Pair with \"set cos N\" if traffic also crosses 802.1q trunks."
           },
           {
             "cmd": "bandwidth percent <value>",
             "desc": "Allocates a percentage of bandwidth to this class queue",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# bandwidth percent 30\n\nWhat it means:\n- Reserves a percentage of link bandwidth for this class\n  (CBWFQ).\n- Sum of all bandwidth percents in a policy must not exceed\n  max-reserved-bandwidth (default 75% of interface BW).\n- Class only gets the reserved BW if other classes have nothing\n  to send — otherwise it's a guarantee, not a cap."
           },
           {
             "cmd": "priority percent <value>",
             "desc": "Configures a strict priority queue for low-latency traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# priority percent 30\n\nWhat it means:\n- LLQ (Low Latency Queue) — sub-class of CBWFQ that gets\n  strict-priority dequeueing.\n- Use ONLY for voice and other latency-sensitive traffic.\n- Excess traffic above the percent is policed-and-dropped to\n  protect other classes from starvation."
           },
           {
             "cmd": "service-policy input <policy-name>",
             "desc": "Applies a QoS policy map to the interface in the inbound direction",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# service-policy input MARK\n\nR1# show policy-map interface gi0/0 | include input\n  Service-policy input: MARK\n\nWhat it means:\n- Applies the named policy to ingress traffic.\n- Common ingress actions: classify + mark (set dscp / cos / qos-group).\n- Re-marking at the network edge (closest to the source) ensures\n  consistent QoS treatment downstream."
           },
           {
             "cmd": "service-policy output <policy-name>",
             "desc": "Applies a QoS policy map to the interface in the outbound direction",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# service-policy output QOS_EGRESS\n\nR1# show policy-map interface gi0/0 | include output\n  Service-policy output: QOS_EGRESS\n\nWhat it means:\n- Applies the named policy to egress traffic.\n- Common egress actions: queueing (priority / bandwidth),\n  shaping, dropping (random-detect).\n- ONLY queueing-related actions belong on egress; classification\n  + marking belong on ingress."
           },
           {
             "cmd": "show policy-map interface <interface>",
             "desc": "Shows QoS statistics per class for a specific interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show policy-map interface gi0/0\n\nGigabitEthernet0/0\n  Service-policy output: QOS_EGRESS\n\n    Class-map: VOICE (match-any)\n      45,012 packets\n      Match: dscp ef (46)\n      Queueing\n        queue limit 64 packets\n        (queue depth/total drops/no-buffer drops) 0/0/0\n        (pkts output/bytes output) 45,012/4,200,000\n      Priority: percent 30, kbps 300000\n\n    Class-map: class-default (match-any)\n      102,341 packets\n      Match: any\n\nWhat it means:\n- Per-interface policy execution. Hit counters per class,\n  queue-depth stats, drops.\n- \"no-buffer drops\" > 0 = queue exhaustion. Increase queue limit\n  or re-tune percentages.\n- \"queue depth\" : current depth — momentary spike is fine; sustained\n  high values mean the class can't drain fast enough."
           }
         ],
         "Multicast": [
