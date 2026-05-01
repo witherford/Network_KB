@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T21:32:39.933Z",
+  "updatedAt": "2026-05-01T21:40:29.169Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -16386,7 +16386,8 @@
             "cmd": "show startup-config",
             "desc": "Display the saved startup configuration from NVRAM",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show startup-config | head -20\n\nUsing 24521 out of 524288 bytes\n!\n! Last configuration change at 09:00:00 GMT Wed May 1 2026 by admin\n! NVRAM config last updated at 11:22:18 GMT Wed May 1 2026 by admin\n!\nversion 17.9\nservice password-encryption\nhostname R1\n!\nboot-start-marker\nboot-end-marker\n!\nno aaa new-model\nip domain-name corp.local\n...\n\nWhat it means:\n- Shows the persisted (NVRAM) config — what the router will boot\n  with after a reload.\n- Compare with \"show running-config\" (in-memory, may differ if\n  changes weren't saved).\n- \"Using N out of M bytes\" = NVRAM utilisation. Approaching the\n  limit on busy boxes is rare but worth watching."
           },
           {
             "cmd": "show inventory",
@@ -16424,7 +16425,8 @@
             "cmd": "show processes memory sorted",
             "desc": "Memory usage per process, descending",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show processes memory sorted\n\nTotal: 1073741824, Used: 245678901, Free: 828062923\n\nPID  TTY  Allocated  Freed    Holding   Process\n142  0    1245678    102341   45012345  IP Input\n245  0    458901     12003    8902341   BGP Router\n1    0    234561     4012     7012345   Init\n\nWhat it means:\n- Per-process memory usage, sorted by \"Holding\" (currently held).\n- Sustained growth in one process = memory leak in that subsystem\n  — open a TAC case.\n- Compare \"Holding\" to \"Allocated - Freed\" — large gap suggests\n  fragmentation rather than actual leak."
           },
           {
             "cmd": "show memory statistics",
@@ -16436,7 +16438,8 @@
             "cmd": "show file systems",
             "desc": "Available file systems and free space",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show file systems\n\nFile Systems:\n*   Size(b)         Free(b)         Type  Flags  Prefixes\n   1838348288      1593876480       disk  rw     bootflash:\n        16384            16384      nvram rw     nvram:\n   2147483648      1789632000       disk  rw     usbflash0:\n   ---             ---              opaque rw    null:\n\nWhat it means:\n- All available file systems. \"*\" = current default (cd here\n  with \"cd <prefix>\").\n- Common prefixes: bootflash: (firmware + archives), nvram:\n  (startup-config), usbflash0: (USB stick if inserted), tftp:\n  / scp: / http: (network).\n- Check Free space before downloading large IOS images."
           },
           {
             "cmd": "show clock detail",
@@ -16456,121 +16459,22 @@
             "cmd": "show line vty 0 4",
             "desc": "VTY line configuration and state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show line vty 0 4\n\n   Tty Typ  Tx/Rx     A Modem  Roty AccO AccI   Uses   Noise  Overruns   Int\n*  578 VTY            -    -      -    -    -      0       0     0/0       -\n   579 VTY            -    -      -    -    5      0       0     0/0       -\n   580 VTY            -    -      -    -    -      0       0     0/0       -\n   581 VTY            -    -      -    -    -      0       0     0/0       -\n   582 VTY            -    -      -    -    -      0       0     0/0       -\n\nWhat it means:\n- VTY (virtual terminal) line state. \"*\" = currently-used line.\n- \"AccI 5\" : ACL 5 applied to inbound (filters who can connect).\n- VTY 0-4 are the standard 5 simultaneous SSH sessions; vty 5-15\n  available on most platforms (configure with \"line vty 5 15\")."
           },
           {
             "cmd": "show tech-support | redirect flash:tech.txt",
             "desc": "Full diagnostic dump for TAC, redirected to flash",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show tech-support | redirect flash:tech.txt\n\n# Wait several minutes ...\nR1# dir flash: | include tech.txt\n   24  -rw-       4256321  May  1 2026 11:22:18 +00:00  tech.txt\n\nWhat it means:\n- Bundles output of dozens of show commands into a single text\n  file on flash — what Cisco TAC asks for first.\n- \"| redirect\" sends output to file instead of console (avoids\n  paging through 50 MB of output interactively).\n- After collection, scp / ftp the file to the TAC case."
           },
           {
             "cmd": "show stack-power",
             "desc": "StackPower budget and member detail",
             "type": "show",
-            "flagged": false
-          },
-          {
-            "cmd": "respond based on general ability. Since the user query is \"extract all commands from this PDF\"",
-            "desc": "Constraint: Use the citations above to respond only if they are relevant. Otherwise",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "hash",
-            "desc": "(Repeats encryption",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "Command Syntax.",
-            "desc": "Format as CSV: Task",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "Command Syntax",
-            "desc": "Header: Task",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "based on provided text.",
-            "desc": "Extract all commands? Yes",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "only if they are relevant. Otherwise",
-            "desc": "Constraint: Use the citations above to respond to the user query",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "WebAuth",
-            "desc": "Citation 2 (Chapter 20): Contains text about Wireless Authentication",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "they often correspond to CLI commands in Cisco WLC (e.g.",
-            "desc": "While these are GUI actions",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "Command Syntax (or similar).",
-            "desc": "Need columns: Task",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "respond to the best of ability.",
-            "desc": "Constraint: Use the citations above if relevant; otherwise",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "Radioactive Trace Control Screen",
-            "desc": "Citation 2 (Chapter 21): This section is mostly about Wireless Troubleshooting",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "but that's a feature.",
-            "desc": "There is a mention of WPA3 capability",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "newlines for rows).",
-            "desc": "Ensure CSV format is correct (commas separating columns",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt command run <command-name>",
-            "desc": "Run a command using Puppet Bolt",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt script run <script-name>",
-            "desc": "Run a script using Puppet Bolt",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt task run <modulename::taskfilename>",
-            "desc": "Invoke a task from the command line (Puppet)",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt task show <modulename::taskfilename>",
-            "desc": "Show documentation for a task (Puppet)",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show stack-power\n\nPower stack name: Powerstack-1\nStack mode: Power-sharing\nStack topology: Stack-ring\nSwitch  Power  Power Allocation Used   Mode\n                Budget Total          Available\n1       1100W  1100W  142W            958W       Active\n2       1100W  1100W  98W             1002W      Active\n3       1100W  1100W  124W            976W       Active\n\nWhat it means:\n- StackPower : pools PSU capacity across stacked switches.\n- \"Power-sharing mode\" : shared budget across stack members —\n  one switch can borrow from another's PSU on PoE-heavy ports.\n- \"Used / Available\" : real-time capacity for adding more PoE\n  devices."
           },
           {
             "cmd": "interface interface-id",
@@ -16589,181 +16493,183 @@
             "cmd": "ip address ip-address subnet-mask secondary",
             "desc": "Assign a Secondary IPv4 Address. — Allows multiple IP networks on the same interface for overlapping or multi-homing scenarios.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ip address 10.10.10.1 255.255.255.0\nR1(config-if)# ip address 192.168.10.1 255.255.255.0 secondary\n\nR1# show ip interface gi0/0 | include address\n  Internet address is 10.10.10.1/24\n  Secondary address: 192.168.10.1/24\n\nWhat it means:\n- Adds an additional IP to the interface — secondary subnet\n  shares the physical port.\n- Common during migrations: dual-IP the interface during\n  cutover, then remove the old one.\n- Routing protocols typically advertise secondary subnets just\n  like primary."
           },
           {
             "cmd": "address-family afi safi",
             "desc": "Initialize Specific Address Family (AFI/SAFI). — Examples: `ipv4 unicast`",
             "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt task run modulename::taskfilename",
-            "desc": "Invoke a Puppet Bolt Task from CLI. — Executes remote tasks cleanly without leaving residual files on devices.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "bolt task show modulename::taskfilename",
-            "desc": "Display Metadata/Documentation for a Bolt Task. — Shows how to run the task",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# address-family ipv4 unicast\nR1(config-router-af)# neighbor 1.2.3.4 activate\nR1(config-router-af)# neighbor 1.2.3.4 prefix-list ALLOW_FROM_ISP in\n\nWhat it means:\n- Generic address-family syntax. AFI = Address Family Identifier\n  (ipv4, ipv6, vpnv4, vpnv6, l2vpn). SAFI = Sub-AFI (unicast,\n  multicast, evpn, mvpn).\n- Used inside BGP, OSPF, IS-IS, MP-BGP for protocol-specific\n  config.\n- Examples: \"address-family ipv4 unicast\", \"address-family vpnv4\",\n  \"address-family l2vpn evpn\"."
           },
           {
             "cmd": "login local",
             "desc": "Enable username and password authentication on vty lines. — Uses locally defined usernames/passwords for VTY line access control.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# line vty 0 4\nR1(config-line)# login local\nR1(config-line)# transport input ssh\n\nR1(config)# username admin secret 9 $9$abcd...\n\nWhat it means:\n- Authenticates VTY logins against the local username database\n  (created with \"username X secret Y\").\n- Compare with \"login authentication AUTH_LIST\" which uses an\n  AAA method-list (RADIUS / TACACS+).\n- \"login local\" is the simpler, AAA-free option for small\n  environments."
           },
           {
             "cmd": "privilege {mode} level {level}",
             "desc": "Change command privilege levels. — Assigns specific commands to different privilege levels (0-15).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# privilege exec level 5 show\nR1(config)# privilege exec level 5 ping\nR1(config)# privilege exec level 5 traceroute\nR1(config)# username operator privilege 5 secret OperatorSecret\n\n# operator now in priv-5 can only run show / ping / traceroute.\n\nWhat it means:\n- Customises which commands a privilege level can run.\n- Default: 0 (logout), 1 (user mode), 15 (privileged mode). Levels\n  2-14 customisable.\n- Use to provide read-only operator accounts without going to\n  full TACACS+ command authorisation."
           },
           {
             "cmd": "hostname {hostname name}",
             "desc": "Enable SSHv2 on a router. — Sets the device hostname which is required for SSH identification.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Router(config)# hostname R1-CORE-01\n\nR1-CORE-01(config)#\n\nWhat it means:\n- Sets the device hostname. Visible in CLI prompt, syslog,\n  CDP/LLDP, SNMP sysName.\n- Best practice: descriptive name that includes site +\n  role + sequence.\n- Avoid spaces, dots — keep it CLI-friendly."
           },
           {
             "cmd": "ip domain-name {domain-name}",
             "desc": "Enable SSHv2 on a router. — Sets the domain name which generates RSA keys for SSH encryption.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip domain-name corp.local\n\nR1# show running-config | include domain-name\nip domain-name corp.local\n\nWhat it means:\n- Default DNS domain. Used by:\n  - Crypto key generation (creates RSA keys named\n    R1.corp.local — required for SSH).\n  - DNS lookups (suffixes short hostnames).\n- Required for SSH to work — won't generate RSA keys without\n  a domain name."
           },
           {
             "cmd": "exec-timeout {minutes} {seconds}",
             "desc": "Disconnect terminal line users that are idle. — Automatically disconnects inactive sessions to save resources and improve security.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# line vty 0 4\nR1(config-line)# exec-timeout 10 0\n\n# After 10 minutes idle:\nR1#\n[connection closed by foreign host]\n\nWhat it means:\n- Auto-disconnect timer for idle CLI sessions.\n- \"10 0\" = 10 minutes 0 seconds. \"0 0\" = never timeout (DANGEROUS,\n  forgotten sessions stay open).\n- Best practice: 10-15 min on production devices to clear\n  abandoned sessions."
           },
           {
             "cmd": "zone-member security zone-name",
             "desc": "Apply a ZBFW security zone to an interface. — Associates the interface with a Zone-Based Firewall security zone.",
             "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "cmd.run",
-            "desc": "Execute ad hoc Linux CLI command across SaltStack managed nodes. — Runs arbitrary shell commands on remote systems and returns output.",
-            "type": "config",
-            "flagged": false
-          },
-          {
-            "cmd": "network.interfaces",
-            "desc": "Gather IP/MAC/interface data from SaltStack managed nodes. — Provides structured data including MAC addresses",
-            "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# zone security INSIDE\nR1(config-sec-zone)# exit\nR1(config)# interface gi0/0\nR1(config-if)# zone-member security INSIDE\n\nR1# show zone-pair security\nZone-pair name: INSIDE-OUTSIDE\n   Source-Zone INSIDE Destination-Zone OUTSIDE\n\nWhat it means:\n- Zone-Based Firewall (ZBFW) interface assignment.\n- An interface MUST be in a zone for ZBFW to inspect its traffic.\n- Zone-pairs (with policy-maps) define what's allowed between\n  named zones."
           },
           {
             "cmd": "ipv6 unicast-routing",
             "desc": "Enable IPv6 Routing on the Router. — Required before configuring IPv6 static routes or protocols.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ipv6 unicast-routing\n\nR1# show ipv6 protocols | head -5\n*** IPv6 Routing is Enabled ***\n\nWhat it means:\n- Globally enables IPv6 routing — required before IPv6 packets\n  are forwarded between interfaces.\n- Without this, the router can have IPv6 addresses but won't\n  route IPv6 traffic.\n- Compare with \"ip routing\" (the IPv4 equivalent, on by default)."
           },
           {
             "cmd": "auto-cost reference-bandwidth bandwidth-in-mbps",
             "desc": "Change dynamic cost calculation base. — Adjusts the reference bandwidth (default 100 Mbps) for more granular metric scaling on high-speed links.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# auto-cost reference-bandwidth 10000\n\nR1# show ip ospf | include Reference\n Reference bandwidth unit is 10000 mbps\n\nWhat it means:\n- OSPF auto-cost reference bandwidth. Default = 100 Mbps.\n- Modern networks need higher: 1000 (1 Gbps), 10000 (10 Gbps),\n  100000 (100 Gbps) so distinct interface speeds get distinct\n  costs.\n- MUST match across the entire OSPF domain — different reference\n  values produce inconsistent path selection."
           },
           {
             "cmd": "router ospfv3 [process-id]",
             "desc": "Initialize OSPFv3 process. — Sets the OSPFv3 process ID for IPv6/IPv4 support.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router ospfv3 1\nR1(config-router)# router-id 1.1.1.1\nR1(config-router)# address-family ipv6 unicast\n\nR1# show running-config | section ospfv3\nrouter ospfv3 1\n router-id 1.1.1.1\n !\n address-family ipv6 unicast\n\nWhat it means:\n- Newer unified OSPFv3 process — handles both IPv4 + IPv6 under\n  a single process (vs separate \"router ospf\" + \"ipv6 router\n  ospf\").\n- Each address-family is configured separately within the same\n  process.\n- Most IOS XE platforms; not all classic IOS."
           },
           {
             "cmd": "area area-id range prefix/prefix-length",
             "desc": "IPv6 summarization (under address-family). — Summarizes IPv6 prefixes at ABRs to reduce LSA flooding.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R-ABR(config-router)# area 1 range 10.0.0.0 255.0.0.0\n\nR-other-area# show ip route ospf\nO IA 10.0.0.0/8 [110/11] via 192.168.1.1, Gi0/0   ← single summary\n\nWhat it means:\n- Inter-area route summarisation at the ABR. Aggregates many\n  intra-area /24s into a single Type-3 LSA.\n- Reduces the size of the LSDB in other areas.\n- A Null0 discard route is auto-installed locally to prevent\n  black-hole loops."
           },
           {
             "cmd": "ospfv3 network {point-to-point | broadcast}",
             "desc": "Set OSPFv3 network type. — Configures the medium type for OSPFv3 interfaces.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-if)# ospfv3 network point-to-point\n\nR1# show ospfv3 interface gi0/0 | include Network\n  Network Type POINT_TO_POINT, Cost: 1\n\nWhat it means:\n- Configures OSPFv3 network type on the interface.\n- point-to-point : skip DR/BDR election (faster convergence on\n  back-to-back router links).\n- broadcast (default on Ethernet) : DR/BDR election runs.\n- Both ends must agree."
           },
           {
             "cmd": "show ospfv3 interface [brief]",
             "desc": "View OSPFv3 interfaces. — Displays address families",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ospfv3 interface brief\n\nInterface  PID  Area      AF   Cost  State Nbrs F/C\nGi0/0      1    0         IPv6 1     P2P   1/1\nLo0        1    0         IPv6 1     LOOP  0/0\n\nWhat it means:\n- OSPFv3 interface summary (brief) or detail (without \"brief\").\n- \"AF: IPv6\" — confirms address family for each interface.\n- \"P2P\" / \"BDR\" / \"LOOP\" : current OSPF interface state.\n- \"Nbrs F/C\" : neighbours in FULL state / total — should match\n  for healthy operation."
           },
           {
             "cmd": "show ospfv3 ipv6 neighbor",
             "desc": "View OSPFv3 IPv6 neighbors. — Shows IPv6-specific neighbor adjacency details.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ospfv3 ipv6 neighbor\n\nNeighbor ID Pri State          Dead Time  Interface ID Interface\n2.2.2.2     1   FULL/-         00:00:34   3            Gi0/0\n\nWhat it means:\n- OSPFv3 IPv6 neighbour table. Adjacencies form over IPv6\n  link-local addresses (FE80::/10).\n- \"FULL\" = healthy. Should be the steady-state.\n- \"Pri\" = OSPF priority for DR/BDR election (only relevant on\n  broadcast interfaces)."
           },
           {
             "cmd": "match ip address {acl-number | acl-name}",
             "desc": "Conditional match on ACL. — Selects prefixes based on network selection criteria defined in an ACL.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# match ip address 100\n# Or:\nR1(config-route-map)# match ip address ALLOW_PREFIXES\n\nWhat it means:\n- Inside route-map, matches IPv4 source/destination based on the\n  named ACL.\n- For BGP, prefer \"match ip address prefix-list\" (more efficient).\n- Multiple match-ip-address clauses form OR; combining with other\n  match types AND."
           },
           {
             "cmd": "set as-path prepend {as-number-pattern | last-as}",
             "desc": "Modify AS Path length. — Prepends ASN to make a path less desirable for inbound traffic engineering.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set as-path prepend 65001 65001 65001\n\n# Now AS_PATH advertised to peers includes the prepend:\nR1# show ip bgp 10.0.0.0 | include AS Path\n  AS_PATH: 65001 65001 65001 65001 65002 (4 hops, was 1)\n\nWhat it means:\n- Adds the local ASN to the AS_PATH N times → makes the route\n  appear LESS attractive (longer AS_PATH) to upstream peers.\n- Common: prepend 3x to influence BGP path selection without\n  using local-pref / MED (which only work intra-AS).\n- \"last-as N\" : prepend the last AS in the path N times (rare\n  use case)."
           },
           {
             "cmd": "set local-preference 0–4294967295",
             "desc": "Modify Local Preference. — Sets a locally significant preference value for route selection.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set local-preference 200\n\n# Routes through this peer now have local-pref 200 (default 100):\nR1# show ip bgp 10.0.0.0\n... LocPrf 200 ... best path\n\nWhat it means:\n- Sets BGP local-preference on routes (only carried within the\n  local AS).\n- Higher = preferred. Default 100.\n- Used to influence which iBGP exit point is preferred for a\n  prefix — e.g. cheap-bandwidth peer gets local-pref 200, others 100."
           },
           {
             "cmd": "set tag 0–4294967295",
             "desc": "Set Tag Value. — Assigns a numeric tag (0 to 4294967295) for identification by other routers.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set tag 100\n\n# Routes redistributed into OSPF carry this tag:\nR-other# show ip route ospf | include 10.99\nO E2 10.99.0.0/24 [110/20] tag 100\n\nWhat it means:\n- Stamps a 32-bit \"tag\" onto routes when redistributing or\n  matching.\n- Used to prevent redistribution loops between protocols:\n  \"redistribute X route-map TAG_OUT\" and \"redistribute Y\n  route-map BLOCK_TAGGED\" with match-tag.\n- Carried in OSPF Type-5 / EIGRP external / ISIS attributes."
           },
           {
             "cmd": "neighbor ip-address filter-list acl-number {in|out}",
             "desc": "Apply AS Path ACL Filtering. — Filters routes based on the current AS path values (regex).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip as-path access-list 10 deny _65003_\nR1(config)# ip as-path access-list 10 permit .*\nR1(config-router)# neighbor 10.10.10.2 filter-list 10 in\n\nWhat it means:\n- Filters BGP routes based on AS_PATH regex.\n- \"_65003_\" : matches if AS 65003 appears anywhere in the path\n  (transit through that AS denied).\n- \".*\" : permits everything else.\n- More efficient than prefix-lists when the filter criterion is\n  \"what ASes the route traversed\"."
           },
           {
             "cmd": "ip community-list ...",
             "desc": "Define Community List. — Creates a list to match communities conditionally (standard/expanded).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip community-list 10 permit 65001:100\nR1(config)# ip community-list expanded EXPAND permit \"65001:..*\"\n\nR1(config-route-map)# match community 10\nR1(config-route-map)# set local-preference 200\n\nWhat it means:\n- BGP community filtering. Standard (1-99) or expanded (100-500).\n- Standard : exact community values.\n- Expanded : regex patterns (e.g. \"65001:100..199\" via regex).\n- Used for tag-based routing policy: customers tag prefixes with\n  communities, ISP route-map matches and applies treatment."
           },
           {
             "cmd": "match any",
             "desc": "Match Any Packet. — Implicitly matches all packets if no other match commands are specified.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# class-map match-any DEFAULT\nR1(config-cmap)# match any\n\nWhat it means:\n- QoS class-map \"match all packets\" — useful as the catch-all\n  in a policy-map.\n- Inside a route-map, \"match any\" doesn't exist (use no match\n  clause — that's an implicit \"match anything\")."
           },
           {
             "cmd": "match [ip] precedence precedence-value-list",
             "desc": "Match IP Precedence. — Matches IP Precedence values (0-7) for IPv4/IPv6 packets.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match ip precedence 5 6 7\n\nWhat it means:\n- Matches IP Precedence values (legacy 3-bit field, predecessor\n  to DSCP).\n- Range 0-7. Common: 5 = critical, 6 = internet, 7 = network.\n- Modern networks use DSCP; precedence retained for backward\n  compatibility with legacy gear."
           },
           {
             "cmd": "match ip rtp starting-port-number port-number-range",
             "desc": "Match RTP Ports. — Matches Real-Time Protocol ports within a specified range.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match ip rtp 16384 16383\n\n# Matches RTP traffic in the 16384-32767 port range — typical\n# voice / video bearer port range.\n\nWhat it means:\n- Specialised match for RTP (Real-time Transport Protocol)\n  traffic with even-port-only filtering (RTCP uses odd ports).\n- Useful for voice/video QoS classification when DSCP marking\n  isn't trustworthy.\n- Modern networks usually classify by DSCP instead."
           },
           {
             "cmd": "match protocol protocol-name",
             "desc": "Match NBAR Protocol. — Uses Network-Based Application Recognition to match application names.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-cmap)# match protocol http\nR1(config-cmap)# match protocol citrix\n\nR1# show class-map | include http\n   Match protocol http\n\nWhat it means:\n- NBAR (Network-Based Application Recognition) — application-\n  layer protocol matching.\n- Recognises 1000+ applications by signature (HTTP, BitTorrent,\n  Skype, Citrix, etc.).\n- More CPU-intensive than DSCP/port matching but more accurate\n  for app-aware QoS."
           },
           {
             "cmd": "set [ip] precedence ip-precedence-value",
             "desc": "Set IP Precedence Value. — Modifies the IP Precedence field for IPv4/IPv6 packets.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-pmap-c)# set ip precedence 5\n\nWhat it means:\n- Marks IP Precedence (3-bit field). Range 0-7.\n- Legacy QoS marking — predecessor to DSCP.\n- Most modern networks use \"set dscp\" instead. Precedence\n  retained for backward-compat with legacy gear."
           },
           {
             "cmd": "show switch",
@@ -16825,7 +16731,8 @@
             "cmd": "show arp",
             "desc": "ARP cache: IP to MAC address mappings and age",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show arp\n\nProtocol  Address      Age  Hardware Addr     Type   Interface\nInternet  10.10.10.1   -    0050.5612.3456    ARPA   Vlan10  ← own\nInternet  10.10.10.50  142  001a.1e11.2233    ARPA   Vlan10\nInternet  10.10.10.51  24   001a.1e44.5566    ARPA   Vlan10\n\nWhat it means:\n- Equivalent to \"show ip arp\" — IPv4 ARP table.\n- Age \"-\" = own address (router-owned IP).\n- Default ARP timeout is 14400 seconds (4 hours) — stale entries\n  age out automatically.\n- For IPv6, use \"show ipv6 neighbors\"."
           },
           {
             "cmd": "show mac address-table",
@@ -16852,13 +16759,15 @@
             "cmd": "show spanning-tree vlan <id>",
             "desc": "STP state for a specific VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show spanning-tree vlan 10\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     0050.5612.3456\n             Cost        0\n             Port        0 (-)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             this bridge is the root\n\n  Bridge ID  Priority    24586  (priority 24576 sys-id-ext 10)\n             Address     0050.5612.3456\n\nInterface          Role Sts Cost      Prio.Nbr Type\n------------------ ---- --- --------- -------- --------------------------------\nGi1/0/1            Desg FWD 4         128.1    P2p Edge\nGi1/0/24           Desg FWD 4         128.24   P2p\n\nWhat it means:\n- Per-VLAN STP detail. Confirms root identity, local bridge ID,\n  per-port roles + states.\n- \"this bridge is the root\" : local switch is root for VLAN 10.\n- \"Role Desg\" : designated (forwards segment traffic)."
           },
           {
             "cmd": "show cdp neighbors",
             "desc": "Cisco Discovery Protocol neighbours summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show cdp neighbors\n\nCapability Codes: R - Router, T - Trans Bridge, S - Switch, I - IGMP\n\nDevice ID         Local Intrfce  Holdtme  Capability  Platform     Port ID\nSwitch-Core-01    Gig 0/0/0      178       R S         WS-C9300    Gig 1/0/24\nAP-Lobby-01       Gig 0/0/1      168       I           AP1242      Eth 0\nR-Branch-02       Gig 0/0/2      152       R S         ISR4351     Gig 0/0/0\n\nWhat it means:\n- CDP (Cisco Discovery Protocol) — Cisco-proprietary L2 neighbor\n  discovery.\n- Shows every directly-connected Cisco device + its model + the\n  remote port.\n- Critical for \"where am I plugged in?\" / \"who's on this port?\"\n  troubleshooting.\n- Disable on edge ports facing untrusted devices: \"no cdp run\"\n  globally or \"no cdp enable\" per-interface."
           },
           {
             "cmd": "show cdp neighbors detail",
@@ -16871,7 +16780,8 @@
             "cmd": "show lldp neighbors",
             "desc": "LLDP neighbours summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show lldp neighbors\n\nCapability codes: R = Router, B = Bridge, T = Telephone\n\nDevice ID            Local Intf     Hold-time  Capability     Port ID\nSwitch-Core-01       Gi0/0          120        B,R           GigabitEthernet1/0/24\nAP-Lobby-01          Gi0/1          120        B,T           Eth0\nPC-Lab-12            Gi0/3          120        B             eth0\n\nWhat it means:\n- LLDP (IEEE 802.1AB) — vendor-neutral neighbor discovery.\n- Works across Cisco / Juniper / Arista / hosts (Linux-LLDP,\n  Windows LLDP support).\n- Slightly less detail than CDP but interoperates everywhere.\n- Enable globally with \"lldp run\"."
           },
           {
             "cmd": "show etherchannel summary",
@@ -16898,13 +16808,15 @@
             "cmd": "show processes memory",
             "desc": "Memory utilisation sorted by process",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show processes memory\n\nTotal: 1073741824, Used: 245678901, Free: 828062923\nLowest: 745678901, Largest: 123456789\n\nPID  TTY   Allocated   Freed       Holding   Process\n142  0     1245678     102341      45012345   IP Input\n245  0     458901      12003       8902341    BGP Router\n1    0     234561      4012        7012345    Init\n\nWhat it means:\n- Per-process memory accounting. Same data as \"sorted\" but\n  unsorted by default.\n- \"Total / Used / Free\" : process memory pool aggregate.\n- \"Lowest\" : lowest-ever Free since boot — water-mark.\n- For process-by-holding view, use \"show processes memory sorted\"."
           },
           {
             "cmd": "show platform tcam utilization",
             "desc": "Shows TCAM (hardware table) utilisation for ACLs, routes, MACs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Switch# show platform hardware fed switch active fwd-asic resource tcam utilization\n\nResource              Total       Used        %Used   Avail\nACL TCAM (input)      1024        342         33%     682\nACL TCAM (output)     1024        145         14%     879\nQoS TCAM              512         88          17%     424\nNetFlow Sampler       64          12          18%     52\nMac TCAM              16384       2042        12%     14342\n\nWhat it means:\n- TCAM utilisation per resource class on Catalyst.\n- ACL TCAM is most-watched on edge platforms — exhaustion drops\n  ACLs to software (slow-path).\n- \"Avail\" running low (>80% used) = simplify ACLs / QoS policies\n  or scale to a larger platform."
           }
         ],
         "VLANs": [
@@ -20472,7 +20384,8 @@
             "cmd": "no synchronization",
             "desc": "Disable IGP-sync requirement (default off in modern IOS).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# no synchronization\n\nR1# show ip protocols | include sync\n  IGP synchronization is disabled\n\nWhat it means:\n- Legacy command that disabled the requirement that BGP-learned\n  routes be in the IGP RIB before being advertised.\n- Default is \"no synchronization\" since IOS 12.2(8)T — most\n  modern networks don't have IGP/iBGP path mismatches anyway.\n- Kept for backward compatibility; rarely needs explicit config."
           },
           {
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
@@ -20520,7 +20433,8 @@
             "cmd": "show ip bgp neighbors 1.2.3.4 received-routes",
             "desc": "Routes we received from this peer (requires soft-reconfig inbound).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp neighbors 10.10.10.2 received-routes\n\nBGP table version is 142, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i internal\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 198.51.100.0/24  10.10.10.2     0             0      65002 i\n*> 203.0.113.0/24   10.10.10.2     0             0      65002 65003 i\n*> 0.0.0.0/0        10.10.10.2     0             0      65002 ?\n\nTotal number of prefixes 3\n\nWhat it means:\n- Routes received from the named peer BEFORE inbound policy.\n- Requires \"neighbor X soft-reconfiguration inbound\" pre-IOS 15\n  (newer versions use route-refresh capability).\n- Compare with \"advertised-routes\" (what we send to the peer)."
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 routes",
@@ -20547,19 +20461,22 @@
             "cmd": "show ip bgp regexp _65000_",
             "desc": "Filter table by AS-path regex (anything that traverses AS 65000).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp regexp _65000_\n\nBGP table version is 142, local router ID is 1.1.1.1\n\nStatus codes: s suppressed, d damped, h history, * valid, > best, i internal\nOrigin codes: i - IGP, e - EGP, ? - incomplete\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 198.51.100.0/24  10.10.10.2     0             0      65002 65000 i\n*> 203.0.113.0/24   10.10.10.2     0             0      65000 65003 i\n\nTotal number of prefixes 2\n\nWhat it means:\n- Filters BGP table by AS_PATH regex.\n- \"_65000_\" : matches if AS 65000 appears anywhere in path\n  (underscores match path separators).\n- Useful queries: \"_65003$\" (originated by 65003), \"^65002_\"\n  (immediate next-AS is 65002), \"_65003_65004_\" (transits both)."
           },
           {
             "cmd": "show ip bgp paths",
             "desc": "AS-path attribute database stats.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip bgp paths\n\nAddress      Hash Refcount Metric Path\n0x12345678   42   12345    0      65001 65002 65003 i\n0x87654321   88   8901     0      65001 65002 i\n0xABCDEF01   142  4502     0      i  ← local origin\n\nWhat it means:\n- AS_PATH cache. Same path used by multiple prefixes only stored\n  once.\n- \"Refcount\" : how many prefixes use this path. High refcount =\n  most prefixes share that AS_PATH.\n- Useful for memory analysis on large-table BGP routers."
           },
           {
             "cmd": "clear ip bgp 1.2.3.4",
             "desc": "Hard reset of one peer (tears down TCP). Use sparingly.",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "R1# clear ip bgp 10.10.10.2\n\n%BGP-5-ADJCHANGE: neighbor 10.10.10.2 Down User reset\n%BGP-5-ADJCHANGE: neighbor 10.10.10.2 Up\n\nWhat it means:\n- HARD reset of a BGP session — TCP closed, all state lost,\n  full re-negotiation + re-exchange of routes.\n- DISRUPTIVE: traffic via this peer drops while the session\n  rebuilds (a few seconds for healthy peers).\n- For non-disruptive policy refresh, use \"soft in\" or \"soft out\"."
           },
           {
             "cmd": "clear ip bgp * soft",
@@ -20572,13 +20489,15 @@
             "cmd": "clear ip bgp 1.2.3.4 soft in",
             "desc": "Soft inbound refresh (re-applies inbound policy from cache).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear ip bgp 10.10.10.2 soft in\n\n# No session reset — peer re-sends all routes via Route Refresh.\n\nR1# show ip bgp summary | include 10.10.10.2\n10.10.10.2  4   65002    14   12   142  0  0  00:08:14   142\n\nWhat it means:\n- Soft inbound reset — no TCP teardown. Peer re-advertises all\n  routes, allowing changed inbound policy to take effect.\n- Requires Route-Refresh capability (RFC 2918) — enabled by\n  default on modern IOS.\n- Fallback: \"neighbor X soft-reconfiguration inbound\" (memory-\n  expensive but works without Route-Refresh)."
           },
           {
             "cmd": "clear ip bgp 1.2.3.4 soft out",
             "desc": "Re-send our outbound advertisements with current policy.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear ip bgp 10.10.10.2 soft out\n\n# Local router re-runs outbound policy and re-advertises routes\n# to the peer.\n\nWhat it means:\n- Soft outbound reset — applies changed outbound policy without\n  resetting the session.\n- Always supported (doesn't require any capability negotiation).\n- Use after modifying \"neighbor X route-map ... out\"."
           },
           {
             "cmd": "neighbor 1.2.3.4 update-source Loopback0",
@@ -20619,7 +20538,8 @@
             "cmd": "neighbor 1.2.3.4 send-community both",
             "desc": "Send both standard and extended communities to the peer.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 send-community both\n\nR1# show ip bgp neighbors 10.10.10.2 | include community\n  Community attribute sent to this neighbor (both)\n\nWhat it means:\n- Sends BGP community attributes to the peer.\n- \"both\" : standard + extended communities. \"standard\" /\n  \"extended\" / \"large\" for specific types.\n- Default is NOT to send communities — must enable explicitly.\n- Required when policy on the receiving side keys off communities."
           },
           {
             "cmd": "neighbor 1.2.3.4 remove-private-as",
@@ -20646,7 +20566,8 @@
             "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
             "desc": "Apply outbound route-map.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 route-map TO-ISP out\n\nR1# show ip bgp neighbors 10.10.10.2 | include policy\n  Outgoing update prefix filter list is TO-ISP\n\nWhat it means:\n- Applies a route-map to outbound BGP updates to the peer.\n- The route-map can permit/deny prefixes AND modify attributes\n  (set local-preference, AS-path prepend, communities).\n- Common pattern: \"TO-ISP\" prepends 3x for backup-link."
           },
           {
             "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
@@ -20659,7 +20580,8 @@
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
             "desc": "Inbound AS-path filter using AS-path access-list 100.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip as-path access-list 100 deny _65003$\nR1(config)# ip as-path access-list 100 permit .*\n\nR1(config-router)# neighbor 10.10.10.2 filter-list 100 in\n\nWhat it means:\n- Filters routes from peer based on AS-path regex.\n- This example denies routes originated by AS 65003 (as-path\n  ends with 65003).\n- More efficient than prefix-lists when filtering by transit/\n  originator AS rather than specific prefixes."
           },
           {
             "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
@@ -20679,19 +20601,22 @@
             "cmd": "route-map TO-ISP permit 10\n match ip address prefix-list MY-NETS\n set as-path prepend 65001 65001 65001",
             "desc": "Outbound prepend example for traffic-engineering.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip prefix-list MY-NETS permit 10.0.0.0/16\n\nR1(config)# route-map TO-ISP permit 10\nR1(config-route-map)# match ip address prefix-list MY-NETS\nR1(config-route-map)# set as-path prepend 65001 65001 65001\n\nR1(config)# router bgp 65001\nR1(config-router)# neighbor 1.2.3.4 route-map TO-ISP out\n\n# Prefixes in MY-NETS now advertised with AS_PATH \"65001 65001\n# 65001 65001 ...\" — making them less preferred upstream.\n\nWhat it means:\n- Outbound policy: only advertise MY-NETS prefixes, with 3x\n  prepended local AS.\n- Common use: backup uplink — prepend to discourage upstream\n  ISPs from using this link as primary."
           },
           {
             "cmd": "route-map FROM-ISP permit 10\n set local-preference 200",
             "desc": "Inbound LP bump to prefer this peer.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# route-map FROM-ISP permit 10\nR1(config-route-map)# set local-preference 200\n\nR1(config-router)# neighbor 1.2.3.4 route-map FROM-ISP in\n\n# Routes from 1.2.3.4 now have local-pref 200 (default 100).\n\nR1# show ip bgp 0.0.0.0 | include LocPrf\n... LocPrf 200 ... best path\n\nWhat it means:\n- Inbound policy : raise local-pref on routes from the preferred\n  ISP.\n- LocPrf 200 wins over LocPrf 100 in BGP path selection — this\n  ISP becomes the primary egress.\n- Common dual-ISP pattern: primary gets LocPrf 200, backup\n  default 100."
           },
           {
             "cmd": "route-map TO-CUSTOMER permit 10\n set community 65001:100 65001:200",
             "desc": "Tag advertised routes with communities.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# route-map TO-CUSTOMER permit 10\nR1(config-route-map)# set community 65001:100 65001:200\n\nR1(config-router)# neighbor 10.10.10.5 route-map TO-CUSTOMER out\nR1(config-router)# neighbor 10.10.10.5 send-community both\n\n# Customer's BGP now sees:\n$ show ip bgp 10.0.0.0 | include Community\nCommunity: 65001:100 65001:200\n\nWhat it means:\n- Tags advertised routes with BGP communities — typically used\n  by ISPs to signal route classification (e.g. 65001:100 =\n  customer route, 65001:200 = peer route).\n- Customer's policy then matches on these communities to\n  apply local treatment (set local-pref, filter, etc.)."
           },
           {
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 summary-only",
@@ -20704,13 +20629,15 @@
             "cmd": "aggregate-address 10.0.0.0 255.0.0.0 as-set",
             "desc": "Aggregate carrying the AS-SET attribute (loop-prevention safe).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# aggregate-address 10.0.0.0 255.0.0.0 as-set summary-only\n\nR1# show ip bgp | include 10.0.0.0\n*> 10.0.0.0/8       0.0.0.0     0     32768   {65002,65003} ?\n\nWhat it means:\n- Generates a summary route 10.0.0.0/8 from contributing\n  more-specific BGP routes.\n- \"as-set\" : creates an AS_SET (the {65002,65003}) so loop-\n  detection still works at AS-boundaries.\n- \"summary-only\" : suppresses the more-specifics — only the\n  summary leaves this router."
           },
           {
             "cmd": "redistribute connected route-map CONN-INTO-BGP",
             "desc": "Filtered redistribution from connected.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# route-map CONN-INTO-BGP permit 10\nR1(config-route-map)# match interface Loopback0\n\nR1(config-router)# redistribute connected route-map CONN-INTO-BGP\n\nR1# show ip bgp | include 1.1.1.1\n*> 1.1.1.1/32      0.0.0.0     0     32768   ?  ← only loopback\n\nWhat it means:\n- Redistributes ONLY interfaces matching the route-map (here\n  Loopback0).\n- Cleaner than redistributing all connected (which would leak\n  every transit subnet into BGP).\n- Standard pattern for advertising router IDs into iBGP."
           },
           {
             "cmd": "neighbor 1.2.3.4 route-reflector-client",
@@ -20730,25 +20657,29 @@
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
             "desc": "Peer-group reduces config and update-generation overhead for many similar peers.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor RR-CLIENTS peer-group\nR1(config-router)# neighbor RR-CLIENTS remote-as 65001\nR1(config-router)# neighbor RR-CLIENTS update-source Loopback0\nR1(config-router)# neighbor RR-CLIENTS route-reflector-client\nR1(config-router)# neighbor 2.2.2.2 peer-group RR-CLIENTS\nR1(config-router)# neighbor 3.3.3.3 peer-group RR-CLIENTS\nR1(config-router)# neighbor 4.4.4.4 peer-group RR-CLIENTS\n\nWhat it means:\n- Peer-group : configure once, apply to many neighbours. Saves\n  config volume on RRs with 100s of clients.\n- \"route-reflector-client\" : marks these peers as RR clients.\n- Inbound updates from RR-clients are reflected to other clients,\n  eliminating the iBGP full-mesh requirement.\n- \"update-source Loopback0\" : peer over the loopback for\n  resilience to interface flaps."
           },
           {
             "cmd": "maximum-paths 8",
             "desc": "Enable 8-way eBGP ECMP.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# maximum-paths 8\n\nR1# show ip bgp 10.0.0.0\n... 8 available, best #1\n   * 10.10.10.2 ... best\n   * 10.10.10.3 ...\n   * 10.10.10.4 ...\n   ... (5 more)\n\nWhat it means:\n- ECMP for eBGP — install up to 8 equal-cost paths to the same\n  prefix.\n- Default 1 (only the best path installed). Range 1-32 on most\n  modern platforms.\n- Routes must have identical: AS_PATH length, weight, local-pref,\n  origin, MED. iBGP ECMP requires \"maximum-paths ibgp\" too."
           },
           {
             "cmd": "maximum-paths ibgp 8",
             "desc": "Enable 8-way iBGP ECMP.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# maximum-paths ibgp 8\n\nR1# show ip bgp 10.0.0.0\n... 4 iBGP paths available\n   * 1.1.1.1 ... best\n   * 2.2.2.2 ...\n   * 3.3.3.3 ...\n   * 4.4.4.4 ...\n\nWhat it means:\n- iBGP ECMP — install multiple iBGP paths to the same prefix.\n- Stricter requirements than eBGP ECMP: all attributes must match\n  exactly, AND IGP cost to next-hop must be equal.\n- Often the limiting factor in iBGP ECMP is identical IGP cost."
           },
           {
             "cmd": "bgp bestpath as-path multipath-relax",
             "desc": "Allow multipath even when AS-paths differ but length matches (multi-homing).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# bgp bestpath as-path multipath-relax\n\nR1# show ip bgp 10.0.0.0 | include multipath\n   8 paths available, best #1, multipath relax\n\nWhat it means:\n- Relaxes the strict \"same AS_PATH\" requirement for ECMP — paths\n  with different but equal-LENGTH AS_PATHs become eligible.\n- Common in multi-homed scenarios where two ISPs offer paths of\n  equal length but different transit ASes.\n- Required to actually load-balance across multiple eBGP peers\n  in most enterprise dual-home designs."
           },
           {
             "cmd": "bgp graceful-restart",
@@ -20761,13 +20692,15 @@
             "cmd": "bgp dampening",
             "desc": "Enable route-flap dampening (mostly avoided in modern Internet operations).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# bgp dampening 15 750 2000 60\n\nR1# show ip bgp dampening parameters\n dampening 15 (half-life) 750 (re-use) 2000 (suppress-limit) 60 (max-suppress-time)\n\nWhat it means:\n- Penalises flapping prefixes — accumulates penalty on each\n  withdraw/announce cycle. Suppresses if penalty > 2000.\n- Half-life 15 min : penalty halves every 15 min.\n- Re-use 750 : un-suppress when penalty drops below 750.\n- Modern internet best-practice is to NOT use dampening for\n  most ISPs (RIPE-378) — penalises legitimate route changes."
           },
           {
             "cmd": "neighbor 1.2.3.4 fall-over bfd",
             "desc": "Bind BFD for sub-second BGP failure detection.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 fall-over bfd\n\nR1(config-if)# bfd interval 50 min_rx 50 multiplier 3\n\n# When BFD detects link loss:\n%BGP-5-ADJCHANGE: neighbor 10.10.10.2 Down BFD adjacency down\n\nWhat it means:\n- BFD-triggered BGP failover. Without BFD, BGP relies on its\n  hold-timer (180 sec default) to detect peer loss.\n- BFD detects loss in < 200 ms with 50/3 timers.\n- Required for sub-second BGP convergence in failure scenarios."
           },
           {
             "cmd": "address-family ipv6 unicast",
@@ -20780,7 +20713,8 @@
             "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
             "desc": "IPv6 BGP peering — activate is mandatory in MP-BGP.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 2001:db8::1 remote-as 65002\nR1(config-router)# address-family ipv6 unicast\nR1(config-router-af)# neighbor 2001:db8::1 activate\n\nR1# show bgp ipv6 unicast summary\nNeighbor        V    AS  MsgRcvd  MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n2001:DB8::1     4 65002      14       12      142    0    0 00:08:14  142\n\nWhat it means:\n- IPv6 BGP peer setup. ALWAYS need both:\n  1. \"neighbor X remote-as Y\" globally.\n  2. \"neighbor X activate\" inside ipv6 AF.\n- Default behaviour pre-IOS 12.4 was implicit activation; modern\n  IOS requires explicit \"activate\"."
           },
           {
             "cmd": "show bgp ipv6 unicast summary",
@@ -20793,55 +20727,64 @@
             "cmd": "show bgp ipv6 unicast",
             "desc": "IPv6 BGP table.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv6 unicast | head -10\n\nBGP table version is 14, local router ID is 1.1.1.1\nStatus codes: s suppressed, d damped, h history, * valid, > best, i internal\nOrigin codes: i - IGP, e - EGP, ? - incomplete\n\n   Network          Next Hop                Metric LocPrf Weight Path\n*> 2001:DB8::/32    2001:DB8::1               0             0      65002 i\n*> 2001:DB8:99::/48 2001:DB8::1               0             0      65002 65003 i\n\nWhat it means:\n- IPv6 BGP table. Same shape as IPv4 BGP, just IPv6 prefixes.\n- \"*>\" = valid + best.\n- Use after enabling IPv6 unicast AF and confirming neighbor is\n  Established."
           },
           {
             "cmd": "address-family vpnv4",
             "desc": "VPNv4 (MPLS-VPN) address-family.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# address-family vpnv4\nR1(config-router-af)# neighbor 1.1.1.1 activate\nR1(config-router-af)# neighbor 1.1.1.1 send-community extended\n\nWhat it means:\n- VPNv4 (RFC 4364) is the BGP address-family for MPLS-L3VPN.\n- Carries customer-VRF prefixes labelled with route-distinguishers\n  (RD) so prefixes from different VRFs are unique.\n- Required on PE routers to exchange VPNv4 routes.\n- Extended communities carry route-targets (RTs) — must enable\n  \"send-community extended\"."
           },
           {
             "cmd": "show bgp vpnv4 unicast all summary",
             "desc": "All VPNv4 peers across all VRFs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp vpnv4 unicast all summary\n\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 4502\nNumber of VRFs                : 3\nTotal number of prefixes received : 12,403\n\nNeighbor    V   AS  MsgRcvd MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n2.2.2.2     4 65001    14502    14492   4502   0    0 1d12h     12403\n\nWhat it means:\n- All VPNv4 peers + per-peer prefix counts.\n- \"Number of VRFs\" : how many customer VRFs are active.\n- \"PfxRcd 12403\" : VPNv4 prefixes received from this peer\n  (across ALL VRFs)."
           },
           {
             "cmd": "address-family ipv4 vrf TENANT-A\n redistribute connected\n redistribute static",
             "desc": "Per-VRF BGP address-family for L3VPN.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# address-family ipv4 vrf TENANT-A\nR1(config-router-af)# redistribute connected\nR1(config-router-af)# redistribute static\n\nR1# show bgp vpnv4 unicast vrf TENANT-A | head -5\nBGP table version is 142\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 10.99.0.0/24     0.0.0.0           0  32768       ?  ← VRF connected\n*> 192.168.99.0/24  10.99.0.1         0  32768       ?  ← VRF static\n\nWhat it means:\n- Redistribute customer VRF's connected and static routes into\n  VPNv4 BGP for advertisement to remote PEs.\n- Inside the VRF AF, \"redistribute\" affects only that VRF's RIB.\n- Common L3VPN PE config — exposes the customer's local routes\n  to other sites via MPLS-VPN."
           },
           {
             "cmd": "aggregate-address network subnet-mask [summary-only] [as-set]",
             "desc": "Configure Dynamic Route Summarization (Aggregation). — Reduces BGP table size/hides link flaps (`summary-only`). Preserves path history with `as-set`.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# aggregate-address 10.0.0.0 255.0.0.0 summary-only as-set\n\nR1# show ip bgp | include 10.0.0.0\n*> 10.0.0.0/8       0.0.0.0     0     32768   {65002,65003} ?\n\nWhat it means:\n- Generic aggregate-address syntax.\n- \"summary-only\" : don't advertise the more-specifics.\n- \"as-set\" : include AS_SET in AS_PATH for loop prevention at\n  remote ASes.\n- Suppresses prefix-list bloat in upstream tables."
           },
           {
             "cmd": "router bgp as-number",
             "desc": "Initialize the BGP Routing Process. — Sets the Autonomous System (AS) number for the local router.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# bgp router-id 1.1.1.1\n\nR1# show ip bgp summary | head -5\nBGP router identifier 1.1.1.1, local AS number 65001\n\nWhat it means:\n- Generic syntax. ASN range 1-4294967295 (32-bit since RFC 4893).\n- Private 16-bit range: 64512-65535.\n- Private 32-bit range: 4200000000-4294967294.\n- Only ONE BGP process per router (unlike OSPF / EIGRP)."
           },
           {
             "cmd": "bgp router-id router-id",
             "desc": "Statically Define the BGP Router ID (RID). — Ensures RID stability; best practice to assign a static IPv4 address.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# bgp router-id 1.1.1.1\n\nR1# show ip bgp summary | include router identifier\nBGP router identifier 1.1.1.1, local AS number 65001\n\nWhat it means:\n- Sets the BGP router-id (32-bit identity).\n- Without this, BGP picks the highest IP among loopbacks then\n  highest physical interface IP.\n- Always set manually — flapping interfaces shouldn't move the\n  router-id."
           },
           {
             "cmd": "no bgp default ipv4-unicast",
             "desc": "Disable Automatic IPv4 AFI Activation. — Standardizes behavior when mixing IPv4/IPv6 families or for cleaner CLI structure on IOS XE.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# no bgp default ipv4-unicast\n\n# Now adding a peer doesn't auto-activate IPv4 unicast:\nR1(config-router)# neighbor 10.10.10.2 remote-as 65002\nR1(config-router)# address-family ipv4 unicast\nR1(config-router-af)# neighbor 10.10.10.2 activate   ! must be explicit\n\nWhat it means:\n- Disables the default behaviour of auto-activating IPv4 unicast\n  for every new peer.\n- Best practice: keep BGP \"clean\" — peers must be explicitly\n  activated in the AFs they should participate in.\n- Critical in MP-BGP environments where some peers should be\n  IPv6-only or VPNv4-only."
           },
           {
             "cmd": "neighbor ip-address remote-as as-number",
             "desc": "Identify a BGP Neighbor and AS Number. — Defines peer relationship; correlates source IP of received packets to this entry.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 remote-as 65002\n\nR1# show ip bgp summary | head -7\nNeighbor       V    AS    MsgRcvd  MsgSent  TblVer InQ OutQ Up/Down  State/PfxRcd\n10.10.10.2     4   65002       14       12     142   0    0 00:08:14   142\n\nWhat it means:\n- Defines a BGP peer with its remote AS.\n- Same ASN as local = iBGP (TTL 255 default, requires loopback\n  source for stability).\n- Different ASN = eBGP (TTL 1 default, point-to-point physical).\n- Add \"ebgp-multihop N\" for multi-hop eBGP scenarios."
           },
           {
             "cmd": "neighbor ip-address activate",
@@ -20854,31 +20797,36 @@
             "cmd": "network network-mask subnet-mask [route-map]",
             "desc": "Advertise Specific Network Prefix into BGP. — Identifies prefixes to install in Loc-RIB; sets Path Attributes (Next Hop",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# network 10.0.0.0 mask 255.255.255.0\nR1(config-router)# network 192.168.0.0 mask 255.255.0.0 route-map TAG_OUT\n\nR1# show ip bgp | head -5\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 10.0.0.0/24      0.0.0.0           0  32768       i\n*> 192.168.0.0/16   0.0.0.0           0  32768       i\n\nWhat it means:\n- \"network\" tells BGP to advertise the prefix IF it exists in\n  the local RIB (via static / connected / IGP).\n- Optional route-map can set communities, AS-path prepend, etc.,\n  on the advertised route.\n- The prefix MUST exist in the IGP/connected RIB — BGP won't\n  invent it."
           },
           {
             "cmd": "show bgp afi safi summary",
             "desc": "Display BGP Table and Neighbor Summary. — Shows Up/Down time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast summary\n\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 142\nRIB entries: 4502\nMemory used: 1153536 bytes\n\nNeighbor       V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.10.10.2     4 65002    14502    14492   142    0    0 1d12h      4502\n\nWhat it means:\n- Per-AF summary. Use AFI/SAFI like \"ipv4 unicast\", \"ipv6 unicast\",\n  \"vpnv4 unicast\", \"ipv4 multicast\".\n- \"PfxRcd\" : prefixes received from this peer in this AF.\n- \"TblVer\" : BGP table version — increments on each change."
           },
           {
             "cmd": "show bgp afi safi neighbors ip-address",
             "desc": "View Detailed BGP Neighbor Session Info. — Includes timers (Hold/Keepalive)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast neighbors 10.10.10.2 | head -15\n\nBGP neighbor is 10.10.10.2, remote AS 65002, external link\n BGP version 4, remote router ID 2.2.2.2\n BGP state = Established, up for 1d12h\n Last read 00:00:14, last write 00:00:14, hold time is 180, keepalive is 60\n Neighbor sessions:\n   1 active, is not multisession capable\n Neighbor capabilities:\n   Route refresh: advertised and received(new)\n   Four-octets ASN Capability: advertised and received\n   Address family IPv4 Unicast: advertised and received\n\nWhat it means:\n- Detailed peer state for one AF.\n- \"BGP state = Established\" : healthy. Other states during\n  setup: Idle, Connect, Active, OpenSent, OpenConfirm.\n- Capabilities advertised + received = both ends agreed on\n  protocol features."
           },
           {
             "cmd": "show bgp afi safi network prefix/prefix-length",
             "desc": "View All Paths for a Specific Prefix in Loc-RIB. — Shows Origin",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast 10.0.0.0/24\n\nBGP routing table entry for 10.0.0.0/24, version 142\nPaths: (2 available, best #1, table default)\n  Advertised to update-groups:\n     1\n  Refresh Epoch 1\n  65002\n    10.10.10.2 from 10.10.10.2 (2.2.2.2)\n      Origin IGP, metric 0, localpref 100, valid, external, best\n\nWhat it means:\n- Detail for a specific prefix in the named AF.\n- Useful during best-path investigations.\n- Compare against \"show bgp ipv4 unicast 10.0.0.0/24 paths\"\n  for AS_PATH detail."
           },
           {
             "cmd": "show bgp afi safi neighbors ip-address advertised routes",
             "desc": "View Adj-RIB-Out (Routes Sent to Peer). — Shows prefixes currently being advertised after outbound policies are applied.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast neighbors 10.10.10.2 advertised-routes\n\nBGP table version is 142, local router ID is 1.1.1.1\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 10.0.0.0/24      0.0.0.0           0  32768       i\n*> 10.10.0.0/16     0.0.0.0           0  32768       i\n\nTotal number of prefixes 2\n\nWhat it means:\n- What we are advertising to the named peer (after outbound\n  policy applies).\n- Useful for confirming \"is the peer seeing X?\" — without having\n  to ask the peer.\n- Compare with \"received-routes\" (what they sent us)."
           },
           {
             "cmd": "show tcp brief",
@@ -20890,91 +20838,106 @@
             "cmd": "show ip route bgp / show ipv6 route bgp",
             "desc": "Display BGP-Learned Routes in Global Routing Table. — Shows Administrative Distance (AD: 20 for eBGP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show ip route bgp\n\nCodes: B - BGP, EX - external\n\nB    198.51.100.0/24 [20/0] via 10.10.10.2, 00:08:14, Gi0/0\nB    203.0.113.0/24 [20/0] via 10.10.10.2, 00:08:14, Gi0/0\nB*   0.0.0.0/0 [20/0] via 10.10.10.2, 00:08:14, Gi0/0\n\nR1# show ipv6 route bgp\nB    2001:DB8::/32 [20/0]\n     via 2001:DB8::1, GigabitEthernet0/0\n\nWhat it means:\n- Filters routing table to only BGP-learned routes.\n- \"[20/0]\" : eBGP AD 20 / metric 0. iBGP routes show \"[200/0]\".\n- Confirms BGP routes have actually been installed in the RIB\n  (not just present in the BGP table)."
           },
           {
             "cmd": "ip as-path access-list acl-number {deny | permit} regex-query",
             "desc": "AS Path ACL definition. — Uses regular expressions to match ASNs in the BGP path attribute.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip as-path access-list 100 permit ^65002_\nR1(config)# ip as-path access-list 100 deny .*\n\nR1(config-router)# neighbor 10.10.10.2 filter-list 100 in\n\nWhat it means:\n- AS-path ACL — uses regex to match BGP AS_PATH.\n- Common patterns:\n  - \"^65002$\" : exact match (only routes from AS 65002).\n  - \"^65002_\" : path starts with 65002 (immediate next-AS).\n  - \"_65003$\" : path ends with 65003 (originator).\n  - \"_65004_\" : path includes 65004 anywhere."
           },
           {
             "cmd": "match as-path",
             "desc": "Conditional match on AS Path. — Matches prefixes based on a regex query to isolate the ASN in the BGP path.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# match as-path 100\n\n# Where 100 is the AS-path access-list defined earlier.\n\nWhat it means:\n- Inside a route-map, matches BGP AS_PATH against the named\n  AS-path ACL.\n- Combine with \"set\" actions for AS-path-conditional policy.\n- Used heavily in transit ISP filtering: \"permit only customer-\n  originated routes\" via AS-path matching."
           },
           {
             "cmd": "match local-preference",
             "desc": "Conditional match on Local Preference. — Matches prefixes based on the BGP attribute local preference.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# match local-preference 200\n\n# Routes with LocPrf 200 match this clause.\n\nWhat it means:\n- Route-map match for BGP local-preference.\n- Useful in conditional advertisement: only export routes with\n  high local-pref (typical ISP upstream routes).\n- Combine with set-community for tag-based routing."
           },
           {
             "cmd": "set ip next-hop {ip-address | peer-address | self}",
             "desc": "Set Next-Hop IP address. — Modifies the BGP next-hop attribute (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set ip next-hop 10.99.0.1\nR1(config-route-map)# set ip next-hop self\nR1(config-route-map)# set ip next-hop peer-address\n\nWhat it means:\n- Manipulates next-hop in route advertisements.\n- \"self\" : advertise own IP as next-hop (typical for iBGP\n  hub-and-spoke or RR clients).\n- \"peer-address\" : advertise the peer's IP as next-hop (rare).\n- Specific IP : recursive next-hop manipulation (PBR contexts)."
           },
           {
             "cmd": "set metric {+value | -value | value}",
             "desc": "Modify Metric. — Adds or sets the BGP path metric (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set metric 200      ! absolute\nR1(config-route-map)# set metric +50      ! add to existing\nR1(config-route-map)# set metric -10      ! subtract\n\nWhat it means:\n- Sets BGP MED (Multi-Exit Discriminator). Lower MED preferred\n  by upstream peer.\n- \"+value\" / \"-value\" : relative adjustment to incoming MED.\n- Cross-AS use: tells upstream which entry-point to prefer when\n  advertising the same prefix from multiple eBGP edges."
           },
           {
             "cmd": "set origin {igp | incomplete}",
             "desc": "Set Origin Attribute. — Sets the BGP PA origin (`i`",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set origin igp\n\n# Routes affected by this clause now have Origin code \"i\".\n\nWhat it means:\n- Sets BGP origin attribute:\n  - igp (i) : prefix originated within an IGP.\n  - egp (e) : EGP-originated (legacy, never used).\n  - incomplete (?) : redistributed from another protocol.\n- Best path selection prefers IGP > EGP > Incomplete (after\n  more important attributes)."
           },
           {
             "cmd": "set weight 0–65535",
             "desc": "Set Weight Attribute. — Sets the locally significant BGP PA weight (Cisco-defined).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set weight 200\n\nR1# show ip bgp 10.0.0.0 | include Weight\n... LocPrf 100, weight 200 ... best\n\nWhat it means:\n- BGP Weight — Cisco-proprietary, locally-significant attribute.\n- Higher weight wins. NOT advertised to peers (purely local\n  influence on best-path selection).\n- Used to prefer one inbound peer over another for outbound\n  traffic from this router specifically."
           },
           {
             "cmd": "set community bgp-community [additive]",
             "desc": "Set Community Attribute. — Appends or modifies BGP communities (e.g.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-route-map)# set community 65001:100 65001:200\nR1(config-route-map)# set community 65001:300 additive\n\n# Without \"additive\", the SET overwrites existing communities.\n# With \"additive\", the new communities are appended.\n\nWhat it means:\n- Sets BGP community attributes on routes.\n- \"no-export\", \"no-advertise\", \"local-as\" are well-known\n  communities with predefined behaviour.\n- Custom format AS:VAL (e.g. 65001:100). The AS_NUMBER:VALUE\n  convention reserves space per ASN.\n- \"additive\" preserves any existing communities."
           },
           {
             "cmd": "neighbor ip-address route-map route-map-name {in|out}",
             "desc": "Apply Route Map to Neighbor. — Associates an inbound or outbound route map with a specific BGP neighbor.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config-router)# neighbor 10.10.10.2 route-map IN_FROM_ISP in\nR1(config-router)# neighbor 10.10.10.2 route-map OUT_TO_ISP out\n\nWhat it means:\n- Applies a route-map to inbound or outbound BGP updates.\n- \"in\" : filter/modify routes RECEIVED from peer.\n- \"out\" : filter/modify routes ADVERTISED to peer.\n- Same route-map can be applied to both directions if needed."
           },
           {
             "cmd": "ip bgp-community new-format",
             "desc": "Enable New Format for Communities. — Displays communities in `AS:NN` format instead of decimal (easier readability).",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "R1(config)# ip bgp-community new-format\n\nR1# show ip bgp 10.0.0.0 | include Community\nCommunity: 65001:100 65001:200\n\nWhat it means:\n- Display BGP communities in modern AS:VAL format (e.g.\n  \"65001:100\") instead of the legacy 32-bit integer.\n- Default in modern IOS XE; explicit on older platforms.\n- No functional change — purely display formatting."
           },
           {
             "cmd": "clear ip bgp ip-address [soft]",
             "desc": "Hard Reset BGP Session. — Tears down the session and removes routes from the peer.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear ip bgp 10.10.10.2 soft\n# Soft reset (uses Route Refresh capability), no session bounce.\n\nR1# clear ip bgp 10.10.10.2\n# Hard reset, session bounces.\n\nWhat it means:\n- \"soft\" : non-disruptive policy refresh. Peer re-sends routes.\n- Without \"soft\" : hard reset, full session re-establishment.\n- For changes to inbound policy, use \"clear ip bgp X soft in\";\n  for outbound use \"soft out\"."
           },
           {
             "cmd": "clear bgp afi safi {ip-address|*} soft [in | out]",
             "desc": "Soft Reset BGP Session. — Invaliates cache and requests full advertisement without tearing down the session.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# clear bgp ipv4 unicast 10.10.10.2 soft in\nR1# clear bgp ipv6 unicast * soft out\n\nWhat it means:\n- Generic soft-reset syntax for any AFI/SAFI.\n- \"*\" affects all peers.\n- \"in\" : refresh inbound (peer re-sends).\n- \"out\" : refresh outbound (we re-advertise)."
           },
           {
             "cmd": "show bgp afi safi regexpregex-pattern",
             "desc": "View Routes Matching Regex. — Displays routes matching a specified AS path regex pattern.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast regexp _65002_\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 198.51.100.0/24  10.10.10.2     0             0      65002 i\n*> 203.0.113.0/24   10.10.10.2     0             0      65002 65003 i\n\nWhat it means:\n- Filters BGP table by AS_PATH regex.\n- Useful for AS-based queries: \"what came from AS 65002?\",\n  \"which prefixes transit AS 65003?\", etc.\n- Same regex syntax as ip-as-path access-lists."
           },
           {
             "cmd": "show bgp afi safi community community",
             "desc": "View Routes Matching Community. — Displays routes matching a specific BGP community value.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "R1# show bgp ipv4 unicast community 65001:100\n\n   Network          Next Hop      Metric LocPrf Weight Path\n*> 10.0.0.0/16      0.0.0.0           0  32768       i\n*> 10.10.0.0/16     0.0.0.0           0  32768       i\n\nTotal number of prefixes 2\n\nWhat it means:\n- Filters BGP table by community attribute.\n- Multiple communities: \"show bgp ipv4 unicast community 65001:100\n  65001:200 exact-match\" (must match BOTH for \"exact-match\"\n  variant).\n- Useful for verifying community-tagging policies."
           },
           {
             "cmd": "neighbor <IP> shutdown",
