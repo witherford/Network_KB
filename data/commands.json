@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T17:05:25.000Z",
+  "updatedAt": "2026-05-01T18:44:20.568Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5217,6 +5217,13 @@
             "desc": "Last 50 threat-log entries",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show running resource-monitor minute last 60",
+            "desc": "Last 60 one-minute samples of CPU per data plane core, packet buffer, session table, and throughput — best first stop when triaging \"firewall feels slow\".",
+            "type": "show",
+            "flagged": false,
+            "example": "Resource monitoring sampling data (per minute):\n\nCPU load (%) during last 60 minutes\ncore   0   1   2   3   4   5   6   7\navg   34  41  39  37  42  38  35  36\nmax   71  82  78  74  85  76  69  72\n\nResource utilization (%) during last 60 minutes\n                       avg  max\nsession table          18   19\npacket buffer           4    7\npacket descriptor       3    5\npacket descriptor (on-chip)  2  4\n\nThroughput (Mbps) during last 60 minutes\navg: 1842  max: 3104"
           }
         ],
         "Commit & Config": [
@@ -11097,12 +11104,6 @@
       "sections": {
         "1. FILE & DIRECTORY NAVIGATION": [
           {
-            "cmd": "------------------------------------------------------------",
-            "desc": "",
-            "type": "show",
-            "flagged": false
-          },
-          {
             "cmd": "pwd",
             "desc": "# show current working directory",
             "type": "show",
@@ -11476,7 +11477,8 @@
             "cmd": "ping -c 4 host",
             "desc": "# send 4 pings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PING host (10.0.0.1) 56(84) bytes of data.\n64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.412 ms\n64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.387 ms\n64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.401 ms\n64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.395 ms\n\n--- host ping statistics ---\n4 packets transmitted, 4 received, 0% packet loss, time 3045ms\nrtt min/avg/max/mdev = 0.387/0.398/0.412/0.011 ms"
           },
           {
             "cmd": "traceroute host",
@@ -11510,7 +11512,8 @@
             "cmd": "curl -I http://example.com",
             "desc": "# fetch headers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "HTTP/1.1 200 OK\nContent-Type: text/html; charset=UTF-8\nDate: Fri, 01 May 2026 19:43:02 GMT\nServer: nginx\nLast-Modified: Thu, 17 Oct 2024 02:00:00 GMT\nETag: \"84cf-625bda3b1a23a\"\nContent-Length: 33999\nConnection: keep-alive"
           }
         ],
         "wget URL  # download file": [
@@ -11668,7 +11671,8 @@
             "cmd": "free -m",
             "desc": "# memory usage in MB",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "               total        used        free      shared  buff/cache   available\nMem:           15998        4521        2114         312        9362       10817\nSwap:           2047           0        2047"
           }
         ],
         "dnf update  # update packages": [
@@ -12938,7 +12942,8 @@
             "cmd": "dig +short example.com",
             "desc": "# short output",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "93.184.216.34"
           },
           {
             "cmd": "dig ANY example.com",
@@ -13246,7 +13251,8 @@
             "cmd": "uptime",
             "desc": "Shows system uptime and load averages",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": " 19:42:11 up 47 days,  3:18,  2 users,  load average: 0.42, 0.51, 0.48"
           },
           {
             "cmd": "top",
@@ -13282,7 +13288,8 @@
             "cmd": "df -h",
             "desc": "Shows disk usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        50G   18G   30G  38% /\ntmpfs           7.9G  6.8M  7.9G   1% /run\n/dev/sdb1       500G  213G  262G  45% /data\ntmpfs           7.9G     0  7.9G   0% /dev/shm"
           }
         ],
         "Networking": [
@@ -13290,7 +13297,8 @@
             "cmd": "ip a",
             "desc": "Shows all IP addresses",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN\n    inet 127.0.0.1/8 scope host lo\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP\n    link/ether 52:54:00:8a:1f:c2 brd ff:ff:ff:ff:ff:ff\n    inet 10.0.0.42/24 brd 10.0.0.255 scope global dynamic eth0\n       valid_lft 84032sec preferred_lft 84032sec\n    inet6 fe80::5054:ff:fe8a:1fc2/64 scope link"
           },
           {
             "cmd": "ip r",
@@ -13314,7 +13322,8 @@
             "cmd": "ss -tulpn",
             "desc": "Shows listening sockets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Netid State   Recv-Q Send-Q  Local Address:Port  Peer Address:Port  Process\nudp   UNCONN  0      0       127.0.0.53%lo:53         0.0.0.0:*      users:((\"systemd-resolve\",pid=812,fd=14))\ntcp   LISTEN  0      128            0.0.0.0:22         0.0.0.0:*      users:((\"sshd\",pid=1024,fd=3))\ntcp   LISTEN  0      511            0.0.0.0:80         0.0.0.0:*      users:((\"nginx\",pid=1340,fd=6))\ntcp   LISTEN  0      4096          127.0.0.1:5432      0.0.0.0:*      users:((\"postgres\",pid=1481,fd=7))"
           },
           {
             "cmd": "ss -s",
@@ -13580,6 +13589,13 @@
             "type": "show",
             "flagged": false,
             "example": "Netid State    Recv-Q Send-Q  Local Address:Port  Peer Address:Port  Process\ntcp   LISTEN   0      128     0.0.0.0:22          0.0.0.0:*          users:((\"sshd\",pid=812,fd=3))\ntcp   ESTAB    0      0       192.168.10.5:38712  198.51.100.20:443  users:((\"curl\",pid=4012,fd=4))\nudp   UNCONN   0      0       0.0.0.0:68          0.0.0.0:*          users:((\"dhclient\",pid=659,fd=6))"
+          },
+          {
+            "cmd": "mtr -rwc 100 <host>",
+            "desc": "MTR in report mode: send 100 cycles, print one combined ping+traceroute table (loss%, avg/best/wrst per hop). Great for capturing intermittent path issues.",
+            "type": "show",
+            "flagged": false,
+            "example": "Start: 2026-05-01T19:55:14+0100\nHOST: web01                       Loss%   Snt   Last   Avg  Best  Wrst StDev\n  1.|-- 10.0.0.1                   0.0%   100    0.4    0.5   0.3   1.1   0.1\n  2.|-- 10.0.255.1                 0.0%   100    1.2    1.4   1.0   3.5   0.4\n  3.|-- 100.64.0.41                2.0%   100   12.4   12.7  11.8  18.4   1.2\n  4.|-- 195.66.224.105             0.0%   100   13.1   13.2  12.7  15.0   0.5\n  5.|-- 1.1.1.1                    0.0%   100   13.8   13.9  13.4  16.2   0.4"
           }
         ],
         "Diagnostics": [
@@ -13587,7 +13603,8 @@
             "cmd": "journalctl -xe",
             "desc": "Shows system errors and warnings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-- Journal begins at Tue 2026-04-01 09:12:01 BST. --\nMay 01 19:42:01 web01 sshd[2891]: Failed password for invalid user admin from 198.51.100.4\nMay 01 19:42:03 web01 sshd[2891]: Connection closed by invalid user admin 198.51.100.4 [preauth]\nMay 01 19:43:11 web01 systemd[1]: nginx.service: Main process exited, code=exited, status=1/FAILURE\nMay 01 19:43:11 web01 systemd[1]: nginx.service: Failed with result 'exit-code'.\n-- The result is failed. The job identifier is 4218 and the job result is failed."
           },
           {
             "cmd": "journalctl -u <service>",
@@ -13599,7 +13616,8 @@
             "cmd": "journalctl -b",
             "desc": "Shows logs since last boot",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "-- Journal begins at Tue 2026-04-01 09:12:01 BST, ends at Fri 2026-05-01 19:42:11 BST. --\nMar 15 08:00:14 web01 kernel: Linux version 6.8.0-31-generic (buildd@lcy02-amd64-013)\nMar 15 08:00:14 web01 kernel: Command line: BOOT_IMAGE=/vmlinuz-6.8.0-31-generic root=UUID=...\nMar 15 08:00:14 web01 kernel: KERNEL supported cpus: Intel/AMD/...\nMar 15 08:00:15 web01 systemd[1]: Starting Network Time Synchronization...\nMar 15 08:00:15 web01 systemd[1]: Started Journal Service."
           },
           {
             "cmd": "journalctl -k",
@@ -13617,7 +13635,8 @@
             "cmd": "systemctl status <service>",
             "desc": "Shows service status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "● nginx.service - A high performance web server\n     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; preset: enabled)\n     Active: active (running) since Fri 2026-05-01 14:21:09 BST; 5h 22min ago\n   Main PID: 1340 (nginx)\n      Tasks: 5 (limit: 18839)\n     Memory: 12.4M\n        CPU: 1.482s\n     CGroup: /system.slice/nginx.service\n             ├─1340 \"nginx: master process /usr/sbin/nginx -g daemon on; master_process on;\"\n             └─1341 \"nginx: worker process\""
           },
           {
             "cmd": "systemctl list-units --failed",
@@ -13638,9 +13657,9 @@
             "flagged": false
           },
           {
-            "cmd": "ps -eo pid",
-            "desc": "cmd",
-            "type": "%cpu",
+            "cmd": "ps -eo pid,%cpu,%mem,cmd --sort=-%cpu | head",
+            "desc": "List processes sorted by CPU usage with PID, CPU%, memory%, and full command",
+            "type": "show",
             "flagged": false
           },
           {
@@ -13671,7 +13690,8 @@
             "cmd": "netstat -tulpn",
             "desc": "Shows listening ports (legacy)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Active Internet connections (only servers)\nProto Recv-Q Send-Q Local Address    Foreign Address  State    PID/Program name\ntcp        0      0 0.0.0.0:22       0.0.0.0:*        LISTEN   1024/sshd\ntcp        0      0 0.0.0.0:80       0.0.0.0:*        LISTEN   1340/nginx\ntcp        0      0 127.0.0.1:5432   0.0.0.0:*        LISTEN   1481/postgres\nudp        0      0 127.0.0.53:53    0.0.0.0:*                 812/systemd-resolve"
           },
           {
             "cmd": "perf top",
@@ -15391,15 +15411,15 @@
             "flagged": false
           },
           {
-            "cmd": "tshark -z conv",
-            "desc": "tcp",
-            "type": "Shows TCP conversations",
+            "cmd": "tshark -z conv,tcp -r capture.pcap",
+            "desc": "Display TCP conversation statistics from a capture (talkers, bytes, duration)",
+            "type": "show",
             "flagged": false
           },
           {
-            "cmd": "tshark -z endpoints",
-            "desc": "tcp",
-            "type": "Shows TCP endpoints",
+            "cmd": "tshark -z endpoints,tcp -r capture.pcap",
+            "desc": "Display TCP endpoint statistics from a capture (per-host packets/bytes)",
+            "type": "show",
             "flagged": false
           },
           {
@@ -15451,9 +15471,9 @@
             "flagged": false
           },
           {
-            "cmd": "tshark -q -z io",
-            "desc": "phs",
-            "type": "Shows protocol hierarchy statistics",
+            "cmd": "tshark -q -z io,phs -r capture.pcap",
+            "desc": "Display protocol hierarchy statistics (frame counts/bytes per protocol layer)",
+            "type": "show",
             "flagged": false
           },
           {
@@ -21318,7 +21338,8 @@
             "cmd": "esxcli system version get",
             "desc": "Shows ESXi version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "   Product: VMware ESXi\n   Version: 8.0.3\n   Build: Releasebuild-24859861\n   Update: 3\n   Patch: 8"
           },
           {
             "cmd": "esxcli system hostname get",
@@ -21402,7 +21423,8 @@
             "cmd": "vim-cmd vmsvc/getallvms",
             "desc": "Registered VMs with vmid, used by most vim-cmd operations",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Vmid   Name                  File                                Guest OS         Version   Annotation\n1      web01                 [DS-FAST] web01/web01.vmx           ubuntu64Guest    vmx-21\n2      db01                  [DS-FAST] db01/db01.vmx             ubuntu64Guest    vmx-21\n3      win-dc01              [DS-SLOW] win-dc01/win-dc01.vmx     windows2019srv   vmx-21\n4      backup-proxy          [DS-FAST] backup/bkp.vmx            other3xLinux64   vmx-19"
           },
           {
             "cmd": "esxcli system stats uptime get",
@@ -21422,7 +21444,8 @@
             "cmd": "esxcli network nic list",
             "desc": "Lists physical NICs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name    PCI Device     Driver  Admin Status  Link Status  Speed  Duplex  MAC Address         MTU   Description\n------  -------------  ------  ------------  -----------  -----  ------  ------------------  ----  ----------------------------------\nvmnic0  0000:01:00.0   nmlx5   Up            Up           25000  Full    00:50:56:aa:bb:c0   1500  Mellanox ConnectX-4 Lx 25GbE\nvmnic1  0000:01:00.1   nmlx5   Up            Up           25000  Full    00:50:56:aa:bb:c1   1500  Mellanox ConnectX-4 Lx 25GbE\nvmnic2  0000:18:00.0   ntg3    Up            Down              0  Half   00:50:56:aa:bb:c2   1500  Broadcom NetXtreme BCM5719 1GbE\nvmnic3  0000:18:00.1   ntg3    Up            Down              0  Half   00:50:56:aa:bb:c3   1500  Broadcom NetXtreme BCM5719 1GbE"
           },
           {
             "cmd": "esxcli network nic get -n <nic>",
@@ -21434,7 +21457,8 @@
             "cmd": "esxcli network ip interface list",
             "desc": "Lists VMkernel interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "vmk0\n   Name: vmk0\n   MAC Address: 00:50:56:6f:1a:2b\n   Enabled: true\n   Portset: vSwitch0\n   Portgroup: Management Network\n   Netstack Instance: defaultTcpipStack\n   MTU: 1500\n   TSO MSS: 65535\n   Port ID: 67108876\nvmk1\n   Name: vmk1\n   MAC Address: 00:50:56:6f:1a:2c\n   Enabled: true\n   Portset: DSwitch\n   Portgroup: vMotion-PG\n   Netstack Instance: vmotion\n   MTU: 9000"
           },
           {
             "cmd": "esxcli network ip interface ipv4 get",
@@ -22581,7 +22605,8 @@
             "cmd": "ipconfig /all",
             "desc": "Shows full IP configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Windows IP Configuration\n   Host Name . . . . . . . . . . . . : DESKTOP-8K2L9P\n   Primary Dns Suffix  . . . . . . . : corp.example.com\n   Node Type . . . . . . . . . . . . : Hybrid\nEthernet adapter Ethernet:\n   Connection-specific DNS Suffix  . : corp.example.com\n   Description . . . . . . . . . . . : Intel(R) Ethernet Connection I219-LM\n   Physical Address. . . . . . . . . : 00-1A-2B-3C-4D-5E\n   DHCP Enabled. . . . . . . . . . . : Yes\n   IPv4 Address. . . . . . . . . . . : 10.0.0.42(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Lease Obtained. . . . . . . . . . : Friday, 1 May 2026 09:21:14\n   Lease Expires . . . . . . . . . . : Saturday, 2 May 2026 09:21:14\n   Default Gateway . . . . . . . . . : 10.0.0.1\n   DHCP Server . . . . . . . . . . . : 10.0.0.1\n   DNS Servers . . . . . . . . . . . : 10.0.0.1, 1.1.1.1"
           },
           {
             "cmd": "ipconfig /flushdns",
@@ -22599,7 +22624,8 @@
             "cmd": "netstat -ano",
             "desc": "Shows all connections with PIDs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Active Connections\n  Proto  Local Address          Foreign Address        State           PID\n  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       1112\n  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4\n  TCP    10.0.0.42:50342        140.82.121.4:443       ESTABLISHED     8124\n  TCP    10.0.0.42:50410        20.190.190.65:443      ESTABLISHED     7244\n  TCP    [::]:135               [::]:0                 LISTENING       1112\n  UDP    0.0.0.0:5353           *:*                                    3204"
           },
           {
             "cmd": "netstat -s",
@@ -22726,6 +22752,13 @@
             "desc": "ARP cache of reachable entries",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "Get-NetTCPConnection -State Established | Sort-Object OwningProcess | Format-Table LocalAddress,LocalPort,RemoteAddress,RemotePort,OwningProcess,@{n=\"Process\";e={(Get-Process -Id $_.OwningProcess -EA 0).Name}}",
+            "desc": "PowerShell replacement for \"netstat -ano | findstr ESTABLISHED\" — established TCP connections joined to process name.",
+            "type": "show",
+            "flagged": false,
+            "example": "LocalAddress  LocalPort RemoteAddress    RemotePort OwningProcess Process\n------------  --------- -------------    ---------- ------------- -------\n10.0.0.42         50342 140.82.121.4            443          8124 chrome\n10.0.0.42         50410 20.190.190.65           443          7244 powershell\n10.0.0.42         50488 52.97.156.130           443          8124 chrome\n10.0.0.42         50612 13.107.42.14            443         10412 OUTLOOK"
           }
         ],
         "Processes": [
@@ -22733,7 +22766,8 @@
             "cmd": "tasklist",
             "desc": "Lists running processes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Image Name                     PID Session Name        Session#    Mem Usage\n========================= ======== ================ =========== ============\nSystem Idle Process              0 Services                   0          8 K\nSystem                           4 Services                   0      4,832 K\nsvchost.exe                   1112 Services                   0     12,908 K\nexplorer.exe                  4982 Console                    1     78,540 K\nchrome.exe                    8124 Console                    1    284,712 K\npowershell.exe                7244 Console                    1     62,118 K"
           },
           {
             "cmd": "taskkill /PID <pid> /F",
@@ -22993,7 +23027,8 @@
             "cmd": "aws ec2 describe-instances",
             "desc": "Lists EC2 instances",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "{\n    \"Reservations\": [\n        {\n            \"Instances\": [\n                {\n                    \"InstanceId\": \"i-0a1b2c3d4e5f67890\",\n                    \"InstanceType\": \"t3.medium\",\n                    \"State\": { \"Name\": \"running\" },\n                    \"PrivateIpAddress\": \"10.0.1.42\",\n                    \"PublicIpAddress\": \"54.247.12.34\",\n                    \"Tags\": [{ \"Key\": \"Name\", \"Value\": \"web01\" }]\n                }\n            ]\n        }\n    ]\n}"
           },
           {
             "cmd": "aws ec2 describe-volumes",
@@ -23115,7 +23150,8 @@
             "cmd": "aws s3 ls",
             "desc": "Lists buckets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "2025-11-03 14:21:09 cf-templates-corp-eu-west-2\n2026-01-17 09:08:42 acme-data-lake\n2026-02-24 11:47:33 acme-logs-archive\n2026-04-08 16:52:15 acme-static-assets"
           },
           {
             "cmd": "aws s3 ls s3://<bucket>",
@@ -23329,7 +23365,8 @@
             "cmd": "aws sts get-caller-identity",
             "desc": "Identity of the caller for user OR assumed role",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "{\n    \"UserId\": \"AROAEXAMPLE12345:matthew.witherford\",\n    \"Account\": \"123456789012\",\n    \"Arn\": \"arn:aws:sts::123456789012:assumed-role/PowerUser/matthew.witherford\"\n}"
           },
           {
             "cmd": "aws iam list-users --query \"Users[].UserName\"",
@@ -32219,7 +32256,8 @@
             "cmd": "pveversion",
             "desc": "Show Proxmox VE version and kernel",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "pve-manager/8.2.4/abcd1234efgh5678 (running kernel: 6.8.4-3-pve)"
           },
           {
             "cmd": "pveversion -v",
@@ -32275,7 +32313,8 @@
             "cmd": "pvecm status",
             "desc": "Cluster quorum status, expected/total votes, ring info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cluster information\n-------------------\nName:             pve-cluster-01\nConfig Version:   5\nTransport:        knet\nSecure auth:      on\n\nQuorum information\n------------------\nDate:             Fri May  1 19:50:14 2026\nQuorum provider:  corosync_votequorum\nNodes:            3\nNode ID:          0x00000001\nRing ID:          1.4f\nQuorate:          Yes\n\nVotequorum information\n----------------------\nExpected votes:   3\nHighest expected: 3\nTotal votes:      3\nQuorum:           2\nFlags:            Quorate\n\nMembership information\n----------------------\n    Nodeid      Votes Name\n0x00000001          1 pve01 (local)\n0x00000002          1 pve02\n0x00000003          1 pve03"
           },
           {
             "cmd": "pvecm nodes",
@@ -32331,7 +32370,8 @@
             "cmd": "qm list",
             "desc": "List all VMs on this node with VMID, name, status, memory, disk",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID\n       100 web01                running    4096       32.00        18432\n       101 db01                 running    8192       128.00       18441\n       102 backup-proxy         stopped    2048       16.00        0\n       110 win-dc01             running    8192       80.00        18712\n       120 ansible-runner       paused     2048       16.00        18821"
           },
           {
             "cmd": "qm config <VMID>",
@@ -32907,7 +32947,8 @@
             "cmd": "zpool status",
             "desc": "All pools, vdev health, scrub progress, errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "  pool: rpool\n state: ONLINE\n  scan: scrub repaired 0B in 00:14:32 with 0 errors on Sun Apr 27 03:14:32 2026\nconfig:\n        NAME                                 STATE     READ WRITE CKSUM\n        rpool                                ONLINE       0     0     0\n          mirror-0                           ONLINE       0     0     0\n            nvme-Samsung_PM9A3_960GB-part3   ONLINE       0     0     0\n            nvme-Samsung_PM9A3_960GB-part3   ONLINE       0     0     0\nerrors: No known data errors"
           },
           {
             "cmd": "zpool list",
@@ -33273,7 +33314,8 @@
             "cmd": "show feature",
             "desc": "NX-OS features installed/enabled",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Feature Name          Instance  State\n--------------------  --------  --------\nbash-shell            1         enabled\nbgp                   1         enabled\neigrp                 1         disabled\nhsrp                  1         enabled\ninterface-vlan        1         enabled\nlacp                  1         enabled\nlldp                  1         enabled\nnxapi                 1         enabled\nospf                  1         enabled\npim                   1         disabled\ntacacs                1         enabled\nvpc                   1         enabled"
           },
           {
             "cmd": "show feature-set",
@@ -33331,7 +33373,8 @@
             "cmd": "show interface brief",
             "desc": "Short status table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "--------------------------------------------------------------------------------\nEthernet      VLAN    Type Mode   Status  Reason                   Speed     Port\nInterface                                                                    Ch #\n--------------------------------------------------------------------------------\nEth1/1        1       eth  trunk  up      none                       10G(D) 10\nEth1/2        1       eth  trunk  up      none                       10G(D) 10\nEth1/3        100     eth  access up      none                       1000(D) --\nEth1/4        --      eth  routed down    Link not connected         auto(D) --\nEth1/47       --      eth  routed up      none                       10G(D)  --\nEth1/48       --      eth  routed up      none                       10G(D)  --"
           },
           {
             "cmd": "show interface description",
@@ -33425,7 +33468,8 @@
             "cmd": "show vpc",
             "desc": "vPC peer-link, peer-keepalive, vPCs, role",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Legend:\n                (*) - local vPC is down, forwarding via vPC peer-link\nvPC domain id                     : 100\nPeer status                       : peer adjacency formed ok\nvPC keep-alive status             : peer is alive\nConfiguration consistency status  : success\nPer-vlan consistency status       : success\nType-2 consistency status         : success\nvPC role                          : primary\nNumber of vPCs configured         : 24\nPeer Gateway                      : Enabled\nDual-active excluded VLANs        : -\nGraceful Consistency Check        : Enabled\nAuto-recovery status              : Enabled, timer is off (timeout = 240s)"
           },
           {
             "cmd": "show vpc consistency-parameters global",
@@ -33455,7 +33499,8 @@
             "cmd": "show fex",
             "desc": "Connected FEXs and link state (legacy)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "  FEX         FEX           FEX                       FEX\nNumber    Description      State            Model            Serial\n------------------------------------------------------------------------\n101        FEX0101         Online   N2K-C2248TP-1GE     SAL1234ABCD\n102        FEX0102         Online   N2K-C2248TP-1GE     SAL1234EFGH"
           },
           {
             "cmd": "feature vpc",
@@ -34427,7 +34472,8 @@
             "cmd": "show version",
             "desc": "Software image, version, build, uptime, last reload reason",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "ArubaOS-CX\n(c) Copyright 2017-2025 Hewlett Packard Enterprise Development LP\n\nVersion      : FL.10.13.1010\nBuild Date   : 2025-09-04 18:42:37 UTC\nBuild ID     : ArubaOS-CX:FL.10.13.1010:f6b4a2e:202509041842\nActive Image : primary\nService OS Version : FL.01.13.0001\nBIOS Version       : FL.01.0007"
           },
           {
             "cmd": "show system",
@@ -34537,7 +34583,8 @@
             "cmd": "show interface brief",
             "desc": "Short interface status table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Port    Native VLAN  Mode    Type    Enabled Status        Reason          Speed     Description\n--------------------------------------------------------------------------------------\n1/1/1   1            access  --      yes     up                            1000      uplink-to-core\n1/1/2   100          access  --      yes     up                            1000      ap-1\n1/1/3   100          access  --      yes     down          waiting for     auto      ap-2\n1/1/4   --           routed  --      yes     up                            10000     l3-uplink\n1/1/47  --           trunk   1G-T    yes     up                            1000\n1/1/48  --           trunk   1G-T    no      down          Administrativel auto"
           },
           {
             "cmd": "show interface 1/1/1",
@@ -34561,7 +34608,8 @@
             "cmd": "show lldp neighbors",
             "desc": "LLDP neighbour table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "LOCAL-PORT  CHASSIS-ID         PORT-ID            PORT-DESCR  TTL  SYS-NAME\n---------------------------------------------------------------------------\n1/1/1       00:1a:1e:11:22:33  GigabitEthernet0/1 uplink      120  core-sw01\n1/1/2       a8:bd:27:44:55:66  1                  AP1-eth0    120  AP-floor1-01\n1/1/3       a8:bd:27:77:88:99  1                  AP2-eth0    120  AP-floor1-02\n1/1/47      00:50:56:aa:bb:cc  vmnic0             ESXi mgmt   120  esxi01.lab"
           },
           {
             "cmd": "show lldp neighbors detail",
@@ -34635,7 +34683,8 @@
             "cmd": "show vlan",
             "desc": "All VLANs + member ports",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "--------------------------------------------------------------------------------\nVLAN  Name                          Status     Reason         Type     Interfaces\n--------------------------------------------------------------------------------\n1     DEFAULT_VLAN_1                up         ok             default  1/1/1, 1/1/47\n10    Management                    up         ok             static   1/1/4, vlan10\n20    Servers                       up         ok             static   1/1/5-1/1/8\n100   AP-mgmt                       up         ok             static   1/1/2, 1/1/3\n200   Guest                         up         ok             static   1/1/2, 1/1/3"
           },
           {
             "cmd": "show vlan 10",
@@ -34723,7 +34772,8 @@
             "cmd": "show ip route",
             "desc": "IPv4 routing table (default VRF)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Displaying ipv4 routes selected for forwarding\n\nOrigin Codes: C - connected, S - static, L - local interface, R - RIP,\n              O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,\n              B - BGP\n\nVRF: default\nPrefix             Nexthop          Interface     VRF (egress)  Origin/Type   Distance/Metric  Age\n--------------------------------------------------------------------------------------------------\n0.0.0.0/0          10.0.0.1         vlan10        -             S/static      1/0              -\n10.0.0.0/24        -                vlan10        -             C/connected   0/0              -\n10.0.10.0/24       10.0.0.2         vlan10        -             O/ospf-intra  110/2            00:14:32\n10.0.20.0/24       -                vlan20        -             C/connected   0/0              -\n10.0.30.0/24       10.0.0.2         vlan10        -             O/ospf-intra  110/2            00:14:32"
           },
           {
             "cmd": "show ip route vrf <name>",
