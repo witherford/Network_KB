@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-01T05:57:41.144Z",
+  "updatedAt": "2026-05-01T17:05:25.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -26,7 +26,8 @@
             "cmd": "show ns hardware",
             "desc": "Hardware details: model, serial number, CPU count, memory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Platform:\tNS-MPX-5901\nManufactured on:\t6/12/2022\nCPU:\t1700MHz\nHost Id:\t1567456\nSerial no:\tABCD1234XYZ\nEncoded serial no:\tABCD1234XYZ\nNetscaler UUID:\t11111111-2222-3333-4444-555555555555"
           },
           {
             "cmd": "show ns license",
@@ -80,19 +81,22 @@
             "cmd": "show system cpu",
             "desc": "Current CPU utilisation across all CPUs and packet engines",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1)\tCPU(%):\t12\t  Idle(%):\t88\n2)\tCPU(%):\t9\t  Idle(%):\t91\n3)\tCPU(%):\t7\t  Idle(%):\t93\n Mgmt CPU(%):\t4\t  Idle(%):\t96"
           },
           {
             "cmd": "show system memory",
             "desc": "Current memory usage: total, used, and free",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total Memory:\t16384 MBytes\nFree Memory:\t4096 MBytes\nUsed Memory:\t12288 MBytes (75%)\nShared Memory:\t512 MBytes\nBuffer Memory:\t1024 MBytes"
           },
           {
             "cmd": "show system disk",
             "desc": "Disk usage for the flash partition and other storage areas",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "/flash    1.9G used / 7.5G total (25%)\n/var      8.2G used / 60G total (14%)\n/var/log   2.1G used / 60G total\n/var/nslog 750M used / 60G total"
           },
           {
             "cmd": "show ns stats -detail",
@@ -104,13 +108,15 @@
             "cmd": "show ns capacity",
             "desc": "Shows licensed capacity: max SSL throughput, connections, RPS",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Bandwidth:\t  3 Gbps (entitled)\nSSL Throughput:\t  1500 Mbps\nSSL TPS (RSA-2K):\t 7500\nFeature License: Standard\nPlatform: NS-MPX-5901"
           },
           {
             "cmd": "show system backup",
             "desc": "List on-box system backups",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Filename: backup_basic_2026_05_01_06_00.tgz\nSize: 22.4 MB\nLevel: basic\nCreated by: nsroot on 2026-05-01 06:00:12 UTC"
           },
           {
             "cmd": "show ns feature",
@@ -218,14 +224,14 @@
           },
           {
             "cmd": "show ns feature -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns feature' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Enabled: LB, CS, SSL, GSLB, Rewrite, Responder"
           },
           {
             "cmd": "show ns mode -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns mode' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Enabled: L3, EDGE, FR, USNIP"
@@ -260,7 +266,7 @@
           },
           {
             "cmd": "show audit syslogPolicy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show audit syslogPolicy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Log_Pol_1: 45021  Log_Pol_2: 0"
@@ -274,7 +280,7 @@
           },
           {
             "cmd": "show cache policy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show cache policy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Pol_Cache_Images: 550  Pol_Cache_JS: 12"
@@ -302,7 +308,7 @@
           },
           {
             "cmd": "show ns xmlnamespace -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns xmlnamespace' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Prefix: ns1  URI: \"http://citrix.com\""
@@ -316,112 +322,112 @@
           },
           {
             "cmd": "show ns tcpProfile -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns tcpProfile' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "nstcp_default: 1M  nstcp_aggressive: 4502"
           },
           {
             "cmd": "show ns httpProfile -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns httpProfile' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "nshttp_default: 1.2M  nshttp_mobile: 104"
           },
           {
             "cmd": "show cache contentGroup -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show cache contentGroup' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Static_Images: 14502  Scripts: 120"
           },
           {
             "cmd": "show cache policy -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show cache policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 15  Hits: 14622"
           },
           {
             "cmd": "show compression vserver -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show compression vserver' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Active: 5  Hits: 12903"
           },
           {
             "cmd": "show compression stats -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show compression stats' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Savings: 75%  TotalIn: 10GB"
           },
           {
             "cmd": "show dns nameServer -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show dns nameServer' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Servers: 2  State: UP"
           },
           {
             "cmd": "show dns record -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show dns record' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Records: 45"
           },
           {
             "cmd": "show dns policy -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show dns policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 5  Hits: 120"
           },
           {
             "cmd": "show snmp trap -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show snmp trap' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Dest: 2  Version: V2"
           },
           {
             "cmd": "show ntp server -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ntp server' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total NTP: 1  Synced: YES"
           },
           {
             "cmd": "show audit nslogAction -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show audit nslogAction' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: ns_act  Dest: /var/log/ns.log"
           },
           {
             "cmd": "show audit syslogPolicy -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show audit syslogPolicy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 5  Hits: 120340"
           },
           {
             "cmd": "show system entity -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show system entity' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Power: OK  Fans: OK  Temp: OK"
           },
           {
             "cmd": "show ns info -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns info' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "CPU: 2%  MEM: 25%  Uptime: 45 days"
           },
           {
             "cmd": "show ns unit -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns unit' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Standalone: NO  HA: YES  Primary: YES"
@@ -470,7 +476,7 @@
           },
           {
             "cmd": "show ns version -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns version' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "13.1.42.47.nc"
@@ -498,49 +504,49 @@
           },
           {
             "cmd": "show ns memory -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns memory' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 16384MB  Free: 4096MB  Kernel: 1024MB"
           },
           {
             "cmd": "show ns session -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns session' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 14502  Active: 850  TimedOut: 120"
           },
           {
             "cmd": "show ns stats -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns stats' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "(Displays all global counters in raw format)"
           },
           {
             "cmd": "show ns unit -detail",
-            "desc": "",
+            "desc": "Display detailed information for 'show ns unit' including additional fields and statistics.",
             "type": "show",
             "flagged": false,
             "example": "Unit: 0  Role: MASTER  MasterIP: 10.10.10.10"
           },
           {
             "cmd": "show ns feature -enabled",
-            "desc": "",
+            "desc": "Display only the entries currently enabled for 'show ns feature'.",
             "type": "show",
             "flagged": false,
             "example": "LB, CS, SSL, GSLB, CF, RP, RS, WL, SP, DG, REWRITE"
           },
           {
             "cmd": "show ns mode -enabled",
-            "desc": "",
+            "desc": "Display only the entries currently enabled for 'show ns mode'.",
             "type": "show",
             "flagged": false,
             "example": "L3, EDGE, USNIP, FR"
           },
           {
             "cmd": "show ns hostname -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns hostname' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "NS-ADC-PROD-01"
@@ -789,19 +795,22 @@
             "cmd": "save config",
             "desc": "Writes running config to /nsconfig/ns.conf — must run after any change",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Done."
           },
           {
             "cmd": "show config diff",
             "desc": "Shows difference between saved config on disk and current running config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "+add lb vserver LB_NewApp HTTP 10.20.30.50 80\n-rm lb vserver LB_OldApp\n add service SVC_Web_3 10.20.30.61 HTTP 80"
           },
           {
             "cmd": "show saved config",
             "desc": "Displays config as last saved to disk",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "#NS14.1 Build 21.57\n# Last modified by `nsroot`, 2026-05-01 05:42:11\nset ns config -IPAddress 10.10.10.11 -netmask 255.255.255.0\nadd ns ip 10.10.10.12 255.255.255.0 -type SNIP\nadd lb vserver LB_Prod HTTP 10.20.30.40 80 -persistenceType COOKIEINSERT"
           },
           {
             "cmd": "clear config full",
@@ -1044,42 +1053,42 @@
           },
           {
             "cmd": "show lb vserver -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show lb vserver' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: LB_VS_1  Persistence: SOURCEIP  Timeout: 2m  LBP: ROUNDROBIN"
           },
           {
             "cmd": "show service -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show service' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: SVC_1  IP: 1.1.1.1  MonState: UP  MaxConn: 5000"
           },
           {
             "cmd": "show serviceGroup -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show serviceGroup' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: SG_1  Members: 2  DownMembers: 0  Autoscale: OFF"
           },
           {
             "cmd": "show lb monitor -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show lb monitor' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: HTTP-Inline  Type: HTTP  Interval: 5  RespCode: 200"
           },
           {
             "cmd": "show lb vserver -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show lb vserver' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "LB_VS_1: 45032  LB_VS_2: 12  LB_VS_3: 0"
           },
           {
             "cmd": "show lb service -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show lb service' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "SVC_1: 22031  SVC_2: 23001"
@@ -1100,42 +1109,42 @@
           },
           {
             "cmd": "show service -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show service' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Services: 120  UP: 115  DOWN: 5"
           },
           {
             "cmd": "show serviceGroup -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show serviceGroup' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Groups: 15  UP: 14  PARTIAL: 1"
           },
           {
             "cmd": "show service -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show service' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "SVC_Web_1: 45021  SVC_Web_2: 45030"
           },
           {
             "cmd": "show lb group -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show lb group' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 5  Active: 5"
           },
           {
             "cmd": "show lb monitor -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show lb monitor' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "MON_PING: 1M probes  MON_HTTP: 500k probes"
           },
           {
             "cmd": "show lb persistentSessions -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show lb persistentSessions' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Active: 1450  Expired: 12903"
@@ -1198,14 +1207,14 @@
           },
           {
             "cmd": "disable lb vserver LB_VS_1",
-            "desc": "",
+            "desc": "Administratively disable a load-balancing vserver (stops accepting new connections; existing connections continue per the vserver's drain settings).",
             "type": "config",
             "flagged": false,
             "example": "Done"
           },
           {
             "cmd": "enable lb vserver LB_VS_1",
-            "desc": "",
+            "desc": "Administratively enable a load-balancing vserver so it begins accepting new connections again.",
             "type": "config",
             "flagged": false,
             "example": "Done"
@@ -1326,28 +1335,28 @@
           },
           {
             "cmd": "show cs vserver -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show cs vserver' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: CS_1  Precedence: RULE  DefaultLB: LB_Def"
           },
           {
             "cmd": "show cs policy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show cs policy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Pol_Mobile: 12034  Pol_Tablet: 402  Pol_PC: 45"
           },
           {
             "cmd": "show cs vserver -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show cs vserver' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "CS_SSL_443: 1.5M  CS_HTTP_80: 450"
           },
           {
             "cmd": "show cs policy -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show cs policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 12  Hits: 1.5M"
@@ -1515,28 +1524,28 @@
           },
           {
             "cmd": "show ssl vserver -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ssl vserver' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: VS_SSL  Ciphers: 12  ECC: Enabled  HSTS: Enabled"
           },
           {
             "cmd": "show ssl certKey -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ssl certKey' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: Cert_1  Expiry: 12/2026  Serial: 0AB12  Issuer: DigiCert"
           },
           {
             "cmd": "show ssl cipher -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ssl cipher' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: DEFAULT  Total: 34  Current: 22"
           },
           {
             "cmd": "show ssl profile -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ssl profile' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: secure_prof  DenySSLv3: YES  StrictCA: YES"
@@ -1550,7 +1559,7 @@
           },
           {
             "cmd": "show ssl vserver -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ssl vserver' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 15  Active: 15"
@@ -1564,21 +1573,21 @@
           },
           {
             "cmd": "show ssl cipher -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ssl cipher' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Cipher Suites: 34"
           },
           {
             "cmd": "show ssl profile -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ssl profile' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Frontend: 5  Backend: 2"
           },
           {
             "cmd": "show ssl action -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ssl action' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Actions: 3"
@@ -1753,49 +1762,49 @@
           },
           {
             "cmd": "show ns rpcNode -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns rpcNode' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "IP: 10.10.10.20  Password: SET  Secure: YES  State: UP"
           },
           {
             "cmd": "show ha node -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ha node' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Primary: 10.10.10.10  SyncState: SUCCESS  Incs: Enabled"
           },
           {
             "cmd": "show cluster node -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show cluster node' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Node 0: 10.10.10.20  State: ACTIVE  Health: OK"
           },
           {
             "cmd": "show cluster instance -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show cluster instance' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "ID: 1  Nodes: 3  Backplane: 1/1  MTU: 1500"
           },
           {
             "cmd": "show cluster node -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show cluster node' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 3  Active: 3  InService: 3"
           },
           {
             "cmd": "show cluster instance -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show cluster instance' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Instance: 1  CLIP: 10.10.10.50  UP"
           },
           {
             "cmd": "show cluster vserver -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show cluster vserver' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "CLIP_VS: 4502  Management: 120"
@@ -1809,7 +1818,7 @@
           },
           {
             "cmd": "show ha node -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ha node' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Local: Primary  Remote: Secondary  Sync: ENABLED"
@@ -1823,7 +1832,7 @@
           },
           {
             "cmd": "show ha node -detail",
-            "desc": "",
+            "desc": "Display detailed information for 'show ha node' including additional fields and statistics.",
             "type": "show",
             "flagged": false,
             "example": "LocalState: PRIMARY  SyncState: SUCCESS  RemoteState: SECONDARY"
@@ -1957,7 +1966,7 @@
           },
           {
             "cmd": "show network visualizer -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show network visualizer' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Nodes: 2  Links: 1  State: HEALTHY"
@@ -2083,21 +2092,21 @@
           },
           {
             "cmd": "show route -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show route' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "10.10.10.0/24  Type: STATIC  Cost: 1  State: UP"
           },
           {
             "cmd": "show arp -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show arp' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Total Entries: 145  Dynamic: 140  Static: 5"
           },
           {
             "cmd": "show vlan -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show vlan' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "VLAN 10: Member Ports: 1/1, 1/2  Untagged: 1/1"
@@ -2125,49 +2134,49 @@
           },
           {
             "cmd": "show ns connectiontable -type SNIP",
-            "desc": "",
+            "desc": "List active connections initiated from a Subnet IP (SNIP), useful when troubleshooting back-end connectivity from the appliance.",
             "type": "show",
             "flagged": false,
             "example": "Source: 10.10.10.11:54321  Dest: 192.168.1.10:80"
           },
           {
             "cmd": "show ns pbr -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns pbr' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "PBR_Internal: 4502  PBR_DMZ: 1290"
           },
           {
             "cmd": "show ns acl -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns acl' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "ACL_DENY_TELNET: 403  ACL_ALLOW_SSH: 15"
           },
           {
             "cmd": "show ns simpleacl -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns simpleacl' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "10.0.0.5: 45  10.0.0.10: 0"
           },
           {
             "cmd": "show ipsec vpn -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ipsec vpn' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Tunnels Up: 2  Tunnels Down: 0  Total BW: 12Mbps"
           },
           {
             "cmd": "show ipsec tunnel",
-            "desc": "",
+            "desc": "Display configured IPsec tunnels and their current state (Phase 1/Phase 2 SAs).",
             "type": "show",
             "flagged": false,
             "example": "Name: T_Cloud  Local: 10.1.1.10  Remote: 50.1.1.1  UP"
           },
           {
             "cmd": "show ipsec stats -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ipsec stats' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "SPI In: 0x1234  SPI Out: 0x5678  AuthFail: 0"
@@ -2181,49 +2190,49 @@
           },
           {
             "cmd": "show tunnel policy",
-            "desc": "",
+            "desc": "List configured tunnel-traffic policies that direct traffic into IP/IPsec/CloudBridge tunnels.",
             "type": "show",
             "flagged": false,
             "example": "Name: TUNNEL_POL_1  Action: ALLOW  Hits: 10293"
           },
           {
             "cmd": "show tunnel action",
-            "desc": "",
+            "desc": "List configured tunnel-traffic actions used as the action target by tunnel policies.",
             "type": "show",
             "flagged": false,
             "example": "Name: ALLOW  Type: ALLOW  Hits: 10293"
           },
           {
             "cmd": "show ns diameter -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns diameter' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Identity: ex.com  Realm: ex.com  State: UP"
           },
           {
             "cmd": "show ns diameter policy",
-            "desc": "",
+            "desc": "List Diameter advance policies configured on the appliance for AAA/load-balancing of Diameter traffic.",
             "type": "show",
             "flagged": false,
             "example": "Name: DIAM_POL_1  Action: DIAM_ACT_1  Hits: 0"
           },
           {
             "cmd": "show ns connectiontable -detail",
-            "desc": "",
+            "desc": "Display detailed information for 'show ns connectiontable' including additional fields and statistics.",
             "type": "show",
             "flagged": false,
             "example": "Src: 10.1.1.5:4521  Dst: 10.1.1.10:443  State: ESTABLISHED  MSS: 1460"
           },
           {
             "cmd": "show ns pbr -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns pbr' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: PBR_1  Action: ALLOW  NextHop: 10.1.1.1  Vlan: 10"
           },
           {
             "cmd": "show ns acl -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show ns acl' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: ACL_1  Action: DENY  Protocol: TCP  DestPort: 23"
@@ -2237,42 +2246,42 @@
           },
           {
             "cmd": "show ns connectiontable -state TIME_WAIT",
-            "desc": "",
+            "desc": "List all connections currently in the TIME_WAIT state — useful when investigating port-exhaustion or rapid connection churn.",
             "type": "show",
             "flagged": false,
             "example": "Src: 10.1.1.5:80  Dst: 10.1.1.10:52134"
           },
           {
             "cmd": "show ns ip6 -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns ip6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total IPv6: 2  Active: 2"
           },
           {
             "cmd": "show ns route6 -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns route6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total IPv6 Routes: 5  Active: 4"
           },
           {
             "cmd": "show ns pbr6 -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns pbr6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total PBR6: 1  Hits: 0"
           },
           {
             "cmd": "show ns acl6 -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns acl6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total ACL6: 2  Hits: 12"
           },
           {
             "cmd": "show ns simpleacl6 -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show ns simpleacl6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total SimpleACL6: 0"
@@ -2476,35 +2485,35 @@
           },
           {
             "cmd": "show policy variable -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show policy variable' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Variables: 15  Active: 8  Expired: 7"
           },
           {
             "cmd": "show policy stringmap -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show policy stringmap' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Maps: 5  Total Keys: 450  Hits: 12093"
           },
           {
             "cmd": "show policy expression -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show policy expression' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: get_user_agent  Expression: \"HTTP.REQ.HEADER(\\\"User-Agent\\\")\""
           },
           {
             "cmd": "show policy label -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show policy label' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "LBL_REQ: 4502  LBL_RES: 120  LBL_SSL: 0"
           },
           {
             "cmd": "show policy dataset -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show policy dataset' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "internal_subnets: 12903  blocked_ips: 45"
@@ -2518,56 +2527,56 @@
           },
           {
             "cmd": "show ns callout -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show ns callout' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Auth_Callout: 4502  Log_Callout: 12"
           },
           {
             "cmd": "show appflow collector -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show appflow collector' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Collector_1: 1.5M messages sent"
           },
           {
             "cmd": "show appflow action -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show appflow action' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "AF_ACT_Log: 4502  AF_ACT_Monitor: 0"
           },
           {
             "cmd": "show appflow policy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show appflow policy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "AF_POL_Global: 105932"
           },
           {
             "cmd": "show responder action -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show responder action' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: ACT_DROP  Type: DROP  Hits: 1293"
           },
           {
             "cmd": "show rewrite action -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show rewrite action' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: ACT_REPLACE  Type: REPLACE  Hits: 8593"
           },
           {
             "cmd": "show responder policy -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show responder policy' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: Resp_Pol  Action: Act_Drop  Rule: CLIENT.IP.SRC.EQ(1.1.1.1)"
           },
           {
             "cmd": "show rewrite policy -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show rewrite policy' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: RW_Pol  Action: RW_Act  Hits: 12904"
@@ -2651,14 +2660,14 @@
           },
           {
             "cmd": "show appflow action -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show appflow action' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: AF_ACT_1  Collectors: Coll_1  PageTracking: Enabled"
           },
           {
             "cmd": "show appflow policy -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show appflow policy' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: AF_POL_1  Rule: TRUE  Action: AF_ACT_1"
@@ -2756,14 +2765,14 @@
           },
           {
             "cmd": "show appfw profile -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show appfw profile' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: Web_App_Pro  StartURL: Enabled  SQLInj: Enabled"
           },
           {
             "cmd": "show appfw policy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show appfw policy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Pol_Web: 40502  Pol_Mobile: 12"
@@ -2784,7 +2793,7 @@
           },
           {
             "cmd": "show appfw profile -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show appfw profile' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "Web_App_Pro: 45021  API_Pro: 12"
@@ -2893,14 +2902,14 @@
           },
           {
             "cmd": "show stream selector -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show stream selector' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: Sel_User  Rule: HTTP.REQ.USER.NAME"
           },
           {
             "cmd": "show stream identifier -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show stream identifier' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "ID_Limit_100: 452  ID_Limit_500: 12"
@@ -3112,28 +3121,28 @@
           },
           {
             "cmd": "show authentication ldapAction -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show authentication ldapAction' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: LDAP_Act  Server: 10.1.1.5  DN: \"cn=adm,dc=ex\""
           },
           {
             "cmd": "show authentication radiusAction -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show authentication radiusAction' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: RAD_Act  Port: 1812  Timeout: 3s  Retries: 3"
           },
           {
             "cmd": "show aaa vserver -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show aaa vserver' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Name: AAA_VS  State: UP  AuthType: FORM  Portal: Default"
           },
           {
             "cmd": "show aaa session -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show aaa session' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "User: jdoe  IntranetIP: 10.1.1.50  StartTime: 10:00"
@@ -3154,42 +3163,42 @@
           },
           {
             "cmd": "show system user -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show system user' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "User: nsroot  Last Login: Mon May 27 09:00:00"
           },
           {
             "cmd": "show system group -full",
-            "desc": "",
+            "desc": "Display the full configuration of 'show system group' including all parameters, including defaults.",
             "type": "show",
             "flagged": false,
             "example": "Group: Admin_Grp  Policies: 3  Users: 5"
           },
           {
             "cmd": "show aaa session -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show aaa session' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Active: 45  Max: 500  Wait: 0"
           },
           {
             "cmd": "show aaa user -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show aaa user' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "User_Admin: 45 logins  User_Staff: 120 logins"
           },
           {
             "cmd": "show aaa group -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show aaa group' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Groups: 10  Active Policies: 15"
           },
           {
             "cmd": "show vpn vserver -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show vpn vserver' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total Gateway: 2  Active Users: 45"
@@ -3203,21 +3212,21 @@
           },
           {
             "cmd": "show vpn parameter -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show vpn parameter' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "SplitTunnel: ON  ClientCleanup: ON"
           },
           {
             "cmd": "show authentication ldapPolicy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show authentication ldapPolicy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "LDAP_POL_1: 4502  LDAP_POL_FAIL: 12"
           },
           {
             "cmd": "show authentication radiusPolicy -hits",
-            "desc": "",
+            "desc": "Display hit counters for 'show authentication radiusPolicy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
             "example": "RAD_POL_1: 129"
@@ -3238,14 +3247,14 @@
           },
           {
             "cmd": "show system group -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show system group' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Total: 5  Privilege: mixed"
           },
           {
             "cmd": "show system user -summary",
-            "desc": "",
+            "desc": "Display a condensed summary view of 'show system user' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
             "example": "Local: 3  External: 0"
@@ -4150,21 +4159,21 @@
           },
           {
             "cmd": "stat service SVC_Web_1",
-            "desc": "",
+            "desc": "Show real-time per-service statistics (requests, throughput, response time, errors) for a specific load-balancing service.",
             "type": "show",
             "flagged": false,
             "example": "Req: 45021  Resp: 45020  Throughput: 12Mbps"
           },
           {
             "cmd": "stat lb vserver LB_Prod",
-            "desc": "",
+            "desc": "Show real-time per-vserver statistics (hits, current/max clients, throughput, surge queue) for a specific LB vserver.",
             "type": "show",
             "flagged": false,
             "example": "Vserver: LB_Prod, Req: 5042, Resp: 5042, PktsIn: 120k, PktsOut: 115k"
           },
           {
             "cmd": "stat cs vserver CS_Main",
-            "desc": "",
+            "desc": "Show real-time per-vserver statistics for a specific Content Switching vserver, including request distribution across target LB vservers.",
             "type": "show",
             "flagged": false,
             "example": "Hits: 10540, Requests: 10540, Responses: 10490"
@@ -8797,440 +8806,440 @@
             "flagged": false
           },
           {
-            "cmd": "wlan <WLAN-NAME> <WLAN-ID> <SSID> - create WLAN",
-            "desc": "",
+            "cmd": "wlan <WLAN-NAME> <WLAN-ID> <SSID>",
+            "desc": "Create WLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no shutdown - enable WLAN",
-            "desc": "",
+            "cmd": "no shutdown",
+            "desc": "Enable WLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "shutdown - disable WLAN",
-            "desc": "",
+            "cmd": "shutdown",
+            "desc": "Disable WLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "ssid <SSID> - set SSID name",
-            "desc": "",
+            "cmd": "ssid <SSID>",
+            "desc": "Set SSID name.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "description <TEXT> - set WLAN description",
-            "desc": "",
+            "cmd": "description <TEXT>",
+            "desc": "Set WLAN description.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "policy <POLICY-PROFILE> - bind WLAN to policy profile",
-            "desc": "",
+            "cmd": "policy <POLICY-PROFILE>",
+            "desc": "Bind WLAN to policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no policy <POLICY-PROFILE> - unbind WLAN from policy profile",
-            "desc": "",
+            "cmd": "no policy <POLICY-PROFILE>",
+            "desc": "Unbind WLAN from policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa psk set-key ascii <PASSWORD> - configure WPA2 PSK",
-            "desc": "",
+            "cmd": "security wpa psk set-key ascii <PASSWORD>",
+            "desc": "Configure WPA2 PSK.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa akm psk - enable PSK AKM",
-            "desc": "",
+            "cmd": "security wpa akm psk",
+            "desc": "Enable PSK AKM.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa akm dot1x - enable 802.1X AKM",
-            "desc": "",
+            "cmd": "security wpa akm dot1x",
+            "desc": "Enable 802.1X AKM.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security dot1x authentication-list <AAA-LIST> - bind AAA list for 802.1X",
-            "desc": "",
+            "cmd": "security dot1x authentication-list <AAA-LIST>",
+            "desc": "Bind AAA list for 802.1X.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa akm sae - enable WPA3 SAE",
-            "desc": "",
+            "cmd": "security wpa akm sae",
+            "desc": "Enable WPA3 SAE.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa sae password <PASSWORD> - configure SAE password",
-            "desc": "",
+            "cmd": "security wpa sae password <PASSWORD>",
+            "desc": "Configure SAE password.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa wpa3 - enable WPA3 mode",
-            "desc": "",
+            "cmd": "security wpa wpa3",
+            "desc": "Enable WPA3 mode.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security wpa akm suite-b-192 - enable Suite‑B 192‑bit mode",
-            "desc": "",
+            "cmd": "security wpa akm suite-b-192",
+            "desc": "Enable Suite‑B 192‑bit mode.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no security wpa - disable WPA",
-            "desc": "",
+            "cmd": "no security wpa",
+            "desc": "Disable WPA.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no security wpa akm - disable all AKMs",
-            "desc": "",
+            "cmd": "no security wpa akm",
+            "desc": "Disable all AKMs.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no security dot1x - disable 802.1X",
-            "desc": "",
+            "cmd": "no security dot1x",
+            "desc": "Disable 802.1X.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security mac-filtering list <ACL> - enable MAC filtering",
-            "desc": "",
+            "cmd": "security mac-filtering list <ACL>",
+            "desc": "Enable MAC filtering.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "wireless profile policy <PROFILE> - create policy profile",
-            "desc": "",
+            "cmd": "wireless profile policy <PROFILE>",
+            "desc": "Create policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "vlan <VLAN-ID> - assign VLAN",
-            "desc": "",
+            "cmd": "vlan <VLAN-ID>",
+            "desc": "Assign VLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no vlan <VLAN-ID> - remove VLAN",
-            "desc": "",
+            "cmd": "no vlan <VLAN-ID>",
+            "desc": "Remove VLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no shutdown - enable policy profile",
-            "desc": "",
+            "cmd": "no shutdown",
+            "desc": "Enable policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "shutdown - disable policy profile",
-            "desc": "",
+            "cmd": "shutdown",
+            "desc": "Disable policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "session-timeout <SECONDS> - set session timeout",
-            "desc": "",
+            "cmd": "session-timeout <SECONDS>",
+            "desc": "Set session timeout.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "idle-timeout <SECONDS> - set idle timeout",
-            "desc": "",
+            "cmd": "idle-timeout <SECONDS>",
+            "desc": "Set idle timeout.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "input-policy <POLICY-MAP> - apply input QoS policy",
-            "desc": "",
+            "cmd": "input-policy <POLICY-MAP>",
+            "desc": "Apply input QoS policy.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "output-policy <POLICY-MAP> - apply output QoS policy",
-            "desc": "",
+            "cmd": "output-policy <POLICY-MAP>",
+            "desc": "Apply output QoS policy.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "wlan <WLAN-NAME> - bind WLAN to policy profile",
-            "desc": "",
+            "cmd": "wlan <WLAN-NAME>",
+            "desc": "Bind WLAN to policy profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "aaa-override - allow AAA override",
-            "desc": "",
+            "cmd": "aaa-override",
+            "desc": "Allow AAA override.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "accounting-list <AAA-LIST> - set accounting list",
-            "desc": "",
+            "cmd": "accounting-list <AAA-LIST>",
+            "desc": "Set accounting list.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "authentication-list <AAA-LIST> - set authentication list",
-            "desc": "",
+            "cmd": "authentication-list <AAA-LIST>",
+            "desc": "Set authentication list.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "authorization-list <AAA-LIST> - set authorization list",
-            "desc": "",
+            "cmd": "authorization-list <AAA-LIST>",
+            "desc": "Set authorization list.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "local-switching - enable FlexConnect local switching",
-            "desc": "",
+            "cmd": "local-switching",
+            "desc": "Enable FlexConnect local switching.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "central-switching - enable central switching",
-            "desc": "",
+            "cmd": "central-switching",
+            "desc": "Enable central switching.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "local-auth - enable FlexConnect local authentication",
-            "desc": "",
+            "cmd": "local-auth",
+            "desc": "Enable FlexConnect local authentication.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "central-auth - enable central authentication",
-            "desc": "",
+            "cmd": "central-auth",
+            "desc": "Enable central authentication.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "flexconnect vlan <VLAN-ID> - set Flex VLAN override",
-            "desc": "",
+            "cmd": "flexconnect vlan <VLAN-ID>",
+            "desc": "Set Flex VLAN override.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "flexconnect ap <AP-NAME> vlan <VLAN-ID> - AP‑specific VLAN override",
-            "desc": "",
+            "cmd": "flexconnect ap <AP-NAME> vlan <VLAN-ID>",
+            "desc": "AP‑specific VLAN override.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "mobility anchor <IP> - configure mobility anchor",
-            "desc": "",
+            "cmd": "mobility anchor <IP>",
+            "desc": "Configure mobility anchor.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no mobility anchor <IP> - remove mobility anchor",
-            "desc": "",
+            "cmd": "no mobility anchor <IP>",
+            "desc": "Remove mobility anchor.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "mobility tunnel mode <L2/L3> - set mobility tunnel mode",
-            "desc": "",
+            "cmd": "mobility tunnel mode <L2/L3>",
+            "desc": "Set mobility tunnel mode.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "timers session-timeout <SECONDS> - set session timeout",
-            "desc": "",
+            "cmd": "timers session-timeout <SECONDS>",
+            "desc": "Set session timeout.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "timers idle-timeout <SECONDS> - set idle timeout",
-            "desc": "",
+            "cmd": "timers idle-timeout <SECONDS>",
+            "desc": "Set idle timeout.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "timers exclusion <SECONDS> - set exclusion timeout",
-            "desc": "",
+            "cmd": "timers exclusion <SECONDS>",
+            "desc": "Set exclusion timeout.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "timers roaming <SECONDS> - set roaming timer",
-            "desc": "",
+            "cmd": "timers roaming <SECONDS>",
+            "desc": "Set roaming timer.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "qos <QOS-PROFILE> - apply QoS profile",
-            "desc": "",
+            "cmd": "qos <QOS-PROFILE>",
+            "desc": "Apply QoS profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no qos <QOS-PROFILE> - remove QoS profile",
-            "desc": "",
+            "cmd": "no qos <QOS-PROFILE>",
+            "desc": "Remove QoS profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "avc-profile <PROFILE> - apply AVC profile",
-            "desc": "",
+            "cmd": "avc-profile <PROFILE>",
+            "desc": "Apply AVC profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no avc-profile <PROFILE> - remove AVC profile",
-            "desc": "",
+            "cmd": "no avc-profile <PROFILE>",
+            "desc": "Remove AVC profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "netflow monitor <MONITOR> - apply NetFlow monitor",
-            "desc": "",
+            "cmd": "netflow monitor <MONITOR>",
+            "desc": "Apply NetFlow monitor.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "multicast vlan <VLAN-ID> - enable multicast VLAN",
-            "desc": "",
+            "cmd": "multicast vlan <VLAN-ID>",
+            "desc": "Enable multicast VLAN.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "multicast mcast-to-unicast - convert multicast to unicast",
-            "desc": "",
+            "cmd": "multicast mcast-to-unicast",
+            "desc": "Convert multicast to unicast.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no multicast mcast-to-unicast - disable multicast conversion",
-            "desc": "",
+            "cmd": "no multicast mcast-to-unicast",
+            "desc": "Disable multicast conversion.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "broadcast-ssid - broadcast SSID",
-            "desc": "",
+            "cmd": "broadcast-ssid",
+            "desc": "Broadcast SSID.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no broadcast-ssid - hide SSID",
-            "desc": "",
+            "cmd": "no broadcast-ssid",
+            "desc": "Hide SSID.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security pmf required - enable mandatory PMF",
-            "desc": "",
+            "cmd": "security pmf required",
+            "desc": "Enable mandatory PMF.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security pmf optional - enable optional PMF",
-            "desc": "",
+            "cmd": "security pmf optional",
+            "desc": "Enable optional PMF.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "security pmf disable - disable PMF",
-            "desc": "",
+            "cmd": "security pmf disable",
+            "desc": "Disable PMF.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "dot11 6ghz - enable 6GHz mode",
-            "desc": "",
+            "cmd": "dot11 6ghz",
+            "desc": "Enable 6GHz mode.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no dot11 6ghz - disable 6GHz mode",
-            "desc": "",
+            "cmd": "no dot11 6ghz",
+            "desc": "Disable 6GHz mode.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "regulatory-domain <CODE> - set 6GHz regulatory domain",
-            "desc": "",
+            "cmd": "regulatory-domain <CODE>",
+            "desc": "Set 6GHz regulatory domain.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "rf-profile dot11 24ghz <PROFILE> - bind 2.4GHz RF profile",
-            "desc": "",
+            "cmd": "rf-profile dot11 24ghz <PROFILE>",
+            "desc": "Bind 2.4GHz RF profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "rf-profile dot11 5ghz <PROFILE> - bind 5GHz RF profile",
-            "desc": "",
+            "cmd": "rf-profile dot11 5ghz <PROFILE>",
+            "desc": "Bind 5GHz RF profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "rf-profile dot11 6ghz <PROFILE> - bind 6GHz RF profile",
-            "desc": "",
+            "cmd": "rf-profile dot11 6ghz <PROFILE>",
+            "desc": "Bind 6GHz RF profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "mdns-sd gateway - enable mDNS gateway",
-            "desc": "",
+            "cmd": "mdns-sd gateway",
+            "desc": "Enable mDNS gateway.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "mdns-sd profile <PROFILE> - bind mDNS profile",
-            "desc": "",
+            "cmd": "mdns-sd profile <PROFILE>",
+            "desc": "Bind mDNS profile.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "band-select - enable band steering",
-            "desc": "",
+            "cmd": "band-select",
+            "desc": "Enable band steering.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no band-select - disable band steering",
-            "desc": "",
+            "cmd": "no band-select",
+            "desc": "Disable band steering.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "load-balance - enable client load balancing",
-            "desc": "",
+            "cmd": "load-balance",
+            "desc": "Enable client load balancing.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no load-balance - disable load balancing",
-            "desc": "",
+            "cmd": "no load-balance",
+            "desc": "Disable load balancing.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "client-steering - enable client steering",
-            "desc": "",
+            "cmd": "client-steering",
+            "desc": "Enable client steering.",
             "type": "config",
             "flagged": false
           },
           {
-            "cmd": "no client-steering - disable client steering",
-            "desc": "",
+            "cmd": "no client-steering",
+            "desc": "Disable client steering.",
             "type": "config",
             "flagged": false
           },
@@ -13564,6 +13573,13 @@
             "desc": "Shows CLOSED sockets",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "ss -tunap",
+            "desc": "List all TCP and UDP sockets with their state, owning process, and PID — modern replacement for 'netstat -tunap', much faster on busy hosts.",
+            "type": "show",
+            "flagged": false,
+            "example": "Netid State    Recv-Q Send-Q  Local Address:Port  Peer Address:Port  Process\ntcp   LISTEN   0      128     0.0.0.0:22          0.0.0.0:*          users:((\"sshd\",pid=812,fd=3))\ntcp   ESTAB    0      0       192.168.10.5:38712  198.51.100.20:443  users:((\"curl\",pid=4012,fd=4))\nudp   UNCONN   0      0       0.0.0.0:68          0.0.0.0:*          users:((\"dhclient\",pid=659,fd=6))"
           }
         ],
         "Diagnostics": [
@@ -15186,6 +15202,13 @@
             "desc": "L2 broadcast + multicast traffic",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "tshark -i eth0 -f \"tcp port 443\" -Y \"tls.handshake.type==1\" -T fields -e ip.src -e tls.handshake.extensions_server_name",
+            "desc": "Capture TLS ClientHellos on eth0 and print only the source IP and SNI — fast way to see which hostnames clients on a link are trying to reach without saving a full pcap.",
+            "type": "show",
+            "flagged": false,
+            "example": "192.168.1.42  api.example.com\n192.168.1.42  fonts.googleapis.com\n192.168.1.99  registry.example.org\n192.168.1.42  cdn.example.com"
           }
         ],
         "Analysis & Statistics": [
@@ -38473,6 +38496,13 @@
             "type": "config",
             "flagged": false,
             "example": "(config-router)# neighbor 10.0.0.2 soft-reconfiguration inbound"
+          },
+          {
+            "cmd": "show bgp ipv4 unicast summary",
+            "desc": "Show BGP neighbour summary for the IPv4 unicast address family: neighbour, AS, message counters, uptime, and PfxRcd. Quickest health check for an IOS-XE router's BGP sessions.",
+            "type": "show",
+            "flagged": false,
+            "example": "BGP router identifier 203.0.113.1, local AS number 65001\nBGP table version is 1428, main routing table version 1428\n147 network entries using 21168 bytes of memory\n\nNeighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n203.0.113.2     4 65002    8421    8417     1428    0    0  6w3d           86\n198.51.100.5    4 65003    1247    1244     1428    0    0  3d04h          12\n10.0.0.9        4 65001     421     422     1428    0    0  1w2d           49"
           }
         ],
         "NAT": [
