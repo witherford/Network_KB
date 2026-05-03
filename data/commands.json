@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-03T05:48:07.155Z",
+  "updatedAt": "2026-05-03T20:39:27.230Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -13141,6 +13141,3192 @@
           {
             "cmd": "systemctl is-active <service>",
             "desc": "Checks if service is active",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 01. File & Directory Navigation": [
+          {
+            "cmd": "ls",
+            "desc": "# List files in the current directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -l",
+            "desc": "# Long format listing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -lha",
+            "desc": "# Long format, hidden files, human-readable sizes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -t",
+            "desc": "# Sort by modification time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -S",
+            "desc": "# Sort by file size",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -1",
+            "desc": "# One file per line",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls --group-directories-first",
+            "desc": "# Directories first",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -d */",
+            "desc": "# List only directories",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls --sort=time",
+            "desc": "# Sort by time",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls --sort=size",
+            "desc": "# Sort by size",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ls -R",
+            "desc": "# Recursive listing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cd /path",
+            "desc": "# Move to directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cd ..",
+            "desc": "# Go up one level",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cd -",
+            "desc": "# Previous directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cd ~",
+            "desc": "# Home directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cd /",
+            "desc": "# Root directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tree",
+            "desc": "# Show directory structure visually",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tree -L 3",
+            "desc": "# Limit depth to 3 levels",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "basename /path/to/file",
+            "desc": "# Show filename only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dirname /path/to/file",
+            "desc": "# Show directory portion",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 02. File Creation, Copying, Moving, Deletion": [
+          {
+            "cmd": "touch file",
+            "desc": "# Create empty file or update timestamp",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "touch -t 202401011200 file",
+            "desc": "# Set specific timestamp",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp src dest",
+            "desc": "# Copy file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp -r dir1 dir2",
+            "desc": "# Copy directory recursively",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp -u src dest",
+            "desc": "# Only copy newer files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp -i src dest",
+            "desc": "# Ask before overwrite",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp -a src dest",
+            "desc": "# Archive mode (preserves all attributes)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp --parents file /dest",
+            "desc": "# Preserve full path structure",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cp --no-clobber src dest",
+            "desc": "# Never overwrite existing files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mv old new",
+            "desc": "# Move or rename",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mv -i old new",
+            "desc": "# Ask before overwrite",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mv --no-clobber old new",
+            "desc": "# Never overwrite existing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rm file",
+            "desc": "# Delete file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rm -i file",
+            "desc": "# Confirm before delete",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkdir dir",
+            "desc": "# Create directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkdir --mode=755 dir",
+            "desc": "# Create with specific permissions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "install -m 755 script.sh /usr/local/bin/",
+            "desc": "# Install with permissions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "truncate -s 0 logfile",
+            "desc": "# Empty a file (keep it)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "truncate -s 1G bigfile",
+            "desc": "# Create a 1G sparse file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shred -u file",
+            "desc": "# Overwrite and delete securely",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shred -n 10 file",
+            "desc": "# Overwrite 10 times",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 03. Viewing & Searching File Content": [
+          {
+            "cmd": "cat file",
+            "desc": "# Show file contents",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tac file",
+            "desc": "# Show contents in reverse",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "less file",
+            "desc": "# Scroll through file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "less -N file",
+            "desc": "# With line numbers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "less -S file",
+            "desc": "# No line wrapping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "more file",
+            "desc": "# Page through file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "head -n 20 file",
+            "desc": "# Show first 20 lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "head -n -5 file",
+            "desc": "# Show all but last 5 lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -n 50 file",
+            "desc": "# Show last 50 lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -n +5 file",
+            "desc": "# Show from line 5 onwards",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "hexdump -C file",
+            "desc": "# Hex dump of file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "od -c file",
+            "desc": "# Octal dump of file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nl file",
+            "desc": "# Show file with line numbers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -n pattern file",
+            "desc": "# Show line numbers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -l pattern *",
+            "desc": "# Show only filenames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -c pattern file",
+            "desc": "# Count matches",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -w word file",
+            "desc": "# Match whole words only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -A3 pattern file",
+            "desc": "# Show 3 lines after match",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -B3 pattern file",
+            "desc": "# Show 3 lines before match",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -C3 pattern file",
+            "desc": "# Show 3 lines of context",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "find . -maxdepth 2 -type f",
+            "desc": "# Limit search depth",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "find /var -type f -name \"*.log\"",
+            "desc": "# Find logs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "find /home -type f -size +1G",
+            "desc": "# Find large files",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 04. Archives & Compression": [
+          {
+            "cmd": "tar -czf archive.tar.gz dir",
+            "desc": "# Create gzip archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar -xzf archive.tar.gz",
+            "desc": "# Extract gzip archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar -tvf archive.tar",
+            "desc": "# List contents",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar --exclude=*.log -czf archive.tar.gz dir",
+            "desc": "# Exclude log files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar -cpf archive.tar dir",
+            "desc": "# Preserve permissions",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar --strip-components=1 -xzf archive.tar.gz",
+            "desc": "# Strip top directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar --lzma -cf archive.tar.lzma dir",
+            "desc": "# Create LZMA archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zip file.zip file1 file2",
+            "desc": "# Create zip archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zip -r dir.zip dir",
+            "desc": "# Recursive zip",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "zip -9 file.zip file",
+            "desc": "# Maximum compression",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "unzip file.zip",
+            "desc": "# Extract zip",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "unzip -l file.zip",
+            "desc": "# List zip contents",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "unzip -o file.zip",
+            "desc": "# Overwrite without prompting",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "gzip file",
+            "desc": "# Compress file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "gzip -9 file",
+            "desc": "# Maximum compression",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "gzip -k file",
+            "desc": "# Keep original",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xz -9 file",
+            "desc": "# Maximum compression",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xz -d file.xz",
+            "desc": "# Decompress",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xz -k file",
+            "desc": "# Keep original",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xz -T0 file",
+            "desc": "# Use all CPU threads",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 05. System Information & Monitoring": [
+          {
+            "cmd": "uname -r",
+            "desc": "# Kernel version",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "whoami",
+            "desc": "# Current user",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "df -i",
+            "desc": "# Inode usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "du -sh dir",
+            "desc": "# Directory size",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "du -sh *",
+            "desc": "# Size of all items in current dir",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "du -ah dir",
+            "desc": "# All files with sizes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "du -x / | sort -n",
+            "desc": "# Largest directories",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ps -eo pid,ppid,cmd,%mem,%cpu",
+            "desc": "# Custom columns",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ps --sort=-%cpu",
+            "desc": "# Sort by CPU usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ps --sort=-%mem",
+            "desc": "# Sort by memory usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kill pid",
+            "desc": "# Terminate process",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "kill -9 pid",
+            "desc": "# Force terminate",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "killall process",
+            "desc": "# Kill all by name",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "uptime -p",
+            "desc": "# Pretty format",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iostat",
+            "desc": "# I/O stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mpstat",
+            "desc": "# CPU stats per core",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dstat",
+            "desc": "# Combined system stats",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sar -u 1 5",
+            "desc": "# CPU usage 5 samples",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "time command",
+            "desc": "# Time how long a command takes",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 06. Networking Commands": [
+          {
+            "cmd": "ip -br a",
+            "desc": "# Brief IP address listing",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip -4 a",
+            "desc": "# IPv4 addresses only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip -6 a",
+            "desc": "# IPv6 addresses only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip -4 r",
+            "desc": "# IPv4 routing table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip link",
+            "desc": "# Show link layer info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip neigh flush all",
+            "desc": "# Clear ARP cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route get 8.8.8.8",
+            "desc": "# Show route to specific host",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping host",
+            "desc": "# Test connectivity",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ping -s 1024 host",
+            "desc": "# Large packet ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl url",
+            "desc": "# Fetch a URL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl -I url",
+            "desc": "# HTTP headers only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl -L url",
+            "desc": "# Follow redirects",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl -O url",
+            "desc": "# Download to current directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl --compressed url",
+            "desc": "# Accept compressed response",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "curl --retry 5 url",
+            "desc": "# Retry on failure",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wget url",
+            "desc": "# Download file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wget -c url",
+            "desc": "# Continue interrupted download",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wget --tries=5 url",
+            "desc": "# Set retry count",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ss -an",
+            "desc": "# All sockets",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh user@host",
+            "desc": "# Connect via SSH",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -i key user@host",
+            "desc": "# SSH with specific key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -p 2222 user@host",
+            "desc": "# SSH on custom port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -v user@host",
+            "desc": "# Verbose SSH debug",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "scp -r dir user@host:/path",
+            "desc": "# Copy directory over SSH",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "hostname -I",
+            "desc": "# Show all IP addresses",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arp -a",
+            "desc": "# ARP cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "route -n",
+            "desc": "# Routing table (numeric)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethtool -S eth0",
+            "desc": "# NIC statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethtool -i eth0",
+            "desc": "# Driver information",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 07. Package Management (APT)": [
+          {
+            "cmd": "sudo apt update",
+            "desc": "# Refresh package lists",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt upgrade",
+            "desc": "# Install updates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt install pkg",
+            "desc": "# Install software",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt install -y pkg",
+            "desc": "# Install without prompt",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt install pkg=version",
+            "desc": "# Install specific version",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt remove pkg",
+            "desc": "# Remove software",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt purge pkg",
+            "desc": "# Remove with config files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt autoremove",
+            "desc": "# Clean unused dependencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt autoremove --purge",
+            "desc": "# Clean and remove configs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo apt full-upgrade",
+            "desc": "# Full system upgrade",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt search term",
+            "desc": "# Search for packages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt show pkg",
+            "desc": "# Show package info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt list --installed",
+            "desc": "# List installed packages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt list --upgradable",
+            "desc": "# List upgradable packages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt-cache policy pkg",
+            "desc": "# Show version and repo info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt-cache depends pkg",
+            "desc": "# Show dependencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt-cache rdepends pkg",
+            "desc": "# Show reverse dependencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -l",
+            "desc": "# List installed packages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -s pkg",
+            "desc": "# Show package status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -L pkg",
+            "desc": "# List files installed by package",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -i file.deb",
+            "desc": "# Install a .deb file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -r pkg",
+            "desc": "# Remove a package",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg --configure -a",
+            "desc": "# Fix broken installs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt --fix-broken install",
+            "desc": "# Repair broken dependencies",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dpkg -S /path/to/file",
+            "desc": "# Find which package owns a file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt-mark hold pkg",
+            "desc": "# Prevent package from upgrading",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt-mark unhold pkg",
+            "desc": "# Remove hold",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt clean",
+            "desc": "# Clear package cache",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "apt autoclean",
+            "desc": "# Remove old cached packages",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 08. User & Permissions Management": [
+          {
+            "cmd": "chmod 755 file",
+            "desc": "# rwxr-xr-x",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod 644 file",
+            "desc": "# rw-r--r--",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod 600 file",
+            "desc": "# rw------- (private key)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod 700 dir",
+            "desc": "# rwx------",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod u+x file",
+            "desc": "# Add execute for owner",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod g-w file",
+            "desc": "# Remove write for group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod o-rwx file",
+            "desc": "# No permissions for others",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chmod -R 755 dir",
+            "desc": "# Recursive chmod",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chown user file",
+            "desc": "# Change owner",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chown user:group file",
+            "desc": "# Change owner and group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chown -R user:group dir",
+            "desc": "# Recursive ownership change",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo passwd user",
+            "desc": "# Change user password",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo useradd -m user",
+            "desc": "# Create user with home dir",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo useradd -m -s /bin/bash user",
+            "desc": "# Create with bash shell",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo userdel user",
+            "desc": "# Delete user",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo userdel -r user",
+            "desc": "# Delete user and home dir",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo usermod -aG group user",
+            "desc": "# Add user to group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo usermod -L user",
+            "desc": "# Lock user account",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo usermod -U user",
+            "desc": "# Unlock user account",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo groupadd group",
+            "desc": "# Create group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo groupdel group",
+            "desc": "# Delete group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "getent passwd",
+            "desc": "# Show all users",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "getent group",
+            "desc": "# Show all groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "getfacl file",
+            "desc": "# Get ACL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "setfacl -m u:user:rwx file",
+            "desc": "# Set ACL for user",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "setfacl -m g:group:rw file",
+            "desc": "# Set ACL for group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "setfacl -b file",
+            "desc": "# Remove all ACLs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chage -l user",
+            "desc": "# Show password aging info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chage -M 90 user",
+            "desc": "# Set max password age",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 09. Systemd Service Management": [
+          {
+            "cmd": "systemctl status service",
+            "desc": "# Check service status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl start service",
+            "desc": "# Start service",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl stop service",
+            "desc": "# Stop service",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl restart service",
+            "desc": "# Restart service",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl reload service",
+            "desc": "# Reload config without restart",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl reload-or-restart service",
+            "desc": "# Reload if supported",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl enable service",
+            "desc": "# Enable at boot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl disable service",
+            "desc": "# Disable at boot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl mask service",
+            "desc": "# Prevent from starting",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl unmask service",
+            "desc": "# Remove mask",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl is-active service",
+            "desc": "# Check if active",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl is-enabled service",
+            "desc": "# Check if enabled",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl is-failed service",
+            "desc": "# Check if failed",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl list-units",
+            "desc": "# List all units",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl list-unit-files",
+            "desc": "# List all unit files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl daemon-reload",
+            "desc": "# Reload unit files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl daemon-reexec",
+            "desc": "# Re-execute systemd",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl cat service",
+            "desc": "# Show unit file content",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl edit service",
+            "desc": "# Edit unit file override",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl show service",
+            "desc": "# Show all properties",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl kill service",
+            "desc": "# Kill service",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl reset-failed service",
+            "desc": "# Clear failed status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl isolate multi-user.target",
+            "desc": "# Switch to CLI mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl set-default multi-user.target",
+            "desc": "# Set default target",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl reboot",
+            "desc": "# Reboot system",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl poweroff",
+            "desc": "# Power off",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl suspend",
+            "desc": "# Suspend to RAM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl hibernate",
+            "desc": "# Hibernate",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl -u service --since today",
+            "desc": "# Today's service logs",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 10. Storage, Mounting & Filesystems": [
+          {
+            "cmd": "lsblk",
+            "desc": "# List block devices",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lsblk -o NAME,SIZE,TYPE,MOUNTPOINT",
+            "desc": "# Custom columns",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mount device dir",
+            "desc": "# Mount filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mount -o ro device dir",
+            "desc": "# Mount read-only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mount -o noatime device dir",
+            "desc": "# Mount without updating atime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mount -a",
+            "desc": "# Mount all from /etc/fstab",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "umount dir",
+            "desc": "# Unmount",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "umount -f dir",
+            "desc": "# Force unmount",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "df -hT",
+            "desc": "# Show filesystem types",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkfs.ext4 device",
+            "desc": "# Format with ext4",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkfs.xfs device",
+            "desc": "# Format with XFS",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkfs.fat device",
+            "desc": "# Format with FAT32",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tune2fs -l device",
+            "desc": "# Show ext4 parameters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tune2fs -m 0 device",
+            "desc": "# Remove reserved space",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "fsck device",
+            "desc": "# Check filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "e2fsck -f device",
+            "desc": "# Force check ext filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xfs_repair device",
+            "desc": "# Repair XFS filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "fdisk /dev/sdb",
+            "desc": "# Interactive partition tool",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "parted /dev/sdb print",
+            "desc": "# Show partition table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "parted /dev/sdb mklabel gpt",
+            "desc": "# Create GPT label",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mount -t tmpfs -o size=1G tmpfs /mnt/ram",
+            "desc": "# Create RAM disk",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 11. Logs & Debugging": [
+          {
+            "cmd": "journalctl -n 100",
+            "desc": "# Last 100 entries",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl --since \"1 hour ago\"",
+            "desc": "# Recent hour",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl --since yesterday",
+            "desc": "# Since yesterday",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dmesg --ctime",
+            "desc": "# With timestamps",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dmesg --level=err",
+            "desc": "# Error messages only",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/syslog",
+            "desc": "# Follow syslog",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tail -f /var/log/auth.log",
+            "desc": "# Follow auth log",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "grep -R error /var/log",
+            "desc": "# Search all logs for errors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "who",
+            "desc": "# Currently logged in users",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 12. Text Processing": [
+          {
+            "cmd": "sort -u file",
+            "desc": "# Sort and remove duplicates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sort -t: -k3n /etc/passwd",
+            "desc": "# Sort by field",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "uniq -d file",
+            "desc": "# Show only duplicates",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "uniq -u file",
+            "desc": "# Show only unique lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '{print $1}' file",
+            "desc": "# Print first column",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '{print $2,$3}' file",
+            "desc": "# Print columns 2 and 3",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '/pattern/ {print $0}' file",
+            "desc": "# Filter by pattern",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '{sum+=$1} END {print sum}' file",
+            "desc": "# Sum a column",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk 'NR%2==0' file",
+            "desc": "# Print even lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '{print NF}' file",
+            "desc": "# Print field count per line",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk '{print $NF}' file",
+            "desc": "# Print last field",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "awk 'BEGIN{FS=\":\"}{print $1,$3}' /etc/passwd",
+            "desc": "# Custom separator",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sed 's/old/new/g' file",
+            "desc": "# Replace all occurrences",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sed -n '1,50p' file",
+            "desc": "# Print lines 1-50",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sed -i 's/old/new/g' file",
+            "desc": "# Edit file in place",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sed '1,10d' file",
+            "desc": "# Delete first 10 lines",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sed 's/^/# /' file",
+            "desc": "# Prefix each line with comment",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cut -d: -f1 /etc/passwd",
+            "desc": "# Extract first field (colon-delimited)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cut -c1-20 file",
+            "desc": "# Extract first 20 characters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cut -d, -f1,3 file",
+            "desc": "# Extract columns 1 and 3 (CSV)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "column -t file",
+            "desc": "# Align columns as table",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "paste file1 file2",
+            "desc": "# Merge files side by side",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "join file1 file2",
+            "desc": "# Join files on common field",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "diff file1 file2",
+            "desc": "# Compare files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "diff -u file1 file2",
+            "desc": "# Unified diff format",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "diff -y file1 file2",
+            "desc": "# Side-by-side diff",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "patch < fix.patch",
+            "desc": "# Apply a patch",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "patch -R < fix.patch",
+            "desc": "# Reverse a patch",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iconv -f utf-8 -t ascii file",
+            "desc": "# Convert encoding",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dos2unix file",
+            "desc": "# Convert Windows line endings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "unix2dos file",
+            "desc": "# Convert to Windows line endings",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 13. Network Troubleshooting": [
+          {
+            "cmd": "tracepath host",
+            "desc": "# Trace path (no root needed)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "traceroute -n host",
+            "desc": "# Numeric only (no DNS)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dig host",
+            "desc": "# DNS lookup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dig +short host",
+            "desc": "# Short DNS output",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dig ANY host",
+            "desc": "# All record types",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dig @8.8.8.8 host",
+            "desc": "# Query specific DNS server",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dig +trace host",
+            "desc": "# Full trace of DNS resolution",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nslookup host",
+            "desc": "# Basic DNS query",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nslookup -type=mx domain",
+            "desc": "# MX record lookup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mtr host",
+            "desc": "# Network path analysis",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mtr -rw host",
+            "desc": "# Report mode",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mtr -c 100 host",
+            "desc": "# 100 packet analysis",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethtool -k eth0",
+            "desc": "# Offload settings",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "arping host",
+            "desc": "# ARP ping",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nmap -sV host",
+            "desc": "# Service version scan",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nmap -sn 192.168.1.0/24",
+            "desc": "# Ping sweep",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nmap -A host",
+            "desc": "# Aggressive scan",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iperf3 -s",
+            "desc": "# Start iperf server",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iperf3 -c host",
+            "desc": "# Run throughput test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iperf3 -t 60 -c host",
+            "desc": "# 60-second test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcpdump -i eth0",
+            "desc": "# Capture all traffic",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcpdump -nn port 80",
+            "desc": "# Filter by port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tcpdump -w file.pcap",
+            "desc": "# Write to file",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 14. System Maintenance & Cleanup": [
+          {
+            "cmd": "apt autoremove --purge",
+            "desc": "# Remove orphan packages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "journalctl --vacuum-size=200M",
+            "desc": "# Limit log disk usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "crontab -e",
+            "desc": "# Edit scheduled tasks",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "updatedb",
+            "desc": "# Update locate database",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "locate file",
+            "desc": "# Find file quickly",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sync",
+            "desc": "# Flush filesystem buffers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "echo 3 > /proc/sys/vm/drop_caches",
+            "desc": "# Drop page/slab caches",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "find /tmp -type f -mtime +1 -delete",
+            "desc": "# Delete old temp files",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "find /var/log -type f -mtime +30 -delete",
+            "desc": "# Delete old logs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tmpreaper /tmp",
+            "desc": "# Clean temp directory",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "logrotate -f /etc/logrotate.conf",
+            "desc": "# Force log rotation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown -r now",
+            "desc": "# Reboot immediately",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown -h now",
+            "desc": "# Halt immediately",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "shutdown -c",
+            "desc": "# Cancel pending shutdown",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 15. Firewall (UFW)": [
+          {
+            "cmd": "sudo ufw status",
+            "desc": "# Check firewall status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw status numbered",
+            "desc": "# Show with rule numbers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw enable",
+            "desc": "# Enable firewall",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw disable",
+            "desc": "# Disable firewall",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw reset",
+            "desc": "# Reset all rules",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw reload",
+            "desc": "# Reload rules",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw allow 22/tcp",
+            "desc": "# Allow SSH",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw allow 443/tcp",
+            "desc": "# Allow HTTPS",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw allow 8080/tcp",
+            "desc": "# Allow custom port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw allow from 192.168.1.0/24",
+            "desc": "# Allow subnet",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw allow 10000:20000/udp",
+            "desc": "# Allow port range",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw deny 80",
+            "desc": "# Block HTTP",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw deny 445/tcp",
+            "desc": "# Block SMB",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw deny from 10.0.0.0/8",
+            "desc": "# Block IP range",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw limit ssh",
+            "desc": "# Rate limit SSH",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw delete allow 22",
+            "desc": "# Remove rule",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo ufw delete 3",
+            "desc": "# Delete rule by number",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+            "desc": "# Allow established/related",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 16. Process Control & Job Management": [
+          {
+            "cmd": "jobs",
+            "desc": "# Show background jobs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "bg %1",
+            "desc": "# Resume job in background",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "fg %1",
+            "desc": "# Bring job to foreground",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nice -n 10 cmd",
+            "desc": "# Run with lower priority",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nice -n -5 cmd",
+            "desc": "# Run with higher priority",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "renice -5 -p pid",
+            "desc": "# Change running process priority",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nohup cmd &",
+            "desc": "# Run immune to hangup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "disown",
+            "desc": "# Remove job from shell",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "command &",
+            "desc": "# Run in background",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 17. Advanced Networking": [
+          {
+            "cmd": "ip addr add 192.168.1.50/24 dev eth0",
+            "desc": "# Add IP address",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip addr del 192.168.1.50/24 dev eth0",
+            "desc": "# Remove IP address",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip link set eth0 mtu 9000",
+            "desc": "# Set jumbo frames",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip link set eth0 txqueuelen 2000",
+            "desc": "# Set transmit queue",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip addr flush dev eth0",
+            "desc": "# Remove all IPs from interface",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route add default via 192.168.1.1",
+            "desc": "# Add default route",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip route del 10.0.0.0/24",
+            "desc": "# Delete route",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip rule show",
+            "desc": "# Show policy routing rules",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ip rule add from 192.168.1.0/24 table 100",
+            "desc": "# Add policy route",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "nmcli radio wifi off",
+            "desc": "# Disable WiFi",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethtool -K eth0 gro off",
+            "desc": "# Disable GRO",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ethtool -G eth0 rx 4096 tx 4096",
+            "desc": "# Set ring buffer size",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 18. Disk & Partition Management": [
+          {
+            "cmd": "parted /dev/sdb mkpart primary ext4 1MiB 100%",
+            "desc": "# Create partition",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkfs.ext4 /dev/sdb1",
+            "desc": "# Format as ext4",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkfs.fat /dev/sdb1",
+            "desc": "# Format as FAT32",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "wipefs -a /dev/sdb",
+            "desc": "# Wipe filesystem signatures",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sgdisk -p /dev/sdb",
+            "desc": "# Show GPT info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tune2fs -l /dev/sda1",
+            "desc": "# Show ext4 filesystem info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "resize2fs /dev/sda1",
+            "desc": "# Resize ext4 filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xfs_repair /dev/sdb1",
+            "desc": "# Repair XFS filesystem",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "smartctl -H /dev/sda",
+            "desc": "# Quick health status",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 19. LVM": [
+          {
+            "cmd": "pvcreate /dev/sdb1",
+            "desc": "# Create physical volume",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pvs",
+            "desc": "# Show physical volumes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vgcreate vgname /dev/sdb1",
+            "desc": "# Create volume group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vgs",
+            "desc": "# Show volume groups",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "vgextend vgname /dev/sdc1",
+            "desc": "# Extend volume group",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lvcreate -L 20G -n lvname vgname",
+            "desc": "# Create logical volume",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lvs",
+            "desc": "# Show logical volumes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lvextend -L +10G /dev/vg/lv",
+            "desc": "# Extend logical volume",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lvreduce -L -5G /dev/vg/lv",
+            "desc": "# Reduce logical volume",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "resize2fs /dev/vg/lv",
+            "desc": "# Resize ext4 after LV change",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "xfs_growfs /mountpoint",
+            "desc": "# Grow XFS after LV extension",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 20. Backup & Snapshots": [
+          {
+            "cmd": "rsync -avh src/ dest/",
+            "desc": "# Sync directories",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rsync -avz user@host:/data/ /backup/",
+            "desc": "# Remote sync",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rsync --delete src/ dest/",
+            "desc": "# Mirror (delete extra files)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rsync -av --progress src/ dest/",
+            "desc": "# Show progress",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rsync -aAXv / /backup/",
+            "desc": "# Full system backup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dd if=/dev/sda of=disk.img bs=4M",
+            "desc": "# Disk image",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dd if=/dev/zero of=/swapfile bs=1M count=2048",
+            "desc": "# Create swap",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "tar -czf $(date +%F).tar.gz dir",
+            "desc": "# Timestamped backup",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cpio -o < filelist > archive.cpio",
+            "desc": "# Create cpio archive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ddrescue /dev/sda image logfile",
+            "desc": "# Rescue failing disk",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "btrfs subvolume snapshot /data /snap/data",
+            "desc": "# BTRFS snapshot",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 21. SSH Hardening & Key Management": [
+          {
+            "cmd": "ssh-keygen -t ed25519",
+            "desc": "# Generate ED25519 key (recommended)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keygen -t rsa -b 4096",
+            "desc": "# Generate 4096-bit RSA key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keygen -t ed25519 -a 100",
+            "desc": "# With 100 KDF rounds",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-copy-id user@host",
+            "desc": "# Install public key on remote",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keygen -l -f key.pub",
+            "desc": "# Show key fingerprint",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keygen -y -f keyfile",
+            "desc": "# Extract public key from private",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keygen -R host",
+            "desc": "# Remove host from known_hosts",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh-keyscan host",
+            "desc": "# Fetch host keys",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "scp -P 2222 file user@host:/path",
+            "desc": "# Custom port",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -L 8080:localhost:80 user@host",
+            "desc": "# Local port forward",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -R 2222:localhost:22 user@host",
+            "desc": "# Remote port forward",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -o StrictHostKeyChecking=no user@host",
+            "desc": "# Skip key check",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -o ConnectTimeout=5 user@host",
+            "desc": "# Connection timeout",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "ssh -o ServerAliveInterval=30 user@host",
+            "desc": "# Keep-alive",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo systemctl restart ssh",
+            "desc": "# Apply SSH config changes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo nano /etc/ssh/sshd_config",
+            "desc": "# Edit SSH config",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 22. Kernel & Module Management": [
+          {
+            "cmd": "modprobe module",
+            "desc": "# Load module",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "modprobe -r module",
+            "desc": "# Unload module",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "modinfo module",
+            "desc": "# Show module information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "modinfo -F filename module",
+            "desc": "# Show module file location",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "uname -m",
+            "desc": "# Show architecture",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /proc/cpuinfo",
+            "desc": "# CPU information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /proc/meminfo",
+            "desc": "# Memory information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /proc/uptime",
+            "desc": "# System uptime",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /proc/loadavg",
+            "desc": "# Load averages",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cat /proc/version",
+            "desc": "# Kernel version string",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysctl -a",
+            "desc": "# Show all kernel parameters",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysctl -w key=value",
+            "desc": "# Set kernel parameter",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysctl net.ipv4.ip_forward",
+            "desc": "# Check IP forwarding",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysctl vm.swappiness",
+            "desc": "# Check swappiness",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysctl fs.file-max",
+            "desc": "# Check file descriptor limit",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 23. Docker & Containers": [
+          {
+            "cmd": "docker ps",
+            "desc": "# List running containers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker ps -a",
+            "desc": "# List all containers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker run -d image",
+            "desc": "# Run detached",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker exec -it container bash",
+            "desc": "# Enter running container",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker inspect container",
+            "desc": "# Inspect container details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker stats",
+            "desc": "# Live resource usage",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker system prune -a",
+            "desc": "# Clean all unused resources",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker network ls",
+            "desc": "# List networks",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker network inspect network",
+            "desc": "# Inspect network",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker volume ls",
+            "desc": "# List volumes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker volume inspect volume",
+            "desc": "# Inspect volume",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker build -t image .",
+            "desc": "# Build image from Dockerfile",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker tag image repo/image",
+            "desc": "# Tag image",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker push repo/image",
+            "desc": "# Push to registry",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker pull repo/image",
+            "desc": "# Pull from registry",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker-compose up -d",
+            "desc": "# Start stack",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker-compose down",
+            "desc": "# Stop stack",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "docker-compose logs",
+            "desc": "# View stack logs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lxc launch ubuntu:22.04 vm",
+            "desc": "# Create LXC container",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lxc exec vm bash",
+            "desc": "# Enter LXC container",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 24. Security & Auditing": [
+          {
+            "cmd": "auditctl -l",
+            "desc": "# List audit rules",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "auditctl -w /etc/passwd -p wa",
+            "desc": "# Watch passwd file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "auditctl -w /etc/shadow -p wa",
+            "desc": "# Watch shadow file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "rkhunter --update",
+            "desc": "# Update RKHunter database",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "aa-status",
+            "desc": "# AppArmor status",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "getent shadow",
+            "desc": "# Show shadow password database",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "chkrootkit -q",
+            "desc": "# Quick rootkit check",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 25. Cryptography & Hashing": [
+          {
+            "cmd": "sha256sum file",
+            "desc": "# SHA-256 checksum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sha512sum file",
+            "desc": "# SHA-512 checksum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "md5sum file",
+            "desc": "# MD5 checksum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sha1sum file",
+            "desc": "# SHA-1 checksum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "cksum file",
+            "desc": "# CRC checksum",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -hex 32",
+            "desc": "# Random hex string",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rand -base64 48",
+            "desc": "# Random base64 string",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl x509 -in cert.pem -text -noout",
+            "desc": "# View certificate",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl req -new -key key.pem -out csr.pem",
+            "desc": "# Create CSR",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl verify cert.pem",
+            "desc": "# Verify certificate",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl enc -aes-256-cbc -salt -in file -out file.enc",
+            "desc": "# Encrypt",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl rsa -in key -check",
+            "desc": "# Check RSA key",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "openssl pkcs12 -export -out cert.p12 -inkey key.pem -in cert.pem",
+            "desc": "# Create PKCS12",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pwgen 20 1",
+            "desc": "# Generate 20-char password",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pwgen -s 32 1",
+            "desc": "# Secure random password",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mkpasswd --method=sha-512",
+            "desc": "# Hashed password",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 26. Git & Version Control": [
+          {
+            "cmd": "git clone url",
+            "desc": "# Clone repository",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git diff",
+            "desc": "# Unstaged changes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git diff --staged",
+            "desc": "# Staged changes",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git stash pop",
+            "desc": "# Apply stash",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git rebase main",
+            "desc": "# Rebase on main",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git reset HEAD file",
+            "desc": "# Unstage file",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git fetch origin",
+            "desc": "# Fetch without merge",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git show HEAD",
+            "desc": "# Show last commit",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "git log --graph",
+            "desc": "# Branch graph",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 27. Database Commands": [
+          {
+            "cmd": "mysql -u root -p",
+            "desc": "# Login to MySQL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "mysql db < backup.sql",
+            "desc": "# Restore database",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sudo -u postgres psql",
+            "desc": "# Open PostgreSQL shell",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "\\l",
+            "desc": "# List databases (psql)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "\\dt",
+            "desc": "# List tables (psql)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "\\q",
+            "desc": "# Quit psql",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "pg_dump db > backup.sql",
+            "desc": "# Backup PostgreSQL database",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "psql -c \"SELECT version();\"",
+            "desc": "# Quick query",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "systemctl restart postgresql",
+            "desc": "# Restart PostgreSQL",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "redis-cli ping",
+            "desc": "# Check Redis connection",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "redis-cli keys \"*\"",
+            "desc": "# List all keys",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "redis-cli flushall",
+            "desc": "# Delete all keys",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "redis-cli info",
+            "desc": "# Server information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "redis-cli monitor",
+            "desc": "# Live command monitor",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 28. Virtualization": [
+          {
+            "cmd": "virsh list",
+            "desc": "# List running VMs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh list --all",
+            "desc": "# List all VMs",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh start vm",
+            "desc": "# Start VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh shutdown vm",
+            "desc": "# Graceful shutdown",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh destroy vm",
+            "desc": "# Force stop",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh dominfo vm",
+            "desc": "# VM information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh domstats vm",
+            "desc": "# VM statistics",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh snapshot-create vm",
+            "desc": "# Create snapshot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh snapshot-list vm",
+            "desc": "# List snapshots",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virsh snapshot-revert vm snap",
+            "desc": "# Revert to snapshot",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virt-install --name vm --ram 2048",
+            "desc": "# Create new VM",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "virt-clone --original vm1 --name vm2",
+            "desc": "# Clone VM",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 29. System Benchmarking & Diagnostics": [
+          {
+            "cmd": "sysbench cpu run",
+            "desc": "# CPU benchmark",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysbench fileio prepare",
+            "desc": "# Prepare I/O test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sysbench fileio run",
+            "desc": "# Run I/O test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "fio --name=test --size=1G --rw=readwrite",
+            "desc": "# Flexible I/O test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "stress --cpu 4",
+            "desc": "# CPU stress test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "stress-ng --cpu 8 --io 4",
+            "desc": "# Advanced stress test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "memtester 1G 1",
+            "desc": "# Memory test",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lscpu",
+            "desc": "# CPU details",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lscpu -e",
+            "desc": "# Extended CPU info",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "lspci -k",
+            "desc": "# PCI devices with drivers",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dmidecode -t memory",
+            "desc": "# RAM information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "dmidecode -t processor",
+            "desc": "# CPU information",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "sensors",
+            "desc": "# Temperature sensors",
+            "type": "show",
+            "flagged": false
+          }
+        ],
+        "Ref 30. Bash Scripting Essentials": [
+          {
+            "cmd": "#!/usr/bin/env bash",
+            "desc": "# Portable shebang",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set -u",
+            "desc": "# Treat undefined vars as errors",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set -x",
+            "desc": "# Print each command",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set -o pipefail",
+            "desc": "# Pipe failure propagation",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "set -euo pipefail",
+            "desc": "# All three together (recommended)",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "IFS=$'\\n\\t'",
+            "desc": "# Safer word splitting",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "echo \"text\"",
+            "desc": "# Print text",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "printf \"%s\\n\" \"$var\"",
+            "desc": "# Formatted print",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "read -r var",
+            "desc": "# Read input safely",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "read -p \"Enter: \" var",
+            "desc": "# Read with prompt",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "exit 0",
+            "desc": "# Exit with success",
+            "type": "show",
+            "flagged": false
+          },
+          {
+            "cmd": "exit 1",
+            "desc": "# Exit with failure",
             "type": "show",
             "flagged": false
           }
