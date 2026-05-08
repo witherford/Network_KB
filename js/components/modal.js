@@ -1,5 +1,7 @@
 // Generic modal helpers. openModal(render) returns a close() handle.
 
+import { esc } from '../utils.js';
+
 const root = () => document.getElementById('modalRoot');
 
 export function openModal(renderFn, { wide = false, onClose } = {}) {
@@ -10,14 +12,15 @@ export function openModal(renderFn, { wide = false, onClose } = {}) {
   overlay.appendChild(modal);
   root().appendChild(overlay);
 
+  function escHandler(e) { if (e.key === 'Escape') close(); }
   function close() {
+    document.removeEventListener('keydown', escHandler);
     overlay.remove();
     if (onClose) onClose();
   }
 
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   document.addEventListener('keydown', escHandler);
-  function escHandler(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); } }
 
   renderFn(modal, close);
   return close;
@@ -28,10 +31,10 @@ export function confirmModal(message, { danger = false, okLabel = 'OK', cancelLa
     openModal((el, close) => {
       el.innerHTML = `
         <h3>Confirm</h3>
-        <p style="font-size:13px;line-height:1.5;color:var(--text-2)">${message}</p>
+        <p style="font-size:13px;line-height:1.5;color:var(--text-2)">${esc(message)}</p>
         <div class="modal-footer">
-          <button class="btn" data-act="cancel">${cancelLabel}</button>
-          <button class="btn ${danger ? 'danger' : 'primary'}" data-act="ok">${okLabel}</button>
+          <button class="btn" data-act="cancel">${esc(cancelLabel)}</button>
+          <button class="btn ${danger ? 'danger' : 'primary'}" data-act="ok">${esc(okLabel)}</button>
         </div>`;
       el.querySelector('[data-act=cancel]').addEventListener('click', () => { close(); resolve(false); });
       el.querySelector('[data-act=ok]').addEventListener('click', () => { close(); resolve(true); });
@@ -43,9 +46,9 @@ export function promptModal(title, { placeholder = '', initial = '', password = 
   return new Promise(resolve => {
     openModal((el, close) => {
       el.innerHTML = `
-        <h3>${title}</h3>
+        <h3>${esc(title)}</h3>
         <div class="form-row">
-          <input type="${password ? 'password' : 'text'}" id="pmInput" placeholder="${placeholder}" value="${initial}">
+          <input type="${password ? 'password' : 'text'}" id="pmInput" placeholder="${esc(placeholder)}" value="${esc(initial)}">
         </div>
         <div class="modal-footer">
           <button class="btn" data-act="cancel">Cancel</button>

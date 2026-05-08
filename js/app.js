@@ -176,53 +176,58 @@ function wireVersionUI() {
     const orig = checkBtn.textContent;
     checkBtn.textContent = 'Checking…';
     try {
-      // 1. Trigger SW update — re-fetches sw.js byte-for-byte. If it
-      //    differs, the existing update-banner / controllerchange flow
-      //    handles the reload, and we exit early here.
+      // 1. Re-fetch data/version.json FIRST so we have authoritative truth.
+      //    Done before the SW poke so the "behind" determination doesn't
+      //    depend on whether sw.js content changed.
+      const latest = await refreshLatest({ silent: false });
+      const behind = !!(latest && compareVersions(APP_VERSION, latest) < 0);
+
+      // 2. Trigger SW update — re-fetches sw.js byte-for-byte. If a new
+      //    SW is installing/waiting, the existing controllerchange handler
+      //    will reload the page automatically once it activates.
       let swResult = 'unsupported';
       if (typeof window.checkForAppUpdate === 'function') {
         swResult = await window.checkForAppUpdate();
-        if (swResult === 'updating') {
-          latestEl.textContent = 'Update found — downloading. Reload prompt will appear when ready.';
-          return;
-        }
       }
 
-      // 2. Re-fetch data/version.json so the "latest" line reflects the
-      //    deployed version. refreshLatest now returns the latest string.
-      const latest = await refreshLatest({ silent: false });
+      if (swResult === 'updating') {
+        latestEl.textContent = behind
+          ? `New version ${latest} downloading — page will reload automatically…`
+          : 'Update found — downloading. Page will reload automatically…';
+        return;
+      }
 
-      // 3. Data-only update path: sw.js is unchanged (typical for an
+      // 3. Data-only update path: sw.js didn't change (typical for an
       //    automated GitHub-merge workflow that only edits data/*.json),
-      //    but data/version.json reports a newer build. Manually purge
-      //    the data caches AND the cached js/version.js, then reload —
-      //    the network-first SW strategy will pull the fresh JSON, and
-      //    a new APP_VERSION will arrive once version.js is re-fetched.
-      if (latest && compareVersions(APP_VERSION, latest) < 0) {
+      //    but data/version.json reports a newer build. Purge every data-*
+      //    cache AND the cached js/* shell so the bundled APP_VERSION
+      //    constant refreshes on the next load.
+      if (behind) {
         latestEl.textContent =
           `New version ${latest} found — reloading with fresh content…`;
         try {
           if ('caches' in window) {
             const keys = await caches.keys();
             // Drop every data-* cache (commands.json, cves.json, etc.)
-            await Promise.all(
-              keys.filter(k => k.startsWith('data-'))
-                  .map(k => caches.delete(k))
-            );
-            // Also evict js/version.js from each shell-* cache so the
-            // bundled APP_VERSION constant refreshes on the next load.
-            for (const k of keys.filter(k => k.startsWith('shell-'))) {
-              try {
-                const c = await caches.open(k);
-                await c.delete('./js/version.js');
-                await c.delete('js/version.js');
-                await c.delete(new URL('js/version.js', location.href).href);
-              } catch { /* ignore per-cache errors */ }
-            }
+            // and shell-* cache so JS modules (incl. version.js) refetch.
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+          // Best-effort: ask the SW to drop its current registration so
+          // the next navigation re-registers cleanly. Failure is fine —
+          // the cache deletion above is sufficient for a fresh reload.
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (reg) { try { await reg.unregister(); } catch {} }
           }
         } catch { /* ignore — reload will still help */ }
-        setTimeout(() => location.reload(), 800);
+        // Bypass HTTP cache on reload (modern browsers honour the no-cache
+        // hint for the navigation; falls back to a regular reload otherwise).
+        setTimeout(() => location.reload(), 600);
+        return;
       }
+
+      // 4. Genuinely up to date — leave the "you are up to date" message
+      //    that refreshLatest already wrote.
     } catch (err) {
       latestEl.hidden = false;
       latestEl.textContent = 'Check failed: ' + err.message;

@@ -146,9 +146,16 @@ function applyUnlock(settings, password) {
   toast('Edit mode unlocked', 'success');
 }
 
+// Session policy: once the admin has unlocked, they stay unlocked for the
+// rest of the tab session. Closing the tab clears the in-memory password
+// (state lives only in JS memory), so the next page load is read-only.
+//
+// The legacy auto-lock timer is opt-in: only armed if the deployed settings
+// explicitly set editSessionMinutes > 0. By default we leave it disarmed.
 function armTimer() {
   if (timer) clearTimeout(timer);
-  const mins = state.settings?.editSessionMinutes ?? 30;
+  const mins = state.settings?.editSessionMinutes;
+  if (!mins || mins <= 0) return;
   timer = setTimeout(() => {
     lock();
     toast('Session expired', 'warn');

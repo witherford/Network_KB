@@ -26,7 +26,7 @@ export function describePending() {
   return bits.join(', ');
 }
 
-export async function saveAll(message) {
+export async function saveAll(message, { quiet = false } = {}) {
   if (!state.editMode || !state.settings) {
     throw new Error('Not in edit mode');
   }
@@ -108,7 +108,7 @@ export async function saveAll(message) {
   state.data.manifest = manifest;
   clearPending();
   emit('saved', { commitSha: result.commitSha, message: msg });
-  toast('Saved — commit ' + result.commitSha.slice(0, 7), 'success', 4000);
+  if (!quiet) toast('Saved — commit ' + result.commitSha.slice(0, 7), 'success', 4000);
   return result;
 }
 

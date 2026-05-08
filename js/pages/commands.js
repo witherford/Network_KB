@@ -9,7 +9,8 @@ import { state, emit, on } from '../state.js';
 import { openModal, confirmModal, promptModal } from '../components/modal.js';
 import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAttempt, getFlagRateHistory, getFlagRateConfig, getGlobalFlagCount, incrementGlobalFlagCount } from '../components/flag-validator.js';
 import { groupByTopic, shouldGroup } from '../components/topic-detect.js';
-import { parseCsv, validateCsv, exportCsv, mergeAdditions } from '../components/csv.js';
+import { parseCsv, validateCsv, exportCsv, mergeAdditions, parseTextBlocks, validateTextBlocks, applyTextBlockUpdates } from '../components/csv.js';
+import { saveAll } from '../save.js';
 // Backend AI pull disabled per v1.3.3.
 // import { fetchForKind } from '../components/ai-fetch.js';
 
@@ -17,6 +18,69 @@ const TYPE_LABELS = { all: 'All', show: 'Show', config: 'Configuration', trouble
 
 let ui = { group: 'all', platform: 'all', type: 'all', query: '', selected: new Set(), hideWithExamples: false };
 let rootEl = null;
+let globalListenersWired = false;
+
+// Auto-commit: batch admin edits and flush 30s after the last activity, so
+// a session of small tweaks ends up as one commit rather than one per click.
+// Each saveAll call still goes through commitBatch (which retries on non-
+// fast-forward), and saves are serialised via saveQueue.
+const AUTOCOMMIT_DELAY_MS = 30_000;
+let saveQueue = Promise.resolve();
+let debounceTimer = null;
+let pendingMessages = [];
+
+function autoCommit(message) {
+  if (!state.editMode) return;
+  if (message) pendingMessages.push(message);
+  emit('pending:changed');
+  scheduleFlush();
+}
+
+function scheduleFlush() {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => { debounceTimer = null; flushAutoCommit(); }, AUTOCOMMIT_DELAY_MS);
+}
+
+function flushAutoCommit() {
+  if (!state.editMode) { pendingMessages = []; return Promise.resolve(); }
+  if (!pendingMessages.length && !state.pending.commands && !state.pending.quarantine) return Promise.resolve();
+  const msg = buildBatchMessage(pendingMessages);
+  pendingMessages = [];
+  const next = saveQueue.then(() => saveAll(msg, { quiet: true })).then(res => {
+    toast('Saved · ' + res.commitSha.slice(0, 7), 'success', 1800);
+    return res;
+  }).catch(err => {
+    toast('Auto-save failed: ' + err.message, 'error', 8000);
+    throw err;
+  });
+  saveQueue = next.catch(() => {});
+  return next;
+}
+
+function buildBatchMessage(msgs) {
+  if (!msgs.length) return 'admin: update commands';
+  if (msgs.length === 1) return msgs[0];
+  // Aggregate "admin: edit command X" + "admin: delete command Y" + … into
+  // a single short summary; full details go in the commit body.
+  const counts = {};
+  for (const m of msgs) {
+    const verb = (m.match(/admin:\s*(\S+)/) || [, 'change'])[1];
+    counts[verb] = (counts[verb] || 0) + 1;
+  }
+  const summary = Object.entries(counts).map(([v, n]) => `${n} ${v}`).join(', ');
+  return `admin: batched ${summary}\n\n` + msgs.map(m => '- ' + m).join('\n');
+}
+
+// Best-effort flush before the tab is torn down. The browser typically
+// finishes outstanding fetches if they've already started, so kicking off
+// the commit synchronously here gives it a chance to land.
+window.addEventListener('beforeunload', () => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
+    if (state.editMode) flushAutoCommit();
+  }
+});
 
 function workingData() {
   return state.editMode && state.pending.commands ? state.pending.commands : state.data.commands;
@@ -54,10 +118,36 @@ export async function mount(root) {
   // when the value arrives. Fails silently if abacus is unreachable.
   fetchGlobalFlagCount();
 
+  wireGlobalListeners();
+}
+
+// One-time module-scope listeners. Without this guard, every mount() (which
+// is called both on initial nav and re-fired by nkb:reload) would add a new
+// document-keydown / editmode:changed / nkb:reload subscriber, leaking
+// handlers and causing reload events to recursively re-mount the page.
+function wireGlobalListeners() {
+  if (globalListenersWired) return;
+  globalListenersWired = true;
   on('editmode:changed', () => { if (state.currentPage === 'commands') renderAll(); });
   window.addEventListener('nkb:reload', () => {
-    if (state.currentPage === 'commands') { ui.selected.clear(); mount(root); }
-  }, { once: true });
+    if (state.currentPage !== 'commands' || !rootEl) return;
+    ui.selected.clear();
+    mount(rootEl);
+  });
+  // "/" focuses the search input — registered on document because the
+  // shortcut should work from anywhere on the page, but only when the
+  // commands page is mounted.
+  document.addEventListener('keydown', e => {
+    if (state.currentPage !== 'commands') return;
+    if (e.key !== '/') return;
+    const search = rootEl?.querySelector('#cmdSearch');
+    if (!search) return;
+    if (document.activeElement === search) return;
+    if (e.target.closest('input, textarea')) return;
+    e.preventDefault();
+    search.focus();
+    search.select();
+  });
 }
 
 function shellHtml() {
@@ -284,11 +374,8 @@ function wireToolbar(root) {
   search.addEventListener('keydown', e => {
     if (e.key === 'Escape') { search.value = ''; ui.query = ''; renderList(); }
   });
-  document.addEventListener('keydown', e => {
-    if (e.key === '/' && document.activeElement !== search && !e.target.closest('input, textarea')) {
-      e.preventDefault(); search.focus(); search.select();
-    }
-  });
+  // The "/" focus shortcut is registered once at module level
+  // (wireGlobalListeners) — it would leak handlers if added per mount.
   root.querySelector('#cmdExport').addEventListener('click', () => {
     const csv = exportCsv(workingData());
     download('commands.csv', csv, 'text/csv');
@@ -699,6 +786,7 @@ async function addSection(pk) {
   const d = ensureDraft();
   d.platforms[pk].sections[name] ||= [];
   renderList();
+  autoCommit(`admin: add section "${name}" to ${pk}`);
 }
 async function renameSection(pk, old) {
   const name = await promptModal('Rename section', { initial: old });
@@ -707,6 +795,7 @@ async function renameSection(pk, old) {
   const sec = d.platforms[pk].sections;
   sec[name] = sec[old]; delete sec[old];
   renderList();
+  autoCommit(`admin: rename section ${pk}/"${old}" → "${name}"`);
 }
 async function deleteSection(pk, name) {
   const ok = await confirmModal(`Delete section "${name}" and all its commands?`, { danger: true });
@@ -714,6 +803,7 @@ async function deleteSection(pk, name) {
   const d = ensureDraft();
   delete d.platforms[pk].sections[name];
   renderAll();
+  autoCommit(`admin: delete section ${pk}/"${name}"`);
 }
 async function deletePlatform(pk) {
   const ok = await confirmModal(`Delete platform "${pk}" and every command in it?`, { danger: true });
@@ -721,6 +811,7 @@ async function deletePlatform(pk) {
   const d = ensureDraft();
   delete d.platforms[pk];
   renderAll();
+  autoCommit(`admin: delete platform "${pk}"`);
 }
 
 function openAddPlatformModal() {
@@ -744,6 +835,7 @@ function openAddPlatformModal() {
       if (d.platforms[key]) return toast('Key already exists', 'error');
       d.platforms[key] = { label, badge: 'badge-sw', short: short || key.slice(0, 3).toUpperCase(), sections: {} };
       close(); renderAll();
+      autoCommit(`admin: add platform "${key}"`);
     });
   });
 }
@@ -766,6 +858,10 @@ function openCommandModal({ pk, section, idx } = {}) {
           ${['show', 'config', 'troubleshooting'].map(t => `<option value="${t}" ${(existing?.type || 'show') === t ? 'selected' : ''}>${t}</option>`).join('')}
         </select>
       </div>
+      <div class="form-row" style="margin-top:8px">
+        <label>Example output</label>
+        <textarea id="cmE" class="search-input" rows="8" style="width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px" placeholder="Optional. Paste the command's typical output and any notes — supports multi-line.">${esc(existing?.example || '')}</textarea>
+      </div>
       <div class="modal-footer">
         ${existing ? '<button class="btn danger" data-act="del">Delete</button>' : ''}
         <button class="btn" data-act="cancel">Cancel</button>
@@ -776,15 +872,17 @@ function openCommandModal({ pk, section, idx } = {}) {
       section: el.querySelector('#cmS').value.trim(),
       cmd: el.querySelector('#cmC').value.trim(),
       desc: el.querySelector('#cmD').value,
-      type: el.querySelector('#cmT').value
+      type: el.querySelector('#cmT').value,
+      example: el.querySelector('#cmE').value
     });
     el.querySelector('[data-act=cancel]').addEventListener('click', close);
-    el.querySelector('[data-act=ok]').addEventListener('click', () => {
+    el.querySelector('[data-act=ok]').addEventListener('click', async () => {
       const v = read();
       if (!v.pk || !v.section || !v.cmd) return toast('Platform, section and command required', 'error');
       const draft = ensureDraft();
       const movedElsewhere = existing && (v.pk !== pk || v.section !== section);
       const newEntry = { cmd: v.cmd, desc: v.desc, type: v.type, flagged: existing?.flagged || false };
+      if (v.example && v.example.trim()) newEntry.example = v.example;
       if (existing && !movedElsewhere) {
         draft.platforms[pk].sections[section][idx] = newEntry;
       } else {
@@ -796,14 +894,17 @@ function openCommandModal({ pk, section, idx } = {}) {
         draft.platforms[v.pk].sections[v.section].push(newEntry);
       }
       close(); renderAll();
+      autoCommit(`admin: ${existing ? 'edit' : 'add'} command ${v.cmd}`);
     });
     el.querySelector('[data-act=del]')?.addEventListener('click', async () => {
       const ok = await confirmModal('Delete this command?', { danger: true });
       if (!ok) return;
       const draft = ensureDraft();
+      const removed = draft.platforms[pk].sections[section][idx];
       draft.platforms[pk].sections[section].splice(idx, 1);
       if (!draft.platforms[pk].sections[section].length) delete draft.platforms[pk].sections[section];
       close(); renderAll();
+      autoCommit(`admin: delete command ${removed?.cmd || ''}`);
     });
   });
 }
@@ -832,31 +933,37 @@ function renderBulkBar() {
 }
 
 async function bulkDelete() {
-  const ok = await confirmModal(`Delete ${ui.selected.size} selected command${ui.selected.size === 1 ? '' : 's'}?`, { danger: true });
+  const n = ui.selected.size;
+  const ok = await confirmModal(`Delete ${n} selected command${n === 1 ? '' : 's'}?`, { danger: true });
   if (!ok) return;
   const draft = ensureDraft();
   for (const key of ui.selected) removeByKey(draft, key);
   ui.selected.clear();
   renderAll();
+  autoCommit(`admin: bulk delete ${n} commands`);
 }
 function bulkFlag() {
+  const n = ui.selected.size;
   const draft = ensureDraft();
   for (const key of ui.selected) {
     const hit = findByKey(draft, key);
     if (hit) hit.item.flagged = !hit.item.flagged;
   }
   renderList(); renderBulkBar();
+  autoCommit(`admin: bulk toggle flag on ${n} commands`);
 }
 async function bulkType() {
   const type = await promptModal('New type (show / config / troubleshooting)');
   if (!type) return;
   if (!['show', 'config', 'troubleshooting'].includes(type)) return toast('Invalid type', 'error');
   const draft = ensureDraft();
+  const n = ui.selected.size;
   for (const key of ui.selected) {
     const hit = findByKey(draft, key);
     if (hit) hit.item.type = type;
   }
   renderList(); renderBulkBar();
+  autoCommit(`admin: bulk set type=${type} on ${n} commands`);
 }
 
 function findByKey(d, key) {
@@ -874,54 +981,126 @@ function removeByKey(d, key) {
   if (!hit.list.length) delete d.platforms[pk].sections[section];
 }
 
-/* ---------- CSV import ---------- */
+/* ---------- Import (CSV / XLSX / text-block) ----------
+ *
+ * Two formats supported:
+ *
+ *   1. CSV / XLSX with header
+ *      platform_key,platform_label,section,command,description,type[,example]
+ *
+ *   2. Loose text-block format (auto-detected when the input starts with
+ *      a "Command:" line):
+ *
+ *        Command: show foo
+ *        Description: short text
+ *        Example: ...output...
+ *
+ *      The text format carries no platform/section, so the modal exposes a
+ *      Platform and Section selector that apply to every parsed block.
+ */
 function openImportModal() {
   openModal((el, close) => {
+    const d = workingData();
+    const platOpts = Object.entries(d.platforms || {}).map(([k, p]) =>
+      `<option value="${esc(k)}">${esc(p.label || k)}</option>`).join('');
     el.innerHTML = `
-      <h3>Import CSV</h3>
+      <h3>Import commands</h3>
       <p style="font-size:12px;color:var(--text-3);line-height:1.5">
-        Header: <code>platform_key,platform_label,section,command,description,type</code>
+        Paste either CSV (<code>platform_key,platform_label,section,command,description,type[,example]</code>)
+        or a text block starting with <code>Command:</code> / <code>Description:</code> / <code>Example:</code>.
+        Format is auto-detected. For text-block input, choose the target platform and section below.
       </p>
-      <input type="file" id="csvFile" accept=".csv,text/csv" style="margin-top:8px">
-      <textarea id="csvText" rows="8" class="search-input" style="width:100%;font-family:monospace;margin-top:8px" placeholder="…or paste CSV here"></textarea>
-      <div id="csvPreview" style="margin-top:10px;font-size:12px;max-height:220px;overflow:auto"></div>
+      <div class="form-row" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:160px"><label style="font-size:11px;color:var(--text-3)">Platform (text-block only)</label>
+          <select id="impPlat" class="search-input" style="width:100%">${platOpts}</select>
+        </div>
+        <div style="flex:1;min-width:160px"><label style="font-size:11px;color:var(--text-3)">Section (text-block only)</label>
+          <input id="impSect" class="search-input" style="width:100%" placeholder="System & Status">
+        </div>
+      </div>
+      <input type="file" id="csvFile" accept=".csv,.txt,text/csv,text/plain" style="margin-top:8px">
+      <textarea id="csvText" rows="8" class="search-input" style="width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;margin-top:8px" placeholder="…paste CSV or Command:/Description:/Example: blocks here"></textarea>
+      <div id="csvPreview" style="margin-top:10px;font-size:12px;max-height:240px;overflow:auto"></div>
       <div class="modal-footer">
         <button class="btn" data-act="cancel">Cancel</button>
         <button class="btn primary" data-act="apply" disabled>Preview first</button>
       </div>`;
     const fileInput = el.querySelector('#csvFile');
-    const textArea = el.querySelector('#csvText');
-    const preview = el.querySelector('#csvPreview');
-    const applyBtn = el.querySelector('[data-act=apply]');
+    const textArea  = el.querySelector('#csvText');
+    const preview   = el.querySelector('#csvPreview');
+    const applyBtn  = el.querySelector('[data-act=apply]');
+    const platSel   = el.querySelector('#impPlat');
+    const sectInput = el.querySelector('#impSect');
     let report = null;
+    let mode = 'csv'; // or 'text'
 
-    const doPreview = (text) => {
-      const d = workingData();
-      report = validateCsv(text, d);
-      preview.innerHTML = `
-        <div style="display:flex;gap:10px;margin-bottom:6px">
-          <span style="color:var(--success)">+${report.add.length} new</span>
-          <span style="color:var(--warn)">${report.dupes.length} dup</span>
-          <span style="color:var(--danger)">${report.errors.length} errors</span>
-        </div>
-        ${report.errors.slice(0, 10).map(e => `<div style="color:var(--danger)">line ${e.line}: ${esc(e.msg)}</div>`).join('')}
-        ${report.errors.length > 10 ? `<div style="color:var(--text-3)">…+${report.errors.length - 10} more errors</div>` : ''}`;
-      applyBtn.disabled = !report.add.length;
-      applyBtn.textContent = report.add.length ? `Apply +${report.add.length}` : 'Nothing to add';
+    const detect = text => /^\s*(?:[-*•]\s*)?Command:/im.test(text) && !/^\s*platform_key\s*,/im.test(text);
+
+    const doPreview = () => {
+      const text = textArea.value;
+      const data = workingData();
+      mode = detect(text) ? 'text' : 'csv';
+      if (mode === 'text') {
+        const blocks = parseTextBlocks(text);
+        const platformKey = platSel.value;
+        const platformLabel = data.platforms?.[platformKey]?.label || platformKey;
+        const section = sectInput.value.trim();
+        report = validateTextBlocks(blocks, { platformKey, platformLabel, section }, data);
+        const total = (report.add?.length || 0) + (report.update?.length || 0);
+        preview.innerHTML = `
+          <div style="display:flex;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="color:var(--success)">+${report.add.length} new</span>
+            <span style="color:var(--accent)">~${report.update.length} updates</span>
+            <span style="color:var(--warn)">${report.dupes.length} unchanged dup</span>
+            <span style="color:var(--danger)">${report.errors.length} errors</span>
+            <span style="color:var(--text-3)">(text-block mode → ${esc(platformKey)} / ${esc(section || '<no section>')})</span>
+          </div>
+          ${report.errors.slice(0, 10).map(e => `<div style="color:var(--danger)">${esc(e.msg)}</div>`).join('')}`;
+        applyBtn.disabled = total === 0;
+        applyBtn.textContent = total ? `Apply (+${report.add.length} / ~${report.update.length})` : 'Nothing to apply';
+      } else {
+        report = validateCsv(text, data);
+        preview.innerHTML = `
+          <div style="display:flex;gap:10px;margin-bottom:6px">
+            <span style="color:var(--success)">+${report.add.length} new</span>
+            <span style="color:var(--warn)">${report.dupes.length} dup</span>
+            <span style="color:var(--danger)">${report.errors.length} errors</span>
+          </div>
+          ${report.errors.slice(0, 10).map(e => `<div style="color:var(--danger)">line ${e.line}: ${esc(e.msg)}</div>`).join('')}
+          ${report.errors.length > 10 ? `<div style="color:var(--text-3)">…+${report.errors.length - 10} more errors</div>` : ''}`;
+        applyBtn.disabled = !report.add.length;
+        applyBtn.textContent = report.add.length ? `Apply +${report.add.length}` : 'Nothing to add';
+      }
     };
-    textArea.addEventListener('input', () => doPreview(textArea.value));
+    textArea.addEventListener('input', doPreview);
+    platSel.addEventListener('change', doPreview);
+    sectInput.addEventListener('input', doPreview);
     fileInput.addEventListener('change', async e => {
       const f = e.target.files[0]; if (!f) return;
       const text = await f.text();
-      textArea.value = text; doPreview(text);
+      textArea.value = text; doPreview();
     });
     el.querySelector('[data-act=cancel]').addEventListener('click', close);
     applyBtn.addEventListener('click', () => {
-      if (!report?.add.length) return;
-      state.pending.commands = mergeAdditions(workingData(), report.add);
-      emit('pending:changed');
-      close(); renderAll();
-      toast(`Imported ${report.add.length} commands — review and Save`, 'success');
+      if (!report) return;
+      if (mode === 'text') {
+        const total = (report.add?.length || 0) + (report.update?.length || 0);
+        if (!total) return;
+        let next = workingData();
+        if (report.add.length) next = mergeAdditions(next, report.add);
+        else next = structuredClone(next); // ensure we mutate a clone for updates
+        if (report.update.length) applyTextBlockUpdates(next, report.update);
+        state.pending.commands = next;
+        close(); renderAll();
+        autoCommit(`admin: import ${report.add.length} new + ${report.update.length} updates (text)`);
+        toast(`Imported: +${report.add.length} new, ~${report.update.length} updates`, 'success');
+      } else {
+        if (!report.add.length) return;
+        state.pending.commands = mergeAdditions(workingData(), report.add);
+        close(); renderAll();
+        autoCommit(`admin: import ${report.add.length} commands (csv)`);
+        toast(`Imported ${report.add.length} commands`, 'success');
+      }
     });
   }, { wide: true });
 }

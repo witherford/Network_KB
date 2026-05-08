@@ -119,6 +119,136 @@ export function mergeAdditions(data, additions) {
   return next;
 }
 
+/**
+ * Parse the loose `Command: … / Description: … / Example: …` block format
+ * users tend to paste in chat. Each Command: line starts a new block.
+ * Description and Example bodies span until the next marker. The format
+ * carries no platform/section, so the caller supplies those at import time.
+ *
+ * Returns: [{ command, description, example }, …]
+ */
+export function parseTextBlocks(text) {
+  const lines = String(text || '').replace(/\r\n?/g, '\n').split('\n');
+  const blocks = [];
+  let cur = null;
+  let mode = 'none';
+  // Match an optional leading "•/-/*" bullet so pasted bullet-lists work.
+  const leader = /^\s*(?:[-*•]\s*)?/;
+  const cmdRe  = new RegExp(leader.source + 'Command:\\s*(.*)$', 'i');
+  const descRe = new RegExp(leader.source + 'Description:\\s*(.*)$', 'i');
+  const exRe   = new RegExp(leader.source + 'Example(?:[^:\\n]*):\\s*(.*)$', 'i');
+
+  const flush = () => {
+    if (!cur) return;
+    cur.command     = (cur.command || '').trim();
+    cur.description = (cur.description || '').trim();
+    cur.example     = (cur.example || '').trim();
+    if (cur.command) blocks.push(cur);
+    cur = null;
+  };
+
+  for (const raw of lines) {
+    const line = raw.replace(/\s+$/, '');
+    let m;
+    if ((m = line.match(cmdRe))) {
+      flush();
+      cur = { command: m[1] || '', description: '', example: '' };
+      mode = 'command';
+      continue;
+    }
+    if (!cur) continue; // junk before first Command: marker — ignore
+    if ((m = line.match(descRe))) { cur.description = m[1] || ''; mode = 'description'; continue; }
+    if ((m = line.match(exRe)))   { cur.example     = m[1] || ''; mode = 'example';     continue; }
+    // Continuation line — append to the current field.
+    if (mode === 'command' && line.trim()) {
+      // Multi-line Command: blocks are unusual; only continue if the next
+      // line isn't blank and we don't yet have a Description/Example marker.
+      cur.command += (cur.command ? ' ' : '') + line.trim();
+    } else if (mode === 'description') {
+      cur.description += (cur.description ? '\n' : '') + line;
+    } else if (mode === 'example') {
+      cur.example += (cur.example ? '\n' : '') + line;
+    }
+  }
+  flush();
+  return blocks;
+}
+
+/**
+ * Validate parsed text-block entries against an existing dataset. Mirrors the
+ * shape of validateCsv but with a fixed platform_key/platform_label/section
+ * (the text format itself carries none of those).
+ */
+export function validateTextBlocks(blocks, { platformKey, platformLabel, section }, existing) {
+  const errors = [];
+  if (!platformKey)   errors.push({ line: 0, msg: 'Platform required' });
+  if (!platformLabel) errors.push({ line: 0, msg: 'Platform label required' });
+  if (!section)       errors.push({ line: 0, msg: 'Section required' });
+  if (errors.length) return { add: [], dupes: [], update: [], errors };
+
+  const existingKeys = buildExistingKeys(existing);
+  // Build a lookup of existing rows so we can detect description/example
+  // updates (vs. straight duplicates).
+  const existingByKey = new Map();
+  if (existing?.platforms?.[platformKey]?.sections) {
+    for (const [sect, items] of Object.entries(existing.platforms[platformKey].sections)) {
+      for (const it of items) {
+        existingByKey.set(`${platformKey}|${sect}|${it.cmd}`, { sect, it });
+      }
+    }
+  }
+
+  const add = [];
+  const dupes = [];
+  const update = [];
+  blocks.forEach((b, i) => {
+    if (!b.command) { errors.push({ line: i + 1, msg: 'Block has no command' }); return; }
+    const key = `${platformKey}|${section}|${b.command}`;
+    const row = {
+      platform_key: platformKey,
+      platform_label: platformLabel,
+      section,
+      command: b.command,
+      description: b.description,
+      type: 'show',
+      flagged: false
+    };
+    if (b.example) row.example = b.example;
+
+    if (existingKeys.has(key)) {
+      const cur = existingByKey.get(key);
+      const descChanged = (cur?.it.desc || '') !== (b.description || '');
+      const exChanged   = (cur?.it.example || '') !== (b.example || '');
+      if (descChanged || exChanged) update.push({ ...row, _existing: cur });
+      else dupes.push({ command: b.command });
+    } else {
+      add.push(row);
+    }
+  });
+  return { add, dupes, update, errors };
+}
+
+/**
+ * Apply text-block updates (in-place description/example changes) to a data
+ * clone. Caller passes a fresh clone (e.g. via mergeAdditions or structuredClone).
+ */
+export function applyTextBlockUpdates(data, updates) {
+  const next = data || { version: 2, platforms: {} };
+  for (const u of updates) {
+    const plat = next.platforms?.[u.platform_key];
+    if (!plat) continue;
+    const list = plat.sections?.[u.section];
+    if (!list) continue;
+    const idx = list.findIndex(it => it.cmd === u.command);
+    if (idx < 0) continue;
+    const row = { ...list[idx], desc: u.description };
+    if (u.example) row.example = u.example;
+    else delete row.example;
+    list[idx] = row;
+  }
+  return next;
+}
+
 function deriveBadge(platformKey) {
   const map = {
     netscaler: 'badge-ns', palo_alto: 'badge-pa', openssl: 'badge-ssl',
