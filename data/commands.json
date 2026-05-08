@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-08T05:20:46.360Z",
+  "updatedAt": "2026-05-08T13:17:31.938Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2427,6 +2427,34 @@
             "type": "show",
             "flagged": false,
             "example": "::/0 ::1 UG 0 0"
+          },
+          {
+            "cmd": "disable ns ip <ip address>",
+            "desc": "Administratively disable a configured NetScaler IP (NSIP/SNIP/VIP/MIP) without removing it from configuration. Equivalent to \"set ns ip <ip> -state DISABLED\".",
+            "type": "config",
+            "flagged": false,
+            "example": "> disable ns ip 10.10.10.11\nDone\n\n> show ns ip 10.10.10.11\nIP                  Type   Mode    State       VLAN\n10.10.10.11         SNIP   Active  Disabled    1\n\nWhat it means:\n- Marks the IP as administratively down: the ADC stops responding on it (no ARP, no L4 traffic), but the configuration is preserved.\n- Useful for staged migrations or temporarily pulling a SNIP/VIP without \"rm ns ip\" + re-adding.\n- Disabling an NSIP is supported but will sever management on that interface — verify you have an alternate management path first."
+          },
+          {
+            "cmd": "enable ns ip <ip address>",
+            "desc": "Re-enables a previously disabled NetScaler IP. Equivalent to \"set ns ip <ip> -state ENABLED\".",
+            "type": "config",
+            "flagged": false,
+            "example": "> enable ns ip 10.10.10.11\nDone\n\n> show ns ip 10.10.10.11\nIP                  Type   Mode    State      VLAN\n10.10.10.11         SNIP   Active  Enabled    1\n\nWhat it means:\n- Brings a disabled IP back into service. ARP responses resume and bound vservers / SNIP-sourced flows can use it again.\n- Pair with \"save ns config\" to persist the change across reboots.\n- If the IP fails to come up, check VLAN/interface state (\"show vlan\", \"show interface\") — the IP is bound to an L2 segment that must also be UP."
+          },
+          {
+            "cmd": "set ns ip <ip address> -arp ENABLED",
+            "desc": "Enables ARP responses for the specified NetScaler IP so the ADC replies to ARP requests for it on its bound VLAN.",
+            "type": "config",
+            "flagged": false,
+            "example": "> set ns ip 10.0.0.10 -arp ENABLED\nDone\n\n> show ns ip 10.0.0.10\nIP            Type   Mode    State    VLAN  Options\n10.0.0.10     VIP    Active  Enabled  100   ARP=ENABLED, ICMP=ENABLED\n\nWhat it means:\n- ARP must be ENABLED for the ADC to be reachable at this IP from the local L2 segment — without it, upstream routers/switches will never resolve the MAC.\n- This is the default for new IPs; you'd only re-enable it after a deliberate disable (HA-AA designs, Direct Server Return, or anycast topologies).\n- For floating VIPs in active/active clusters, ARP is owned by the striped/spotted node — flipping ARP back on without coordinating with cluster ownership can cause duplicate-IP alarms."
+          },
+          {
+            "cmd": "set ns ip <ip address> -arp DISABLED",
+            "desc": "Suppresses ARP responses for the specified NetScaler IP. The IP remains configured but the ADC will not answer ARP requests for it.",
+            "type": "config",
+            "flagged": false,
+            "example": "> set ns ip 10.0.0.10 -arp DISABLED\nDone\n\n> show ns ip 10.0.0.10\nIP            Type   Mode    State    VLAN  Options\n10.0.0.10     VIP    Active  Enabled  100   ARP=DISABLED\n\nWhat it means:\n- Stops the ADC answering ARP for this IP — used when another device (HA peer, upstream router, anycast neighbour) must own L2 reachability for the address.\n- Common scenarios: Direct Server Return (loopback VIP on backend that mustn't ARP), striped cluster IPs owned by a single node, or quiescing a VIP without changing routing.\n- Disabling ARP on the only path to a SNIP/NSIP will black-hole traffic — verify the alternate ARP responder is live before applying."
           }
         ],
         "Rewrite & Responder": [
@@ -3459,6 +3487,20 @@
             "type": "show",
             "flagged": false,
             "example": "User: bwayne, IP: 172.16.1.5, Duration: 01:20:15"
+          },
+          {
+            "cmd": "show vpn icaConnection -summary",
+            "desc": "Tabular summary of active ICA Proxy sessions through NetScaler Gateway: user, transport, domain, client IP/port and back-end XenApp/XenDesktop IP/port.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show vpn icaConnection -summary\n\n---------------------------------------------------------------------------------------------------------------------------\n      User       TransType Domain             ClientIP          ClientPort XenAppXenDesktopIP     XenAppXenDesktopPort\n---------------------------------------------------------------------------------------------------------------------------\n1     <username>     TCP       <domain>             10.46.255.88      57014      10.112.1.126           2598\n2     <username>     TCP       <domain>             10.46.255.88      59777      10.112.1.41            2598\n3     <username>     TCP       <domain>             10.46.255.88      51175      10.112.1.128           2598\n4     <username>     TCP       <domain>             10.46.255.88      62944      10.112.1.47            2598\n\nWhat it means:\n- One row per live ICA/HDX session being proxied by NetScaler Gateway.\n- TransType TCP : classic ICA over TCP (port 1494) or Common Gateway Protocol (2598 = Session Reliability).\n- ClientIP / ClientPort : the source seen by the ADC (typically the user's NAT or VPN-assigned address).\n- XenApp/XenDesktop IP/Port : the back-end VDA the session is brokered to.\n- Use the summary view to quickly count active sessions per VDA or per client subnet during capacity / incident triage."
+          },
+          {
+            "cmd": "show vpn icaConnection",
+            "desc": "Detailed view of active ICA Proxy sessions through NetScaler Gateway, including per-cluster-node breakdown when run on a clustered ADC.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show vpn icaConnection      (clustered ADC)\n\nNode Id: 1\nNode Id: 2\n1)      User name: <username>       Domain name: <domain>\n        Client IP(Client Port): 10.46.255.88(57014)\n        XenApp/XenDesktop IP(XenApp/XenDesktop Port): 10.112.1.126(2598)\n\nWhat it means:\n- Verbose form of the icaConnection table — each session printed as a multi-line block instead of the tabular -summary view.\n- On a cluster, output is grouped by Node Id so you can see which cluster node is owning each session (useful when troubleshooting steered/striped traffic).\n- Pair with \"show vpn icaConnection -summary\" for fast counts and \"stat vpn vserver\" for aggregate gateway stats."
           }
         ],
         "Diagnostics": [
