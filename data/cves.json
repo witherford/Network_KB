@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-12T05:55:56.988Z",
+  "updatedAt": "2026-05-13T06:14:51.402Z",
   "items": [
     {
       "id": "CVE-2026-32202",
@@ -3270,11 +3270,12 @@
       "cvss": 9.8,
       "summary": "A buffer overflow vulnerability in the User-ID™ Authentication Portal (aka Captive Portal) service of Palo Alto Networks PAN-OS software allows an unauthenticated attacker to execute arbitrary code with root privileges on the PA-Series and VM-Series firewalls by sending specially crafted packets. \n\nThe risk of this issue is greatly reduced if you secure access to the User-ID™ Authentication Portal per the  best practice guidelines https://knowledgebase.paloaltonetworks.com/KCSArticleDetail  by restricting access to only trusted internal IP addresses.\n\nPrisma Access, Cloud NGFW and Panorama appliances are not impacted by this vulnerability.",
       "published": "2026-05-06T19:16:35.730",
-      "lastModified": "2026-05-07T17:46:44.287",
+      "lastModified": "2026-05-12T18:47:21.360",
       "vendor": "Palo Alto",
       "product": "PAN-OS",
       "references": [
         "https://security.paloaltonetworks.com/CVE-2026-0300",
+        "https://cert-portal.siemens.com/productcert/html/ssa-967325.html",
         "https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-0300"
       ],
       "source": "nvd"
