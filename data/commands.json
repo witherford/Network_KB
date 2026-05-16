@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-16T05:43:55.397Z",
+  "updatedAt": "2026-05-16T21:07:57.712Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -7733,6 +7733,146 @@
             "type": "show",
             "flagged": false,
             "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
+          },
+          {
+            "flagged": false,
+            "cmd": "show redundancy",
+            "desc": "HA state of the controller pair. Both should be ACTIVE / STANDBY HOT with Standby Recovery State 0.",
+            "type": "show",
+            "example": "WLC-01# show redundancy\nRedundant System Information :\n       Available system uptime = 142 days, 6 hours, 11 minutes\nSwitchovers system experienced = 0\n              Standby failures = 0\n              Communications = Up\nCurrent Processor Information :\n               Active Location = slot 1\n        Current Software state = ACTIVE\nPeer Processor Information :\n              Standby Location = slot 2\n        Current Software state = STANDBY HOT\n         Standby Recovery State = 0"
+          },
+          {
+            "flagged": false,
+            "cmd": "show clock",
+            "desc": "Current system time. EAP-TLS authentication fails silently when WLC time is wrong — first thing to check when certs misbehave.",
+            "type": "show",
+            "example": "WLC-01# show clock\n*14:32:07.418 GMT Tue Apr 21 2026"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless country configured",
+            "desc": "Confirms which regulatory country codes are enabled. Required for 6GHz operation in particular.",
+            "type": "show",
+            "example": "WLC-01# show wireless country configured"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless tag policy detailed \"<name>\"",
+            "desc": "WLAN-to-policy-profile mappings inside a policy tag. Quote names containing spaces.",
+            "type": "show",
+            "example": "WLC-01# show wireless tag policy detailed \"POLICY-FL1\"\nPolicy Tag Name : POLICY-FL1\nDescription     : Floor 1 Policy Tag\nNumber of WLAN-POLICY maps: 2\nWLAN Profile Name          Policy Name\nGUEST-WLAN                 GUEST-POLICY\nCORP-WLAN                  POLICY-FL1"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless tag policy all",
+            "desc": "Detailed view of every policy tag at once.",
+            "type": "show",
+            "example": "WLC-01# show wireless tag policy all"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless tag site detailed \"<name>\"",
+            "desc": "Shows whether a site tag is local-site (FlexConnect) or central, and which flex profile and AP join profile are bound to it.",
+            "type": "show",
+            "example": "WLC-01# show wireless tag site detailed \"SITE-FL1\"\nSite Tag Name      : SITE-FL1\nDescription        : Floor 1 Site Tag\nFlex Profile       : FLEX-FL1\nAP Profile         : default-ap-profile\nLocal-site         : Yes\nImage Download Profile : default"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless profile policy detailed \"<name>\"",
+            "desc": "Full policy profile config: status, VLAN, AAA override, central switching/DHCP/auth/association flags, session timers.",
+            "type": "show",
+            "example": "WLC-01# show wireless profile policy detailed \"POLICY-FL1\"\nPolicy Profile Name   : POLICY-FL1\nStatus                : ENABLED\nVLAN                  : CORP-FL1\nCentral Switching          : DISABLED\nCentral Authentication     : ENABLED\nCentral DHCP               : DISABLED\nCentral Association        : ENABLED\nAAA Policy\n    AAA Override           : ENABLED\n    NAC                    : ENABLED"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless profile flex summary",
+            "desc": "Lists all flex profiles.",
+            "type": "show",
+            "example": "WLC-01# show wireless profile flex summary"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless profile flex detailed <name>",
+            "desc": "VLAN-name to VLAN-ID mappings, native VLAN, ACLs, and other FlexConnect parameters.",
+            "type": "show",
+            "example": "WLC-01# show wireless profile flex detailed FLEX-FL1"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap profile name <name> detailed",
+            "desc": "AP join profile detail including management credentials, CAPWAP timers, and SSH/Telnet access settings.",
+            "type": "show",
+            "example": "WLC-01# show ap profile name default-ap-profile detailed\nWLC-01# show ap profile name default-ap-profile detailed | include mgmt|secret|password"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap tag summary",
+            "desc": "Per-AP tag assignment: site tag, policy tag, RF tag, plus any misconfiguration flag.",
+            "type": "show",
+            "example": "WLC-01# show ap tag summary\nAP Name        AP Mac          Site Tag Name  Policy Tag Name  RF Tag Name  Misconfigured  Tag Source\nAP-OFFICE-01   cc6e.2aae.dc20  SITE-FL1       POLICY-FL1       RF-DEFAULT   No             Static"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap inventory <ap-name>",
+            "desc": "Hardware model, serial number, regulatory domain. Use to confirm -E (EU/UK) vs -A (NA) variant for 6GHz capability.",
+            "type": "show",
+            "example": "WLC-01# show ap inventory AP-OFFICE-01"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap power-save summary",
+            "desc": "Lists APs in reduced-power operation due to insufficient PoE.",
+            "type": "show",
+            "example": "WLC-01# show ap power-save summary\nWLC-01# show ap power-save AP-OFFICE-01"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap dot11 <band> network",
+            "desc": "Global band state. Enabled means the band is in service controller-wide.",
+            "type": "show",
+            "example": "WLC-01# show ap dot11 5ghz network\nWLC-01# show ap dot11 6ghz shutdown"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap name <ap-name> wlan dot11 <band>",
+            "desc": "BSSIDs each WLAN is broadcasting on a specific AP's radio. If empty, no WLAN is being deployed — usually a tag, policy, or flex-profile mismatch.",
+            "type": "show",
+            "example": "WLC-01# show ap name AP-OFFICE-01 wlan dot11 5ghz\nSlot id  : 1\n  WLAN ID    BSSID\n  1          70bd.9685.9c8f"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless client mac-address <mac> detail",
+            "desc": "Full client session detail: auth method, VLAN and source (AAA-override vs policy profile), session timers.",
+            "type": "show",
+            "example": "WLC-01# show wireless client mac-address aabb.ccdd.eeff detail"
+          },
+          {
+            "flagged": false,
+            "cmd": "show wireless client mac-address <mac> mobility history",
+            "desc": "Roaming history for a specific client.",
+            "type": "show",
+            "example": "WLC-01# show wireless client mac-address aabb.ccdd.eeff mobility history"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ip dhcp pool <pool-name>",
+            "desc": "Internal DHCP pool status, used when the WLC serves DHCP for the auth-failed VLAN.",
+            "type": "show",
+            "example": "WLC-01# show ip dhcp pool AUTH-FAILED-POOL"
+          },
+          {
+            "flagged": false,
+            "cmd": "show running-config | section <keyword>",
+            "desc": "Show only the config block relevant to a keyword. Far faster than scrolling through the whole running config.",
+            "type": "show",
+            "example": "WLC-01# show running-config | section radius\nWLC-01# show running-config | section wlan\nWLC-01# show running-config | include tag"
+          },
+          {
+            "flagged": false,
+            "cmd": "show ap dot11 24ghz summary (with channel/power asterisk legend)",
+            "desc": "Per-radio summary. Asterisks (*) on channel or power indicate manually assigned (not RRM-controlled). TX power format: <current_level>/<max_level> (<dBm>); level 1 = max, level 8 = min.",
+            "type": "show",
+            "example": "* global assignment\nAP Name       Mac Address     Slot  Admin State  Oper State  Width  Txpwr          Channel    Mode\nAP-OFFICE-01  70bd.9685.9c80  1     Enabled      Up          40     3/8 (14 dBm)   (149,153)  REAP"
           }
         ],
         "AP Management": [
@@ -8629,6 +8769,41 @@
             "type": "show",
             "flagged": false,
             "example": "SSID     : Corp\nVLAN     : 100\nSecurity : WPA2/WPA3"
+          },
+          {
+            "flagged": false,
+            "cmd": "security ft adaptive",
+            "desc": "802.11r Fast Transition in adaptive mode (lets capable clients use FT while preserving compatibility).",
+            "type": "config",
+            "example": "WLC-01(config-wlan)# security ft adaptive"
+          },
+          {
+            "flagged": false,
+            "cmd": "security ft over-the-ds",
+            "desc": "802.11r Fast Transition over-the-DS variant.",
+            "type": "config",
+            "example": "WLC-01(config-wlan)# security ft over-the-ds"
+          },
+          {
+            "flagged": false,
+            "cmd": "security wpa akm dot1x-sha256",
+            "desc": "Enable WPA AKM with SHA-256 (required for PMF/WPA3 transition).",
+            "type": "config",
+            "example": "WLC-01(config-wlan)# security wpa akm dot1x-sha256"
+          },
+          {
+            "flagged": false,
+            "cmd": "security dot1x authentication-list <list>",
+            "desc": "Bind a named AAA dot1x method list to the WLAN.",
+            "type": "config",
+            "example": "WLC-01(config-wlan)# security dot1x authentication-list DOT1X-LIST"
+          },
+          {
+            "flagged": false,
+            "cmd": "mac-filtering <list>",
+            "desc": "Enable MAC filtering using a named AAA list (used in MAB / hybrid auth flows).",
+            "type": "config",
+            "example": "WLC-01(config-wlan)# mac-filtering DOT1X-LIST"
           }
         ],
         "Tags & Profiles": [
@@ -8712,6 +8887,118 @@
             "type": "config",
             "flagged": false,
             "example": "RF tag assignment successful."
+          },
+          {
+            "flagged": false,
+            "cmd": "wireless profile flex <name>",
+            "desc": "FlexConnect profile defining VLAN-name to VLAN-ID mappings for locally-switched WLANs, plus the native VLAN. Reference VLANs by name in the policy profile.",
+            "type": "config",
+            "example": "WLC-01(config)# wireless profile flex FLEX-FL1\nWLC-01(config-wireless-flex-profile)# description \"Floor 1 Flex Profile\"\nWLC-01(config-wireless-flex-profile)# native-vlan-id 10\nWLC-01(config-wireless-flex-profile)# vlan-name CORP-FL1\nWLC-01(config-wireless-flex-vlan)#  vlan-id 1110\nWLC-01(config-wireless-flex-profile)# vlan-name AUTH-FAILED\nWLC-01(config-wireless-flex-vlan)#  vlan-id 1168\nWLC-01(config-wireless-flex-vlan)#   central-dhcp"
+          },
+          {
+            "flagged": false,
+            "cmd": "native-vlan-id <id>",
+            "desc": "Flex profile: defines the native VLAN of the AP uplink.",
+            "type": "config",
+            "example": "WLC-01(config-wireless-flex-profile)# native-vlan-id 10"
+          },
+          {
+            "flagged": false,
+            "cmd": "vlan-name <name>",
+            "desc": "Flex profile: declare a VLAN name that the policy profile can reference. Pair with vlan-id under it.",
+            "type": "config",
+            "example": "WLC-01(config-wireless-flex-profile)# vlan-name CORP-FL1\nWLC-01(config-wireless-flex-vlan)#  vlan-id 1110"
+          },
+          {
+            "flagged": false,
+            "cmd": "central-dhcp (flex VLAN)",
+            "desc": "Force DHCP for a specific Flex VLAN back through CAPWAP. Used for the auth-failed quarantine VLAN so the WLC can serve it.",
+            "type": "config",
+            "example": "WLC-01(config-wireless-flex-vlan)# central-dhcp"
+          },
+          {
+            "flagged": false,
+            "cmd": "flex-profile <name>",
+            "desc": "Site tag: binds a flex profile to the APs that use this site tag.",
+            "type": "config",
+            "example": "WLC-01(config-site-tag)# flex-profile FLEX-FL1"
+          },
+          {
+            "flagged": false,
+            "cmd": "ap-profile <name>",
+            "desc": "Site tag: binds an AP join profile to the APs that use this site tag.",
+            "type": "config",
+            "example": "WLC-01(config-site-tag)# ap-profile default-ap-profile"
+          },
+          {
+            "flagged": false,
+            "cmd": "local-site",
+            "desc": "Site tag: enables FlexConnect (local switching). Default is enabled — \"no local-site\" puts APs into central switching and is the most common FlexConnect misconfiguration.",
+            "type": "config",
+            "example": "WLC-01(config-site-tag)# local-site"
+          },
+          {
+            "flagged": false,
+            "cmd": "wlan <wlan-name> policy <policy-profile>",
+            "desc": "Policy tag: maps a WLAN to a policy profile.",
+            "type": "config",
+            "example": "WLC-01(config-policy-tag)# wlan CORP-WLAN policy POLICY-FL1\nWLC-01(config-policy-tag)# wlan GUEST-WLAN policy GUEST-POLICY"
+          },
+          {
+            "flagged": false,
+            "cmd": "ap profile <name>",
+            "desc": "AP join profile: controls AP management credentials, CAPWAP timers, SSH/Telnet access. Bound to APs via site tag.",
+            "type": "config",
+            "example": "WLC-01(config)# ap profile default-ap-profile"
+          },
+          {
+            "flagged": false,
+            "cmd": "mgmtuser username <user> password 0 <login> secret 0 <enable>",
+            "desc": "Per-AP-join-profile management credentials. Both login password and enable secret must be set on the same mgmtuser line.",
+            "type": "config",
+            "example": "WLC-01(config-ap-profile)# mgmtuser username admin password 0 <login-pass> secret 0 <enable-secret>"
+          },
+          {
+            "flagged": false,
+            "cmd": "ap <base-radio-MAC>",
+            "desc": "Per-AP tag override: enter per-AP config mode to assign policy/site/RF tags to a single AP.",
+            "type": "config",
+            "example": "WLC-01(config)# ap aabb.ccdd.eeff\nWLC-01(config-ap-tag)# policy-tag POLICY-TAG-FL1\nWLC-01(config-ap-tag)# site-tag   SITE-FL1\nWLC-01(config-ap-tag)# rf-tag     RF-DEFAULT"
+          },
+          {
+            "flagged": false,
+            "cmd": "ap filter create <name> / ap name-regex <regex> / ap filter priority <n> filter-name <name>",
+            "desc": "Regex-based bulk tag assignment by AP name.",
+            "type": "config",
+            "example": "WLC-01(config)# ap filter create FILTER-FL1\nWLC-01(config-ap-filter)# ap name-regex ^AP-FL1-.*\nWLC-01(config)# ap filter priority 1 filter-name FILTER-FL1"
+          },
+          {
+            "flagged": false,
+            "cmd": "wireless profile policy <name> — FlexConnect template",
+            "desc": "Policy profile for FlexConnect. Defaults to shutdown and central switching. For FlexConnect: leave central authentication and central association at default (enabled); only central switching and central dhcp are disabled.",
+            "type": "config",
+            "example": "WLC-01(config)# wireless profile policy POLICY-FL1\nWLC-01(config-wireless-policy)# description \"Floor 1 Corp Policy\"\nWLC-01(config-wireless-policy)# vlan CORP-FL1\nWLC-01(config-wireless-policy)# aaa-override\nWLC-01(config-wireless-policy)# nac\nWLC-01(config-wireless-policy)# no central switching\nWLC-01(config-wireless-policy)# no central dhcp\nWLC-01(config-wireless-policy)# no shutdown"
+          },
+          {
+            "flagged": false,
+            "cmd": "no central switching",
+            "desc": "Policy profile: disable central switching (required for FlexConnect local switching).",
+            "type": "config",
+            "example": "WLC-01(config-wireless-policy)# no central switching"
+          },
+          {
+            "flagged": false,
+            "cmd": "no central dhcp",
+            "desc": "Policy profile: disable central DHCP (FlexConnect — DHCP handled locally at the site).",
+            "type": "config",
+            "example": "WLC-01(config-wireless-policy)# no central dhcp"
+          },
+          {
+            "flagged": false,
+            "cmd": "nac",
+            "desc": "Policy profile: enable Network Admission Control / CoA integration with an NAC server.",
+            "type": "config",
+            "example": "WLC-01(config-wireless-policy)# nac"
           }
         ],
         "Client Management": [
@@ -8921,6 +9208,132 @@
             "desc": "Displays the MAC filter list and allowed/denied entries",
             "type": "show",
             "flagged": false
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa session-id common",
+            "desc": "Use a common session-id format across AAA subsystems (recommended for ISE/NPS compatibility).",
+            "type": "config",
+            "example": "WLC-01(config)# aaa session-id common"
+          },
+          {
+            "flagged": false,
+            "cmd": "automate-tester username <user> ignore-acct-port probe-on",
+            "desc": "Periodic RADIUS probe so the WLC marks a dead server before a real client times out. The probe user does not need to exist in AD — any RADIUS reply is enough.",
+            "type": "config",
+            "example": "WLC-01(config-radius-server)# automate-tester username radius-probe ignore-acct-port probe-on"
+          },
+          {
+            "flagged": false,
+            "cmd": "timeout <seconds>",
+            "desc": "RADIUS server: per-server response timeout.",
+            "type": "config",
+            "example": "WLC-01(config-radius-server)# timeout 5"
+          },
+          {
+            "flagged": false,
+            "cmd": "retransmit <count>",
+            "desc": "RADIUS server: per-server retransmit attempts before failover.",
+            "type": "config",
+            "example": "WLC-01(config-radius-server)# retransmit 3"
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa group server radius <name>",
+            "desc": "Group RADIUS servers for load-balancing and failover.",
+            "type": "config",
+            "example": "WLC-01(config)# aaa group server radius RAD-GROUP\nWLC-01(config-sg-radius)# server name NPS-01\nWLC-01(config-sg-radius)# server name NPS-02\nWLC-01(config-sg-radius)# deadtime 5\nWLC-01(config-sg-radius)# load-balance method least-outstanding"
+          },
+          {
+            "flagged": false,
+            "cmd": "radius-server dead-criteria time <s> tries <n>",
+            "desc": "Defines how quickly the WLC marks a non-responding server dead.",
+            "type": "config",
+            "example": "WLC-01(config)# radius-server dead-criteria time 5 tries 3"
+          },
+          {
+            "flagged": false,
+            "cmd": "radius-server deadtime <minutes>",
+            "desc": "How long a server stays marked dead before being probed again.",
+            "type": "config",
+            "example": "WLC-01(config)# radius-server deadtime 5"
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa authentication dot1x <list> group <group>",
+            "desc": "AAA method list for 802.1X authentication.",
+            "type": "config",
+            "example": "WLC-01(config)# aaa authentication dot1x DOT1X-LIST group RAD-GROUP"
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa authorization network <list> group <group>",
+            "desc": "AAA method list for network authorization (returns VLAN/ACL attributes).",
+            "type": "config",
+            "example": "WLC-01(config)# aaa authorization network DOT1X-LIST group RAD-GROUP"
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa accounting identity <list> start-stop group <group>",
+            "desc": "AAA method list for identity (dot1x) accounting.",
+            "type": "config",
+            "example": "WLC-01(config)# aaa accounting identity DOT1X-LIST start-stop group RAD-GROUP"
+          },
+          {
+            "flagged": false,
+            "cmd": "aaa server radius dynamic-author",
+            "desc": "Enable RADIUS Change of Authorization (CoA). Required for guest captive portals and post-auth VLAN re-assignment.",
+            "type": "config",
+            "example": "WLC-01(config)# aaa server radius dynamic-author\nWLC-01(config-locsvr-da-radius)# client 10.10.10.10 server-key <shared-secret>\nWLC-01(config-locsvr-da-radius)# client 10.10.10.11 server-key <shared-secret>\nWLC-01(config-locsvr-da-radius)# auth-type any"
+          },
+          {
+            "flagged": false,
+            "cmd": "radius-server attribute <num>",
+            "desc": "Tune which RADIUS attributes the WLC sends/expects. Common attrs: 6 (Service-Type), 8 (Framed-IP), 25 (Class), 31 (Calling-Station-ID).",
+            "type": "config",
+            "example": "WLC-01(config)# radius-server attribute 6 on-for-login-auth\nWLC-01(config)# radius-server attribute 8 include-in-access-req\nWLC-01(config)# radius-server attribute 25 access-request include\nWLC-01(config)# radius-server attribute 31 mac format ietf upper-case\nWLC-01(config)# radius-server attribute 31 send nas-port-detail mac-only\nWLC-01(config)# radius-server vsa send authentication\nWLC-01(config)# radius-server vsa send accounting"
+          },
+          {
+            "flagged": false,
+            "cmd": "clock timezone <name> <offset>",
+            "desc": "Timezone setting. Required before NTP and before any cert-based auth.",
+            "type": "config",
+            "example": "WLC-01(config)# clock timezone GMT 0 0"
+          },
+          {
+            "flagged": false,
+            "cmd": "clock summer-time <name> recurring ...",
+            "desc": "Daylight Saving Time rule.",
+            "type": "config",
+            "example": "WLC-01(config)# clock summer-time BST recurring last Sun Mar 1:00 last Sun Oct 2:00"
+          },
+          {
+            "flagged": false,
+            "cmd": "ntp server <ip> [prefer]",
+            "desc": "Defines an NTP source. Configure at least two.",
+            "type": "config",
+            "example": "WLC-01(config)# ntp server 10.10.1.1 prefer\nWLC-01(config)# ntp server 10.10.1.2"
+          },
+          {
+            "flagged": false,
+            "cmd": "wireless country <code>",
+            "desc": "Sets regulatory domain. Affects allowed channels and TX power limits.",
+            "type": "config",
+            "example": "WLC-01(config)# wireless country GB"
+          },
+          {
+            "flagged": false,
+            "cmd": "no ap dot11 <band> shutdown",
+            "desc": "Globally enables a band that was previously admin-disabled (frequent culprit when 6GHz radios are down).",
+            "type": "config",
+            "example": "WLC-01(config)# no ap dot11 6ghz shutdown"
+          },
+          {
+            "flagged": false,
+            "cmd": "ip dhcp pool <name> (auth-failed quarantine)",
+            "desc": "WLC-internal DHCP scope. For the auth-failed VLAN, omit default-router and dns-server so devices get an IP but cannot reach anything.",
+            "type": "config",
+            "example": "WLC-01(config)# ip dhcp excluded-address 10.6.8.1\nWLC-01(config)# ip dhcp excluded-address 10.6.8.2 10.6.8.9\nWLC-01(config)# ip dhcp pool AUTH-FAILED-POOL\nWLC-01(dhcp-config)# network 10.6.8.0 255.255.255.0\nWLC-01(dhcp-config)# lease 0 0 10"
           }
         ],
         "mDNS & AP Mesh": [
@@ -9052,6 +9465,34 @@
             "desc": "Displays CAPWAP client connection details from the AP perspective",
             "type": "show",
             "flagged": false
+          },
+          {
+            "flagged": false,
+            "cmd": "test aaa group <group> <user> <pass> new-code",
+            "desc": "Synthetic RADIUS authentication through a server group. Confirms WLC-to-NPS reachability and shared secret. \"User rejected\" is a positive result (path works); timeout = reachability/secret issue.",
+            "type": "troubleshooting",
+            "example": "WLC-01# test aaa group RAD-GROUP testuser testpass new-code\nUser rejected\n(A \"User rejected\" response still confirms WLC-to-NPS RADIUS reachability and\na matching shared secret -- the WLC reached NPS and got a valid RADIUS reply.\nA timeout, by contrast, indicates a reachability or shared-secret problem.)"
+          },
+          {
+            "flagged": false,
+            "cmd": "debug radius",
+            "desc": "Capture all RADIUS request/response traffic. Watch for Tunnel-Private-Group-ID in Access-Accept to confirm VLAN assignment. High CPU — disable when done.",
+            "type": "troubleshooting",
+            "example": "WLC-01# debug radius\nWLC-01# no debug radius"
+          },
+          {
+            "flagged": false,
+            "cmd": "debug client mac-address <mac>",
+            "desc": "Detailed per-client 802.1X / association debug. Combine with \"show logging | include <mac>\" to extract the trace. High CPU — disable when done.",
+            "type": "troubleshooting",
+            "example": "WLC-01# debug client mac-address aabb.ccdd.eeff\nWLC-01# show logging | include aabb.ccdd.eeff\nWLC-01# no debug client mac-address aabb.ccdd.eeff"
+          },
+          {
+            "flagged": false,
+            "cmd": "redundancy force-switchover",
+            "desc": "Trigger HA failover from active to standby. Used to test that clients survive failover with no service impact.",
+            "type": "troubleshooting",
+            "example": "WLC-01# redundancy force-switchover"
           }
         ],
         "Config Management": [
@@ -9102,6 +9543,27 @@
             "desc": "Restores a running config from a TFTP server",
             "type": "show",
             "flagged": false
+          },
+          {
+            "flagged": false,
+            "cmd": "software install add file bootflash:/<image>.bin",
+            "desc": "IOS-XE image upgrade — stage step. WLC stages and pushes new AP images automatically (default 15 APs at a time).",
+            "type": "config",
+            "example": "WLC-01# software install add file bootflash:/<image>.bin"
+          },
+          {
+            "flagged": false,
+            "cmd": "software install activate",
+            "desc": "IOS-XE image upgrade — activate step (reload).",
+            "type": "config",
+            "example": "WLC-01# software install activate"
+          },
+          {
+            "flagged": false,
+            "cmd": "software install commit",
+            "desc": "IOS-XE image upgrade — commit step (makes activation persistent).",
+            "type": "config",
+            "example": "WLC-01# software install commit"
           }
         ],
         "System": [
@@ -30849,6 +31311,48 @@
             "type": "show",
             "flagged": false,
             "example": "Interface GigabitEthernet0/0\n  Hardware is iGbE\n  Link is Up - 1Gbps Full Duplex"
+          },
+          {
+            "flagged": false,
+            "cmd": "show power inline <interface>",
+            "desc": "PoE status for a single port: admin state, oper state, power drawn, device class, max power. Class 4 = 802.3at PoE+ (30W); Class 6+ = 802.3bt PoE++ (needed for Wi-Fi 6E APs at full power).",
+            "type": "show",
+            "example": "SWITCH-01# show power inline gigabitethernet 1/0/12\nInterface  Admin  Oper       Power   Device              Class  Max\n                              (Watts)\n---------  -----  ---------- ------- ------------------- -----  ----\nGi1/0/12   auto   on         30.0    CW9166I-ROW         4      30.0\n\n(Class 4 = 802.3at PoE+, 30W ceiling. A 9166 wants Class 6+ / 802.3bt for full\nradio power -- on Class 4 it runs in reduced-power mode.)"
+          },
+          {
+            "flagged": false,
+            "cmd": "show cdp neighbors <interface> detail",
+            "desc": "Look for \"Power drawn\" and \"Power request levels\" to confirm what the AP has been granted via CDP PoE negotiation.",
+            "type": "show",
+            "example": "SWITCH-01# show cdp neighbors gigabitethernet 1/0/12 detail\nDevice ID: AP-OFFICE-01\n  IP address: 10.16.2.11\nPlatform: cisco CW9166I-ROW,  Capabilities: Router Trans-Bridge\nInterface: GigabitEthernet1/0/12,  Port ID (outgoing port): GigabitEthernet0\nPower drawn: 30.000 Watts\nPower request levels are:30000 15400 0 0 0"
+          },
+          {
+            "flagged": false,
+            "cmd": "show lldp neighbors <interface> detail",
+            "desc": "Same per-port neighbour info as CDP but via LLDP — preferred by newer Cisco APs for PoE negotiation.",
+            "type": "show",
+            "example": "SWITCH-01# show lldp neighbors gigabitethernet 1/0/12 detail"
+          },
+          {
+            "flagged": false,
+            "cmd": "switchport trunk allowed vlan <list> (AP-facing trunk)",
+            "desc": "On an AP-facing trunk, include the management VLAN (as native) plus all wireless data VLANs. The AP needs every WLAN-VLAN tagged through to it.",
+            "type": "config",
+            "example": "SWITCH-01(config-if)# switchport mode trunk\nSWITCH-01(config-if)# switchport trunk native vlan 10\nSWITCH-01(config-if)# switchport trunk allowed vlan 10,1110,1120,1130,1140,1150,1160,1164,1168"
+          },
+          {
+            "flagged": false,
+            "cmd": "power inline auto max <milliwatts>",
+            "desc": "Permit the port to negotiate up to N mW for 802.3bt-capable APs (e.g. 60000 = 60 W). On 802.3at-only switch HW the effective max is ~30 W regardless.",
+            "type": "config",
+            "example": "SWITCH-01(config-if)# power inline auto max 60000"
+          },
+          {
+            "flagged": false,
+            "cmd": "spanning-tree portfast trunk (AP-facing)",
+            "desc": "Critical on AP-facing trunks — without it CAPWAP can time out during STP convergence on link-up. Pair with `spanning-tree bpduguard enable`.",
+            "type": "config",
+            "example": "SWITCH-01(config-if)# interface gigabitethernet 1/0/12\nSWITCH-01(config-if)# description AP-OFFICE-01\nSWITCH-01(config-if)# switchport mode trunk\nSWITCH-01(config-if)# switchport trunk native vlan 10\nSWITCH-01(config-if)# spanning-tree portfast trunk\nSWITCH-01(config-if)# spanning-tree bpduguard enable\nSWITCH-01(config-if)# power inline auto max 60000"
           }
         ],
         "VLAN": [
@@ -42905,6 +43409,172 @@
             "type": "config",
             "flagged": false,
             "example": "R1(config)# rib-group MY_TABLE\nR1(config-rib-group)# import-rib ipv4 unicast topology base\nR1(config-router)# rib-group MY_TABLE\n\nR1# show ip route rib-group MY_TABLE\n... (IS-IS routes also installed in this group's RIB) ...\n\nWhat it means:\n- RIB groups let you push IS-IS routes into multiple RIBs at once\n  — useful for export to another VRF or for having a parallel\n  copy in a custom RIB consumed by an SDN controller.\n- Largely an XR/IOS-XE feature; older platforms may not support it."
+          }
+        ]
+      }
+    },
+    "cisco_capwap_ap": {
+      "label": "Cisco CAPWAP AP (9100-series Lightweight)",
+      "badge": "badge-capwap-ap",
+      "short": "CAPWAP AP",
+      "sections": {
+        "Show & Status": [
+          {
+            "cmd": "show capwap ?",
+            "desc": "Discover available capwap subcommands. Same trick works for `show dot11 ?`, `show flexconnect ?`, `show controllers ?`, `show wired ?`.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show capwap ?\nAP-OFFICE-01# show dot11 ?\nAP-OFFICE-01# show flexconnect ?\nAP-OFFICE-01# show controllers ?\nAP-OFFICE-01# show wired ?"
+          },
+          {
+            "cmd": "show version",
+            "desc": "AP software version, hardware, uptime.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show version"
+          },
+          {
+            "cmd": "show inventory",
+            "desc": "AP hardware model and serial number.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show inventory"
+          },
+          {
+            "cmd": "show interfaces",
+            "desc": "Wired and wireless interface counters on the AP.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show interfaces"
+          },
+          {
+            "cmd": "show clock",
+            "desc": "AP system time. CAPWAP join can fail if AP time is way off.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show clock"
+          },
+          {
+            "cmd": "show running-config",
+            "desc": "Limited running config of the AP itself. Most operational config lives in `show capwap client config`.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show running-config"
+          },
+          {
+            "cmd": "show ip route",
+            "desc": "AP's routing table — confirms it has a default route to its controller.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show ip route"
+          }
+        ],
+        "CAPWAP": [
+          {
+            "cmd": "show capwap client config",
+            "desc": "Comprehensive dump of all configuration the WLC has pushed to the AP. Long output but the definitive view of what the AP thinks it should be doing.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show capwap client config"
+          },
+          {
+            "cmd": "show capwap client rcb",
+            "desc": "Radio Control Block info — radio-level operational state as the AP sees it.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show capwap client rcb"
+          },
+          {
+            "cmd": "show capwap reap",
+            "desc": "FlexConnect (REAP) status.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show capwap reap"
+          },
+          {
+            "cmd": "show capwap reap association",
+            "desc": "Per-WLAN FlexConnect association counters.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show capwap reap association"
+          },
+          {
+            "cmd": "show dtls connection",
+            "desc": "State of the DTLS tunnel back to the controller. Should be Connected.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show dtls connection\nNumber of DTLS connection = 1\nLocalIP(Port)        PeerIP(Port)         Ciphersuite              Version\n10.16.2.11(5248)     10.10.0.10(5246)     ECDHE-ECDSA-AES256-GCM   1.2\nState: Connected"
+          },
+          {
+            "cmd": "capwap ap primary-base <wlc-name> <wlc-ip>",
+            "desc": "Recovery: set a static primary controller when DNS/DHCP-based discovery has failed.",
+            "type": "config",
+            "flagged": false,
+            "example": "AP-OFFICE-01# capwap ap primary-base WLC-01 10.10.0.10"
+          },
+          {
+            "cmd": "capwap ap restart",
+            "desc": "Force the AP to tear down and rebuild its CAPWAP tunnel to the controller. Useful when config sync seems stuck.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "AP-OFFICE-01# capwap ap restart"
+          }
+        ],
+        "FlexConnect": [
+          {
+            "cmd": "show flexconnect wlan",
+            "desc": "Per-radio, per-VAP table showing which WLANs are active and the Switching column (Central vs Local). If every row shows Central despite the AP being FlexConnect, the policy profile has central switching incorrectly enabled — WLANs will not deploy.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show flexconnect wlan\nFlexconnect WLANs:\nRadio Vap SSID            State  Auth     Assoc  Switching\n    0   0  CORPORATE-WIFI UP     Central  Local  Local\n    1   0  CORPORATE-WIFI UP     Central  Local  Local\n    2   0  CORPORATE-WIFI UP     Central  Local  Local\n\n(Before the policy profile fix, every row showed State DOWN and Switching\nCentral -- the signature of a central-switching policy profile bound to a\nFlexConnect AP.)"
+          },
+          {
+            "cmd": "show flexconnect vlan-name",
+            "desc": "VLAN-name to VLAN-ID mapping the AP received from the flex profile. Confirms VLAN definitions made it through.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show flexconnect vlan-name\n               vlan-name vlan-id\n        CORP-FL1            1110\n           GUEST-WIFI       1160\n                 default       1\n   AUTH-FAILED            1168"
+          },
+          {
+            "cmd": "show flexconnect status",
+            "desc": "FlexConnect operational state summary.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show flexconnect status"
+          }
+        ],
+        "Radios": [
+          {
+            "cmd": "show controllers dot11Radio <0|1|2>",
+            "desc": "Detailed radio-level info: channel, TX power, BSSIDs being beaconed, MAC stats. Slot 0 = 2.4GHz, 1 = 5GHz, 2 = 6GHz on tri-radio APs.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show controllers dot11Radio 0\nAP-OFFICE-01# show controllers dot11Radio 1\nAP-OFFICE-01# show controllers dot11Radio 2"
+          }
+        ],
+        "Wired Uplink": [
+          {
+            "cmd": "show wired",
+            "desc": "VLANs the AP has learned on its uplink trunk, plus PoE class negotiated. Useful for confirming the access-switch trunk is allowing the right VLANs through.",
+            "type": "show",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show wired"
+          }
+        ],
+        "Diagnostics": [
+          {
+            "cmd": "show logging",
+            "desc": "AP-local log buffer. Useful for tracking CAPWAP join issues, image download, and radio events.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "AP-OFFICE-01# show logging"
+          },
+          {
+            "cmd": "ping <controller-ip>",
+            "desc": "Basic reachability to the WLC management IP.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "AP-OFFICE-01# ping 10.10.0.10"
           }
         ]
       }
