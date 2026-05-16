@@ -10,8 +10,11 @@ any browser sees them.
 
 ## Features
 
-- **Commands** — 2,500+ CLI commands across 15 platforms (NetScaler, Palo Alto,
-  Cisco IOS/ASA, Linux, Wireshark, ESXi, Windows, AWS CLI, SDX, Nexus). Search,
+- **Commands** — 6,600+ CLI commands across 20 platforms: Linux, Cisco IOS,
+  Cisco IOS-XE Switch, NetScaler, NetScaler SDX, Cisco Catalyst 9800 WLC,
+  Cisco IOS-XE Router, Wireshark, Palo Alto PAN-OS, OpenSSL, Cisco Nexus,
+  Proxmox VE, Aruba AOS-CX, Cisco ASA, Aruba Mobility Controller, Windows,
+  VMware ESXi, AWS CLI, Aruba AP / Instant, and Cisco CAPWAP AP. Search,
   filter by platform or command type, favourites, recents, copy, and bulk CSV
   import/export.
 - **Software releases** — Latest / recommended / EOL versions per vendor-product
