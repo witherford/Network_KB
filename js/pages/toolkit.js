@@ -22,9 +22,14 @@ const SUBS = {
   oui:          { label: 'OUI lookup',          group: 'Scripts & builders',   load: () => import('../toolkit/oui-list.js') },
   arpmac:       { label: 'Cisco merger',        group: 'Scripts & builders',   load: () => import('../toolkit/arp-mac-merge.js') },
   tcl:          { label: 'TCL generator',       group: 'Scripts & builders',   load: () => import('../toolkit/tcl-generator.js') },
-  filter:       { label: 'Capture filters',     group: 'Scripts & builders',   load: () => import('../toolkit/filter-builder.js') },
   jsonyaml:     { label: 'JSON / YAML',         group: 'Scripts & builders',   load: () => import('../toolkit/json-yaml.js') },
   regex:        { label: 'Regex builder',       group: 'Scripts & builders',   load: () => import('../toolkit/regex-builder.js') },
+
+  // Wireshark
+  filter:       { label: 'Capture & display filters', group: 'Wireshark',      load: () => import('../toolkit/filter-builder.js') },
+  wsdisplay:    { label: 'Display-filter library', group: 'Wireshark',         load: () => import('../toolkit/ws-display-filters.js') },
+  wscli:        { label: 'CLI (tshark / editcap)', group: 'Wireshark',         load: () => import('../toolkit/ws-cli.js') },
+  wskeys:       { label: 'Keyboard shortcuts',  group: 'Wireshark',            load: () => import('../toolkit/ws-shortcuts.js') },
 
   // WIFI tools
   wifistd:      { label: 'Wireless standards',  group: 'WIFI tools',           load: () => import('../toolkit/wifi-standards.js') },
