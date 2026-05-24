@@ -1,22 +1,45 @@
-// Toolkit container — sub-router over subnet/ping/dns/regex/calculator/cheatsheets/worldclock.
+// Toolkit container — grouped sub-router over calculators, cheat sheets,
+// password/hash tools, scripts & builders, WIFI tools and Palo Alto helpers.
 
 const SUBS = {
-  subnet:       { label: 'Subnet calc',      load: () => import('../toolkit/subnet.js') },
-  vlsm:         { label: 'VLSM optimiser',   load: () => import('../toolkit/vlsm.js') },
-  ping:         { label: 'Ping script',      load: () => import('../toolkit/ping-script.js') },
-  dns:          { label: 'DNS script',       load: () => import('../toolkit/dns-script.js') },
-  mac:          { label: 'Cisco info scripts', load: () => import('../toolkit/mac-lookup.js') },
-  filter:       { label: 'Capture filters',  load: () => import('../toolkit/filter-builder.js') },
-  throughput:   { label: 'Throughput / MTU', load: () => import('../toolkit/throughput.js') },
-  dscp:         { label: 'DSCP / ToS',       load: () => import('../toolkit/dscp.js') },
-  encoding:     { label: 'Encoding & hash',  load: () => import('../toolkit/encoding.js') },
-  password:     { label: 'Password gen',     load: () => import('../toolkit/password.js') },
-  jsonyaml:     { label: 'JSON / YAML',      load: () => import('../toolkit/json-yaml.js') },
-  regex:        { label: 'Regex builder',    load: () => import('../toolkit/regex-builder.js') },
-  calculator:   { label: 'Calculator',       load: () => import('../toolkit/calculator.js') },
-  cheatsheets:  { label: 'Cheat sheets',     load: () => import('../toolkit/cheatsheets.js') },
-  worldclock:   { label: 'World clock',      load: () => import('../toolkit/worldclock.js') }
+  // Calculators
+  subnet:       { label: 'Subnet calc',        group: 'Calculators',          load: () => import('../toolkit/subnet.js') },
+  vlsm:         { label: 'VLSM optimiser',      group: 'Calculators',          load: () => import('../toolkit/vlsm.js') },
+  throughput:   { label: 'Throughput / MTU',    group: 'Calculators',          load: () => import('../toolkit/throughput.js') },
+  calculator:   { label: 'Calculator',          group: 'Calculators',          load: () => import('../toolkit/calculator.js') },
+
+  // Cheat sheets & references
+  cheatsheets:  { label: 'Cheat sheets',        group: 'Cheat sheets',         load: () => import('../toolkit/cheatsheets.js') },
+  dscp:         { label: 'DSCP / ToS',          group: 'Cheat sheets',         load: () => import('../toolkit/dscp.js') },
+
+  // Password & Hash tools
+  password:     { label: 'Password gen',        group: 'Password & Hash tools', load: () => import('../toolkit/password.js') },
+  encoding:     { label: 'Encoding & hash',     group: 'Password & Hash tools', load: () => import('../toolkit/encoding.js') },
+
+  // Scripts & builders
+  ping:         { label: 'Ping script',         group: 'Scripts & builders',   load: () => import('../toolkit/ping-script.js') },
+  dns:          { label: 'DNS script',          group: 'Scripts & builders',   load: () => import('../toolkit/dns-script.js') },
+  mac:          { label: 'Cisco info scripts',  group: 'Scripts & builders',   load: () => import('../toolkit/mac-lookup.js') },
+  filter:       { label: 'Capture filters',     group: 'Scripts & builders',   load: () => import('../toolkit/filter-builder.js') },
+  jsonyaml:     { label: 'JSON / YAML',         group: 'Scripts & builders',   load: () => import('../toolkit/json-yaml.js') },
+  regex:        { label: 'Regex builder',       group: 'Scripts & builders',   load: () => import('../toolkit/regex-builder.js') },
+
+  // WIFI tools
+  wifistd:      { label: 'Wireless standards',  group: 'WIFI tools',           load: () => import('../toolkit/wifi-standards.js') },
+  wifichan:     { label: 'Channels & frequencies', group: 'WIFI tools',        load: () => import('../toolkit/wifi-channels.js') },
+  wifisignal:   { label: 'Signal reference',    group: 'WIFI tools',           load: () => import('../toolkit/wifi-signal.js') },
+  wifisec:      { label: 'Security & encryption', group: 'WIFI tools',         load: () => import('../toolkit/wifi-security.js') },
+
+  // Palo Alto
+  patraffic:    { label: 'Traffic filters',     group: 'Palo Alto',            load: () => import('../toolkit/pa-traffic-filters.js') },
+
+  // Misc
+  worldclock:   { label: 'World clock',         group: 'Other',                load: () => import('../toolkit/worldclock.js') }
 };
+
+// Preserve insertion order of groups for the nav.
+const GROUPS = [];
+for (const v of Object.values(SUBS)) if (!GROUPS.includes(v.group)) GROUPS.push(v.group);
 
 function subFromHash() {
   const m = (location.hash || '').match(/^#\/toolkit\/(\w+)/);
@@ -24,10 +47,17 @@ function subFromHash() {
 }
 
 export async function mount(root) {
+  const nav = GROUPS.map(g => `
+    <div class="tk-group">
+      <div class="tk-group-label">${g}</div>
+      <div class="tk-group-tabs">
+        ${Object.entries(SUBS).filter(([, v]) => v.group === g)
+          .map(([k, v]) => `<button class="ftab" data-sub="${k}">${v.label}</button>`).join('')}
+      </div>
+    </div>`).join('');
+
   root.innerHTML = `
-    <nav class="sub-nav" id="tkNav">
-      ${Object.entries(SUBS).map(([k, v]) => `<button class="ftab" data-sub="${k}">${v.label}</button>`).join('')}
-    </nav>
+    <nav class="sub-nav grouped" id="tkNav">${nav}</nav>
     <div id="tkBody" class="page"></div>`;
 
   const body = root.querySelector('#tkBody');
@@ -50,8 +80,6 @@ export async function mount(root) {
     location.hash = '#/toolkit/' + btn.dataset.sub;
   });
 
-  // Respond to both clicks (via hashchange fired by the assignment above)
-  // and external navigation like someone deep-linking #/toolkit/cheatsheets.
   const onHash = () => {
     if (!root.isConnected) { window.removeEventListener('hashchange', onHash); return; }
     if (!/^#\/toolkit/.test(location.hash || '#/toolkit/subnet')) return;

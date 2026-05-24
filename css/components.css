@@ -351,6 +351,23 @@
 }
 .sub-nav .ftab { padding: 5px 12px; }
 
+/* Grouped toolkit nav */
+.sub-nav.grouped {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  row-gap: 12px;
+}
+.tk-group { display: flex; flex-direction: column; gap: 6px; }
+.tk-group-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--text-3);
+}
+.tk-group-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+
 /* ---------- Edit-mode banner ---------- */
 .edit-banner {
   position: fixed;
