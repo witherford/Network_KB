@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-24T01:32:03.652Z",
+  "updatedAt": "2026-05-24T01:42:20.238Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -31717,65 +31717,66 @@
           },
           {
             "cmd": "show ip ospf neighbor",
-            "desc": "Shows OSPF neighbors",
+            "desc": "OSPF adjacency table — neighbour router-ID, priority, state (Full = healthy), dead-timer, neighbour IP, interface.",
             "type": "show",
             "flagged": false,
-            "example": "Neighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:35    10.0.0.2        GigabitEthernet0/1\n3.3.3.3           1   FULL/BDR        00:00:34    10.0.0.3        GigabitEthernet0/1\n4.4.4.4           1   FULL/-          00:00:38    10.0.1.2        GigabitEthernet0/2"
+            "example": "sw# show ip ospf neighbor\nNeighbor ID     Pri   State           Dead Time   Address         Interface\n2.2.2.2           1   FULL/DR         00:00:34    10.0.0.2        Vlan99\n3.3.3.3           1   FULL/BDR        00:00:36    10.0.0.3        Vlan99"
           },
           {
             "cmd": "show ip ospf interface",
-            "desc": "Shows OSPF interfaces",
+            "desc": "Per-interface OSPF state: area, network type, hello/dead timers, neighbour count, DR/BDR.",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip ospf interface Gi0/0\nGigabitEthernet0/0 is up, line protocol is up\n  Internet Address 192.168.1.1/24, Area 0, Attached via Network Statement\n  Process ID 1, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1\n  State BDR, Priority 1, Designated Router (ID) 2.2.2.2\n  Hello 10, Dead 40, Wait 40, Retransmit 5\n\nWhat it means:\n- Network Type    : BROADCAST = DR/BDR election occurs. Other types:\n                    POINT-TO-POINT, NBMA, P2MP.\n- Cost: 1         : OSPF metric for this interface (lower is better).\n- State BDR       : this router is the Backup Designated Router here.\n- Hello 10/Dead 40: the Hello interval and the Dead timer (must match\n                    exactly between neighbours or no adjacency forms).\n- Retransmit 5    : retry interval for unacknowledged LSAs."
+            "example": "sw# show ip ospf interface Vlan99\nVlan99 is up, line protocol is up\n  Internet Address 10.0.0.1/24, Area 0\n  Process ID 1, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1\n  Topology-MTID    Cost    Disabled    Shutdown   Topology Name\n       0           1         no           no       Base\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Designated Router (ID) 1.1.1.1, Interface address 10.0.0.1\n  Backup Designated router (ID) 2.2.2.2, Interface address 10.0.0.2\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n    oob-resync timeout 40\n    Hello due in 00:00:04\n  Supports Link-local Signaling (LLS)\n  Index 1/1/1, flood queue length 0\n  Next 0x0(0)/0x0(0)/0x0(0)\n  Last flood scan length is 1, maximum is 12\n  Last flood scan time is 0 msec, maximum is 8 msec\n  Neighbor Count is 2, Adjacent neighbor count is 2"
           },
           {
             "cmd": "show ip ospf database",
-            "desc": "Shows OSPF LSDB",
+            "desc": "OSPF LSDB summary by area + LSA type. Each LSA shows age, sequence, checksum.",
             "type": "show",
             "flagged": false,
-            "example": "            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum Link count\n1.1.1.1         1.1.1.1         421         0x80000045 0x00A1D2 3\n2.2.2.2         2.2.2.2         389         0x80000041 0x00BCAB 4\n3.3.3.3         3.3.3.3         402         0x8000003F 0x00CD89 2\n\n                Net Link States (Area 0)\n\nLink ID         ADV Router      Age         Seq#       Checksum\n10.0.0.2        2.2.2.2         389         0x80000022 0x009A12"
+            "example": "sw# show ip ospf database\n            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\nLink ID         ADV Router      Age   Seq#       Checksum  Link count\n1.1.1.1         1.1.1.1         102   0x80000045 0x00ab12  3\n2.2.2.2         2.2.2.2          98   0x80000041 0x00cd34  3\n\n                Net Link States (Area 0)\nLink ID         ADV Router      Age   Seq#       Checksum\n10.0.0.1        1.1.1.1          98   0x80000020 0x00ef56\n\n                Type-5 AS External Link States\nLink ID         ADV Router      Age   Seq#       Checksum  Tag\n0.0.0.0         1.1.1.1         234   0x80000001 0x00abcd  0"
           },
           {
             "cmd": "show ip ospf border-routers",
-            "desc": "Shows ABRs/ASBRs",
+            "desc": "ABRs/ASBRs reachable through this OSPF process.",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip ospf border-routers\n\nOSPF Process 1 internal Routing Table\n\nCodes: i - Intra-area route, I - Inter-area route\n\ni 2.2.2.2 [10] via 10.1.1.2, Gi0/0, ABR, Area 0, SPF 5\ni 3.3.3.3 [20] via 10.1.1.2, Gi0/0, ASBR, Area 0, SPF 5\n\nWhat it means:\n- Lists every ABR (Area Border Router) and ASBR (Autonomous System\n  Boundary Router) the local OSPF process knows about.\n- Cost in [brackets] is the IGP cost to reach that border router.\n- Used as the underlay to compute Type-3/Type-5 next-hop selection."
+            "example": "sw# show ip ospf border-routers\n\n            OSPF Router with ID (1.1.1.1) (Process ID 1)\n\nCodes: i - Intra-area route, I - Inter-area route\n\nDest     Type Cost  Type    Next Hop          Interface       Area\ni 5.5.5.5  ABR    4      intra   10.0.0.2          Vlan99         0\nI 6.6.6.6  ASBR   8      inter   10.0.0.2          Vlan99         0"
           },
           {
             "cmd": "show ip ospf traffic",
-            "desc": "Shows OSPF traffic stats",
+            "desc": "OSPF packet counters per process: hellos, DBD, LSU, LSAck sent/received.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip ospf traffic\nOSPF Router with ID (1.1.1.1) (Process ID 1)\n\nOSPF queue statistics for process ID 1:\n  Hello/Router    Input/Output                  Length    Max\n  Hello           1234567/1234560               24/24    1500/1500\n  Router          234567/234560                  60/60   1500/1500\n  Network         12345/12340                    20/20   1500/1500\n  Summary         5432/5430                      28/28   1500/1500"
           },
           {
             "cmd": "show ip ospf sham-links",
-            "desc": "Shows sham links",
+            "desc": "OSPF sham-links (MPLS L3VPN feature — backdoor between VRFs). Empty on most non-PE switches.",
             "type": "show",
             "flagged": false,
-            "example": "R-PE# show ip ospf sham-links\nSham Link OSPF_SL0 to address 2.2.2.2 is up\n   Area 0 source address 1.1.1.1\n   Cost of using 1, State POINT_TO_POINT\n   Adjacency State FULL\n\nWhat it means:\n- A sham-link is an intra-area OSPF tunnel between two PEs over the\n  MPLS-VPN backbone — makes the customer routes look like genuine\n  intra-area paths so they win against the inter-area MPLS path.\n- Built using BGP-learned /32s as the tunnel endpoints. Used for\n  OSPF-as-PE-CE deployments."
+            "example": "sw# show ip ospf sham-links\n# No sham-links configured.\n# When configured, output shows neighbour-IP, state, cost, hello/dead timers."
           },
           {
             "cmd": "show ip ospf virtual-links",
-            "desc": "Shows virtual links",
+            "desc": "OSPF virtual-links state (transit-area links across area-0).",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip ospf virtual-links\nVirtual Link OSPF_VL0 to router 2.2.2.2 is up\n  Run as demand circuit\n  Transit area 1, via interface Gi0/0\n  Topology-MTID Cost   Disabled  Shutdown  Topology Name\n        0          1     no       no        Base\n  Hello 10, Dead 40, Wait 40, Retransmit 5\n\nWhat it means:\n- A virtual link makes a discontiguous area 0 act as if it were\n  contiguous — the transit area (here area 1) carries Type-3 LSAs\n  for area 0.\n- \"is up\" means the underlying transit-area path is reachable AND\n  the OSPF adjacency over the VL is FULL.\n- Considered a band-aid; redesign with a contiguous backbone if\n  possible."
+            "example": "sw# show ip ospf virtual-links\nVirtual Link OSPF_VL0 to router 2.2.2.2 is up\n  Run as demand circuit\n  DoNotAge LSA allowed\n  Transit area 1, via interface Vlan100\n  Topology-MTID    Cost    Disabled    Shutdown\n       0            1         no           no\n  Transmit Delay is 1 sec, State POINT_TO_POINT"
           },
           {
             "cmd": "show ip ospf events",
-            "desc": "Shows OSPF events",
+            "desc": "Per-event log: adjacency transitions, LSA generation, SPF runs (most-recent first).",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip ospf events\n\nOSPF Router with ID (1.1.1.1) (Process ID 1)\n\n1  Apr 29 15:23:44.000: Generic: ospfv2_router_lsa_updated\n2  Apr 29 15:23:44.000: Generic: ospfv2_schedule_spf\n3  Apr 29 15:23:44.005: Generic: ospfv2_running_spf_intra\n4  Apr 29 15:23:44.012: Generic: ospfv2_running_spf_summary\n5  Apr 29 15:24:08.231: Generic: ospfv2_neighbor_event_2WAY\n6  Apr 29 15:24:08.231: Generic: ospfv2_neighbor_event_EXSTART\n\nWhat it means:\n- Ring buffer of recent OSPF state-machine events with sub-ms\n  timestamps.\n- Cheaper than running \"debug ip ospf adj\" for post-mortem analysis\n  of a flap that has already happened."
+            "example": "sw# show ip ospf events\nOSPF Router with ID (1.1.1.1) (Process ID 1)\n\n   1  14:30:01.234  Generic: AdjChange 2.2.2.2 (Vlan99) Full\n   2  14:30:01.123  Generic: Rcv LSA Type 1 from 2.2.2.2\n   3  14:30:00.987  Spf calculation, scheduled\n   4  14:30:01.001  Spf calculation, completed in 2 ms"
           },
           {
             "cmd": "show ip ospf statistics",
-            "desc": "Shows OSPF statistics",
+            "desc": "SPF run count, average / max runtime, last-trigger source.",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip ospf statistics\n\n  Area 0: SPF algorithm executed 12 times\n  Summary OSPF SPF statistic\n  SPF calculation time\n  Delta T   Intra D-Intra Summ D-Summ Ext   D-Ext  Total Reason\n  00:01:34   4ms     0ms   1ms    0ms   2ms    0ms    7ms  R, N\n\nWhat it means:\n- Each row is one SPF run, broken down by stage (Intra, Summary, Ext).\n- \"Reason\" tells why SPF ran:\n    R = Router-LSA changed\n    N = Network-LSA changed\n    SN = Summary-Net (Type-3) changed\n    X = External (Type-5) changed\n- A high SPF count over a short window points at flapping links."
+            "example": "sw# show ip ospf statistics\n Area 0: SPF algorithm executed 18 times\n Summary:\n  Full SPF runs:               18\n  External SPF runs:            0\n  Time since last Full SPF:    01:23:45\n  Avg full SPF runtime:         2 ms\n  Max full SPF runtime:         8 ms\n  Last full SPF triggered by:  Router LSA 1.1.1.1"
           },
           {
             "cmd": "show ip ospf database router self-originate",
@@ -31786,9 +31787,10 @@
           },
           {
             "cmd": "show ip ospf interface <int>",
-            "desc": "OSPF state/timers/metric on one interface",
+            "desc": "Per-interface OSPF state for one port/SVI.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip ospf interface Vlan99\nVlan99 is up, line protocol is up\n  Internet Address 10.0.0.1/24, Area 0\n  Process ID 1, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Neighbor Count is 2, Adjacent neighbor count is 2"
           },
           {
             "cmd": "router ospf 1",
@@ -32047,28 +32049,28 @@
             "desc": "OSPFv3 IPv6 adjacencies.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 ospf neighbor\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\nNeighbor ID     Pri   State           Dead Time   Interface ID    Interface\n2.2.2.2           1   FULL/  -        00:00:34    3               GigabitEthernet0/0/0"
+            "example": "sw# show ipv6 ospf neighbor\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\nNeighbor ID     Pri   State           Dead Time   Interface ID    Interface\n2.2.2.2           1   FULL/  -        00:00:34    3               Vlan99\n3.3.3.3           1   FULL/  -        00:00:36    3               Vlan99"
           },
           {
             "cmd": "show ipv6 ospf interface",
             "desc": "OSPFv3 per-interface state.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 ospf interface GigabitEthernet0/0/0\nGigabitEthernet0/0/0 is up, line protocol is up\n  Link Local Address FE80::1, Interface ID 3\n  Area 0, Process ID 1, Instance ID 0, Router ID 1.1.1.1\n  Network Type POINT_TO_POINT, Cost: 1\n  Transmit Delay is 1 sec, State POINT_TO_POINT\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Neighbor Count is 1, Adjacent neighbor count is 1"
+            "example": "sw# show ipv6 ospf interface Vlan99\nVlan99 is up, line protocol is up\n  Link Local Address FE80::1, Interface ID 3\n  Area 0, Process ID 1, Instance ID 0, Router ID 1.1.1.1\n  Network Type BROADCAST, Cost: 1\n  Transmit Delay is 1 sec, State DR, Priority 1\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Neighbor Count is 2, Adjacent neighbor count is 2"
           },
           {
             "cmd": "show ipv6 ospf database",
             "desc": "OSPFv3 LSDB summary.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 ospf database\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\nADV Router       Age   Seq#       Fragment ID  Link count  Bits\n1.1.1.1         234   0x80000045 0            1           B\n2.2.2.2         220   0x80000041 0            1           B"
+            "example": "sw# show ipv6 ospf database\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\nADV Router       Age   Seq#       Fragment ID  Link count  Bits\n1.1.1.1         234   0x80000045 0            1           B\n2.2.2.2         220   0x80000041 0            1           B"
           },
           {
             "cmd": "ipv6 ospf cost 10",
             "desc": "OSPFv3 per-interface cost override.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-if)# ipv6 ospf cost 10"
+            "example": "sw(config-if)# ipv6 ospf cost 10\nsw# show ipv6 ospf interface Vlan99 | include Cost\n  Network Type BROADCAST, Cost: 10"
           },
           {
             "cmd": "ipv6 ospf network point-to-point",
@@ -32578,38 +32580,38 @@
         "Routing › EIGRP": [
           {
             "cmd": "show ip eigrp neighbors",
-            "desc": "Shows EIGRP neighbors",
+            "desc": "EIGRP adjacency table.",
             "type": "show",
             "flagged": false,
-            "example": "EIGRP-IPv4 Neighbors for AS(100)\nH   Address       Interface           Hold  Uptime    SRTT    RTO     Q   Seq\n                                      (sec)           (ms)            Cnt Num\n1   10.0.0.2      Gi0/1               14    01:23:45  12      200     0   142\n0   10.0.1.2      Gi0/2               13    02:15:08  8       200     0   89"
+            "example": "sw# show ip eigrp neighbors\nEIGRP-IPv4 Neighbors for AS(100)\nH   Address     Interface  Hold Uptime  SRTT  RTO  Q   Seq\n                           (sec)         (ms)       Cnt Num\n0   10.0.0.2    Vlan99     14   3w2d    12    200  0   124\n1   10.0.0.3    Vlan99     13   3w2d    10    200  0   118"
           },
           {
             "cmd": "show ip eigrp topology",
-            "desc": "Shows EIGRP topology",
+            "desc": "EIGRP topology table — successors (best) and feasible successors (backup). P = passive (stable).",
             "type": "show",
             "flagged": false,
-            "example": "EIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,\n       r - reply Status, s - sia Status\n\nP 10.10.0.0/24, 1 successors, FD is 30720\n        via 10.0.0.2 (30720/28160), GigabitEthernet0/1\nP 10.20.0.0/24, 2 successors, FD is 51200\n        via 10.0.0.2 (51200/30720), GigabitEthernet0/1\n        via 10.0.1.2 (51200/30720), GigabitEthernet0/2"
+            "example": "sw# show ip eigrp topology\nEIGRP-IPv4 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active, U - Update, Q - Query, R - Reply\n\nP 10.0.0.0/30, 1 successors, FD is 256\n        via Connected, Vlan99\nP 172.16.0.0/16, 2 successors, FD is 2816\n        via 10.0.0.2 (2816/256), Vlan99\n        via 10.0.0.3 (3328/768), Vlan99  ; feasible successor"
           },
           {
             "cmd": "show ip eigrp interfaces",
-            "desc": "Shows EIGRP interfaces",
+            "desc": "Per-interface EIGRP state.",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip eigrp interfaces\n\nEIGRP-IPv4 Interfaces for AS(100)\n                Xmit Queue  PeerQ       Mean   Pacing Time   Multicast\nInterface Peers Un/Reliable Un/Reliable SRTT   Un/Reliable   Flow Timer\nGi0/0     1     0/0         0/0         12     0/2           50\n\nWhat it means:\n- Peers       : neighbour count on this interface.\n- Xmit Queue  : packets queued for unicast/multicast transmission.\n- Mean SRTT   : smoothed RTT to neighbours (ms).\n- Multicast Flow Timer : pacing timer for multicast updates (ms).\n- Un/Reliable column shows the queue split between unreliable\n  (hello) and reliable (update/ack) packets."
+            "example": "sw# show ip eigrp interfaces\nEIGRP-IPv4 Interfaces for AS(100)\n                        Xmit Queue PeerQ Mean   Pacing Time   Multicast\nInterface     Peers   Un/Reliable Un/Rel SRTT   Un/Reliable   Flow Timer\nVlan99        2       0/0          0/0    12     0/1           50\nVlan100       0       0/0          0/0    0      0/1           0"
           },
           {
             "cmd": "show ip eigrp traffic",
-            "desc": "Shows EIGRP traffic stats",
+            "desc": "EIGRP packet counters per process.",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip eigrp traffic\n\nEIGRP-IPv4 Traffic Statistics for AS(100)\n  Hellos sent/received: 521/518\n  Updates sent/received: 12/14\n  Queries sent/received: 0/0\n  Replies sent/received: 0/0\n  Acks sent/received: 14/12\n  SIA-Queries sent/received: 0/0\n  SIA-Replies sent/received: 0/0\n\nWhat it means:\n- A growing Queries/Replies count signals topology churn. SIA-Queries\n  > 0 is a serious warning — DUAL is hitting the SIA-timer.\n- Hellos sent ≈ Hellos received ratio close to 1:1 means link health\n  is fine; a big imbalance hints at unidirectional packet loss."
+            "example": "sw# show ip eigrp traffic\nEIGRP-IPv4 Traffic Statistics for AS 100\n  Hellos sent/received: 12345/12340\n  Updates sent/received: 234/231\n  Queries sent/received: 12/10\n  Replies sent/received: 8/8\n  Acks sent/received: 245/241\n  SIA-Queries sent/received: 0/0"
           },
           {
             "cmd": "show ip eigrp events",
             "desc": "Shows EIGRP events",
             "type": "show",
             "flagged": false,
-            "example": "R1# show ip eigrp events\n\n  Event information for AS 100:\n\n1   12:01:05.123 Route 10.1.1.0/24, FD 2816, NHID 1.1.1.1: Reachable\n2   12:01:05.123 Route 10.1.1.0/24: Update sent\n3   12:00:45.872 Neighbor 10.1.1.2 (Gi0/0): adjacency UP\n4   12:00:30.012 Going active for 10.5.5.0/24, FD 2816\n\nWhat it means:\n- Lightweight ring buffer of recent topology / DUAL events with\n  sub-second timestamps.\n- Far cheaper than running debug eigrp fsm in production.\n- Use to confirm post-incident WHY a route went active or a neighbour\n  flapped."
+            "example": "sw# show ip eigrp events\nEvent information for AS 100:\n1  14:30:02.345 (Default-IP-Routing-Table) Active 172.16.0.0/16\n2  14:30:01.234 (Default-IP-Routing-Table) Found 172.16.0.0/16\n3  14:30:00.123 Reset (Vlan99): 10.0.0.2 holdtime expired"
           },
           {
             "cmd": "show ip eigrp neighbors detail",
@@ -32620,27 +32622,31 @@
           },
           {
             "cmd": "show ip eigrp topology detail",
-            "desc": "Shows detailed topology",
+            "desc": "Verbose topology — each prefix with FD, RD, hop count, contributing AS.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip eigrp topology detail\nP 172.16.0.0/16, 2 successors, FD is 2816, serno 12345\n        via 10.0.0.2 (2816/256), Vlan99\n        Composite metric is (2816/256), route is Internal\n        Vector metric:\n          Minimum bandwidth is 1000000 Kbit\n          Total delay is 110 microseconds\n          Reliability is 255/255\n          Load is 1/255\n          Minimum MTU is 1500\n          Hop count is 1"
           },
           {
             "cmd": "show ip eigrp vrf <vrf>",
-            "desc": "Shows EIGRP VRF info",
+            "desc": "EIGRP info filtered to a specific VRF.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip eigrp vrf TENANT-A topology\nEIGRP-IPv4 Topology Table for AS(100)/VRF(TENANT-A)/ID(1.1.1.1)\nP 10.50.0.0/24, 1 successors, FD is 2816\n        via 10.50.0.2 (2816/256), Vlan50"
           },
           {
             "cmd": "show ip eigrp traffic detail",
-            "desc": "Shows detailed traffic stats",
+            "desc": "Verbose per-process EIGRP packet stats.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip eigrp traffic detail\nEIGRP-IPv4 Traffic Statistics for AS 100 (detailed)\n  Hellos sent/received: 12345/12340\n  Updates sent/received: 234/231 (reliable), 12/10 (unreliable)\n  Queries sent/received: 12/10\n  Replies sent/received: 8/8\n  Acks sent/received: 245/241\n  SIA-Queries sent/received: 0/0\n  Retransmissions: 3"
           },
           {
             "cmd": "show ip eigrp summary",
-            "desc": "Shows EIGRP summary",
+            "desc": "EIGRP process summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip eigrp summary\nEIGRP-IPv4 Protocol for AS(100)\n  Metric weight K1=1, K2=0, K3=1, K4=0, K5=0\n  NSF-aware route hold timer is 240\n  Router-ID: 1.1.1.1\n  Topology : 0 (base)\n  Active Timer: 3 min\n  Distance: internal 90 external 170\n  Maximum path: 4\n  Maximum hopcount 100\n  Maximum metric variance 1\n  Total Prefix Count: 234\n  Total Redist Count: 12"
           },
           {
             "cmd": "router eigrp 100",
@@ -32724,14 +32730,14 @@
             "desc": "Per-interface EIGRP hold time (must be ≥ 3× hello).",
             "type": "config",
             "flagged": false,
-            "example": "router(config-if)# ip hold-time eigrp 100 6"
+            "example": "sw(config-if)# ip hold-time eigrp 100 6"
           },
           {
             "cmd": "ip bandwidth-percent eigrp 100 75",
             "desc": "Cap the % of interface bandwidth EIGRP can use for protocol traffic (default 50%). Useful on low-speed WAN links where EIGRP queries could starve user traffic.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-if)# ip bandwidth-percent eigrp 100 75"
+            "example": "sw(config-if)# ip bandwidth-percent eigrp 100 75"
           },
           {
             "cmd": "ip authentication mode eigrp 100 md5\nip authentication key-chain eigrp 100 EIGRP-KC",
@@ -32752,7 +32758,7 @@
             "desc": "EIGRP equal-cost (and variance-eligible) multipath cap. Default 4. Maximum 32 on IOS-XE.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# maximum-paths 6"
+            "example": "sw(config-router)# maximum-paths 6"
           },
           {
             "cmd": "eigrp stub connected summary",
@@ -32766,7 +32772,7 @@
             "desc": "Most restrictive stub mode — advertises nothing, only receives routes. Use on spoke devices that should never be a transit.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# eigrp stub receive-only"
+            "example": "sw(config-router)# eigrp stub receive-only"
           },
           {
             "cmd": "ip summary-address eigrp 100 10.10.0.0 255.255.0.0",
@@ -32784,10 +32790,10 @@
           },
           {
             "cmd": "redistribute static metric 1000000 1 255 1 1500",
-            "desc": "Redistribute static into EIGRP — same metric tuple.",
+            "desc": "Redistribute static into EIGRP with metric tuple (BW/delay/reliability/load/MTU).",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# redistribute static metric 1000000 1 255 1 1500"
+            "example": "sw(config-router)# redistribute static metric 1000000 1 255 1 1500"
           },
           {
             "cmd": "distribute-list prefix BLOCK-RFC1918 in",
@@ -32801,14 +32807,14 @@
             "desc": "Add 100 to the metric of routes matched by ACL 10 inbound on Gi0/1 — makes them less preferred. Lightweight traffic-engineering knob.",
             "type": "config",
             "flagged": false,
-            "example": "router(config)# access-list 10 permit 192.0.2.0 0.0.0.255\nrouter(config-router)# offset-list 10 in 100 GigabitEthernet0/1"
+            "example": "sw(config)# access-list 10 permit 192.0.2.0 0.0.0.255\nsw(config-router)# offset-list 10 in 100 GigabitEthernet0/1"
           },
           {
             "cmd": "timers active-time disabled",
             "desc": "Disable the SIA (Stuck-In-Active) timer — EIGRP will wait forever for query replies. Almost never the right answer; instead use stub routers, summarisation, or named-mode SIA tuning.",
             "type": "config",
             "flagged": true,
-            "example": "router(config-router)# timers active-time disabled\n# Equivalent: timers active-time 0 disables; lower values increase SIA-Query frequency."
+            "example": "sw(config-router)# timers active-time disabled"
           },
           {
             "cmd": "router eigrp NAMED\n address-family ipv4 unicast autonomous-system 100",
@@ -32850,21 +32856,21 @@
             "desc": "EIGRPv6 adjacency table.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 eigrp neighbors\nEIGRP-IPv6 Neighbors for AS(100)\nH   Address                  Interface  Hold Uptime   SRTT  RTO  Q   Seq\n                                        (sec)         (ms)       Cnt Num\n0   Link-local address:      Gi0/0/0    14   3w2d     12    200  0   124\n    FE80::2"
+            "example": "sw# show ipv6 eigrp neighbors\nEIGRP-IPv6 Neighbors for AS(100)\nH   Address                Interface  Hold Uptime\n                                       (sec)\n0   Link-local: FE80::2    Vlan99     14   3w2d"
           },
           {
             "cmd": "show ipv6 eigrp topology",
             "desc": "EIGRPv6 topology table.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 eigrp topology\nEIGRP-IPv6 Topology Table for AS(100)/ID(1.1.1.1)\nCodes: P - Passive, A - Active\n\nP 2001:db8::/64, 1 successors, FD is 2816\n        via FE80::2 (2816/256), GigabitEthernet0/0/0"
+            "example": "sw# show ipv6 eigrp topology\nEIGRP-IPv6 Topology Table for AS(100)/ID(1.1.1.1)\nP 2001:db8::/64, 1 successors, FD is 256\n        via Connected, Vlan99"
           },
           {
             "cmd": "show ipv6 eigrp interfaces",
             "desc": "EIGRPv6 per-interface state.",
             "type": "show",
             "flagged": false,
-            "example": "router# show ipv6 eigrp interfaces\nEIGRP-IPv6 Interfaces for AS(100)\nInterface     Peers   Un/Reliable  SRTT   Un/Reliable   Flow Timer\nGi0/0/0       1       0/0          12     0/1           50"
+            "example": "sw# show ipv6 eigrp interfaces\nEIGRP-IPv6 Interfaces for AS(100)\nInterface  Peers Un/Rel SRTT  Un/Rel  Flow Timer\nVlan99     1     0/0    12    0/1     50"
           },
           {
             "cmd": "router eigrp [as-number]",
@@ -33486,28 +33492,31 @@
           },
           {
             "cmd": "show ip bgp summary",
-            "desc": "Shows BGP summary",
+            "desc": "BGP peer summary — V/AS/MsgRcvd/MsgSent/TblVer/InQ/OutQ/Up-Down/State or PfxRcd.",
             "type": "show",
             "flagged": false,
-            "example": "BGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 2143, main routing table version 2143\n920483 network entries using 207MB of memory\n1842965 path entries using 110MB of memory\n135267/65420 BGP path/bestpath attribute entries using 36MB of memory\n\nNeighbor        V    AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n1.2.3.4         4 65002  142051   142198   2143      0    0 1d04h    920483\n5.6.7.8         4 65003   89234    89456   2143      0    0 03:45:12 920481"
+            "example": "sw# show ip bgp summary\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 12345\n234 network entries using 56160 bytes of memory\n\nNeighbor    V    AS  MsgRcvd  MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.0.0.5    4 65002    98421    98412    12345    0    0  3w2d           512\n10.0.0.6    4 65003     1234     1230    12345    0    0  00:00:14    Idle"
           },
           {
             "cmd": "show ip bgp neighbors",
-            "desc": "Shows BGP neighbors",
+            "desc": "Full detail for every BGP peer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp neighbors | head -20\nBGP neighbor is 10.0.0.5, remote AS 65002, external link\n  BGP version 4, remote router ID 1.2.3.5\n  BGP state = Established, up for 3w2d\n  Last read 00:00:23, last write 00:00:18\n  Hold time is 180, keepalive interval is 60 seconds\n  Neighbor capabilities:\n    Route refresh: advertised and received(new)\n    Four-octets ASN Capability: advertised and received\n    Address family IPv4 Unicast: advertised and received"
           },
           {
             "cmd": "show ip bgp neighbors <ip>",
             "desc": "Shows neighbor details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp neighbors 10.0.0.5\nBGP neighbor is 10.0.0.5, remote AS 65002, external link\n  BGP state = Established, up for 3w2d\n  Last reset by us never, due to No error\n  Connection state is ESTAB, I/O status: 1, unread input bytes: 0\n  TCP MD5 password not in use"
           },
           {
             "cmd": "show ip bgp dampening parameters",
-            "desc": "Shows dampening parameters",
+            "desc": "Current BGP dampening parameters (half-life, suppress, reuse, max-suppress).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp dampening parameters\n dampening 15 750 2000 60 (route-map none)\n  Half-life time      :    15 mins       Decay Time       : 2320 secs\n  Max suppress penalty: 12000            Max suppress time:   60 mins\n  Suppress penalty :   2000              Reuse penalty :      750"
           },
           {
             "cmd": "show ip bgp paths",
@@ -33518,46 +33527,52 @@
           },
           {
             "cmd": "show ip bgp community",
-            "desc": "Shows BGP communities",
+            "desc": "BGP table filtered by community.",
             "type": "show",
             "flagged": false,
-            "example": "*> 10.0.0.0/8       192.168.1.1              0    100      0 65100 i"
+            "example": "sw# show ip bgp community 65001:200\nBGP table version is 12345, local router ID is 1.1.1.1\n\n     Network          Next Hop       Metric LocPrf Weight Path\n *>i 10.50.0.0/16     1.1.1.2             0    100      0 i\n      Community: 65001:200"
           },
           {
             "cmd": "show ip bgp regexp <regex>",
-            "desc": "Filters BGP routes",
+            "desc": "Filter BGP by AS-path regex.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp regexp _65002_\n     Network          Next Hop       Metric LocPrf Weight Path\n *>e 8.8.8.0/24       10.0.0.5             0           0 65002 15169 i"
           },
           {
             "cmd": "show ip bgp vrf <vrf>",
-            "desc": "Shows BGP VRF table",
+            "desc": "BGP table within a VRF.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp vrf TENANT-A\nBGP routing table information for VRF TENANT-A\n     Network          Next Hop       Metric LocPrf Weight Path\n *>  10.50.0.0/24     0.0.0.0              0         32768 i"
           },
           {
             "cmd": "show ip bgp vpnv4 all",
-            "desc": "Shows VPNv4 routes",
+            "desc": "Full VPNv4 BGP table across all VRFs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip bgp vpnv4 all\nBGP table version is 5432, local router ID is 1.1.1.1\nRoute Distinguisher: 65001:1 (default for vrf TENANT-A)\n *> 10.50.0.0/24     0.0.0.0              0         32768 i\n *>i 10.50.10.0/24   2.2.2.2              0    100      0 i"
           },
           {
             "cmd": "show bgp ipv4 unicast summary",
-            "desc": "AFI/SAFI-scoped BGP neighbor summary",
+            "desc": "Newer AF-style summary (mirror of `show ip bgp summary` but uses AF syntax).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show bgp ipv4 unicast summary\nBGP router identifier 1.1.1.1, local AS number 65001\nNeighbor    V    AS  MsgRcvd  MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.0.0.5    4 65002    98421    98412    12345    0    0  3w2d           512"
           },
           {
             "cmd": "show bgp ipv4 unicast <prefix>",
             "desc": "Best/alt paths and attributes for a prefix",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show bgp ipv4 unicast 8.8.8.0/24\nBGP routing table entry for 8.8.8.0/24, version 9876\nPaths: (1 available, best #1)\n  AS-Path: 65002 15169, path sourced external\n  10.0.0.5 from 10.0.0.5 (1.2.3.5)\n      Origin IGP, metric 0, localpref 100, weight 0, valid, external, best"
           },
           {
             "cmd": "clear bgp ipv4 unicast <neighbor> soft",
             "desc": "Soft-reset a BGP neighbor without bouncing session",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# clear bgp ipv4 unicast 10.0.0.5 soft"
           },
           {
             "cmd": "router bgp 65001",
@@ -33585,7 +33600,7 @@
             "desc": "Disable IGP synchronisation — BGP will advertise routes without requiring matching IGP entries. Default in IOS-XE 15+; only relevant on legacy designs.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# no synchronization"
+            "example": "sw(config-router)# no synchronization"
           },
           {
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
@@ -33599,7 +33614,7 @@
             "desc": "Free-text description on a BGP peer. Pure documentation but visible in `show ip bgp neighbors`. Always describe peers.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# neighbor 10.0.0.5 description ISP-A primary - 1 Gbps DIA"
+            "example": "sw(config-router)# neighbor 10.0.0.5 description ISP-A primary - 1 Gbps DIA"
           },
           {
             "cmd": "network 10.0.0.0 mask 255.255.255.0",
@@ -33676,7 +33691,7 @@
             "desc": "Outbound soft-refresh — resend the local RIB to a peer after editing outbound policy.",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "router# clear ip bgp 10.0.0.5 soft out"
+            "example": "sw# clear ip bgp 10.0.0.5 soft out"
           },
           {
             "cmd": "neighbor 1.2.3.4 update-source Loopback0",
@@ -33690,7 +33705,7 @@
             "desc": "Allow eBGP TCP session to traverse N IP hops (default 1). Required when peering loopback-to-loopback.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# neighbor 10.0.0.5 ebgp-multihop 5\nrouter(config-router)# neighbor 10.0.0.5 update-source Loopback0"
+            "example": "sw(config-router)# neighbor 10.0.0.5 ebgp-multihop 5"
           },
           {
             "cmd": "neighbor 1.2.3.4 next-hop-self",
@@ -33753,7 +33768,7 @@
             "desc": "Inbound prefix-list filter — accept only matching prefixes (no modification). Lighter than a route-map when you only need filtering.",
             "type": "config",
             "flagged": false,
-            "example": "router(config)# ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24\nrouter(config-router)# neighbor 10.0.0.5 prefix-list PEER-IN in"
+            "example": "sw(config)# ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24\nsw(config-router)# neighbor 10.0.0.5 prefix-list PEER-IN in"
           },
           {
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
@@ -33830,7 +33845,7 @@
             "desc": "Cluster-ID for redundant route-reflectors. Two RRs in the same cluster share a cluster-ID so they suppress duplicate reflections.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# bgp cluster-id 1.1.1.1"
+            "example": "sw(config-router)# bgp cluster-id 1.1.1.1"
           },
           {
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
@@ -33851,14 +33866,14 @@
             "desc": "iBGP ECMP — same as `maximum-paths` but for iBGP routes (different best-path rules).",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# maximum-paths ibgp 8"
+            "example": "sw(config-router-af)# maximum-paths ibgp 8"
           },
           {
             "cmd": "bgp bestpath as-path multipath-relax",
             "desc": "Allow multipath even when AS-paths differ but length matches. Essential in VXLAN-EVPN and any fabric where leafs receive same prefix from spines with different AS_PATHs.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# bgp bestpath as-path multipath-relax"
+            "example": "sw(config-router)# bgp bestpath as-path multipath-relax"
           },
           {
             "cmd": "bgp graceful-restart",
@@ -33900,14 +33915,14 @@
             "desc": "IPv6 BGP peer summary.",
             "type": "show",
             "flagged": false,
-            "example": "router# show bgp ipv6 unicast summary\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 1234, main routing table version 1234\n\nNeighbor       V   AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n2001:DB8::5    4 65002   12345    12340   1234    0    0  3w2d           512"
+            "example": "sw# show bgp ipv6 unicast summary\nBGP router identifier 1.1.1.1, local AS number 65001\nNeighbor       V   AS  MsgRcvd  MsgSent  TblVer  InQ OutQ Up/Down  State/PfxRcd\n2001:DB8::5    4 65002   12345    12340    1234    0    0  3w2d            512"
           },
           {
             "cmd": "show bgp ipv6 unicast",
             "desc": "IPv6 BGP table.",
             "type": "show",
             "flagged": false,
-            "example": "router# show bgp ipv6 unicast\nBGP table version is 1234, local router ID is 1.1.1.1\nStatus codes: s suppressed, * valid, > best, i - internal\n\n     Network          Next Hop            Metric LocPrf Weight Path\n*>e  2001:4860::/32   2001:DB8::5              0             0 65002 15169 i"
+            "example": "sw# show bgp ipv6 unicast\n     Network          Next Hop       Metric LocPrf Weight Path\n*>e  2001:4860::/32   2001:DB8::5         0           0 65002 15169 i"
           },
           {
             "cmd": "address-family vpnv4",
@@ -33956,42 +33971,42 @@
             "desc": "Inside a route-map: set the LOCAL_PREF on matched routes. Higher = more preferred. Local-pref stays inside your AS — used to influence OUTBOUND traffic decisions among iBGP peers.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-route-map)# set local-preference 200"
+            "example": "sw(config-route-map)# set local-preference 200"
           },
           {
             "cmd": "set as-path prepend <AS> <AS> <AS>",
             "desc": "Inside a route-map: prepend extra AS numbers to the AS_PATH so the route looks longer / less attractive to neighbours. Used to influence INBOUND traffic engineering.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-route-map)# set as-path prepend 65001 65001 65001"
+            "example": "sw(config-route-map)# set as-path prepend 65001 65001 65001"
           },
           {
             "cmd": "set metric <value>",
             "desc": "Inside a route-map: set the MED (Multi-Exit Discriminator). Tells an EXTERNAL neighbour which entry point into your AS to prefer. Lower = more preferred.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-route-map)# set metric 50"
+            "example": "sw(config-route-map)# set metric 50"
           },
           {
             "cmd": "set community <number> | no-export | no-advertise",
             "desc": "Inside a route-map: tag the route with one or more communities. Special well-known values: no-export (do not send outside the AS), no-advertise (do not send to any peer), local-AS (do not send outside the local sub-AS).",
             "type": "config",
             "flagged": false,
-            "example": "router(config-route-map)# set community 65001:100 no-export\nrouter(config-route-map)# set community 65001:200 additive    ; add without overwriting"
+            "example": "sw(config-route-map)# set community 65001:100 no-export\nsw(config-route-map)# set community 65001:200 additive"
           },
           {
             "cmd": "bgp confederation identifier <AS>",
             "desc": "AS-confederation member-AS scheme — divide a large AS into sub-ASes that internally use eBGP but appear as the confederation-ID externally.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# bgp confederation identifier 65000\nrouter(config-router)# bgp confederation peers 65001 65002"
+            "example": "sw(config-router)# bgp confederation identifier 65000\nsw(config-router)# bgp confederation peers 65001 65002"
           },
           {
             "cmd": "bgp confederation peers <AS-List>",
             "desc": "Tell the router which other sub-ASs belong to the same confederation as the local sub-AS.",
             "type": "config",
             "flagged": false,
-            "example": "router(config-router)# bgp confederation peers 65001 65002 65003"
+            "example": "sw(config-router)# bgp confederation peers 65001 65002 65003"
           },
           {
             "cmd": "show ip bgp labels",
@@ -34005,7 +34020,7 @@
             "desc": "Filter BGP table by a literal AS-number anywhere in the path (matches across AS-set / private-AS removal).",
             "type": "show",
             "flagged": false,
-            "example": "router# show ip bgp quote-regexp _65002_"
+            "example": "sw# show ip bgp quote-regexp _65002_"
           },
           {
             "cmd": "show ip bgp community-list <number>",
@@ -34685,973 +34700,1123 @@
         "Multicast": [
           {
             "cmd": "show ip igmp groups",
-            "desc": "Shows IGMP groups",
+            "desc": "IGMP group membership table — multicast groups joined per VLAN/interface.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip igmp groups\nIGMP Connected Group Membership\nGroup Address    Interface              Uptime    Expires  Last Reporter   Group Accounted\n224.0.1.40       Vlan10                 3w2d      00:02:42 10.10.10.20\n239.255.255.250  Vlan10                 1d4h      00:02:38 10.10.10.21\n239.10.10.10     Vlan20                 02:34:56  00:02:55 10.20.20.10"
           },
           {
             "cmd": "show ip igmp snooping",
-            "desc": "Shows IGMP snooping",
+            "desc": "IGMP snooping state per VLAN — enabled/disabled, querier, mrouter ports.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip igmp snooping\nGlobal IGMP Snooping configuration:\n-------------------------------------------\nIGMP snooping              : Enabled\nGlobal PIM Snooping        : Disabled\nIGMPv3 snooping (minimal)  : Enabled\nReport suppression         : Enabled\nTCN solicit query          : Disabled\nTCN flood query count      : 2\nLast member query interval : 1000\n\nVlan 10:\n--------\nIGMP snooping              : Enabled\nIGMPv2 immediate leave     : Disabled\nMulticast router learning  : pim-dvmrp\nCGMP interoperability      : IGMP_ONLY\nVlan 10 has 3 groups"
           },
           {
             "cmd": "show ip igmp snooping groups",
-            "desc": "Shows snooping groups",
+            "desc": "Multicast groups learnt by IGMP snooping with port lists.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip igmp snooping groups\nVlan      Group                    Type        Version     Port List\n-----------------------------------------------------------------------\n10        224.0.1.40               igmp        v2          Gi1/0/1, Gi1/0/11\n10        239.255.255.250          igmp        v2          Gi1/0/2, Po1\n20        239.10.10.10             igmp        v3          Gi1/0/24"
           },
           {
             "cmd": "show ip pim neighbor",
-            "desc": "Shows PIM neighbors",
+            "desc": "PIM neighbours: address, interface, uptime, DR priority.",
             "type": "show",
             "flagged": false,
-            "example": "PIM Neighbor Table\nMode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,\n      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable\n\nNeighbor          Interface                Uptime/Expires    Ver   DR\nAddress                                                            Prio/Mode\n10.0.0.2          GigabitEthernet0/1       1d04h/00:01:38    v2    1 / DR S P G"
+            "example": "sw# show ip pim neighbor\nPIM Neighbor Table\nMode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,\n      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable\nNeighbor          Interface           Uptime/Expires    Ver   DR\nAddress                                                       Prio/Mode\n10.0.0.2          Vlan99              3w2d/00:01:30     v2    1 / DR S P G\n10.0.0.3          Vlan99              3w2d/00:01:35     v2    1 / S P G"
           },
           {
             "cmd": "show ip pim interface",
-            "desc": "Shows PIM interfaces",
+            "desc": "PIM-enabled interfaces with mode (sparse/dense), DR, hello interval.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip pim interface\nAddress         Interface          Ver/  Nbr   Query     DR        DR\n                                   Mode  Count Intvl     Prior\n10.0.0.1        Vlan99              v2/S  2     30        1         10.0.0.2\n1.1.1.1         Loopback0           v2/S  0     30        1         1.1.1.1"
           },
           {
             "cmd": "show ip pim rp mapping",
-            "desc": "Shows RP mapping",
+            "desc": "PIM RP-to-group mappings — static, BSR-learnt, Auto-RP-learnt.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip pim rp mapping\nPIM Group-to-RP Mappings\nGroup(s) 224.0.0.0/4\n  RP 10.99.99.1 (?), v2\n    Info source: 10.99.99.1 (?), via Auto-RP\n         Uptime: 3w2d, expires: 00:02:43"
           },
           {
             "cmd": "show ip mroute",
-            "desc": "Shows multicast routing table",
+            "desc": "IPv4 multicast routing table (MRIB) — (S,G) and (*,G) entries with OIL (outgoing interface list).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip mroute\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,\n       L - Local, P - Pruned, R - RP-bit set, F - Register flag, T - SPT-bit set,\n       J - Join SPT, M - MSDP created entry\n\n(*, 239.10.10.10), 02:34:56/stopped, RP 10.99.99.1, flags: SJC\n  Incoming interface: Vlan99, RPF nbr 10.0.0.2\n  Outgoing interface list:\n    Vlan20, Forward/Sparse, 02:34:55/00:02:14\n\n(10.50.50.50, 239.10.10.10), 02:34:55/00:02:14, flags: T\n  Incoming interface: Vlan99, RPF nbr 10.0.0.2\n  Outgoing interface list:\n    Vlan20, Forward/Sparse, 02:34:55/00:02:14"
           },
           {
             "cmd": "show ip mroute count",
-            "desc": "Shows mroute count",
+            "desc": "Aggregate multicast packet/byte counts per (S,G).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip mroute count\nIP Multicast Statistics\n9 routes using 4068 bytes of memory\n4 groups, 1.25 average sources per group\n\nGroup: 239.10.10.10, Source count: 1, Packets forwarded: 12345, Packets received: 12345\n  RP-tree: Forwarding: 0/0/0/0, Other: 0/0/0\n  Source: 10.50.50.50/32, Forwarding: 12345/8/512/0, Other: 12345/0/0"
           },
           {
             "cmd": "show ip mroute summary",
-            "desc": "Shows mroute summary",
+            "desc": "Multicast routing summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip mroute summary\nIP Multicast Routing Table\n4 groups, 1.25 average sources per group\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,\n       L - Local, P - Pruned, R - RP-bit set, F - Register flag, T - SPT-bit set\n\n(*, 239.10.10.10), 02:34:56/stopped, RP 10.99.99.1, OIF count: 1, flags: SJC\n(10.50.50.50, 239.10.10.10), 02:34:55/00:02:14, OIF count: 1, flags: T"
           },
           {
             "cmd": "show ip multicast",
-            "desc": "Shows multicast summary",
+            "desc": "Global multicast routing state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip multicast\nMulticast Routing: enabled\nMulticast Multipath: disabled\nMulticast Route limit: No limit\nMulticast Triggered Routing: enabled\nMulticast Fallback group mode: Sparse\nNumber of multicast boundaries configured with filter-autorp option: 0\nMRTS:\n  IP multicast RPF Backoff disabled\n  Multicast multicast-routing aggregate: disabled"
           },
           {
             "cmd": "show ip mroute active",
-            "desc": "Only multicast flows with live traffic",
+            "desc": "Active multicast streams — sources currently transmitting above the active-rate threshold.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip mroute active\nActive IP Multicast Sources - sending > 4 kbps\n\nGroup: 239.10.10.10, (?)\n   Source: 10.50.50.50 (?)\n     Rate: 1234 pps/567 kbps(1sec), 1100 pps/520 kbps(last 30 secs), 980 pps/470 kbps(life avg)"
           }
         ],
         "Security": [
           {
             "cmd": "show ip ssh",
-            "desc": "Shows SSH configuration",
+            "desc": "SSH server config and current cipher/protocol policy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip ssh\nSSH Enabled - version 2.0\nAuthentication methods:publickey,keyboard-interactive,password\nAuthentication Publickey Algorithms:x509v3-ssh-rsa,ssh-rsa,rsa-sha2-256,rsa-sha2-512\nHostkey Algorithms:rsa-sha2-256,rsa-sha2-512,ssh-rsa\nEncryption Algorithms:aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc\nMAC Algorithms:hmac-sha2-256,hmac-sha2-512,hmac-sha1\nKEX Algorithms:diffie-hellman-group14-sha1,ecdh-sha2-nistp256,curve25519-sha256\nAuthentication timeout: 120 secs; Authentication retries: 3\nMinimum expected Diffie Hellman key size : 2048 bits"
           },
           {
             "cmd": "show ip ssh statistics",
-            "desc": "Shows SSH statistics",
+            "desc": "SSH session counters (connections, authentication attempts, failures).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip ssh statistics\nSSH Statistics:\n  Total Connections: 12345\n  Active Connections: 3\n  Total Authentication Failures: 234\n  Total Bytes Sent: 9876543\n  Total Bytes Received: 1234567"
           },
           {
             "cmd": "show ip ssh active-session",
-            "desc": "Shows active SSH sessions",
+            "desc": "Currently active SSH sessions with user and source.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ssh\nConnection      Version Mode Encryption  Hmac         State              Username\n0               2.0     IN   aes256-ctr  hmac-sha2-256 Session started    admin\n0               2.0     OUT  aes256-ctr  hmac-sha2-256 Session started    admin\n%No SSHv1 server connections running."
           },
           {
             "cmd": "show ip http server",
-            "desc": "Shows HTTP server status",
+            "desc": "HTTP server state. Best practice: disabled (only HTTPS).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip http server status\nHTTP server status: Disabled\nHTTP server port: 80\nHTTP server active supplementary listener ports: \nHTTP server authentication method: enable\nHTTP server idle session timeout: 180 seconds\n\nHTTP secure server capability: Present\nHTTP secure server status: Enabled\nHTTP secure server port: 443\nHTTP secure server ciphersuite: tls-rsa-aes256-gcm-sha384"
           },
           {
             "cmd": "show ip http secure-server",
-            "desc": "Shows HTTPS server status",
+            "desc": "HTTPS server cipher / TLS version policy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip http server secure status\nHTTP secure server status: Enabled\nHTTP secure server port: 443\nHTTP secure server ciphersuite: tls-rsa-aes256-gcm-sha384 tls-rsa-aes256-sha256\nHTTP secure server TLS version: TLSv1.2 TLSv1.3\nHTTP secure server client authentication: Disabled\nHTTP secure server trustpoint: TP-self-signed-12345\nHTTP secure server peer validation trustpoint:"
           },
           {
             "cmd": "show login failures",
-            "desc": "Shows login failures",
+            "desc": "Login failure log — usernames + source IPs that failed authentication. Useful for spotting bruteforce attempts.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show login failures\nInformation about login failure's:\nUsername          Source IPAddr     lPort Count    Latest TimeStamp\n-----------------------------------------------------------------------------\nadmin             203.0.113.42        22   234     14:23:45 GMT Apr 21 2026\nroot              198.51.100.99       22   12      02:15:33 GMT Apr 21 2026"
           },
           {
             "cmd": "show login on-failure",
-            "desc": "Shows login failure tracking",
+            "desc": "Login-on-failure logging policy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show login on-failure log\nlogin on-failure log every 1 attempts"
           },
           {
             "cmd": "show login on-success",
-            "desc": "Shows login success tracking",
+            "desc": "Login-on-success logging policy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show login on-success log\nlogin on-success log every 1 attempts"
           },
           {
             "cmd": "show aaa servers",
-            "desc": "Shows AAA servers",
+            "desc": "RADIUS/TACACS server reachability and request statistics.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show aaa servers\nRADIUS: id 1, priority 1, host 10.10.10.50, auth-port 1812, acct-port 1813, hostname ISE-01\n     State: current UP, duration 1209655s, previous duration 0s\n     Authen: request 18452, timeouts 3, failover 0, retransmission 3\n             Response: accept 17901, reject 548, challenge 0\n     Acct:   request 17901, timeouts 0\nRADIUS: id 2, priority 2, host 10.10.10.51, auth-port 1812, acct-port 1813, hostname ISE-02\n     State: current UP, duration 1209640s"
           },
           {
             "cmd": "show aaa sessions",
-            "desc": "Shows AAA sessions",
+            "desc": "Active AAA sessions (typically 802.1X / MAB).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show aaa sessions\nTotal sessions since last reload: 12345\nSession Id: 1234\n   Unique Id: 12345\n   User Name: host/laptop01.acme.com\n   IP Address: 10.10.10.20\n   IPv6 Address: Unknown\n   Idle Time: 0\n   CT Call Back: -\n   Common Session ID: 0A0A0A140000003039ABCDEF\n   Acct Session ID: 0x00000123\n   Method List: DOT1X-LIST\nSession Id: 1235\n   User Name: host/printer-floor3.acme.com\n   Method List: DOT1X-LIST"
           },
           {
             "cmd": "show aaa user",
-            "desc": "Shows AAA user info",
+            "desc": "Per-user AAA session detail.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show aaa user all\nUnique ID: 12345\nUser Name: host/laptop01.acme.com\nIP Address: 10.10.10.20\nMethod List: DOT1X-LIST\nAttribute list:\n  Service-Type: Framed\n  Tunnel-Type: VLAN\n  Tunnel-Medium-Type: 802\n  Tunnel-Private-Group-Id: 10"
           },
           {
             "cmd": "show radius statistics",
-            "desc": "Shows RADIUS statistics",
+            "desc": "Aggregate RADIUS counters per server: requests, accepts, rejects, timeouts, retransmits.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show radius statistics\nAuth.    : Maximum inQ length: 1\nAuth.    : Maximum waited time(in msec): 14\nAuth.    : Maximum doneQ length: 1\nAuth.    : Total responses seen from server: 18449\nAuth.    : Packets with responses: 18449\nAuth.    : Packets without responses: 3\nAuth.    : Average response time(in msec): 12\nAcct.    : Maximum inQ length: 1\nAcct.    : Average response time(in msec): 10"
           },
           {
             "cmd": "show radius server-group",
-            "desc": "Shows RADIUS server groups",
+            "desc": "Configured RADIUS server groups.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show radius server-group all\nServer group radius\n    Server(s) info:\n         (Server status not shown)\n\nServer group RAD-GROUP\n    Sharecount = 0   sg_unconfigured = FALSE\n    Type = standard  Memlocks = 1\n    Server(s) info:\n        10.10.10.50, auth-port 1812, acct-port 1813, hostname ISE-01\n        10.10.10.51, auth-port 1812, acct-port 1813, hostname ISE-02"
           },
           {
             "cmd": "show tacacs",
             "desc": "Shows TACACS configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show tacacs\nTacacs+ Server         : 10.10.10.60/49\n              Socket opens:        12345\n              Socket closes:       12340\n              Socket aborts:           0\n              Socket errors:           0\n              Socket Timeouts:         3\n              Failed Connect Attempts: 0\n              Total Packets Sent:  18452\n              Total Packets Recv:  18449"
           },
           {
             "cmd": "show tacacs server",
-            "desc": "Shows TACACS servers",
+            "desc": "TACACS server statistics (alt syntax to `show tacacs`).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show tacacs server | head -10\nTacacs+ Server         : 10.10.10.60/49\nSocket opens:        12345\nSocket aborts:           0\nFailed Connect Attempts: 0\nTotal Packets Sent:  18452\nTotal Packets Recv:  18449"
           },
           {
             "cmd": "show crypto key mypubkey rsa",
-            "desc": "Shows RSA public key",
+            "desc": "Installed RSA key pairs (used for SSH/HTTPS/SCEP). Generate with `crypto key generate rsa modulus 2048`.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show crypto key mypubkey rsa\n% Key pair was generated at: 14:23:45 GMT Apr 01 2026\nKey name: sw.acme.com\nKey type: RSA KEYS\n Storage Device: not specified\n Usage: General Purpose Key\n Key is not exportable. Redundancy enabled.\n Key Data:\n  30820122 300D0609 2A864886 F70D0101 01050003 82010F00 3082010A 02820101\n  ..."
           },
           {
             "cmd": "show crypto key mypubkey ecdsa",
-            "desc": "Shows ECDSA public key",
+            "desc": "Installed ECDSA key pairs (modern, smaller, faster than RSA).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show crypto key mypubkey ecdsa\n% Key pair was generated at: 14:23:45 GMT Apr 01 2026\nKey name: sw.acme.com.ecc\nKey type: EC KEYS (curve P-256)\n Storage Device: private-config\n Usage: General Purpose Key\n Key is not exportable. Redundancy enabled.\n Key Data:\n  30593013 06072A86 48CE3D02 0106082A 8648CE3D 03010703 42000412 34567890\n  ..."
           },
           {
             "cmd": "show crypto pki certificates",
-            "desc": "Shows PKI certificates",
+            "desc": "All installed PKI certificates (identity + CA + intermediate). Status, validity, subject, key usage.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show crypto pki certificates\nCertificate\n  Status: Available\n  Certificate Serial Number (hex): 0x1234ABCD\n  Certificate Usage: General Purpose\n  Issuer:\n    cn=Internal CA, o=Acme Corp, c=GB\n  Subject:\n    Name: sw-access-01.acme.com\n    cn=sw-access-01.acme.com\n  Validity Date:\n    start date: 00:00:00 UTC Jan 1 2026\n    end   date: 23:59:59 UTC Jan 1 2028\n  Associated Trustpoints: ACME-CA\n\nCA Certificate\n  Status: Available\n  Issuer: cn=Internal CA, o=Acme Corp, c=GB\n  Subject: cn=Internal CA, o=Acme Corp, c=GB"
           },
           {
             "cmd": "show crypto pki trustpoints",
-            "desc": "Shows trustpoints",
+            "desc": "Defined trustpoints — name, enrollment URL, hash algorithm, key reuse policy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show crypto pki trustpoints\nTrustpoint ACME-CA:\n    Subject Name:\n     cn=sw-access-01.acme.com\n          Serial Number: 1234ABCD\n    Certificate configured.\n    Keypair name: sw.acme.com\n    Enrollment URL: http://ca.acme.com/certsrv/mscep/mscep.dll\n    Revocation Check: ocsp,crl\n    Hash Algorithm: SHA256\n\nTrustpoint TP-self-signed-12345:\n    Subject Name:\n     cn=IOS-Self-Signed-Certificate-12345\n    Self-signed certificate."
           },
           {
             "cmd": "show crypto pki server",
-            "desc": "Shows PKI server info",
+            "desc": "IOS-XE CA server state (if device is acting as an internal CA).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show crypto pki server\n# (No CA server configured)\n# When configured:\n# Certificate Server INTERNAL-CA:\n#     Status: enabled\n#     State: enabled\n#     Server's configuration is locked  (enter \"shut\" to unlock it)\n#     Issuer name: CN=Internal CA"
           },
           {
             "cmd": "show platform software fed switch active access-list interface <int> output",
-            "desc": "Hardware-ACL programming for egress on a port",
+            "desc": "FED-level egress ACL detail per port — verifies what the ASIC actually evaluates.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active access-list interface GigabitEthernet1/0/1 output\nInterface     : GigabitEthernet1/0/1, Direction: Egress\nACL Name      : EGRESS-FILTER\nACL Number    : 12\nACL Entries   : 5 (hardware), 0 (software fallback)\nHits          : 12345"
           },
           {
             "cmd": "show device-tracking database",
-            "desc": "IP-to-MAC binding database (used for IPv6 FHS / DAI)",
+            "desc": "IPv4 + IPv6 device-tracking (snooping) database — binding (MAC/IP/VLAN/port) entries.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show device-tracking database\nBinding Table has 3 entries, 3 dynamic (limit 100000)\nCodes: L - Local, S - Static, ND - Neighbor Discovery, ARP - Address Resolution Protocol,\n       DH4 - DHCPv4, DH6 - DHCPv6, PKT - Other Packet, API - API created\n\nNetwork Layer Address              Link Layer Address  Interface     vlan       prlvl    age   state\n10.10.10.20                        1122.3344.5566      Gi1/0/1       10         0024     45s   REACH\n2001:db8:10::20                    1122.3344.5566      Gi1/0/1       10         0024     45s   REACH\n10.10.10.21                        2233.4455.6677      Gi1/0/11      10         0024     12s   REACH"
           },
           {
             "cmd": "show device-tracking policies",
-            "desc": "Configured device-tracking policies and bindings",
+            "desc": "Defined device-tracking policies and their attachments.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show device-tracking policies\nTarget               Type  Policy             Feature        Target range\nGi1/0/1              PORT  ACCESS-PORT        Device-tracking vlan all\nGi1/0/2              PORT  TRUST-PORT          Device-tracking vlan all\nVlan 10              VLAN  IPDT-MAX-10        Device-tracking vlan all"
           }
         ],
         "DHCP": [
           {
             "cmd": "show ip dhcp binding",
-            "desc": "Shows DHCP bindings",
+            "desc": "IOS-XE internal DHCP server — active leases.",
             "type": "show",
             "flagged": false,
-            "example": "Bindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type       State\n                    Hardware address/\n                    User name\n10.0.10.50          0100.1ab3.c456.78       Feb 06 2026 10:23 AM    Automatic  Active\n10.0.10.51          0100.5056.1234.56       Feb 06 2026 11:02 AM    Automatic  Active"
+            "example": "sw# show ip dhcp binding\nBindings from all pools not associated with VRF:\nIP address          Client-ID/              Lease expiration        Type    State    Interface\n                    Hardware address/\n                    User name\n10.10.10.20         0100.1122.3344.5566     Apr 22 2026 02:23 AM    Auto    Active  Vlan10\n10.10.10.21         0100.2233.4455.6677     Apr 22 2026 02:30 AM    Auto    Active  Vlan10"
           },
           {
             "cmd": "show ip dhcp pool",
-            "desc": "Shows DHCP pools",
+            "desc": "Configured DHCP pools with utilisation and lease counts.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp pool\nPool USERS-VLAN10 :\n Utilization mark (high/low)    : 100 / 0\n Subnet size (first/next)       : 0 / 0\n Total addresses                : 253\n Leased addresses               : 245\n Excluded addresses             : 5\n Pending event                  : none\n 1 subnet is currently in the pool :\n Current index        IP address range                    Leased/Excluded/Total\n 10.10.10.246         10.10.10.1     - 10.10.10.254       245     / 5         / 253"
           },
           {
             "cmd": "show ip dhcp conflict",
-            "desc": "Shows DHCP conflicts",
+            "desc": "IP addresses the DHCP server detected as conflicts (ping or gratuitous-ARP response from a non-leased host).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp conflict\nIP address       Detection Method   Detection time           VRF\n10.10.10.99      Ping               Apr 21 2026 14:23:45     default\n10.10.10.150     Gratuitous ARP     Apr 21 2026 02:15:33     default"
           },
           {
             "cmd": "show ip dhcp snooping",
-            "desc": "Shows DHCP snooping status",
+            "desc": "DHCP snooping global + per-VLAN config: enabled VLANs, rate-limits, trust state.",
             "type": "show",
             "flagged": false,
-            "example": "Switch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10\nDHCP snooping is operational on following VLANs:\n10\nDHCP snooping is configured on the following Interfaces:\nNone\nInsertion of option 82 is enabled\n   circuit-id default format: vlan-mod-port\n   remote-id: 7c21.0d6a.0000 (MAC)\nOption 82 on untrusted port is not allowed\nVerification of hwaddr field is enabled\nVerification of giaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                    Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet1/0/24      yes        yes             unlimited"
+            "example": "sw# show ip dhcp snooping\nSwitch DHCP snooping is enabled\nDHCP snooping is configured on following VLANs:\n10,20,30,99\nDHCP snooping is operational on following VLANs:\n10,20,30,99\nDHCP Snooping Information Option Insertion: enabled\nDHCP Snooping verification of hwaddr field is enabled\nDHCP snooping trust/rate is configured on the following Interfaces:\n\nInterface                  Trusted    Allow option    Rate limit (pps)\n-----------------------    -------    ------------    ----------------\nGigabitEthernet1/0/47       yes        yes             unlimited\nGigabitEthernet1/0/48       yes        yes             unlimited\nGigabitEthernet1/0/1        no         no              15"
           },
           {
             "cmd": "show ip dhcp snooping binding",
-            "desc": "Shows snooping bindings",
+            "desc": "DHCP snooping binding table — MAC↔IP↔VLAN↔port mappings learned from DHCP exchanges. Foundation for IPSG and DAI.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp snooping binding\nMacAddress          IpAddress        Lease(sec)  Type           VLAN  Interface\n------------------  ---------------  ----------  -------------  ----  --------------------\n11:22:33:44:55:66   10.10.10.20      85432       dhcp-snooping   10    GigabitEthernet1/0/1\n22:33:44:55:66:77   10.10.10.21      85410       dhcp-snooping   10    GigabitEthernet1/0/11\nTotal number of bindings: 2"
           },
           {
             "cmd": "show ip dhcp snooping statistics",
-            "desc": "Shows snooping stats",
+            "desc": "DHCP snooping counters — discards by reason (untrusted server, MAC mismatch, opt-82 mismatch).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp snooping statistics\nDHCP snooping is enabled on switch\n\nFunctionality                Counter Name                Count\n----------------------------------------------------------------\nDHCP packets received        Forwarded packets           12345\nDHCP packets received        Packets dropped (invalid)     234\nDHCP packets received        Bad message types                0\nDHCP packets received        Untrusted port                  12\nDHCP packets received        DHCP server packets on untrusted port   3\nDHCP option-82 enabled        Drops on untrusted port         12"
           },
           {
             "cmd": "show ip dhcp relay information",
-            "desc": "Shows DHCP relay info",
+            "desc": "DHCP relay agent state per interface (helper-address, option-82 insertion).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp relay information option-pkt\nDHCP Option 82 insertion enabled globally\nDHCP relay agent helper-address configured:\n  Vlan10:  10.50.50.50\n  Vlan20:  10.50.50.50\n  Vlan30:  10.50.50.50 10.50.50.51"
           },
           {
             "cmd": "show ip dhcp relay statistics",
-            "desc": "Shows relay statistics",
+            "desc": "DHCP relay agent counters: forwards in each direction, drops.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp relay statistics\nDHCP Relay Counter Information:\n\nDHCP Relay statistics\n   Total client packets received : 12345\n   Total server packets received : 12340\n   Total client packets relayed  : 12345\n   Total server packets relayed  : 12340\n   Packets dropped (no helper)   :    0\n   Packets dropped (giaddr fail) :    0"
           },
           {
             "cmd": "show ip dhcp server statistics",
-            "desc": "Shows DHCP server stats",
+            "desc": "IOS-XE internal DHCP server counters: discovers, offers, requests, acks, naks, declines.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp server statistics\nMemory usage         12345\nAddress pools         3\nDatabase agents       0\nAutomatic bindings    245\nManual bindings       2\nExpired bindings      12\nMalformed messages    0\nSecure arp entries    0\n\nMessage                       Received\nBOOTREQUEST                       0\nDHCPDISCOVER                     12\nDHCPREQUEST                     245\nDHCPDECLINE                       1\nDHCPRELEASE                      12\nDHCPINFORM                        3\n\nMessage                       Sent\nBOOTREPLY                         0\nDHCPOFFER                        12\nDHCPACK                         245\nDHCPNAK                           1"
           },
           {
             "cmd": "show ip dhcp database",
-            "desc": "Shows DHCP database",
+            "desc": "DHCP database agents (where lease state is persisted across reloads).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip dhcp database\nURL              :  ftp://user:pass@10.50.50.50/sw-dhcp.txt\nRead             :  Apr 21 2026 09:00:00\nWritten          :  Apr 21 2026 14:30:01\nStatus           :  Last write succeeded\nDelay            :  300 seconds\nTimeout          :  300 seconds\nFailures         :  0\nSuccesses        :  142"
           }
         ],
         "NTP": [
           {
             "cmd": "show ntp status",
-            "desc": "Shows NTP status",
+            "desc": "NTP sync state: associated peer/stratum, reference clock, offset, jitter. \"unsynchronised\" = no sync.",
             "type": "show",
             "flagged": false,
-            "example": "Clock is synchronized, stratum 3, reference is 10.10.10.10\nnominal freq is 250.0000 Hz, actual freq is 249.9988 Hz, precision is 2**18\nntp uptime is 14823100 (1/100 of seconds), resolution is 4016\nreference time is EAA1B2C3.4D5E6F7A (10:23:45.301 UTC Mon Feb 5 2026)\nclock offset is 0.5234 msec, root delay is 5.91 msec\nroot dispersion is 14.71 msec, peer dispersion is 1.11 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000004752 s/s\nsystem poll interval is 64, last update was 27 sec ago."
+            "example": "sw# show ntp status\nClock is synchronized, stratum 3, reference is 10.10.0.10\nnominal freq is 250.0000 Hz, actual freq is 249.9994 Hz, precision is 2**18\nreference time is E1234567.890ABCDE (14:30:01.123 GMT Tue Apr 21 2026)\nclock offset is 1.234 msec, root delay is 12.345 msec\nroot dispersion is 15.000 msec, peer dispersion is 0.500 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000002345 s/s\nsystem poll interval is 1024, last update was 23 sec ago."
           },
           {
             "cmd": "show ntp associations",
-            "desc": "Shows NTP associations",
+            "desc": "Configured NTP peers/servers with sync state. * = sys-peer, + = selected, x = falsticker, - = excess.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp associations\n\n  address            ref clock    st   when   poll reach  delay   offset    disp\n*~10.10.0.10        10.99.0.1     2    234   1024   377   0.456    1.234    0.500\n+~10.10.0.11        10.99.0.1     2    456   1024   377   0.512    1.456    0.600\n  ~127.127.1.1      .LOCL.       11      -     16   377   0.000    0.000    0.500\n * sys.peer, # selected, + candidate, - outlyer, x falseticker, ~ configured"
           },
           {
             "cmd": "show ntp associations detail",
-            "desc": "Shows detailed NTP info",
+            "desc": "Verbose peer detail: drift, offset, jitter, last poll exchange.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp associations detail\n10.10.0.10 configured, ipv4, our_master, sane, valid, stratum 2\nref ID 10.99.0.1, time E1234567.890ABCDE (14:30:01.123 GMT Tue Apr 21 2026)\nour mode client, peer mode server, our poll intvl 1024, peer poll intvl 1024\nroot delay 12.345 msec, root disp 15.000, reach 377, sync dist 27.345\ndelay 0.456 msec, offset 1.234 msec, dispersion 0.500\nprecision 2**18, version 4\norg time E1234567.78901234 (14:30:00.456 GMT Tue Apr 21 2026)\nrec time E1234567.89012345 (14:30:01.001 GMT Tue Apr 21 2026)\nxmt time E1234567.890ABCDE (14:30:01.123 GMT Tue Apr 21 2026)\nfilterdelay  =  0.456   0.512   0.498   0.467   0.501   0.489   0.502   0.495"
           },
           {
             "cmd": "show ntp config",
-            "desc": "Shows NTP configuration",
+            "desc": "NTP config snippet from running-config.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show running-config | section ntp\nntp authentication-key 1 md5 <hash> 7\nntp authentication-key 2 md5 <hash> 7\nntp authenticate\nntp trusted-key 1 2\nntp source Loopback0\nntp server 10.10.0.10 prefer key 1\nntp server 10.10.0.11 key 2\nntp access-group peer NTP-PEERS-ACL"
           },
           {
             "cmd": "show ntp statistics",
-            "desc": "Shows NTP statistics",
+            "desc": "NTP packet counters — RX/TX, drops, processed.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp statistics io\nio counters:\ntime since reset:    12w3d:14h:07m:23s\nreceive buffers:     12345\nfree receive buffers: 234\nused receive buffers: 0\nlow water refills:    23\ndropped packets:      0\nignored packets:      0\nreceived packets:     12345\nsent packets:         12345\npackets not sent due to error: 0"
           },
           {
             "cmd": "show ntp peer-status",
-            "desc": "Shows peer status",
+            "desc": "Cisco-specific compact peer-status view.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp peer-status\nTotal peers : 2\n* sys.peer  : 10.10.0.10\n+ candidate : 10.10.0.11"
           },
           {
             "cmd": "show ntp clock",
-            "desc": "Shows NTP clock state",
+            "desc": "Current NTP-derived clock.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp\n14:30:01.234 GMT Tue Apr 21 2026"
           },
           {
             "cmd": "show ntp server-status",
-            "desc": "Shows server status",
+            "desc": "NTP server-mode status (when this device is also serving NTP downstream).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp server\nReceiving NTP requests: enabled\nNumber of clients served: 245\nLast client request: 14:30:00.456 GMT Apr 21 2026"
           },
           {
             "cmd": "show ntp trace",
-            "desc": "Shows NTP trace logs",
+            "desc": "NTP tracing log (debug-level events).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp trace\nNTP trace logging:\n  Stratum    Address          Status\n  3          10.10.0.10       Sys peer\n  2          10.99.0.1        Ref clock"
           },
           {
             "cmd": "show ntp sync-status",
-            "desc": "Shows sync status",
+            "desc": "Compact view: synchronized? clock-source? stratum?",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ntp status | include synchronized|stratum\nClock is synchronized, stratum 3, reference is 10.10.0.10"
           }
         ],
         "SNMP": [
           {
             "cmd": "show snmp",
-            "desc": "Shows SNMP configuration",
+            "desc": "SNMP feature summary: enabled, packet counters, errors.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp\nChassis: FCW2306G0F1\nContact: noc@acme.com\nLocation: London-DC1-Rack3\n0 SNMP packets input\n    0 Bad SNMP version errors\n    0 Unknown community name\n    0 Illegal operation for community name supplied\n    0 Encoding errors\n    0 Number of requested variables\n    0 Number of altered variables\n    0 Get-request PDUs\n    0 Get-next PDUs\n    0 Set-request PDUs\n    0 Input queue packet drops (Maximum queue size 1000)\n12345 SNMP packets output"
           },
           {
             "cmd": "show snmp community",
-            "desc": "Shows SNMP communities",
+            "desc": "SNMP v1/v2c communities with ACL bindings (do not show in cleartext on screen).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp community\n\nCommunity name: public\nCommunity Index: cisco0\nCommunity SecurityName: public\nstorage-type: nonvolatile        active access-list: SNMP-RO-ACL\n\nCommunity name: rw-secret-12345\nCommunity Index: cisco1\nCommunity SecurityName: rw-secret-12345\nstorage-type: nonvolatile        active access-list: SNMP-RW-ACL"
           },
           {
             "cmd": "show snmp group",
-            "desc": "Shows SNMP groups",
+            "desc": "SNMPv3 groups with security model (noauth/auth/priv) and bound views.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp group\ngroupname: V1                            security model:v1\nreadview : v1default                     writeview: <no writeview specified>\nnotifyview: <no notifyview specified>\nrow status: active\n\ngroupname: V3-PRIV                       security model:v3 priv\nreadview : v1default                     writeview: <no writeview specified>\nnotifyview: <no notifyview specified>\nrow status: active"
           },
           {
             "cmd": "show snmp user",
-            "desc": "Shows SNMP users",
+            "desc": "Defined SNMPv3 users with auth + priv algorithms.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp user\n\nUser name: snmpuser01\nEngine ID: 800000090300AABBCCDD0001\nstorage-type: nonvolatile        active\nAuthentication Protocol: SHA\nPrivacy Protocol: AES128\nGroup-name: V3-PRIV"
           },
           {
             "cmd": "show snmp engineID",
-            "desc": "Shows SNMP engine ID",
+            "desc": "Local SNMPv3 engine ID + remote engine IDs (for inform recipients).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp engineID\nLocal SNMP engineID: 800000090300AABBCCDD0001\nRemote Engine ID                                  IP-addr           Port\n800000090300112233445566                          10.50.50.50       162"
           },
           {
             "cmd": "show snmp mib",
-            "desc": "Shows MIB info",
+            "desc": "Enabled MIBs the device supports.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp mib | head -10\natEntry.1\natEntry.2\natEntry.3\nbgp4PathAttrEntry.1\nbgp4PathAttrEntry.2\nciscoMemoryPoolEntry.1\ncpmCPUTotalEntry.1\nentPhysicalEntry.1\nifEntry.1\nifEntry.2"
           },
           {
             "cmd": "show snmp packets",
-            "desc": "Shows SNMP packet counters",
+            "desc": "SNMP packet counters — same first block of `show snmp` extracted.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp\nSNMP packets input\n    18452 Get-request PDUs\n    8234 Get-next PDUs\n    12 Set-request PDUs\n    0 Input queue packet drops\n26710 SNMP packets output\n    18452 Get-response PDUs (Sent)"
           },
           {
             "cmd": "show snmp sessions",
-            "desc": "Shows SNMP sessions",
+            "desc": "Active SNMP query sessions (NMS pollers).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp sessions\nDestination: 10.50.50.50.162, V2C community: corp-snmp\n  Tx 12345 packets, 0 errors\nDestination: 10.50.50.51.162, V3 user: snmpuser01\n  Tx 9876 packets, 0 errors"
           },
           {
             "cmd": "show snmp traps",
-            "desc": "Shows SNMP traps",
+            "desc": "Enabled trap categories.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp host\nNotification host: 10.50.50.50         udp-port: 162    type: trap\nuser: public        security model: v2c\ntraps enabled: bgp, ospf, snmp, syslog, envmon, port-security, vrrp\n\nNotification host: 10.50.50.51         udp-port: 162    type: trap\nuser: snmpuser01    security model: v3 priv\ntraps enabled: bgp, ospf, snmp, syslog"
           },
           {
             "cmd": "show snmp notifications",
-            "desc": "Shows SNMP notifications",
+            "desc": "Recent SNMP traps generated.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show snmp notifications | head\nApr 21 14:23:45.123: linkUp on GigabitEthernet1/0/1 - sent to 10.50.50.50\nApr 21 14:23:46.234: linkDown on GigabitEthernet1/0/24 - sent to 10.50.50.50\nApr 21 14:24:01.345: bgpEstablished neighbor 10.0.0.5 - sent to 10.50.50.50"
           }
         ],
         "NetFlow": [
           {
             "cmd": "show flow monitor",
-            "desc": "Shows flow monitors",
+            "desc": "Configured flow monitors — exporter, record, cache stats.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow monitor\nFlow Monitor MON1:\n  Description:       User defined\n  Flow Record:       REC1\n  Flow Exporter:     EXP1\n  Cache:\n    Type:            normal (Platform cache)\n    Status:          allocated\n    Size:            200000 entries / 32768208 bytes\n    Inactive Timeout:    15 secs\n    Active Timeout:      60 secs"
           },
           {
             "cmd": "show flow monitor <name>",
-            "desc": "Shows monitor details",
+            "desc": "Detail for a specific monitor.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow monitor MON1\nFlow Monitor MON1:\n  Description:       User defined\n  Flow Record:       REC1\n  Flow Exporter:     EXP1\n  Cache:\n    Type:            normal (Platform cache)\n    Status:          allocated\n    Size:            200000 entries / 32768208 bytes\n    Inactive Timeout:    15 secs\n    Active Timeout:      60 secs\n    Update Timeout:      0 secs\n    Synchronized Timeout: 600 secs\n    Trans End Aging:     0 secs"
           },
           {
             "cmd": "show flow exporter",
-            "desc": "Shows flow exporters",
+            "desc": "Configured flow exporters — destination, transport, template timer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow exporter\nFlow Exporter EXP1:\n  Description:              NetFlow to collector\n  Export protocol:          NetFlow Version 9\n  Transport Configuration:\n    Destination IP address: 10.50.50.50\n    Source IP address:      1.1.1.1\n    Transport Protocol:     UDP\n    Destination Port:       2055\n    Source Port:            55123\n    DSCP:                   0x0\n    TTL:                    255\n    Output Features:        Not Used"
           },
           {
             "cmd": "show flow exporter <name>",
-            "desc": "Shows exporter details",
+            "desc": "Detail for a specific exporter.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow exporter EXP1 templates\nFlow Exporter EXP1:\n  Client: Flow Monitor MON1\n  Exporter Format: NetFlow Version 9\n  Template ID    : 256\n  Source ID      : 0\n  Record Size    : 26\n  Template layout\n  _____________________________________________________________________\n  | Field                              | Type | Offset |   Size |\n  _____________________________________________________________________\n  | ipv4 source address                |   8  |   0    |   4    |\n  | ipv4 destination address           |  12  |   4    |   4    |\n  | transport source-port              |   7  |   8    |   2    |\n  | transport destination-port         |  11  |  10    |   2    |"
           },
           {
             "cmd": "show flow record",
-            "desc": "Shows flow records",
+            "desc": "Configured flow records — match (key) and collect (non-key) fields.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow record\nflow record REC1:\n  Description:     User defined\n  No. of users:    1\n  Total field space: 26 bytes\n  Fields:\n    match ipv4 source address\n    match ipv4 destination address\n    match transport source-port\n    match transport destination-port\n    match ipv4 protocol\n    collect counter bytes\n    collect counter packets\n    collect timestamp absolute first\n    collect timestamp absolute last"
           },
           {
             "cmd": "show flow record <name>",
-            "desc": "Shows record details",
+            "desc": "Detail for a specific record.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow record REC1\n[Same output as `show flow record` filtered to REC1]"
           },
           {
             "cmd": "show platform hardware qfp active feature netflow",
-            "desc": "Shows QFP NetFlow info",
+            "desc": "QFP NetFlow data-path state on ISR/ASR (not all C9k). Hardware cache utilisation.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware qfp active feature netflow\nNetFlow Statistics:\n  IPv4 flows: 12345 active / 1000000 max\n  IPv6 flows:   234 active /  500000 max\n  Aged flows (active): 4567890\n  Aged flows (inactive): 12345678\n  Exported packets: 234567"
           },
           {
             "cmd": "show ip cache flow",
-            "desc": "Shows legacy NetFlow cache",
+            "desc": "Legacy NetFlow v5 cache (older platforms). Modern Catalyst uses Flexible NetFlow.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip cache flow\nIP packet size distribution (12345678 total packets):\n   1-32   64   96  128  160  192  224  256  288  320  352  384  416  448  480\n   .000 .234 .123 .045 .012 .008 .005 .003 .002 .002 .001 .001 .001 .001 .001\n\nIP Flow Switching Cache, 4456704 bytes\n  12345 active, 53991 inactive, 4567890 added\n  234567890 ager polls, 0 flow alloc failures"
           },
           {
             "cmd": "show ip flow interface",
-            "desc": "Shows flow-enabled interfaces",
+            "desc": "Interfaces with NetFlow enabled and direction.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip flow interface\nGigabitEthernet1/0/47\n  ip flow ingress\nGigabitEthernet1/0/48\n  ip flow ingress"
           },
           {
             "cmd": "show ip flow export",
-            "desc": "Shows flow export status",
+            "desc": "Legacy NetFlow export destination + counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip flow export\nFlow export v9 is enabled for main cache\n  Export source and destination details :\n  VRF ID : Default\n    Source(1)         1.1.1.1 (Loopback0)\n    Destination(1)    10.50.50.50 (2055)\n  Version 9 flow records\n  Cache for main pool:\n    12345 packets exported in 1234 udp datagrams\n    0 export packets dropped"
           },
           {
             "cmd": "show flow monitor <name> cache",
-            "desc": "Flow-cache contents for a monitor",
+            "desc": "In-memory flow cache contents — confirm NetFlow is actually capturing.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow monitor MON1 cache\n  Cache type:           Normal (Platform cache)\n  Cache size:           200000\n  Current entries:       12345\n  Flows added:          4567890\n  Flows aged:           4555545\n\nIPV4 SRC ADDR     IPV4 DST ADDR     TRNS SRC PORT  TRNS DST PORT  IP PROT     bytes long   pkts long\n================  ================  =============  =============  =======  ===========  ==========\n10.10.10.20       8.8.8.8                  54321            443        6        12345         123\n10.10.10.21       8.8.4.4                  54322            443        6         9876          98"
           },
           {
             "cmd": "show flow monitor <name> statistics",
-            "desc": "Drop/flows/packet counters for the monitor",
+            "desc": "Per-monitor packet/flow counters and cache hit/miss.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flow monitor MON1 statistics\n  Cache type:                       Normal (Platform cache)\n  Cache size:                       200000\n  Current entries:                   12345\n  Flows added:                      4567890\n  Flows aged:                       4555545\n    - Active timeout       (60 secs)     9876543\n    - Inactive timeout     (15 secs)    12345678\n    - Event aged                                0\n    - Watermark aged                            0\n    - Emergency aged                            0"
           }
         ],
         "Telemetry": [
           {
             "cmd": "show telemetry internal",
-            "desc": "Shows telemetry internal state",
+            "desc": "IOS-XE model-driven telemetry internal state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry internal subscription summary\nTelemetry subscription summary:\nID         State            Type            Sensor-group(s)         Encoding\n1          Valid            Configured      SG1                     kvgpb\n2          Valid            Configured      SG2                     gpb"
           },
           {
             "cmd": "show telemetry model-driven",
-            "desc": "Shows MDT configuration",
+            "desc": "MDT (model-driven telemetry) subscription / sensor-group / destination-group state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven subscription summary\nTelemetry subscription summary:\n  Subscription ID    : 1\n  State              : Valid\n  Stream             : yang-push\n  Encoding           : encode-kvgpb\n  Transport          : grpc-tcp\n  Source VRF         : default\n  Filter:\n    Filter type      : xpath\n    Xpath            : /environment-ios-xe-oper:environment/cpu-usage/cpu-utilization"
           },
           {
             "cmd": "show telemetry model-driven subscription",
-            "desc": "Shows MDT subscriptions",
+            "desc": "Active telemetry subscriptions.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven subscription\nID              Stream    Encoding  Transport  State       Recv\n1               yang-push kvgpb     grpc-tcp   Valid       Active\n2               yang-push gpb       grpc-tcp   Valid       Active"
           },
           {
             "cmd": "show telemetry model-driven sensor-group",
-            "desc": "Shows sensor groups",
+            "desc": "Sensor-group definitions — YANG xpaths being subscribed.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven sensor-group\nSensor-group: SG1\n  Sensor-group type: Periodic\n  Subscriptions: 1\n  Sensor-paths:\n    Path: /environment-ios-xe-oper:environment/cpu-usage\n      State: Resolved\n      Filter: None"
           },
           {
             "cmd": "show telemetry model-driven destination-group",
-            "desc": "Shows destination groups",
+            "desc": "Destination-group definitions — collector endpoints.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven destination-group\nDestination-group: DG1\n  Destination IP: 10.50.50.50\n    Destination Port: 57500\n    Protocol: gRPC\n    Profile: \n    Encoding: kvgpb\n    State: Connected\n    Last connection attempt: SUCCESS at 14:30:01 Apr 21 2026"
           },
           {
             "cmd": "show telemetry model-driven statistics",
-            "desc": "Shows MDT statistics",
+            "desc": "Per-subscription packet/error counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven subscription 1 statistics\nSubscription ID: 1\n  Messages sent:        12345\n  Errors:                   0\n  Last error:            None\n  Last connection time: 14:30:01 Apr 21 2026"
           },
           {
             "cmd": "show telemetry model-driven transport",
-            "desc": "Shows transport settings",
+            "desc": "Telemetry transport channel state per destination.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven destination summary\nDestination IP        Port  Transport State        Profile\n10.50.50.50          57500 gRPC      Connected   \n10.50.50.51          57500 gRPC      Connecting  "
           },
           {
             "cmd": "show telemetry model-driven errors",
-            "desc": "Shows MDT errors",
+            "desc": "Recent telemetry errors (connection failures, encoding errors).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven errors\n# No errors logged.\n# Example error:\n# Destination 10.50.50.51:57500 - Connection refused at 14:25:00 Apr 21 2026"
           },
           {
             "cmd": "show telemetry model-driven capabilities",
-            "desc": "Shows MDT capabilities",
+            "desc": "Supported telemetry encodings, protocols, YANG models.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry model-driven capabilities\nTelemetry capabilities:\n  Streams supported  : yang-push\n  Encodings supported: kvgpb, gpb, json, xml\n  Protocols supported: grpc-tcp, grpc-tls, netconf"
           },
           {
             "cmd": "show telemetry model-driven summary",
-            "desc": "Shows MDT summary",
+            "desc": "High-level telemetry summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show telemetry internal subscription summary\nTotal subscriptions       : 2\nValid subscriptions       : 2\nInvalid subscriptions     : 0\nMessages sent (total)     : 24690\nMessages dropped (total)  : 0"
           }
         ],
         "TrustSec": [
           {
             "cmd": "show cts",
-            "desc": "Shows TrustSec status",
+            "desc": "Cisco TrustSec global state — SGT/SGACL feature, environment data, PAC, AAA.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts\nGlobal Dot1x feature is Enabled\nCTS device identity: \"sw-access-01\"\nCTS caching support: enabled\nCTS sgt-caching global: Disabled\n\nNumber of CTS interfaces in DOT1X mode: 12\nNumber of CTS interfaces in MANUAL mode: 0\nNumber of CTS interfaces in LAYER3 TrustSec mode: 0"
           },
           {
             "cmd": "show cts role-based permissions",
-            "desc": "Shows RBAC permissions",
+            "desc": "Programmed SGACL matrix (src-SGT → dst-SGT → permissions).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts role-based permissions\nIPv4 Role-based permissions default:\n  Permit IP-00\nIPv4 Role-based permissions from group 10:USERS to group 100:WEB-SERVERS:\n  PERMIT-WEB-80\nIPv4 Role-based permissions from group 10:USERS to group 999:QUARANTINE:\n  DENY-ALL\nIPv4 Role-based permissions from group 30:GUESTS to group 100:WEB-SERVERS:\n  PERMIT-WEB-443"
           },
           {
             "cmd": "show cts role-based counters",
-            "desc": "Shows RBAC counters",
+            "desc": "Per-SGT-pair hit counters for SGACLs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts role-based counters\nRole-based IPv4 counters\nFrom    To      SW-Denied  HW-Denied  SW-Permitt  HW-Permitt  SW-Monitor  HW-Monitor\n10      100         0           12        0          12345      0           0\n30      100         0            0        0           9876      0           0\n10      999         0          234        0              0      0           0"
           },
           {
             "cmd": "show cts role-based sgt-map",
-            "desc": "Shows SGT mappings",
+            "desc": "IP-to-SGT mapping table (static + learnt from ISE/AAA/RADIUS).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts role-based sgt-map all\nActive IPv4-SGT Bindings Information\n\nIP Address              SGT     Source\n10.10.10.20             10      LEARNED (ISE)\n10.10.10.21             10      LEARNED (ISE)\n10.10.10.99             999     LEARNED (ISE)  ; quarantined\n198.51.100.10           100     CONFIGURED   ; static binding for web server"
           },
           {
             "cmd": "show cts environment-data",
-            "desc": "Shows environment data",
+            "desc": "Environment data downloaded from ISE — SGT name-table, server-list, refresh timer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts environment-data\nCTS Environment Data\n====================\nCurrent state    : COMPLETE\nLast status      : Successful\nLocal Device SGT : 0:Unknown\nServer List Info :\nInstalled list: CTSServerList1-0001, 2 server(s):\n  *Server: 10.10.10.50, port 1812, A-ID 1234ABCD\n     Status = ALIVE\n     auto-test = TRUE, keywrap-enable = FALSE\n  Server: 10.10.10.51, port 1812\nServer Group deadtime = 20 sec"
           },
           {
             "cmd": "show cts pacs",
-            "desc": "Shows PACs",
+            "desc": "Protected Access Credentials (PACs) installed for ISE communication.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts pacs\n  AID: 1234ABCD\n  I-ID: sw-access-01\n  A-ID-Info: Identity Services Engine\n  Credential Lifetime: 16:00:00 GMT Apr 20 2027\n  PAC-Info:\n    PAC-type = Cisco Trustsec\n    AID: 1234ABCD\n    A-ID-Info: Identity Services Engine\n    Credential Lifetime: 16:00:00 GMT Apr 20 2027"
           },
           {
             "cmd": "show cts credentials",
-            "desc": "Shows CTS credentials",
+            "desc": "TrustSec credentials (device-ID and password used to authenticate to ISE).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts credentials\nCTS password is defined in keystore, device-id = sw-access-01"
           },
           {
             "cmd": "show cts interface <int>",
-            "desc": "Shows CTS on interface",
+            "desc": "Per-interface TrustSec state — SAP negotiation, link encryption, propagation mode.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts interface GigabitEthernet1/0/47\nGlobal Dot1x feature is Enabled\nInterface  GigabitEthernet1/0/47:\n    CTS is enabled, mode:    MANUAL\n    Propagate SGT:           Enabled\n    Static Ingress SGT Policy:\n      Peer SGT: 10\n      Peer SGT assignment: Trusted\n    Authorization Status:    SUCCEEDED\n    SAP Status:              SUCCEEDED"
           },
           {
             "cmd": "show cts sxp connections",
-            "desc": "Shows SXP connections",
+            "desc": "SXP (SGT eXchange Protocol) peer state — passes IP-SGT bindings between devices.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts sxp connections\nSXP             : Enabled\nDefault Password: Set\nDefault Source IP: 1.1.1.1\nConnection retry open period: 120 secs\nReconcile period: 120 secs\n\nPeer IP       : 10.99.0.1\nSource IP     : 1.1.1.1\nConn status   : On\nConn version  : 4\nConn mode     : Speaker\nLocal mode    : Speaker\nConnection inst: 1\nTCP conn fd   : 12\nTCP conn password: default SXP password"
           },
           {
             "cmd": "show cts sxp peers",
             "desc": "Shows SXP peers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show cts sxp sgt-map\nIP-SGT Mappings as follows:\n IPv4,SGT                Source\n========\n10.10.10.20,10          INTERNAL\n10.10.10.99,999         INTERNAL\n10.99.99.50,1000        SXP\n"
           }
         ],
         "SD-Access": [
           {
             "cmd": "show fabric edge",
-            "desc": "Shows fabric edge status",
+            "desc": "SD-Access fabric edge-node state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric edge\nFabric Edge:\n  Status: Active\n  Site: SITE-LON-01\n  RLOC: 1.1.1.1\n  Map-Server: 10.99.99.1, 10.99.99.2\n  Active EID-tables: 3 (VRF default + 2 tenant VRFs)"
           },
           {
             "cmd": "show fabric edge neighbors",
-            "desc": "Shows fabric neighbors",
+            "desc": "Fabric edge neighbours discovered via LISP / control-plane.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric edge neighbors\nNeighbor RLOC     Status   Uptime    Tunnels\n2.2.2.2           Up       3w2d      VXLAN\n3.3.3.3           Up       3w2d      VXLAN\n4.4.4.4           Up       1d4h      VXLAN"
           },
           {
             "cmd": "show fabric edge statistics",
-            "desc": "Shows fabric statistics",
+            "desc": "Fabric data-plane stats: encapped/decapped packets per VNI/SGT.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric edge statistics\n  VNI 10100 (USERS-DATA):\n    Encapped: 12345678   Decapped: 9876543\n    Drops: 0\n  VNI 10200 (USER-VOICE):\n    Encapped: 234567     Decapped: 198765\n    Drops: 0"
           },
           {
             "cmd": "show fabric control-plane",
-            "desc": "Shows control-plane status",
+            "desc": "Control-plane node (LISP map-server/resolver) state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric control-plane\nFabric Control-Plane:\n  Local map-server: 10.99.99.1 (this node)\n  Peer map-server: 10.99.99.2\n  Total registrations: 245\n  Total queries: 12345"
           },
           {
             "cmd": "show fabric control-plane lisp",
-            "desc": "Shows LISP control-plane",
+            "desc": "LISP-specific control-plane state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric control-plane lisp summary\nLISP IPv4 Map-Server\n  Service status: enabled\n  Total EID prefixes registered: 245\n  Total ETR registrations: 12\n\nLISP IPv4 Map-Resolver\n  Service status: enabled\n  Total queries: 12345"
           },
           {
             "cmd": "show fabric lisp eid-table",
-            "desc": "Shows EID table",
+            "desc": "EID (Endpoint Identifier) table — registered prefixes per VRF/VNI.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric lisp eid-table\nLISP EID Database:\n  EID-table: default (Instance ID 4097)\n    Prefix: 10.10.10.20/32, Locator-set: { 1.1.1.1, priority 10, weight 100 }\n    Prefix: 10.10.10.21/32, Locator-set: { 1.1.1.1, priority 10, weight 100 }\n  EID-table: TENANT-A (Instance ID 4098)\n    Prefix: 10.50.0.0/24, Locator-set: { 1.1.1.1, priority 10, weight 100 }"
           },
           {
             "cmd": "show fabric lisp map-cache",
-            "desc": "Shows LISP map-cache",
+            "desc": "Local map-cache — recently-resolved EID→RLOC bindings.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric lisp map-cache\nLISP IPv4 Mapping Cache for EID-table default (Instance ID 4097), 234 entries\n\n10.10.20.20/32, uptime: 02:34:55, expires: 21:25:05, via map-reply, complete\n  Locator   Uptime    State    Pri/Wgt  Encap-IID\n  2.2.2.2   02:34:55  up        10/100   -"
           },
           {
             "cmd": "show fabric lisp session",
-            "desc": "Shows LISP sessions",
+            "desc": "LISP control-plane sessions to map-servers/proxies.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric lisp session\nSessions for VRF default, total: 2, established: 2\nPeer State          Up/Down        In/Out    Users\n10.99.99.1 Up       3w2d           12345/12340  1\n10.99.99.2 Up       3w2d           12340/12345  1"
           },
           {
             "cmd": "show fabric vxlan",
-            "desc": "Shows VXLAN fabric info",
+            "desc": "VXLAN encapsulation state on the fabric edge.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric vxlan\nVXLAN configuration:\n  Source-interface: Loopback0 (1.1.1.1)\n  UDP port: 4789\n  Active VNIs: 3 (10100, 10200, 50001)"
           },
           {
             "cmd": "show fabric authentication",
-            "desc": "Shows fabric authentication",
+            "desc": "Fabric AAA / authentication state — RADIUS/ISE integration for the underlay.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show fabric authentication\nFabric AAA:\n  ISE servers: 10.10.10.50, 10.10.10.51\n  Auth Status: AUTHORIZED on Apr 21 04:00:00 2026\n  Last AAA exchange: 14:25:01 Apr 21 2026 (SUCCESS)"
           }
         ],
         "VXLAN": [
           {
             "cmd": "show vxlan",
-            "desc": "Shows VXLAN summary",
+            "desc": "VXLAN feature summary on the switch.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan\nVXLAN Configuration Summary:\n  Mode: BGP-EVPN\n  Source-interface: Loopback0 (1.1.1.1)\n  UDP port: 4789\n  Active VNIs: 3\n  Active peers: 4"
           },
           {
             "cmd": "show vxlan interface",
-            "desc": "Shows VXLAN interfaces",
+            "desc": "VXLAN tunnel interface (NVE) state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan interface\nInterface: nve1\n  State: Up\n  Source: Loopback0 (1.1.1.1)\n  Host reachability: Control-Plane (BGP-EVPN)\n  Member VNIs: 3"
           },
           {
             "cmd": "show vxlan vni",
-            "desc": "Shows VNI mappings",
+            "desc": "Per-VNI state with VLAN/VRF binding and ingress-replication peers.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan vni\nCodes: CP - Control Plane    DP - Data Plane\n\nInterface  VNI       Mode  Type [VLAN/VRF]    State  Peers\nnve1       10100     CP    L2 [VLAN 10]       Up     2.2.2.2, 3.3.3.3\nnve1       10200     CP    L2 [VLAN 20]       Up     2.2.2.2, 3.3.3.3\nnve1       50001     CP    L3 [TENANT-A]      Up     -"
           },
           {
             "cmd": "show vxlan tunnel",
-            "desc": "Shows VXLAN tunnels",
+            "desc": "VXLAN tunnels to remote VTEPs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan tunnel\nPeer-VTEP  State  Uptime    Encap-Stats        Decap-Stats\n2.2.2.2    Up     3w2d      12345678 pkts      9876543 pkts\n3.3.3.3    Up     3w2d      9876543 pkts       8765432 pkts\n4.4.4.4    Up     1d4h      234567 pkts        198765 pkts"
           },
           {
             "cmd": "show vxlan multicast",
-            "desc": "Shows VXLAN multicast groups",
+            "desc": "Multicast-mode VXLAN (flood-and-learn) underlay multicast tree.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan multicast\n# Empty when using ingress-replication BGP-EVPN.\n# With multicast underlay:\n# VNI 10100 → Group 239.1.1.1, RPF nbr 10.0.0.2, OIF Po1"
           },
           {
             "cmd": "show vxlan control-plane",
-            "desc": "Shows VXLAN control-plane",
+            "desc": "VXLAN control-plane mode — BGP-EVPN or flood-and-learn.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan control-plane\nControl-plane mode: BGP-EVPN\nLocal Router-ID: 1.1.1.1\nBGP AS: 65001\nActive EVPN peers: 2 (10.0.0.5, 10.0.0.6)"
           },
           {
             "cmd": "show vxlan statistics",
-            "desc": "Shows VXLAN statistics",
+            "desc": "VXLAN encap/decap counters per VNI.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan statistics\nVNI 10100:\n  Encapped: 12345678 pkts / 1876543210 bytes\n  Decapped:  9876543 pkts / 1234567890 bytes\n  Drops: 0\nVNI 10200:\n  Encapped:   234567 pkts /   45678901 bytes\n  Decapped:   198765 pkts /   38765432 bytes\nVNI 50001:\n  Encapped:    12345 pkts /    2345678 bytes\n  Decapped:     9876 pkts /    1876543 bytes"
           },
           {
             "cmd": "show vxlan encapsulation",
-            "desc": "Shows encapsulation info",
+            "desc": "Local VXLAN encap config (UDP port, source IF, secondary IP for anycast-VTEP).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan encapsulation\nUDP destination port: 4789\nSource interface: Loopback0\n  Primary IP: 1.1.1.1\n  Secondary IP: 1.1.1.99 (anycast VTEP for vPC pair)"
           },
           {
             "cmd": "show vxlan decapsulation",
-            "desc": "Shows decapsulation info",
+            "desc": "Decap statistics and drop reasons.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan decapsulation\nDecap counters:\n  Successful decaps: 9876543\n  Drops:\n    Unknown VNI: 0\n    MAC unknown after decap: 12\n    TTL expired: 0"
           },
           {
             "cmd": "show vxlan vrf",
-            "desc": "Shows VXLAN VRF info",
+            "desc": "Per-VRF VXLAN state — L3 VNI binding for tenant routing.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vxlan vrf\nVRF Name        L3 VNI       Status     Anycast-MAC\nTENANT-A        50001        Up         0001.0001.0001\nTENANT-B        50002        Up         0001.0001.0001"
           }
         ],
         "EVPN": [
           {
             "cmd": "show evpn",
-            "desc": "Shows EVPN summary",
+            "desc": "EVPN feature summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn\nEVPN Configuration:\n  Mode: BGP-EVPN with VXLAN\n  Local Router-ID: 1.1.1.1\n  Active EVIs: 3\n  Total MAC routes (Type-2): 234\n  Total IP-prefix routes (Type-5): 12\n  Active peers: 2"
           },
           {
             "cmd": "show evpn evi",
-            "desc": "Shows EVPN instances",
+            "desc": "EVPN instances (one per L2VNI). Brief view.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn evi\nEVI    Bridge-Domain    Encap     State\n10100  10               VXLAN     Up\n10200  20               VXLAN     Up\n50001  -                VXLAN     Up (L3 VNI)"
           },
           {
             "cmd": "show evpn evi detail",
-            "desc": "Shows detailed EVI info",
+            "desc": "Per-EVI detail: bridge-domain, RD/RT, member-MACs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn evi 10100 detail\nEVI 10100:\n  Bridge-Domain: 10\n  Encapsulation: VXLAN\n  RD: 1.1.1.1:10100\n  Import RT: 65001:10100\n  Export RT: 65001:10100\n  Members:\n    Local MACs: 12\n    Remote MACs: 89\n    Total: 101"
           },
           {
             "cmd": "show evpn mac",
-            "desc": "Shows EVPN MAC table",
+            "desc": "EVPN MAC table (Type-2 routes) — local + remote MACs with origin VTEP.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn mac\nEVI    MAC Address       Origin   Source\n10100  aabb.ccdd.eeff    LOCAL    Gi1/0/1\n10100  1122.3344.5566    REMOTE   2.2.2.2 (VTEP)\n10100  2233.4455.6677    REMOTE   3.3.3.3 (VTEP)\n10200  3344.5566.7788    LOCAL    Gi1/0/2"
           },
           {
             "cmd": "show evpn mac detail",
-            "desc": "Shows detailed MAC info",
+            "desc": "Per-MAC EVPN detail with sequence number, ESI, encap, label/VNI.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn mac detail | head -15\nEVI 10100:\n  MAC: aabb.ccdd.eeff\n    Origin: LOCAL\n    Source: Gi1/0/1\n    Encap: VXLAN, VNI 10100\n    Sequence number: 0\n    ESI: 0000.0000.0000.0000.0000\n  MAC: 1122.3344.5566\n    Origin: REMOTE\n    Source VTEP: 2.2.2.2\n    Encap: VXLAN, VNI 10100\n    Sequence number: 2\n    ESI: 0000.0000.0000.0000.0000"
           },
           {
             "cmd": "show evpn route",
-            "desc": "Shows EVPN routes",
+            "desc": "EVPN routing table — all route types from local + remote VTEPs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn route\nRoute Type    Prefix                                  Origin  Next-hop\nType-2 (MAC)  [aabb.ccdd.eeff][10100]                 LOCAL   1.1.1.1\nType-2 (MAC)  [1122.3344.5566][10100]                 REMOTE  2.2.2.2\nType-3 (IMR)  [1.1.1.1][10100]                        LOCAL   1.1.1.1\nType-3 (IMR)  [2.2.2.2][10100]                        REMOTE  2.2.2.2\nType-5 (Pfx)  [10.50.10.0/24][50001]                  REMOTE  2.2.2.2"
           },
           {
             "cmd": "show evpn route type-2",
-            "desc": "Shows type?2 routes",
+            "desc": "Type-2 (MAC/IP) routes only.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn route type-2\nEVI 10100:\n  [aabb.ccdd.eeff][10100]    LOCAL    via 1.1.1.1\n  [1122.3344.5566][10100]    REMOTE   via 2.2.2.2\n  [2233.4455.6677][10100]    REMOTE   via 3.3.3.3"
           },
           {
             "cmd": "show evpn route type-5",
-            "desc": "Shows type?5 routes",
+            "desc": "Type-5 (IP-prefix) routes only — used for tenant L3 routing across the fabric.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn route type-5\nEVI 50001 (L3 VNI for TENANT-A):\n  [10.50.10.0/24]    REMOTE    via 2.2.2.2  Router-MAC: aabb.cc00.0002\n  [10.50.20.0/24]    REMOTE    via 3.3.3.3  Router-MAC: aabb.cc00.0003"
           },
           {
             "cmd": "show evpn neighbors",
             "desc": "Shows EVPN neighbors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn neighbors\nNeighbor    AS     State        Up/Down  Type-2 Type-3 Type-5\n10.0.0.5    65001  Established  3w2d     89     2      8\n10.0.0.6    65001  Established  3w2d     89     2      8"
           },
           {
             "cmd": "show evpn statistics",
-            "desc": "Shows EVPN statistics",
+            "desc": "EVPN message counters per type.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show evpn statistics\n             Type-1   Type-2     Type-3    Type-4   Type-5\nSent              0     12345         3         0       12\nReceived          0     56789         8         0       42\nDropped           0         0         0         0        0"
           }
         ],
         "Automation": [
           {
             "cmd": "show netconf-yang sessions",
-            "desc": "Shows NETCONF sessions",
+            "desc": "Active NETCONF sessions.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show netconf-yang sessions\nSession-id   Username       SourceHost                           Connect time\n12345        netconf-user   10.99.99.50                          14:23:45"
           },
           {
             "cmd": "show netconf-yang capabilities",
-            "desc": "Shows NETCONF capabilities",
+            "desc": "NETCONF/YANG capabilities advertised by the device.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show netconf-yang datastores\n         Datastore Name : running\n         Globally Locked By Session : None\n         Globally Locked Time : None"
           },
           {
             "cmd": "show netconf-yang statistics",
-            "desc": "Shows NETCONF statistics",
+            "desc": "NETCONF session and operation counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show netconf-yang statistics\nNETCONF Operation Statistics:\n  netconf-start-time      : Wed Apr 01 09:21:42 2026\n  in-rpcs                 : 12345\n  in-bad-rpcs             : 12\n  out-rpc-errors          : 12\n  out-notifications       : 0\n  in-sessions             : 12\n  dropped-sessions        : 0\n  in-bad-hellos           : 0"
           },
           {
             "cmd": "show restconf",
-            "desc": "Shows RESTCONF status",
+            "desc": "RESTCONF feature state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show restconf\nRESTCONF: enabled\nHTTPS port: 443\nMax sessions: 100\nActive sessions: 2"
           },
           {
             "cmd": "show restconf resources",
-            "desc": "Shows RESTCONF resources",
+            "desc": "RESTCONF resource tree available.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show restconf resources\nResource                                     Operations\n/restconf/data/native                        GET, PATCH, PUT, POST, DELETE\n/restconf/data/Cisco-IOS-XE-native:native    GET, PATCH, PUT, POST, DELETE\n/restconf/operations                         POST\n/restconf/yang-library-version               GET"
           },
           {
             "cmd": "show restconf statistics",
-            "desc": "Shows RESTCONF statistics",
+            "desc": "RESTCONF request counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show restconf statistics\nRESTCONF Operation Statistics:\n  in-requests        : 234\n  in-bad-requests    : 12\n  out-responses      : 234\n  out-response-errors: 12"
           },
           {
             "cmd": "show event manager policy registered",
-            "desc": "Shows EEM policies",
+            "desc": "Registered EEM policies (applets and scripts) with trigger details.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show event manager policy registered\nNo.  Class     Type    Event Type          Trap  Time Registered           Name\n1    applet    user    syslog              Off   14:23:45 Apr 21 2026      HIGH_CPU\n     pattern {.*CPUTOTALCAPACITY.*}\n     action 1.0 mail server \"10.50.50.50\" to \"noc@acme.com\" from \"sw@acme.com\" subject \"$_event_pub_time HIGH_CPU on $_event_pub_hostname\" body \"CPU above threshold\"\n     action 2.0 cli command \"show processes cpu sorted | head -10\""
           },
           {
             "cmd": "show event manager history events",
-            "desc": "Shows EEM events",
+            "desc": "EEM event firing history.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show event manager history events\nNo.  Time of Event         Event Type          Name\n1    14:23:45 Apr 21 2026  syslog              applet: HIGH_CPU\n2    13:11:33 Apr 20 2026  interface           applet: INTERFACE_FLAP\n3    09:00:00 Apr 19 2026  cli                 applet: CONFIG_SAVE"
           },
           {
             "cmd": "show event manager environment",
-            "desc": "Shows EEM environment",
+            "desc": "EEM environment variables (used inside applets via $env_var_name).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show event manager environment\nNo.  Name                  Value\n1    _email_to             noc@acme.com\n2    _email_from           sw@acme.com\n3    _syslog_server        10.50.50.50"
           },
           {
             "cmd": "show event manager scheduler",
-            "desc": "Shows EEM scheduler",
+            "desc": "EEM scheduler — currently running and queued policies.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show event manager scheduler thread\nThread name            : default\nThread id              : 1\nMax runtime allowed    : 20\nState                  : idle\nWaiting policies       : 0"
           }
         ],
         "SystemMgmt": [
           {
             "cmd": "show tech-support",
-            "desc": "Generates full tech support",
+            "desc": "Comprehensive diagnostic dump — running config + every show command + counters. Always redirect to file.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show tech-support | redirect bootflash:tac.txt\nsw# dir bootflash: | include tac\n   45  -rw-     12345678   Apr 21 14:30:15 2026  tac.txt\nsw# copy bootflash:tac.txt scp://admin@10.99.99.50/tac-sw01.txt"
           },
           {
             "cmd": "show system integrity",
-            "desc": "Shows system integrity",
+            "desc": "Same as `show platform integrity` — secure boot + image attestation.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity\nPlatform: C9300-48P\nBoot Stage 0 (uROM): PASSED\nBoot Stage 1 (BIOS): PASSED\nBoot Stage 2 (Bootloader): PASSED\nBoot Stage 3 (Kernel): PASSED\nBoot Stage 4 (Application): PASSED\nOverall Status: TRUSTED"
           },
           {
             "cmd": "show system resources",
-            "desc": "Shows system resources",
+            "desc": "CPU, memory, disk usage summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show system resources\nLoad average:   1 minute: 0.45   5 minutes: 0.42   15 minutes: 0.40\nProcesses   :   245 total, 1 running\nCPU states  :   8.0% user,   2.0% kernel,  90.0% idle\nMemory usage:   3987654K total, 1567823K used, 2419831K free\n                1234K buffers, 567890K cache\nKernel vmalloc:    134217728K total,        0K free\nKernel buffers:      2345K Used"
           },
           {
             "cmd": "show system uptime",
-            "desc": "Shows system uptime",
+            "desc": "Per-component uptime — system, supervisor, FED.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show system uptime\nSystem start time:          14:23:45 GMT Tue Feb 5 2026\nSystem uptime:              12 weeks, 3 days, 14 hours, 7 minutes\nKernel uptime:              12 weeks, 3 days, 14 hours, 8 minutes\nActive supervisor uptime:   12 weeks, 3 days, 14 hours, 7 minutes"
           },
           {
             "cmd": "show system internal logs",
-            "desc": "Shows internal logs",
+            "desc": "Internal IOSd / platform log directory contents (for TAC).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show system internal log info\n# Internal logs are usually viewed under bootflash:/tracelogs/ and bootflash:/onboard/\nsw# dir bootflash:tracelogs | head\n  234  drwx        4096  Apr 21 14:30:15  fed_pmanlog\n  235  drwx        4096  Apr 21 14:30:15  iosd_pmanlog\n  236  drwx        4096  Apr 21 14:30:15  platform_mgr_pmanlog"
           },
           {
             "cmd": "show system internal processes",
-            "desc": "Shows internal processes",
+            "desc": "Internal IOS-XE process state (alt to `show processes platform`).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes platform\nName              Pid    PPid  Status     Size       uTime    sTime\niosd            12346      1   sleeping   876543 KB  987654   123456\nfed             12348      1   sleeping   456789 KB  234567    34567\nfman_rp         12347      1   sleeping   234567 KB   45678     6789"
           },
           {
             "cmd": "show system internal memory",
-            "desc": "Shows internal memory",
+            "desc": "Per-process memory usage on the platform-OS level.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software memory switch active r0\nmodule iosd:       8765432 bytes used\nmodule fed:        1234567 bytes used\nmodule fman_rp:    2345678 bytes used\nmodule platform_mgr: 3456789 bytes used"
           },
           {
             "cmd": "show system internal crashinfo",
-            "desc": "Shows crash info",
+            "desc": "Crash file inventory + most-recent crash decode.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show system internal crashinfo\nCrashinfo directory: bootflash:/crashinfo/\n  No crash files present.\n# When a crash exists:\n# bootflash:/crashinfo/crashinfo_RP_00_00_20260421-143245-UTC\n# Use `more flash:/crashinfo/<file>` to view."
           },
           {
             "cmd": "show system internal trace",
-            "desc": "Shows internal trace logs",
+            "desc": "Internal trace buffers — fine-grained debug for FED/IOSd subsystems.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform trace messages process iosd switch active r0 | head\n2026/04/21 14:30:01.234 {pman_R0-0}{1}: [pman.fp]: Sending HELLO\n2026/04/21 14:30:02.345 {pman_R0-0}{1}: [pman.fp]: Received HELLO ack"
           },
           {
             "cmd": "show system internal state",
-            "desc": "Shows internal system state",
+            "desc": "IOSd subsystem state summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software process slot switch active r0 monitor | head\ntop - 14:30:01 up 12 weeks, idle 1.50%\nTasks: 245 total, 1 running, 244 sleeping\n%Cpu(s):  8.0 us,  2.0 sy,  0.0 ni, 90.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st\nMiB Mem :  3894.4 total,  2363.5 free,  1530.9 used\nMiB Swap:     0.0 total,     0.0 free,     0.0 used\n   PID USER   PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 12346 root   20   0  876543 234567  12345 S   3.2   5.9   1:23.45 iosd"
           }
         ],
         "Troubleshooting": [
           {
             "cmd": "show tech-support | redirect bootflash:tac.txt",
-            "desc": "Capture tech-support for TAC",
+            "desc": "Capture full tech-support to flash. Always do this rather than scrollback.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show tech-support | redirect bootflash:tac.txt\nsw# dir bootflash: | include tac\n   45  -rw-     12345678   Apr 21 14:30:15 2026  tac.txt"
           },
           {
             "cmd": "show platform software process slot switch active r0 monitor",
-            "desc": "Top-style view of processes on RP",
+            "desc": "Live top-like view of platform processes on the active RP.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software process slot switch active r0 monitor\ntop - 14:30:01 up 12 weeks, idle 1.50%\nTasks: 245 total, 1 running\n%Cpu(s):  8.0 us,  2.0 sy,  0.0 ni, 90.0 id\nMiB Mem :  3894.4 total, 2363.5 free, 1530.9 used\n   PID USER   PR  NI    VIRT    RES   %CPU  %MEM     TIME+ COMMAND\n 12346 root   20   0  876543 234567   3.2   5.9   1:23.45 iosd\n 12348 root   20   0  456789 123456   2.1   3.1   0:45.67 fed"
           },
           {
             "cmd": "show platform software status control-processor brief",
             "desc": "Control-plane CPU, memory, load averages",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software status control-processor brief\nLoad Average\n Slot  Status  1-Min  5-Min 15-Min\n  1-RP0 Healthy   0.45   0.42   0.40\n\nMemory (kB)\n Slot  Status    Total      Used (Pct)       Free (Pct)\n  1-RP0 Healthy   3987654    1567823 (39%)   2419831 (61%)\n\nCPU Utilization\n Slot  CPU   User System  Idle    IRQ   SIRQ\n  1-RP0   0  4.20   1.10  94.00   0.10   0.60\n  1-RP0   1  3.80   0.95  95.10   0.05   0.10"
           },
           {
             "cmd": "show monitor capture",
-            "desc": "EPC capture sessions configured",
+            "desc": "List active Embedded Packet Capture (EPC) sessions.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show monitor capture\nStatus Information for Capture CAP\n  Target Type:\n   Interface: GigabitEthernet1/0/1, Direction: both\n   Status : Inactive\n  Filter Details:\n   IPv4 src any dst any\n  Buffer Details:\n   Buffer Type: LINEAR\n   Buffer Size (in MB): 10\n  Limit Details:\n   Number of Packets to capture: 0 (no limit)\n   Packet Size to capture: 0 (no limit)\n   Maximum number of packets to capture per second: 1000"
           },
           {
             "cmd": "monitor capture CAP interface <int> both match any buffer size 10 limit pps 1000",
-            "desc": "Set up in-box packet capture",
+            "desc": "Define an Embedded Packet Capture — on-box pcap capability.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# monitor capture CAP interface GigabitEthernet1/0/1 both match any buffer size 10 limit pps 1000\n%Capture point CAP created\nsw# monitor capture CAP start\nStarted capture point : CAP"
           },
           {
             "cmd": "monitor capture CAP start",
-            "desc": "Start a configured capture",
+            "desc": "Start a previously-defined EPC session.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# monitor capture CAP start\nStarted capture point : CAP"
           },
           {
             "cmd": "monitor capture CAP stop",
-            "desc": "Stop it",
+            "desc": "Stop capture — buffer remains in RAM until cleared.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# monitor capture CAP stop\nCapture statistics collected at software:\n  Capture duration - 123 seconds\n  Packets received - 12345\n  Packets dropped - 0"
           },
           {
             "cmd": "monitor capture CAP export flash:cap.pcap",
-            "desc": "Write captured packets to flash",
+            "desc": "Export EPC buffer to a pcap file (Wireshark-compatible).",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# monitor capture CAP export flash:cap.pcap\nExported Successfully\nsw# dir flash: | include cap.pcap\n  82  -rw-      1234567   Apr 21 14:35:01  cap.pcap"
           }
         ],
         "Config Management": [
           {
             "cmd": "switch 3 renumber 2",
-            "desc": "Renumber a stack member from 3 to 2 (takes effect after reload).",
+            "desc": "Renumber a stack member. Member must be reset for the change to take effect. Coordinate with cabling.",
             "type": "config",
             "flagged": true,
-            "example": "WARNING: Renumbering will take effect after reload"
+            "example": "sw# switch 3 renumber 2\nWARNING: Changing the switch number may result in interface configuration changes.\nDo you want to continue?[confirm] y\nChanges to the running configuration will be saved to the startup configuration\n\n# After reload of switch 3 it boots up as member 2."
           },
           {
             "cmd": "write memory",
             "desc": "Save running-config to startup-config (alias for \"copy running-config startup-config\").",
             "type": "config",
             "flagged": false,
-            "example": "Building configuration...\n[OK]"
+            "example": "sw# write memory\nBuilding configuration...\n[OK]"
           },
           {
             "cmd": "copy running-config startup-config",
@@ -35671,17 +35836,17 @@
           },
           {
             "cmd": "show run | include [0-9]",
-            "desc": "Pipe regex — match any line containing at least one digit.",
+            "desc": "Quick filter — only show running-config lines containing digits (IPs, VLAN IDs, timer values).",
             "type": "show",
             "flagged": false,
-            "example": "vlan 10\nip address 192.168.1.1 255.255.255.0"
+            "example": "sw# show running-config | include [0-9]\n ip address 10.0.0.1 255.255.255.252\n switchport access vlan 10\n switchport voice vlan 20\n spanning-tree vlan 1-10 priority 24576\n ntp server 10.10.0.10 prefer"
           },
           {
             "cmd": "show memory",
-            "desc": "Memory pool totals — total, used, free.",
+            "desc": "Memory pool summary (Processor, I/O) with size/used/free.",
             "type": "show",
             "flagged": false,
-            "example": "Processor Pool Total: 987654321 Used: 456789012 Free: 530865309"
+            "example": "sw# show memory\n                Head    Total(b)     Used(b)     Free(b)   Lowest(b)  Largest(b)\nProcessor   0x12345678  3987654656  1567823872  2419830784  2350000000  2380000000\n     I/O    0x23456789  1073741824   234567890   839173934   810000000   830000000"
           }
         ],
         "NTP / SNMP / Logging": [
@@ -35690,7 +35855,7 @@
             "desc": "Filter logging buffer by severity — useful when looking for specific %xxx-N-MSG severity tags.",
             "type": "show",
             "flagged": false,
-            "example": "%SYS-5-CONFIG_I: Configured from console\n%LINK-3-UPDOWN: Interface Gi0/1, changed state to up"
+            "example": "sw# show logging | include severity\n%SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 10.50.50.50 port 514 started\n# Use `show logging | include %.*-3-` for severity 3 (errors)\n# Use `show logging | include %.*-2-` for severity 2 (critical)"
           }
         ],
         "Diagnostics": [
