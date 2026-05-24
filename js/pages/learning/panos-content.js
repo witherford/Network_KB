@@ -131,7 +131,7 @@ request wildfire upgrade install version latest`},
           'DNS + NTP configured and clock ≤ 1s drift',
           'Auth-code applied, all paid subscriptions activated',
           'Content package installed and dynamic-update schedule set',
-          'PAN-OS version on a supported train (see <a href=\'#/software\'>Software Releases</a>)',
+          'PAN-OS version on a supported train',
           'Backup of running-config exported off-box',
           'Panorama association (if applicable) complete and in sync'
         ]}

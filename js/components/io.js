@@ -1,5 +1,5 @@
 // Shared CSV / XLSX / paste-export / copy-button / file-import utilities.
-// One file used across toolkit tools and software/CVE pages so we don't
+// One file used across toolkit tools so we don't
 // duplicate the parsing, exporting, drag-drop, or copy-button code.
 
 import { copyToClipboard, toast, download, slugify } from '../utils.js';

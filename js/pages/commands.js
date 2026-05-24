@@ -11,8 +11,6 @@ import { validateFlagDescription, getBlockedTerms, flaggingEnabled, recordFlagAt
 import { groupByTopic, shouldGroup } from '../components/topic-detect.js';
 import { parseCsv, validateCsv, exportCsv, mergeAdditions, parseTextBlocks, validateTextBlocks, applyTextBlockUpdates } from '../components/csv.js';
 import { saveAll } from '../save.js';
-// Backend AI pull disabled per v1.3.3.
-// import { fetchForKind } from '../components/ai-fetch.js';
 
 const TYPE_LABELS = { all: 'All', show: 'Show', config: 'Configuration', troubleshooting: 'Troubleshooting' };
 

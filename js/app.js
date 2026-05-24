@@ -10,9 +10,6 @@ import { mountVisitsCounter } from './components/visits.js';
 
 const PAGES = {
   commands: () => import('./pages/commands.js'),
-  software: () => import('./pages/software.js'),
-  guides: () => import('./pages/guides.js'),
-  cves: () => import('./pages/cves.js'),
   toolkit: () => import('./pages/toolkit.js'),
   settings: () => import('./pages/settings.js')
 };
@@ -208,7 +205,7 @@ function wireVersionUI() {
         try {
           if ('caches' in window) {
             const keys = await caches.keys();
-            // Drop every data-* cache (commands.json, cves.json, etc.)
+            // Drop every data-* cache (commands.json, etc.)
             // and shell-* cache so JS modules (incl. version.js) refetch.
             await Promise.all(keys.map(k => caches.delete(k)));
           }

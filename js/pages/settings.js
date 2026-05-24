@@ -52,11 +52,6 @@ export async function mount(root) {
       ${renderSection('Flag-report — blocked phrases', renderFlagBlocked(s))}
       ${renderSection('Repository', renderRepo(s))}
       ${renderSection('AI providers (keyring)', renderProviders(s))}
-      ${renderSection('Vendor APIs (Cisco / NVD / MSRC)', renderVendorApis(s))}
-      ${renderSection('AI prompts', renderPrompts(s))}
-      ${renderSection('Source domains', renderDomains(s))}
-      ${renderSection('Watchlist', renderWatchlist(s))}
-      ${renderSection('Scheduled pull (cron)', renderCron(s))}
       ${renderSection('Session', renderSession(s))}
     </div>`;
 
@@ -65,11 +60,6 @@ export async function mount(root) {
   wireFlagBlocked(root, s);
   wireRepo(root, s);
   wireProviders(root, s);
-  wireVendorApis(root, s);
-  wirePrompts(root, s);
-  wireDomains(root, s);
-  wireWatchlist(root, s);
-  wireCron(root, s);
   wireSession(root, s);
 }
 
@@ -364,163 +354,6 @@ function wireProviders(root, s) {
     markDirty();
     rerender();
   });
-}
-
-/* ---------- Vendor APIs ---------- */
-function renderVendorApis(s) {
-  s.ciscoApi ||= { clientId: '', clientSecret: '', pidPresets: {} };
-  s.nvdApi ||= { apiKey: '' };
-  s.msrcApi ||= {};
-  s.corsProxy ||= '';
-  return `
-    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px">
-      Real-API credentials for the Software and CVE pages. When configured, the <b>Fetch now</b>
-      button and the scheduled pull call the vendor API directly and only fall back to AI for
-      anything the API doesn't cover. NVD is CORS-friendly and works in the browser; the others
-      are normally Node-only unless you also set a CORS proxy URL below.
-    </p>
-    <h4 style="margin:12px 0 6px 0;font-size:12px;color:var(--text-2)">Cisco (apix.cisco.com — OAuth2)</h4>
-    <div class="form-row"><label>Client ID</label>
-      <input id="cscId" class="search-input" style="width:100%" value="${esc(s.ciscoApi.clientId || '')}" placeholder="Cisco API Console client_id">
-    </div>
-    <div class="form-row" style="margin-top:6px"><label>Client Secret</label>
-      <input id="cscSec" type="password" class="search-input" style="width:100%" value="${esc(s.ciscoApi.clientSecret || '')}" placeholder="client_secret">
-    </div>
-    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
-      Provides Software Suggestion v2 (TAC-recommended releases) and PSIRT openVuln advisories.
-      Register an app at <code>apiconsole.cisco.com</code>.
-    </p>
-
-    <h4 style="margin:14px 0 6px 0;font-size:12px;color:var(--text-2)">NVD (services.nvd.nist.gov)</h4>
-    <div class="form-row"><label>API key (optional but recommended)</label>
-      <input id="nvdKey" type="password" class="search-input" style="width:100%" value="${esc(s.nvdApi.apiKey || '')}" placeholder="nvd.nist.gov/developers/request-an-api-key">
-    </div>
-    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
-      Without a key NVD rate-limits to 5 req / 30 s; a key raises that to 50 / 30 s.
-    </p>
-
-    <h4 style="margin:14px 0 6px 0;font-size:12px;color:var(--text-2)">CORS proxy (browser only)</h4>
-    <div class="form-row"><label>Proxy URL prefix</label>
-      <input id="corsProxy" class="search-input" style="width:100%" value="${esc(s.corsProxy || '')}" placeholder="https://your-worker.example.com/?url=">
-    </div>
-    <p style="font-size:11px;color:var(--text-3);margin:4px 0 0 0">
-      Cisco / MSRC / Palo Alto / Citrix don't send CORS headers. Provide a proxy that forwards
-      Authorization + Accept headers unchanged if you want the browser <b>Fetch now</b> to hit
-      these sources; otherwise they're only consulted during the scheduled Node-side pull.
-    </p>
-  `;
-}
-function wireVendorApis(root, s) {
-  const on = (id, fn) => {
-    const el = root.querySelector('#' + id);
-    if (el) el.addEventListener('input', e => { fn(e.target.value.trim()); markDirty(); });
-  };
-  on('cscId',     v => { s.ciscoApi.clientId = v; });
-  on('cscSec',    v => { s.ciscoApi.clientSecret = v; });
-  on('nvdKey',    v => { s.nvdApi.apiKey = v; });
-  on('corsProxy', v => { s.corsProxy = v; });
-}
-
-/* ---------- Prompts ---------- */
-function renderPrompts(s) {
-  const prompts = s.prompts || {};
-  return Object.entries(prompts).map(([k, v]) => `
-    <div class="form-row" style="margin-bottom:8px">
-      <label>${esc(k)}</label>
-      <textarea id="pr_${esc(k)}" rows="3" class="search-input" style="width:100%;font-family:inherit;resize:vertical">${esc(v)}</textarea>
-    </div>`).join('');
-}
-function wirePrompts(root, s) {
-  const prompts = s.prompts || {};
-  for (const k of Object.keys(prompts)) {
-    const el = root.querySelector('#pr_' + k);
-    if (!el) continue;
-    el.addEventListener('input', e => { s.prompts[k] = e.target.value; markDirty(); });
-  }
-}
-
-/* ---------- Domains ---------- */
-function renderDomains(s) {
-  return `
-    <textarea id="setDomains" rows="6" class="search-input" style="width:100%;font-family:inherit;resize:vertical" placeholder="one domain per line">${esc((s.domains || []).join('\n'))}</textarea>
-    <p style="font-size:11px;color:var(--text-3);margin-top:4px">Domains the AI prompt instructs to source from. One per line.</p>`;
-}
-function wireDomains(root, s) {
-  root.querySelector('#setDomains').addEventListener('input', e => {
-    s.domains = e.target.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-    markDirty();
-  });
-}
-
-/* ---------- Watchlist ---------- */
-function renderWatchlist(s) {
-  const list = (s.watchlist && s.watchlist.vendors) || [];
-  return `
-    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:8px">
-      Vendors and products that the scheduled AI pull and the <b>Fetch now</b> buttons iterate over. For every <i>vendor × product</i> pair, one prompt is sent per content type (software releases, guides, CVEs). Leave <b>products</b> empty to issue a single vendor-wide query.
-    </p>
-    <p style="font-size:11px;color:var(--text-3);line-height:1.5;margin-bottom:10px">
-      Example — Vendor: <code>Cisco</code>, Products: <code>IOS-XE, ASA, Nexus NX-OS</code>. This yields 3 pulls per content type per run (9 total for Cisco alone).
-    </p>
-    <div id="wlRows">${list.map(renderWlRow).join('') || '<p style="font-size:12px;color:var(--text-3)">No vendors yet.</p>'}</div>
-    <button class="btn" id="wlAdd" style="margin-top:8px">Add vendor</button>`;
-}
-function renderWlRow(v, i) {
-  return `
-    <div class="wl-row" data-i="${i}" style="display:grid;grid-template-columns:1fr 2fr auto;gap:6px;margin-bottom:6px">
-      <input class="search-input" data-f="vendor" value="${esc(v.vendor || '')}" placeholder="Vendor">
-      <input class="search-input" data-f="products" value="${esc((v.products || []).join(', '))}" placeholder="Products (comma-separated)">
-      <button class="btn danger" data-f="del">✕</button>
-    </div>`;
-}
-function wireWatchlist(root, s) {
-  s.watchlist ||= { vendors: [] };
-  const rowsEl = root.querySelector('#wlRows');
-  const rerender = () => { rowsEl.innerHTML = s.watchlist.vendors.map((v, i) => renderWlRow(v, i)).join(''); attach(); };
-  const attach = () => {
-    rowsEl.querySelectorAll('.wl-row').forEach(row => {
-      const i = Number(row.dataset.i);
-      row.querySelector('[data-f=vendor]').addEventListener('input', e => { s.watchlist.vendors[i].vendor = e.target.value.trim(); markDirty(); });
-      row.querySelector('[data-f=products]').addEventListener('input', e => { s.watchlist.vendors[i].products = e.target.value.split(',').map(x => x.trim()).filter(Boolean); markDirty(); });
-      row.querySelector('[data-f=del]').addEventListener('click', () => { s.watchlist.vendors.splice(i, 1); markDirty(); rerender(); });
-    });
-  };
-  attach();
-  root.querySelector('#wlAdd').addEventListener('click', () => {
-    s.watchlist.vendors.push({ vendor: '', products: [] });
-    markDirty(); rerender();
-  });
-}
-
-/* ---------- Cron ---------- */
-function renderCron(s) {
-  const c = s.cron || { schedule: '0 3 * * *', enabled: true };
-  return `
-    <p style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:8px">
-      Standard 5-field cron expression (UTC) controlling how often GitHub Actions runs the scheduled AI pull. Cron has no year field — schedules repeat annually. Use <code>*</code> to mean &ldquo;every&rdquo; for that field.
-    </p>
-    <pre style="font-size:11px;color:var(--text-2);background:var(--surface-2);padding:8px 10px;border-radius:4px;margin:0 0 8px 0;line-height:1.5">┌──── minute        (0–59)
-│ ┌── hour          (0–23, UTC)
-│ │ ┌ day-of-month  (1–31)
-│ │ │ ┌ month       (1–12)
-│ │ │ │ ┌ day-of-week (0–6, Sun=0)
-│ │ │ │ │
-* * * * *</pre>
-    <p style="font-size:11px;color:var(--text-3);line-height:1.5;margin:0 0 8px 0">
-      Examples — <code>0 3 * * *</code> daily at 03:00 UTC · <code>*/30 * * * *</code> every 30 min · <code>0 */6 * * *</code> every 6 h · <code>0 9 * * 1</code> Mondays 09:00 UTC.
-    </p>
-    <div class="form-row"><label>Cron schedule</label><input id="setCron" class="search-input" style="width:100%" value="${esc(c.schedule)}" placeholder="0 3 * * *"></div>
-    <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px">
-      <input type="checkbox" id="setCronOn" ${c.enabled ? 'checked' : ''}> Enabled
-    </label>
-    <p style="font-size:11px;color:var(--text-3);margin-top:4px">
-      Committing settings also rewrites <code>.github/workflows/ai-pull.yml</code> to match this schedule.
-    </p>`;
-}
-function wireCron(root, s) {
-  s.cron ||= { schedule: '0 3 * * *', enabled: true };
-  root.querySelector('#setCron').addEventListener('input', e => { s.cron.schedule = e.target.value.trim(); markDirty(); });
-  root.querySelector('#setCronOn').addEventListener('change', e => { s.cron.enabled = e.target.checked; markDirty(); });
 }
 
 /* ---------- Session ---------- */

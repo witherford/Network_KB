@@ -80,7 +80,7 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   // Navigation requests — for an SPA we always serve index.html so deep
-  // links like /Network_KB/#/guides/ospf still work offline.
+  // links like /Network_KB/#/toolkit/subnet still work offline.
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
       try {

@@ -10,9 +10,6 @@ export const state = {
   // Loaded data (lazy-populated per page)
   data: {
     commands: null,
-    software: null,
-    guides: null,
-    cves: null,
     manifest: null,
     cheatsheets: {}
   },
@@ -20,9 +17,6 @@ export const state = {
   // Pending edits, keyed by data file — flushed on Save
   pending: {
     commands: null,
-    software: null,
-    guides: null,
-    cves: null,
     cheatsheets: {}
   },
 
@@ -53,12 +47,12 @@ export function emit(event, payload) {
 
 export function hasPendingChanges() {
   const p = state.pending;
-  if (p.commands || p.software || p.guides || p.cves) return true;
+  if (p.commands) return true;
   if (p.cheatsheets && Object.keys(p.cheatsheets).length) return true;
   return false;
 }
 
 export function clearPending() {
-  state.pending = { commands: null, software: null, guides: null, cves: null, cheatsheets: {} };
+  state.pending = { commands: null, cheatsheets: {} };
   emit('pending:cleared');
 }

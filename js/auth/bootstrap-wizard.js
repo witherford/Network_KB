@@ -16,24 +16,6 @@ const AI_PROVIDERS = [
   { id: 'groq',       label: 'Groq',        defaultModel: 'llama-3.3-70b-versatile' }
 ];
 
-const DEFAULT_PROMPTS = {
-  commands: 'For vendor {{vendor}} under domains {{domains}}, return JSON array of CLI commands. Each item: {cmd, desc, type: show|config|troubleshooting, section}.',
-  software: 'For vendor {{vendor}} product {{product}}, list latest / recommended / end-of-life versions. Return JSON: {latest, recommended, eol[], notes}.',
-  guides:   'For topic {{topic}}, write a step-by-step troubleshooting/config guide. Return JSON: {title, steps: [{n, action, expected, commands: []}], refs: []}.',
-  cves:     'For vendor {{vendor}} product {{product}}, return current CVEs from the last 90 days. JSON array: {id, cvss, severity, summary, affected, fixed, references: []}.',
-  regex:    'Return a {{engine}}-compatible regex that matches: {{description}}. Return plain regex text only, no delimiters, no explanation.'
-};
-
-const DEFAULT_DOMAINS = [
-  'docs.netscaler.com',
-  'cisco.com/c/en/us/td/docs',
-  'docs.paloaltonetworks.com',
-  'learn.microsoft.com',
-  'docs.aws.amazon.com',
-  'kb.vmware.com',
-  'ubuntu.com/server/docs',
-  'wireshark.org/docs'
-];
 
 export async function openWizard() {
   return new Promise(resolve => {
@@ -169,7 +151,6 @@ function renderStep(step, ctx) {
       <p style="font-size:13px;line-height:1.6">Ready to commit:</p>
       <ul style="font-size:12px;color:var(--text-2);line-height:1.8;margin:8px 0 8px 18px">
         <li><code>data/settings.enc.json</code> — encrypted settings</li>
-        <li><code>data/software.json</code>, <code>data/guides.json</code>, <code>data/cves.json</code> — empty stubs if missing</li>
       </ul>
       <p style="font-size:11px;color:var(--text-3);line-height:1.5">
         Commit message: <code>bootstrap: initial settings</code>
@@ -287,10 +268,6 @@ async function commit(el, ctx, done) {
       model: ctx.data.aiModel,
       enabled: true
     }],
-    prompts: { ...DEFAULT_PROMPTS },
-    domains: DEFAULT_DOMAINS,
-    watchlist: { vendors: [] },
-    cron: { schedule: '0 3 * * *', enabled: true },
     editSessionMinutes: 30
   };
 
@@ -312,16 +289,6 @@ async function commit(el, ctx, done) {
       branch: ctx.defaultBranch
     });
 
-    for (const [path, body] of Object.entries(emptyStubs())) {
-      const cur = await getFile({ pat: ctx.data.pat, repo: ctx.data.repo, path });
-      if (cur) continue;
-      await putFile({
-        pat: ctx.data.pat, repo: ctx.data.repo, path,
-        content: body, message: 'bootstrap: seed ' + path,
-        branch: ctx.defaultBranch
-      });
-    }
-
     msg.textContent = '✓ Done.';
     msg.style.color = 'var(--success)';
     toast('Bootstrap complete — edit mode unlocked', 'success', 4000);
@@ -336,12 +303,3 @@ async function commit(el, ctx, done) {
   }
 }
 
-function emptyStubs() {
-  const now = new Date().toISOString();
-  const seed = (extra) => JSON.stringify({ version: 1, updatedAt: now, items: [], ...extra }, null, 2) + '\n';
-  return {
-    'data/software.json': seed(),
-    'data/guides.json': seed(),
-    'data/cves.json': seed()
-  };
-}

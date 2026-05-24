@@ -1,8 +1,7 @@
 # Network Knowledge Base
 
-A self-hosted, single-repo network reference for command lookups, cheat sheets,
-vendor software releases, troubleshooting guides, CVE feeds, and a toolkit of
-network utilities.
+A self-hosted, single-repo network reference for CLI command lookups, cheat
+sheets, and a toolkit of network utilities.
 
 Everything is static HTML + ES modules. Edits you make in the admin UI commit
 back to the hosting repo via the GitHub Contents API, so the next page load in
@@ -10,27 +9,19 @@ any browser sees them.
 
 ## Features
 
-- **Commands** — 6,600+ CLI commands across 20 platforms: Linux, Cisco IOS,
+- **Commands** — 6,600+ CLI commands across 19 platforms: Linux, Cisco IOS,
   Cisco IOS-XE Switch, NetScaler, NetScaler SDX, Cisco Catalyst 9800 WLC,
   Cisco IOS-XE Router, Wireshark, Palo Alto PAN-OS, OpenSSL, Cisco Nexus,
   Proxmox VE, Aruba AOS-CX, Cisco ASA, Aruba Mobility Controller, Windows,
-  VMware ESXi, AWS CLI, Aruba AP / Instant, and Cisco CAPWAP AP. Search,
-  filter by platform or command type, favourites, recents, copy, and bulk CSV
-  import/export.
-- **Software releases** — Latest / recommended / EOL versions per vendor-product
-  pair, populated by scheduled AI pulls.
-- **Guides** — Step-by-step troubleshooting and configuration guides, also
-  AI-populated.
-- **CVEs** — Security advisories for tracked vendors/products with severity and
-  NVD detail links.
+  VMware ESXi, AWS CLI, and Aruba AP / Instant. Search, filter by platform
+  or command type, favourites, recents, copy, and bulk CSV import/export.
 - **Toolkit** — Subnet calculator (IPv4 + IPv6, supernet split), ping script
   builder (PowerShell / cmd / bash), DNS resolve script builder, AI-powered
   regex builder, scientific calculator, cheat sheets (TCP/UDP ports, IP
   protocols, multicast, IPv4/IPv6 specials, public allocations, admin
   distances, acronyms), world clock.
-- **Settings** — Password-encrypted admin settings holding the GitHub PAT, a
-  rotating ring of AI API keys, AI prompt templates, allowed source domains,
-  vendor watchlist, cron schedule.
+- **Settings** — Password-encrypted admin settings holding the GitHub PAT and
+  a rotating ring of AI API keys (used by the regex builder).
 
 ## Repo layout
 
@@ -46,22 +37,16 @@ js/
   crypto.js             PBKDF2 + AES-GCM (planned)
   api/                  github, ai, keyring (planned)
   auth/                 edit-mode + bootstrap wizard (planned)
-  pages/                commands, software, guides, cves, toolkit, settings
+  pages/                commands, toolkit, settings
   toolkit/              subnet, ping, dns, regex, calculator, cheatsheets, worldclock
   components/           modal, command-list, bulk-toolbar, csv
 data/
   manifest.json         cache-bust timestamps
   commands.json         command database
-  software.json
-  guides.json
-  cves.json
   cheatsheets/*.json    static cheat sheets
   settings.enc.json     encrypted admin settings
 scripts/
   migrate-v12.mjs       one-shot v12 → commands.json migration
-  ai-pull.mjs           scheduled AI runner (planned)
-.github/workflows/
-  ai-pull.yml           cron workflow (planned)
 ```
 
 ## Running locally
@@ -156,23 +141,6 @@ The import preview modal shows:
 - **Errors**: rows failing validation, with line numbers
 
 Round-trip is safe — exported CSV re-imports cleanly with 100% duplicate skip.
-
-## Scheduled AI pulls
-
-`scripts/ai-pull.mjs` runs from `.github/workflows/ai-pull.yml` on the schedule
-configured in settings. It:
-
-1. Reads `data/settings.enc.json` using the `SETTINGS_PASSWORD` Actions secret.
-2. For each watchlist vendor × prompt type (software / guides / cves), rotates
-   through enabled AI keys with cooldown on 429/5xx.
-3. Validates JSON outputs against a schema and deduplicates against existing
-   data.
-4. Writes `data/software.json`, `data/guides.json`, `data/cves.json`,
-   updates `data/manifest.json`, and commits with message
-   `ai-pull: <counts>`.
-
-When an admin changes the cron in the settings UI, Save also rewrites
-`.github/workflows/ai-pull.yml` so the next scheduled run respects it.
 
 ## Migration from v12
 
