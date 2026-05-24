@@ -154,6 +154,110 @@ export function normaliseMac(s) {
   return bare.length === 12 ? bare : null;
 }
 
+// Canonicalise an interface name to a short form (GigabitEthernet1/0/1 → Gi1/0/1,
+// "Gig 0/1" → Gi0/1) so CDP / LLDP / MAC-table / ARP can be matched together.
+const IFACE_MAP = [
+  [/^(TwentyFiveGig(abitEthernet)?|TwentyFiveGigE|Twe)/i, 'Twe'],
+  [/^(TwoGigabitEthernet|TwoGigE|Tw)/i, 'Tw'],
+  [/^(TenGig(abitEthernet)?|TenGigE|Ten|Te)/i, 'Te'],
+  [/^(FortyGig(abitEthernet)?|FortyGigE|Forty|Fo)/i, 'Fo'],
+  [/^(HundredGig(abitEthernet)?|HundredGigE|Hu)/i, 'Hu'],
+  [/^(GigabitEthernet|GigEthernet|GigE|Gig|GE|Gi)/i, 'Gi'],
+  [/^(FastEthernet|FastEth|Fas|Fa)/i, 'Fa'],
+  [/^(Port-?channel|Po)/i, 'Po'],
+  [/^(Ethernet|Eth|Et)/i, 'Et'],
+  [/^(Vlan|Vl)/i, 'Vlan'],
+  [/^(Loopback|Lo)/i, 'Lo'],
+  [/^(Tunnel|Tu)/i, 'Tu'],
+  [/^(Management|Mgmt|mgmt|Ma)/i, 'Ma'],
+  [/^(Bundle-Ether|BE)/i, 'BE']
+];
+export function normIface(s) {
+  if (!s) return '';
+  const str = String(s).trim();
+  const m = str.match(/^([A-Za-z\-]+)\s*([\d/.:]+)$/);
+  if (!m) return str;
+  const [, pfx, num] = m;
+  for (const [re, short] of IFACE_MAP) { if (re.test(pfx)) return short + num; }
+  return pfx + num;
+}
+
+// Parse `show cdp neighbors [detail]`. Returns
+// [{localIf, neighbor, remotePort, platform, mgmtIp}].
+export function parseCdp(text) {
+  const out = [];
+  if (!text || !text.trim()) return out;
+  if (/Device ID:/i.test(text)) {
+    // Detail format — split into per-neighbor blocks.
+    const blocks = text.split(/(?=Device ID:)/i);
+    for (const b of blocks) {
+      const dev = b.match(/Device ID:\s*(\S+)/i);
+      const li  = b.match(/Interface:\s*([^,\n]+)/i);
+      if (!dev || !li) continue;
+      out.push({
+        localIf: li[1].trim(),
+        neighbor: dev[1].trim(),
+        remotePort: (b.match(/Port ID \(outgoing port\):\s*([^\n,]+)/i)?.[1] || '').trim(),
+        platform: (b.match(/Platform:\s*([^,\n]+)/i)?.[1] || '').trim(),
+        mgmtIp: (b.match(/IP(?:v4)? address:\s*([\d.]+)/i)?.[1] || '').trim()
+      });
+    }
+    return out;
+  }
+  // Tabular format.
+  return parseNeighborTable(text, /Local\s+Intrfce/i);
+}
+
+// Parse `show lldp neighbors [detail]`.
+export function parseLldp(text) {
+  const out = [];
+  if (!text || !text.trim()) return out;
+  if (/Local Intf:/i.test(text)) {
+    const blocks = text.split(/(?=Local Intf:)/i);
+    for (const b of blocks) {
+      const li = b.match(/Local Intf:\s*(\S+)/i);
+      if (!li) continue;
+      const dev = b.match(/System Name:\s*(.+)/i);
+      out.push({
+        localIf: li[1].trim(),
+        neighbor: (dev?.[1] || b.match(/Chassis id:\s*(\S+)/i)?.[1] || '').trim(),
+        remotePort: (b.match(/Port id:\s*([^\n]+)/i)?.[1] || '').trim(),
+        platform: (b.match(/System Description:\s*(.+)/i)?.[1] || '').trim().slice(0, 60),
+        mgmtIp: (b.match(/(?:Management Address(?:es)?[\s\S]*?)?IP:\s*([\d.]+)/i)?.[1] || '').trim()
+      });
+    }
+    return out;
+  }
+  return parseNeighborTable(text, /Local\s+Intf/i);
+}
+
+// Shared tabular parser for `show cdp/lldp neighbors`. Columns:
+// Device-ID  Local-Intf  Holdtime  Capability  [Platform]  Port-ID
+function parseNeighborTable(text, headerRe) {
+  const out = [];
+  const lines = text.split(/\r?\n/);
+  let started = false;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (headerRe.test(line)) { started = true; continue; }
+    if (!started) continue;
+    if (/^(Total|Capability codes|---)/i.test(line)) continue;
+    const tokens = line.split(/\s+/);
+    if (tokens.length < 3) continue;
+    const dev = tokens[0];
+    // Local interface: token[1], plus token[2] if the platform splits "Gig 1/0/1".
+    let idx = 1, localIf = tokens[1];
+    if (/^[A-Za-z]+$/.test(tokens[1]) && /^[\d/.:]/.test(tokens[2] || '')) { localIf = tokens[1] + tokens[2]; idx = 2; }
+    // Port ID: trailing tokens — join an alpha prefix with a following number.
+    let remotePort = tokens[tokens.length - 1];
+    const penult = tokens[tokens.length - 2];
+    if (/^[\d/.:]/.test(remotePort) && /^[A-Za-z]+$/.test(penult || '')) remotePort = penult + remotePort;
+    out.push({ localIf, neighbor: dev, remotePort, platform: '', mgmtIp: '' });
+  }
+  return out;
+}
+
 export function fmtMac(bare, fmt) {
   if (!bare) return '';
   if (fmt === 'dash')   return bare.match(/.{2}/g).join('-');
