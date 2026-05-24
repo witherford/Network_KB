@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-24T01:14:48.282Z",
+  "updatedAt": "2026-05-24T01:32:03.652Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -30034,780 +30034,896 @@
         "System": [
           {
             "cmd": "show version",
-            "desc": "Shows software version",
+            "desc": "IOS-XE version, uptime, hardware model, boot image, installed packages, processor info. First command on a new device.",
             "type": "show",
             "flagged": false,
-            "example": "Cisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_LITE_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\n\nROM: IOS-XE ROMMON\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\n\nSwitch1 uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by PowerOn\nSystem restarted at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Power-on\n\ncisco C9300-48P (X86) processor (revision V01) with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of non-volatile configuration memory.\n8388608K bytes of physical memory.\n11161600K bytes of Bootflash at bootflash:.\n\nConfiguration register is 0x102"
+            "example": "sw# show version\nCisco IOS XE Software, Version 17.12.04\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 17.12.04, RELEASE SOFTWARE (fc4)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2026 by Cisco Systems, Inc.\nCompiled Tue 02-Apr-26 by mcpre\n\nROM: 17.4.1r[FC2]\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2]\n\nsw uptime is 12 weeks, 3 days, 14 hours, 7 minutes\nSystem returned to ROM by Reload Command at 09:21:42 UTC Mon Feb 5 2026\nSystem image file is \"flash:packages.conf\"\nLast reload reason: Reload Command\n\ncisco C9300-48P (X86) processor with 1392642K/6147K bytes of memory.\nProcessor board ID FCW2306G0F1\n1 Virtual Ethernet interface\n52 Gigabit Ethernet interfaces\n4 Ten Gigabit Ethernet interfaces\n2048K bytes of NVRAM.\n11264000K bytes of Bootflash at bootflash:.\n\nLicense Type: Smart License\nLicense Level: network-essentials\nNext reload license Level: network-essentials"
           },
           {
             "cmd": "show running-config",
-            "desc": "Shows running configuration",
+            "desc": "Active configuration. Use `show running-config interface <int>` or `show running-config | section <feature>` for targeted slices.",
             "type": "show",
             "flagged": false,
-            "example": "Building configuration...\n\nCurrent configuration : 7842 bytes\n!\nversion 17.12\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\n!\nhostname Switch1\n!\nboot-start-marker\nboot system flash:cat9k_lite_iosxe.17.12.04.SPA.bin\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa authentication login default group radius local\n!\nip domain-name corp.example.com\nip name-server 10.10.0.10 10.10.0.11\n!\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT\n switchport mode access\n switchport access vlan 10\n spanning-tree portfast\n!\n... (truncated)"
+            "example": "sw# show running-config | section interface GigabitEthernet1/0/1\ninterface GigabitEthernet1/0/1\n description ACCESS-PORT host01\n switchport mode access\n switchport access vlan 10\n switchport voice vlan 20\n authentication periodic\n authentication timer reauthenticate server\n mab\n access-session port-control auto\n dot1x pae authenticator\n spanning-tree portfast\n spanning-tree bpduguard enable\n!"
           },
           {
             "cmd": "show startup-config",
-            "desc": "Shows startup configuration",
+            "desc": "Saved configuration in NVRAM. Differs from running after any unsaved change. Use `show archive config differences` to compare.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show startup-config | head -25\nUsing 24567 out of 524288 bytes\n!\n! Last configuration change at 14:23:45 UTC Tue Apr 21 2026 by admin\n! NVRAM config last updated at 14:25:01 UTC Tue Apr 21 2026 by admin\n!\nversion 17.12\nservice timestamps debug datetime msec localtime\nservice timestamps log datetime msec localtime\nservice password-encryption\n!\nhostname sw-access-01\n!\nboot-start-marker\nboot system flash:packages.conf\nboot-end-marker\n!\nenable secret 9 $9$abcdef...\n!\naaa new-model\naaa group server radius RAD-GROUP\n server name ISE-01\n server name ISE-02\n!"
           },
           {
             "cmd": "show platform",
-            "desc": "Shows platform details",
+            "desc": "Slot inventory (StackWise stack members, supervisor, line cards, transceivers) with status, hardware revision, serial, uptime.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform\nChassis type: C9300-48P\n\nSlot     Type                State                 Insert time (ago)\n-------- ------------------- --------------------- -----------------\n1        C9300-48P           ok                    12w3d\n1/0      C9300-NM-8X         ok                    12w3d\n2        C9300-48P           ok                    12w3d\n2/0      C9300-NM-2Q         ok                    12w3d\n3        C9300-24P           ok                    12w3d\n3/0      <empty>             ---                   12w3d\n4        WS-C3850-24P        provisioned           never\n\nSlot     CPLD Version        Firmware Version\n-------- ------------------- ---------------------------------------\n1        17091116            17.4.1r[FC2]\n2        17091116            17.4.1r[FC2]\n3        17091116            17.4.1r[FC2]"
           },
           {
             "cmd": "show platform software status switch active",
-            "desc": "Shows active switch status",
+            "desc": "IOS-XE platform status on the active stack switch: CPU/memory by core, process states, dataplane health.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software status switch active\nLoad Average\n  Slot  Status  1-Min  5-Min  15-Min\n  1-RP0 Healthy   0.45   0.42   0.40\n\nMemory (kB)\n  Slot  Status    Total      Used (Pct)       Free (Pct) Committed (Pct)\n  1-RP0 Healthy   3987654    1567823 (39%)   2419831 (61%)  2103456 (53%)\n\nCPU Utilization\n  Slot  CPU   User System   Nice   Idle    IRQ   SIRQ IOwait\n  1-RP0   0  4.20   1.10   0.00  94.00   0.10   0.60   0.00\n  1-RP0   1  3.80   0.95   0.00  95.10   0.05   0.10   0.00\n  1-RP0   2  3.20   0.85   0.00  95.80   0.05   0.10   0.00\n  1-RP0   3  2.90   0.75   0.00  96.20   0.05   0.10   0.00"
           },
           {
             "cmd": "show platform software status switch standby",
-            "desc": "Shows standby switch status",
+            "desc": "Same as switch active but for the standby supervisor in HA stack — confirms sync and idle behaviour.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software status switch standby\nLoad Average\n  Slot  Status  1-Min  5-Min  15-Min\n  2-RP0 Healthy   0.21   0.18   0.16\n\nMemory (kB)\n  Slot  Status    Total      Used (Pct)       Free (Pct)\n  2-RP0 Healthy   3987654    1234567 (31%)   2753087 (69%)\n\nCPU Utilization\n  Slot  CPU   User System   Idle    IRQ   SIRQ\n  2-RP0   0  1.50   0.40   97.80   0.10   0.20\n  2-RP0   1  1.20   0.30   98.30   0.05   0.15\n\n# Standby idle (~98%) is normal — it only processes sync traffic."
           },
           {
             "cmd": "show platform software process list",
-            "desc": "Shows platform processes",
+            "desc": "All running IOS-XE processes (Linux-kernel level): PID, name, CPU%, memory. Use to find a misbehaving daemon.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software process list switch active r0\nName                    Pid    PPid   Status       Size                   uTime    sTime\nplatform_mgr           12345      1   sleeping     324567 KB              123456    12345\niosd                   12346      1   sleeping     876543 KB              987654   123456\nfman_rp                12347      1   sleeping     234567 KB               45678     6789\nfed                    12348      1   sleeping     456789 KB              234567    34567\nbtman                  12349      1   sleeping     123456 KB               12345     1234\nsnmp                   12350      1   sleeping      98765 KB                3456      345\nlogger                 12351      1   sleeping      87654 KB                4567      456"
           },
           {
             "cmd": "show platform software memory switch active",
-            "desc": "Shows active switch memory",
+            "desc": "Per-process memory pool usage. Compare with `show platform software memory switch standby` for HA divergence.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software memory switch active r0\nmodule fed:\n  Total Available 0 bytes, Total Used 1234567 bytes\nmodule iosd:\n  Total Available 0 bytes, Total Used 8765432 bytes\nmodule fman_rp:\n  Total Available 0 bytes, Total Used 2345678 bytes\nmodule platform_mgr:\n  Total Available 0 bytes, Total Used 3456789 bytes\n\n# Growth in any one module across hours = leak candidate."
           },
           {
             "cmd": "show platform software memory switch standby",
-            "desc": "Shows standby switch memory",
+            "desc": "Standby supervisor memory state. Should track active closely after sync.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software memory switch standby r0\nmodule iosd:\n  Total Available 0 bytes, Total Used 8765000 bytes\n# Within a few hundred KB of active = normal sync."
           },
           {
             "cmd": "show platform software fed switch active",
-            "desc": "Shows forwarding engine details",
+            "desc": "Forwarding Engine Driver (FED) — the IOS-XE component that programs the ASIC. Sub-commands give per-feature TCAM/queue/punt info.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active\n# This command summarises FED subsystem state; specific feature views:\n#   ... fed switch active acl       — ACL TCAM programming\n#   ... fed switch active qos       — QoS policers/queues\n#   ... fed switch active punt      — packets sent to CPU\n#   ... fed switch active resources — hardware resource utilisation\n#   ... fed switch active fwd-asic drops/errors/utilization\nsw# show platform software fed switch active resources\nResource Information for Module: 1\nHardware Resource Utilisation:\n   IPv4 Routes        : 18234/65536    27%\n   IPv6 Routes        :  3210/24576    13%\n   MAC Addresses      : 12345/32768    37%\n   Multicast Routes   :    50/8192      0%\n   QoS Policers       :   234/8192      2%\n   ACL TCAM (IPv4)    :   876/12288     7%"
           },
           {
             "cmd": "show platform software fed switch active qos",
-            "desc": "Shows QoS details",
+            "desc": "QoS data-plane state from the FED: policer entries, queues, scheduler config, marking maps.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active qos policy summary\nNumber of policies allocated: 12\nNumber of policies in-use: 8\n\nPolicy Name                        Type          Total Classes  Policers  Markers\nINGRESS-DSCP                       input         5              3         5\nWAN-OUT                            output        4              2         4\nVOIP-PROTECT                       input         3              1         3\n\nsw# show platform software fed switch active qos interface GigabitEthernet1/0/1 ingress\nQoS Subblock Information for Interface: GigabitEthernet1/0/1\n  Policy Name: INGRESS-DSCP\n  Direction: Ingress\n  Total Classes: 5"
           },
           {
             "cmd": "show platform software fed switch active punt",
-            "desc": "Shows punt statistics",
+            "desc": "Per-CPU-queue punt path — packets sent from ASIC to CPU. Sustained high rates indicate punted-traffic problems (CDP flood, OSPF storm, ICMP redirects).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active punt cpuq rates\nCPU Punt Path Receive Rates\n\n  CPUQ            Drop_Rcv   Drop_Send   Rcv_Rate    Curr_Rcv_Rate    Avg_Rcv_Rate\n                  Packets    Packets     (pps)       (pps)            (pps)\n  ----            --------   ---------   ---------   --------------   --------------\n   0  CPU_Q_DOT1X_AUTH          0          0          0                0                0\n   1  CPU_Q_L2_CONTROL          0          0         12               12               10\n   2  CPU_Q_BROADCAST           0          0          2                2                2\n   3  CPU_Q_LEARNING_CACHE_OVFL 0          0          0                0                0\n   4  CPU_Q_SW_FORWARDING       0          0          1                1                1\n   5  CPU_Q_TOPOLOGY_CONTROL    0          0          8                8                7\n   6  CPU_Q_PROTO_SNOOPING      0          0          0                0                0\n   7  CPU_Q_BFD_LOW_LATENCY     0          0          0                0                0"
           },
           {
             "cmd": "show platform software fed switch active acl",
-            "desc": "Shows ACL hardware programming",
+            "desc": "ACL TCAM consumption — which ACLs are programmed in hardware vs CPU-evaluated. Hardware exhaustion punts the ACE to CPU = severe perf hit.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active acl usage\n##### ACL Type Summary ##############\n  IFG: 16  IFGS: 14\n  Entries: 876 / 12288 free\n  Stats: 234 / 4096 free\n\n##### Class Hardware Entry Usage ##############\nFeature/Direction          Total  Used   Free\nL3 IPv4 Ingress             8192   543   7649\nL3 IPv4 Egress              4096   123   3973\nL3 IPv6 Ingress             4096    87   4009\nL2 Mac Ingress              2048    23   2025"
           },
           {
             "cmd": "show platform software fed switch active resources",
-            "desc": "Shows hardware resource usage",
+            "desc": "Overall hardware resource utilisation: routes (v4/v6), MAC, multicast, policers, TCAM. Use to plan capacity before hitting hardware caps.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active resources\nResource Information for Module: 1\nHardware Resource Utilisation:\n   IPv4 Routes        : 18234/65536    27%\n   IPv6 Routes        :  3210/24576    13%\n   MAC Addresses      : 12345/32768    37%\n   Multicast Routes   :    50/8192      0%\n   QoS Policers       :   234/8192      2%\n   Bridge Domains     :     5/4096      0%\n   NetFlow Entries    :  4567/8192    55%\n   Tunnels            :     2/1024      0%\n   ACL TCAM (IPv4)    :   876/12288     7%\n   ACL TCAM (IPv6)    :    87/6144      1%\n   ACL TCAM (MAC)     :    23/2048      1%"
           },
           {
             "cmd": "show platform software fed switch active ifm mappings",
-            "desc": "Shows interface mappings",
+            "desc": "Interface Manager mappings — physical to logical interface (IF_ID) mapping the FED uses. Useful when debug output references IF_IDs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active ifm mappings\nInterface                  IF_ID         Type            State\nGigabitEthernet1/0/1       0x9           ether           UP\nGigabitEthernet1/0/2       0xa           ether           UP\nGigabitEthernet1/0/24      0x20          ether           DOWN\nTenGigabitEthernet1/1/1    0x40          ether           UP\nPort-channel1              0x80          etherchnl       UP\nVlan1                      0x100         svi             UP\nVlan10                     0x101         svi             UP\nLoopback0                  0x200         loopback        UP"
           },
           {
             "cmd": "show platform software fed switch active fwd-asic drops",
-            "desc": "Shows ASIC drop counters",
+            "desc": "ASIC-level drop counters per drop-reason (RPF, MTU, ACL, TCAM, QoS tail). The authoritative answer for \"where did my packet go\".",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active fwd-asic drops\nDrop Reason                            Drop Count\n-------                                ----------\nMaclearningOverflow                            0\nMtuViolation                                  12\nRpfFailed                                      0\nQOSTailDrop                                    8\nL3SinkOnly                                     0\nNoForwarding                                   0\nAclDeny                                     1234\nDot1xDeny                                      0\nFlowMaskGenFailure                             0\nL2BroadcastSuppress                            0"
           },
           {
             "cmd": "show platform software fed switch active fwd-asic errors",
-            "desc": "Shows ASIC error counters",
+            "desc": "ASIC programming errors (rare but critical). Non-zero = hardware/firmware fault.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active fwd-asic errors\nError Type                           Error Count\n----                                 -----------\nProgramFailures                                0\nReadFailures                                   0\nMemoryEccErrors                                0\nLinkCrcErrors                                  0\nParityErrors                                   0\nIfgErrors                                      0\n\n# Any non-zero value should trigger TAC engagement."
           },
           {
             "cmd": "show platform software fed switch active fwd-asic utilization",
-            "desc": "Shows ASIC utilization",
+            "desc": "Per-ASIC utilisation: pipeline throughput, lookup engines busy %. Sustained >90% = approaching forwarding capacity.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active fwd-asic utilization\nForwarding Engine Utilisation:\n  ASIC 0:\n    Pipeline 0: 23% (1-min avg), 18% (5-min avg)\n    Pipeline 1: 22% (1-min avg), 18% (5-min avg)\n    Lookup Engine: 31%\n    Modify Engine: 28%\n  ASIC 1:\n    Pipeline 0: 27% (1-min avg), 22% (5-min avg)"
           }
         ],
         "Hardware": [
           {
             "cmd": "show inventory",
-            "desc": "Shows hardware inventory",
+            "desc": "Hardware inventory: chassis, modules, transceivers, power supplies — with model, serial, hardware revision.",
             "type": "show",
             "flagged": false,
-            "example": "NAME: \"Switch1 System\", DESCR: \"Cisco Catalyst 9300L-48T-4X-A Switch\"\nPID: C9300L-48T-4X-A   , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"GigabitEthernet1/1/1 transceiver\", DESCR: \"1000BASE-T SFP\"\nPID: GLC-T            , VID: V02  , SN: AGM23408XYZ\n\nNAME: \"TenGigabitEthernet1/1/1 transceiver\", DESCR: \"10GBASE-LR SFP+\"\nPID: SFP-10G-LR-S     , VID: V01  , SN: FNS231400ABC"
+            "example": "sw# show inventory\nNAME: \"c93xx Stack\", DESCR: \"c93xx Stack\"\nPID: C9300-48P         , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"Switch 1\", DESCR: \"C9300-48P\"\nPID: C9300-48P         , VID: V01  , SN: FCW2306G0F1\n\nNAME: \"Switch 1 - Power Supply A\", DESCR: \"Switch 1 - Power Supply A\"\nPID: PWR-C1-715WAC     , VID: V02  , SN: LIT2306ABCD\n\nNAME: \"Switch 1 FRU Uplink Module 1\", DESCR: \"8x10G Uplink Module\"\nPID: C9300-NM-8X       , VID: V01  , SN: FCW2306ZYXW\n\nNAME: \"Te1/1/1\", DESCR: \"SFP-10GBase-LR\"\nPID: SFP-10G-LR        , VID: V01  , SN: ABCD25400000\n\nNAME: \"Switch 2\", DESCR: \"C9300-48P\"\nPID: C9300-48P         , VID: V01  , SN: FCW2306G1A2"
           },
           {
             "cmd": "show diag",
-            "desc": "Shows diagnostic info",
+            "desc": "Diagnostic test results across all modules. Each module reports per-test PASS/FAIL.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag\nSlot 1\n  Switch 1 IOS_KERNEL_INIT_TEST.................... PASS\n  Switch 1 ROMMON_INIT_TEST..................... PASS\n  Switch 1 BOOTLOADER_INIT_TEST................. PASS\n  Switch 1 ASIC_INIT_TEST....................... PASS\n  Switch 1 CHASSIS_FAN_TEST.................... PASS\n  Switch 1 PHY_INIT_TEST........................ PASS\nSlot 2\n  Switch 2 IOS_KERNEL_INIT_TEST.................... PASS\n  Switch 2 ASIC_INIT_TEST....................... PASS"
           },
           {
             "cmd": "show diag chassis",
-            "desc": "Shows chassis diagnostics",
+            "desc": "Chassis-level diagnostic info: model, serial, hardware revisions, dates.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag chassis\nChassis Type: c9300\nSwitch Number: 1\nSwitch Type: C9300-48P\nHardware Revision: V01\nSerial Number: FCW2306G0F1\nManufacture Date: 06-2023\nMAC Address: aabb.ccdd.0001\nLicense Level: network-essentials"
           },
           {
             "cmd": "show diag power-supply",
-            "desc": "Shows PSU diagnostics",
+            "desc": "Per-PSU diagnostic: model, capacity, status, fan health, voltage rails.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag power-supply\nSwitch 1:\n  Power Supply A: PWR-C1-715WAC, OK, 715W max, 245W in use, fan OK\n  Power Supply B: PWR-C1-715WAC, OK, 715W max, 245W in use, fan OK\nSwitch 2:\n  Power Supply A: PWR-C1-715WAC, OK, 715W max, 198W in use, fan OK\n  Power Supply B: -- not present --"
           },
           {
             "cmd": "show diag fan",
-            "desc": "Shows fan diagnostics",
+            "desc": "Per-fan diagnostic: model, RPM, status. Failed fan = future thermal-shutdown trigger.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag fan\nSwitch 1 Fan Tray:\n  Fan 1: 7234 RPM, OK\n  Fan 2: 7128 RPM, OK\n  Fan 3: 7212 RPM, OK\nSwitch 2 Fan Tray:\n  Fan 1: 7156 RPM, OK\n  Fan 2: 7098 RPM, OK\n  Fan 3: 7245 RPM, OK"
           },
           {
             "cmd": "show diag temperature",
-            "desc": "Shows temperature sensors",
+            "desc": "Per-zone temperature with major/minor thresholds. Sustained warnings should prompt cooling/airflow review.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag temperature\nSwitch 1:\n  Sensor      Current   Minor     Major\n  Inlet         28 C      45 C      55 C\n  Outlet        38 C      55 C      65 C\n  Hotspot       42 C      75 C      85 C\nSwitch 2:\n  Inlet         29 C      45 C      55 C\n  Outlet        39 C      55 C      65 C\n  Hotspot       43 C      75 C      85 C"
           },
           {
             "cmd": "show diag environment",
-            "desc": "Shows environment status",
+            "desc": "All environmental sensors in one view — equivalent of `show environment all` on some platforms.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show diag environment\nSwitch 1:\n  Power Supply A: OK   245W draw\n  Power Supply B: OK   245W draw\n  Fan Tray:       OK\n  Inlet temp:     28 C  (Normal)\n  Outlet temp:    38 C  (Normal)\n  Hotspot temp:   42 C  (Normal)\nSwitch 2:\n  Power Supply A: OK   198W draw\n  Fan Tray:       OK\n  Inlet temp:     29 C  (Normal)"
           },
           {
             "cmd": "show environment all",
-            "desc": "Shows all environmental sensors",
+            "desc": "Aggregated environmental status: power, fans, temperature for every stack member.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment all\nSwitch 1 FAN  is OK\nSwitch 1 TEMPERATURE is OK\nSwitch 1 POWER is OK\nSwitch 2 FAN  is OK\nSwitch 2 TEMPERATURE is OK\nSwitch 2 POWER is OK\nSWITCH: 1\nSYSTEM TEMPERATURE is OK\nInlet Temperature Value: 28 Degree Celsius\nTemperature State: GREEN\nYellow Threshold : 45 Degree Celsius\nRed Threshold    : 55 Degree Celsius"
           },
           {
             "cmd": "show environment power",
-            "desc": "Shows power supply status",
+            "desc": "PSU details with capacity, draw, redundancy mode, alarm state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment power all\nSW  PID                 Serial#     Status           Sys Pwr  PoE Pwr  Watts\n--  ------------------  ----------  ---------------  -------  -------  -----\n1A  PWR-C1-715WAC       LIT2306ABCD OK              Good     Good     715\n1B  PWR-C1-715WAC       LIT2306EFGH OK              Good     Good     715\n2A  PWR-C1-715WAC       LIT2306IJKL OK              Good     Good     715\n2B  Not Present\n\nPower System Mode: Redundant"
           },
           {
             "cmd": "show environment fan",
-            "desc": "Shows fan status",
+            "desc": "Per-fan-tray state, RPM, last failure event.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment fan\nFAN is OK\nSWITCH: 1\n  FAN 1 is OK\n    Fan Speed: 7234 RPM\n  FAN 2 is OK\n    Fan Speed: 7128 RPM\n  FAN 3 is OK\n    Fan Speed: 7212 RPM\nSWITCH: 2\n  FAN 1 is OK\n  FAN 2 is OK\n  FAN 3 is OK"
           },
           {
             "cmd": "show environment temperature",
-            "desc": "Shows temperature status",
+            "desc": "Sensors with current and threshold values. State GREEN/YELLOW/RED maps to normal/warning/critical.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment temperature\nSWITCH: 1\nSYSTEM TEMPERATURE is OK\n\nInlet Temperature Value: 28 Degree Celsius\nTemperature State: GREEN\nYellow Threshold : 45 Degree Celsius\nRed Threshold    : 55 Degree Celsius\n\nHotspot Temperature Value: 42 Degree Celsius\nTemperature State: GREEN\nYellow Threshold : 75 Degree Celsius\nRed Threshold    : 85 Degree Celsius"
           },
           {
             "cmd": "show environment stack",
-            "desc": "Shows stack environment",
+            "desc": "StackWise-port and stack-power environment view: per-member, per-port stack-cable state, power-stack budget.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment stack\nStackPower\nSwitch  Power Stack   Stack    Total   Allocated   Free      System Power Budget\n        Name          Mode     Power   Power       Power     Mode\n------  ------------  -------  ------  ----------  --------  ----------------\n  1     Powerstack-1  SP-PS    1430    490         940        Power Sharing\n  2     Powerstack-1  SP-PS    1430    490         940        Power Sharing\n\nStack Port Status\nSwitch  Port 1        Port 2\n------  -------       -------\n  1     OK            OK\n  2     OK            OK"
           },
           {
             "cmd": "show environment alarms",
-            "desc": "Shows environmental alarms",
+            "desc": "Active environmental alarms (asserted thresholds). Empty when healthy.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment alarms\nNo alarms currently active.\n\n# Example with a thermal alarm asserted:\n# alarm contact 1: External Temperature Alarm (Severity MAJOR), Asserted 14:23:45 Apr 21 2026\n#   Source: Inlet temperature exceeded major threshold (current 58 C, threshold 55 C)"
           },
           {
             "cmd": "show environment cooling",
-            "desc": "Shows cooling system status",
+            "desc": "Fan-tray cooling state plus airflow direction (front-to-back / back-to-front) — must match cabinet airflow.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment cooling\nSwitch 1 Fan Tray: OK\n  Airflow Direction: Front to Back\n  Fan Speed: Auto (target 7000 RPM)\nSwitch 2 Fan Tray: OK\n  Airflow Direction: Front to Back\n  Fan Speed: Auto"
           },
           {
             "cmd": "show environment detail",
-            "desc": "Shows detailed environment info",
+            "desc": "Comprehensive environmental detail in one pass — sensors, PSUs, fans, alarms.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show environment all detail\n[SWITCH 1]\n  Temperature: 28 C (Inlet), 38 C (Outlet), 42 C (Hotspot) — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 245W draw\n  PSU B: PWR-C1-715WAC, OK, 245W draw\n  Fans: 3/3 OK, 7128–7234 RPM\n  Alarms: none\n[SWITCH 2]\n  Temperature: 29 C / 39 C / 43 C — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 198W draw\n  Fans: 3/3 OK"
           }
         ],
         "Licensing": [
           {
             "cmd": "show license",
-            "desc": "Shows license summary",
+            "desc": "Smart Licensing top-level status (registration, authorization, enabled features).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license\nSmart Licensing Status\n=======================\nSmart Licensing is ENABLED\nUtility:\n  Status: DISABLED\n\nData Privacy:\n  Sending Hostname: yes\n    Callhome hostname privacy: DISABLED\n    Smart Licensing hostname privacy: DISABLED\n\nTransport:\n  Type: Smart\n  URL: https://smartreceiver.cisco.com/licservice/license\n\nRegistration:\n  Status: REGISTERED\n  Smart Account: ACME Corp\n  Virtual Account: Default\n  Initial Registration: SUCCEEDED on Apr 01 2026\n  Last Renewal Attempt: SUCCEEDED on Apr 15 2026\n\nLicense Authorization:\n  Status: AUTHORIZED on Tue Apr 21 04:00:00 2026 GMT"
           },
           {
             "cmd": "show license status",
-            "desc": "Shows license status",
+            "desc": "Compact registration + authorization summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license status\nUtility:\n  Status: DISABLED\nSmart Licensing using Policy:\n  Status: ENABLED\nRegistration:\n  Status: REGISTERED\n  Smart Account: ACME Corp\nLicense Authorization:\n  Status: AUTHORIZED\n  Last Communication Attempt: SUCCEEDED on Apr 21 04:00:00 2026"
           },
           {
             "cmd": "show license all",
-            "desc": "Shows all license info",
+            "desc": "Every licence parameter in one dump. Use for TAC tickets or audit.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license all\n[Includes: show license status + show license usage + show license summary +\n           show license tech-support + Smart Agent state + RUM reports + ...]\nSmart Licensing using Policy:\n  Status: ENABLED\n  Policy:\n    Policy in use: Default Policy\n    First Report Requirement (days): 90 (CISCO default)\n    Reporting Frequency (days): 365 (CISCO default)\n    Report on change (days): 90 (CISCO default)\n  Reporting State:\n    Last Report Sent: Apr 15 2026"
           },
           {
             "cmd": "show license usage",
-            "desc": "Shows license usage",
+            "desc": "Per-feature licence usage with entitlement-tag and compliance state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license usage\nLicense Authorization:\n  Status: AUTHORIZED on Tue Apr 21 04:00:00 2026 GMT\n\nnetwork-essentials_48p (C9300-48 Network Essentials):\n  Description: C9300-48 Network Essentials\n  Count: 1\n  Version: 1.0\n  Status: AUTHORIZED\n  Export status: NOT RESTRICTED\n  Feature Name: network-essentials\n  Feature Description: network-essentials\n\ndna-essentials_48p_t (C9300-48 DNA Essentials):\n  Count: 1\n  Status: AUTHORIZED\n  Feature Name: dna-essentials"
           },
           {
             "cmd": "show license feature",
-            "desc": "Shows licensed features",
+            "desc": "Licence states by feature toggle — useful when a feature command is being rejected.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license feature\nFeature name             Enforcement  Evaluation  Subscription   Enabled  RightToUse\nnetwork-essentials       no           no          no             yes      yes\nnetwork-advantage        no           no          no             no       yes\ndna-essentials           no           no          yes            yes      yes\ndna-advantage            no           no          yes            no       yes"
           },
           {
             "cmd": "show license udi",
-            "desc": "Shows UDI information",
+            "desc": "Unique Device Identifier — required when generating PAK or Smart Licence token.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license udi\nUDI: PID:C9300-48P,SN:FCW2306G0F1"
           },
           {
             "cmd": "show license summary",
-            "desc": "Shows license summary",
+            "desc": "One-line per active licence with count and status.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license summary\nLicense Usage:\n  License                       Entitlement Tag                            Count Status\n  ---------------------------------------------------------------------------------------\n  network-essentials_48p        (C9300-48 Network Essentials)              1     AUTHORIZED\n  dna-essentials_48p_t          (C9300-48 DNA Essentials)                  1     AUTHORIZED"
           },
           {
             "cmd": "show license platform",
-            "desc": "Shows platform license info",
+            "desc": "Platform-specific licence detail (subscription term, expiry date, hardware-locked features).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license platform usage\nPlatform Image License: network-essentials\nPlatform Subscription License: dna-essentials\n  Subscription Term: 3-year\n  Term Expiry: Apr 01 2029"
           },
           {
             "cmd": "show license registration",
-            "desc": "Shows smart licensing registration",
+            "desc": "Smart Licence registration ID, certificate, renewal schedule.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license registration\nRegistration:\n  Status: REGISTERED\n  Smart Account: ACME Corp\n  Virtual Account: Default\n  Export-Controlled Functionality: ALLOWED\n  Initial Registration: SUCCEEDED on Apr 01 2026 04:00:00 GMT\n  Last Renewal Attempt: SUCCEEDED on Apr 15 2026 04:00:00 GMT\n  Next Renewal Attempt: Oct 12 2026 04:00:00 GMT\n  Registration Expires: Apr 01 2027 04:00:00 GMT"
           },
           {
             "cmd": "show license tech-support",
-            "desc": "Shows license tech support info",
+            "desc": "Full licence subsystem dump for TAC. Massive — redirect to a file.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show license tech-support | redirect bootflash:lic-tac.txt\nsw# dir bootflash: | include lic-tac\n  87  -rw-       234567   Apr 21 14:30:15  lic-tac.txt"
           }
         ],
         "Processes": [
           {
             "cmd": "show processes cpu",
-            "desc": "Shows CPU usage",
+            "desc": "Per-process CPU on the route processor (5-second / 1-min / 5-min). High `% in interrupts` (the first number) = data-plane punting heavily.",
             "type": "show",
             "flagged": false,
-            "example": "CPU utilization for five seconds: 3%/0%\none minute: 4%  five minutes: 5%"
+            "example": "sw# show processes cpu sorted | exclude 0.00\nCPU utilization for five seconds: 8%/2%; one minute: 7%; five minutes: 7%\n PID Runtime(ms) Invoked      uSecs    5Sec   1Min   5Min TTY Process\n  73       12345 1234567        10    3.20%  3.15%  3.10%   0 IOSXE-RP Punt Se\n 102        9876  876543        11    2.10%  2.05%  2.00%   0 Hulc LED Process\n 154        5432  543210        10    0.90%  0.88%  0.85%   0 IP Input\n# 8%/2% = 8% total, 2% interrupts. >5% interrupts = high punt traffic."
           },
           {
             "cmd": "show processes cpu sorted",
-            "desc": "Shows CPU usage sorted",
+            "desc": "CPU view sorted by 5-sec column (descending) — top hogs first.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes cpu sorted 5sec | head -15\nCPU utilization for five seconds: 8%/2%; one minute: 7%; five minutes: 7%\n PID Runtime(ms) Invoked      uSecs    5Sec   1Min   5Min TTY Process\n  73       12345 1234567        10    3.20%  3.15%  3.10%   0 IOSXE-RP Punt Se\n 102        9876  876543        11    2.10%  2.05%  2.00%   0 Hulc LED Process\n 154        5432  543210        10    0.90%  0.88%  0.85%   0 IP Input\n 211        2345  234567         9    0.40%  0.42%  0.45%   0 SNMP Engine"
           },
           {
             "cmd": "show processes cpu history",
-            "desc": "Shows CPU history",
+            "desc": "ASCII histogram of CPU utilisation over last 60 s, 60 min, 72 hr — spot recent spikes.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes cpu history\n100\n 90                                                       *\n 80                                                       *\n 70                                                       *  *\n 60                            *                          *  *\n 50               *           **                          *  *\n 40   *          *  *         **       *                  *  *\n 30 *  *      *  *  *       * **     *  *   *           * *  *\n 20**********************************************************\n 10**********************************************************\n     0    5    1    1    2    2    3    3    4    4    5    5\n          0    0    5    0    5    0    5    0    5    0    5\n                  CPU% per second (last 60 seconds)"
           },
           {
             "cmd": "show processes memory",
-            "desc": "Shows memory usage",
+            "desc": "Per-process memory allocation. \"Holding\" = currently allocated, \"Allocated/Freed\" = lifetime totals.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes memory\nProcessor Pool Total: 4294967296 Used: 1234567890 Free: 3060399406\n      I/O Pool Total: 1073741824 Used:  234567890 Free:  839173934\n\n PID TTY  Allocated      Freed    Holding    Getbufs    Retbufs Process\n   0   0 1234567890 1098765432  135802458          0          0 *Init*\n  73   0  234567890  198765432   35802458       1234        543 IOSXE-RP Punt Se\n 102   0   45678901   34567890   11111011       1245        890 Hulc LED Process"
           },
           {
             "cmd": "show processes memory sorted",
-            "desc": "Shows memory usage sorted",
+            "desc": "Memory view sorted by Holding column (descending) — biggest consumers first.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes memory sorted\nProcessor Pool Total: 4294967296 Used: 1234567890 Free: 3060399406\n\n PID TTY  Allocated      Freed    Holding Process\n   0   0 1234567890 1098765432  135802458 *Init*\n  73   0  234567890  198765432   35802458 IOSXE-RP Punt Se\n 102   0   45678901   34567890   11111011 Hulc LED Process\n 154   0   12345678    9876543    2469135 IP Input"
           },
           {
             "cmd": "show processes platform",
-            "desc": "Shows platform processes",
+            "desc": "Linux process list (IOSd is the largest entry). Use to investigate non-IOSd issues (FED, fman_rp, platform_mgr).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes platform\nName                    Pid    PPid   Status       Size                   uTime    sTime\nplatform_mgr           12345      1   sleeping     324567 KB              123456    12345\niosd                   12346      1   sleeping     876543 KB              987654   123456\nfman_rp                12347      1   sleeping     234567 KB               45678     6789\nfed                    12348      1   sleeping     456789 KB              234567    34567\nsnmp                   12350      1   sleeping      98765 KB                3456      345\nlogger                 12351      1   sleeping      87654 KB                4567      456"
           },
           {
             "cmd": "show processes platform sorted",
-            "desc": "Shows sorted platform processes",
+            "desc": "Same as `show processes platform` sorted by CPU/memory.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes platform sorted memory\nName                    Pid    Status       Size\niosd                   12346   sleeping     876543 KB\nfed                    12348   sleeping     456789 KB\nplatform_mgr           12345   sleeping     324567 KB\nfman_rp                12347   sleeping     234567 KB"
           },
           {
             "cmd": "show processes cpu platform",
-            "desc": "Shows CPU usage by platform processes",
+            "desc": "Per-Linux-process CPU usage on the platform level (separate from IOSd processes).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes cpu platform\nCPU utilization for five seconds:  8%/2%, one minute:  7%, five minutes:  7%\nCore 0: CPU utilization for five seconds: 12%, one minute:  9%, five minutes:  9%\nCore 1: CPU utilization for five seconds:  6%, one minute:  6%, five minutes:  6%\nCore 2: CPU utilization for five seconds:  5%, one minute:  5%, five minutes:  5%\nCore 3: CPU utilization for five seconds:  9%, one minute:  8%, five minutes:  8%\n   Pid    PPid    5Sec   1Min   5Min  Status        Size  Name\n  12346      1   3.20%  3.15%  3.10%  sleeping  876543KB  iosd\n  12348      1   2.10%  2.05%  2.00%  sleeping  456789KB  fed\n  12347      1   0.45%  0.42%  0.40%  sleeping  234567KB  fman_rp"
           },
           {
             "cmd": "show processes cpu platform sorted",
-            "desc": "Shows sorted platform CPU usage",
+            "desc": "Same as `show processes cpu platform` sorted by 5-sec CPU descending.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes cpu platform sorted\nCore 0: CPU utilization for five seconds: 12%, one minute:  9%, five minutes:  9%\n   Pid    5Sec   1Min   5Min  Status        Size  Name\n  12346  3.20%  3.15%  3.10%  sleeping  876543KB  iosd\n  12348  2.10%  2.05%  2.00%  sleeping  456789KB  fed"
           },
           {
             "cmd": "show processes cpu extended",
-            "desc": "Shows extended CPU info",
+            "desc": "Extended CPU detail including user/sys split per-process.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show processes cpu extended history\nPID      Name        5Sec   1Min  5Min  uTime   sTime  TTY\n 73 IOSXE-RP Punt    3.20%  3.15% 3.10% 12345   2345    0\n102 Hulc LED Proc    2.10%  2.05% 2.00%  9876    876    0"
           }
         ],
         "Logging": [
           {
             "cmd": "show logging",
-            "desc": "Shows system logs",
+            "desc": "Buffered syslog plus logging-system status (configured destinations, severity, rate limits). Newest entries at bottom.",
             "type": "show",
             "flagged": false,
-            "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
+            "example": "sw# show logging\nSyslog logging: enabled (0 messages dropped, 0 flushes, 0 overruns, xml disabled, filtering disabled)\n\nNo Active Message Discriminator.\n\nConsole logging: level critical, 1234 messages logged\nMonitor logging: level debugging, 0 messages logged\nBuffer logging:  level informational, 234567 messages logged\nException Logging: size (4096 bytes)\nFile logging: disabled\nTrap logging: level informational, 12345 message lines logged\n  Logging to 10.50.50.50 (udp port 514, audit disabled,\n        link up), 12345 message lines logged\n\nLog Buffer (8192 bytes):\n%LINK-3-UPDOWN: Interface GigabitEthernet1/0/24, changed state to up\n%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet1/0/24, changed state to up\n%DOT1X-5-RESULT: Authentication result: 'success' from interface Gi1/0/1 for client (aabb.ccdd.eeff)"
           },
           {
             "cmd": "show logging onboard",
-            "desc": "Shows onboard logging",
+            "desc": "On-board failure logging (OBFL) — environmental + crash history stored in non-volatile flash across reloads.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging onboard switch 1 environment\n--------------------------------------------------------------------------------\nNUMBER OF UPTIME EVENTS\n--------------------------------------------------------------------------------\nFirst Customer Power On                                  04/01/2024 09:21:42\nNumber of times system reset                                              23\nNumber of times system booted                                             45\n\n--------------------------------------------------------------------------------\nTEMPERATURE STATS\n--------------------------------------------------------------------------------\nSensor              Min     Max     Min Date       Max Date\nInlet                15      35      01/15/2025     07/22/2025\nHotspot              28      55      01/15/2025     07/22/2025"
           },
           {
             "cmd": "show logging history",
-            "desc": "Shows logging history",
+            "desc": "SNMP trap history — last 100 (default) traps generated.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging history\nSyslog History Table: 1 maximum table entries, 0 messages ignored, 0 dropped, 100 table size\nThis table contains: 100 entries\nReceived: 0 messages\nThis table entries last cleared: never\n\nLEVEL          NAME            DESCRIPTION\nemergencies(0) SYS-EMERG       System unusable\nalerts(1)      SYS-ALERT       Action must be taken immediately\ncritical(2)    SYS-CRIT        Critical conditions\nerrors(3)      SYS-ERROR       Error conditions\nwarnings(4)    SYS-WARN        Warning conditions"
           },
           {
             "cmd": "show logging persistent",
-            "desc": "Shows persistent logs",
+            "desc": "Persistent logs written to flash. Survive reload (unlike buffered logs). Configure with `logging persistent`.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging persistent\nPersistent logging size : 32768 bytes\nLogs filename            : bootflash:syslog\n\nDirectory of bootflash:/syslog/\n   23  -rw-      234567   Apr 21 14:30:15 2026  log_20260421-143015\n   24  -rw-      198765   Apr 20 02:11:33 2026  log_20260420-021133\n\nsw# more bootflash:/syslog/log_20260421-143015 | head\n%SYS-5-RESTART: System restarted\n%LINK-3-UPDOWN: Interface GigabitEthernet1/0/1, changed state to up"
           },
           {
             "cmd": "show logging process",
-            "desc": "Shows process logs",
+            "desc": "Per-process logging filters/levels. NX-OS-like granular control over which IOS-XE processes log at what level.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging process bgp module 1\nLogging Settings\n  Process: bgp (PID 12346, instance 0)\n  Module: 1\n  Severity: warnings (4)\n  Counters:\n    Total Messages: 12345\n    Drop count: 0"
           },
           {
             "cmd": "show logging alarms",
-            "desc": "Shows alarm logs",
+            "desc": "Active syslog-generated alarms (severity ≥ alert).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging alarms\nNo alarms currently asserted.\n\n# Example with an alarm:\n# Alarm contact: 1\n#   Description: External temperature alarm\n#   Severity: MAJOR\n#   Asserted: 14:23:45 GMT Apr 21 2026\n#   Source: %ENV_MON-2-TEMP_CRIT: Switch 1 inlet temperature critical"
           },
           {
             "cmd": "show logging events",
-            "desc": "Shows event logs",
+            "desc": "Recent EEM-triggered events with the policy that fired them.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging events\nApr 21 14:23:45.123: %HA_EM-6-FMS_POLICY_TRIGGERED: applet HIGH_CPU triggered\nApr 21 14:24:01.234: %HA_EM-6-FMS_POLICY_EXECUTED: applet HIGH_CPU action 1.0 sent email to noc@acme.com\nApr 21 14:30:55.567: %HA_EM-6-FMS_POLICY_TRIGGERED: applet INTERFACE_FLAP triggered"
           },
           {
             "cmd": "show logging system",
-            "desc": "Shows system log summary",
+            "desc": "IOS-XE system-level logger statistics (queue depth, drops, syslog throughput).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging system\nSystem Logger:\n  Buffer status: enabled, 234567 messages logged, 0 dropped\n  Queue: depth 0/1000, max-depth-seen 45\n  Console: enabled (severity ≤ critical)\n  Monitor: enabled (severity ≤ debugging)\n  Trap: enabled (severity ≤ informational)\n    Server 10.50.50.50: up, 12345 messages sent, 0 dropped"
           },
           {
             "cmd": "show logging last 100",
-            "desc": "Shows last 100 log entries",
+            "desc": "Last N log lines from the in-memory buffer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging last 5\nApr 21 14:30:01.234: %BGP-5-ADJCHANGE: neighbor 10.0.0.5 Up\nApr 21 14:30:02.345: %OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 from LOADING to FULL, Loading Done\nApr 21 14:30:14.456: %LINK-3-UPDOWN: Interface Te1/1/1, changed state to up\nApr 21 14:30:15.567: %LINEPROTO-5-UPDOWN: Line protocol on Interface Te1/1/1, changed state to up\nApr 21 14:30:16.678: %DHCP_SNOOPING-5-DHCP_SNOOPING_UNTRUSTED_PORT: DHCP_SNOOPING drop"
           },
           {
             "cmd": "show logging interface <int>",
-            "desc": "Shows logs for interface",
+            "desc": "Filter buffer to messages mentioning a specific interface — quick diagnostic for one port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show logging | include Gi1/0/12\nApr 21 14:23:45.123: %LINK-3-UPDOWN: Interface GigabitEthernet1/0/12, changed state to up\nApr 21 14:23:46.234: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet1/0/12, changed state to up\nApr 21 14:25:01.567: %CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on GigabitEthernet1/0/12 (not half duplex), with AP-OFFICE-01 (full duplex)."
           }
         ],
         "File System": [
           {
             "cmd": "show file systems",
-            "desc": "Shows file systems",
+            "desc": "Available file systems with size, free, type, prefixes. Use to find where to copy a new IOS-XE image.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show file systems\nFile Systems:\n\n     Size(b)       Free(b)      Type   Flags   Prefixes\n           -             -    opaque      rw   system:\n           -             -    opaque      rw   tmpsys:\n     2048000       1234567    nvram      rw   nvram:\n* 11264000000  9876543210      disk      rw   bootflash:\n   1024000000    876543210      disk      rw   crashinfo:\n           -             -   network      rw   tftp:\n           -             -   network      rw   scp:"
           },
           {
             "cmd": "show flash:",
-            "desc": "Shows flash contents",
+            "desc": "List files on flash (bootflash:). Newest at bottom (usually).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show flash:\nDirectory of bootflash:/\n\n   23  -rw-   534567890  Apr 01 14:23:45 2026  cat9k_iosxe.17.12.04.SPA.bin\n   24  -rw-   534567890  Mar 15 09:21:42 2026  cat9k_iosxe.17.12.03.SPA.bin\n   45  -rw-       65536  Apr 21 14:30:15 2026  packages.conf\n   67  drwx        4096  Apr 21 14:25:01 2026  syslog\n   89  -rw-     1234567  Apr 21 14:30:15 2026  archive-1\n\n11264000000 bytes total (9876543210 bytes free)"
           },
           {
             "cmd": "show bootflash:",
-            "desc": "Shows bootflash contents",
+            "desc": "Same as `show flash:` on Catalyst 9000 — bootflash and flash are aliases.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show bootflash:\nDirectory of bootflash:/\n\n   23  -rw-   534567890  Apr 01 14:23:45 2026  cat9k_iosxe.17.12.04.SPA.bin\n   45  -rw-       65536  Apr 21 14:30:15 2026  packages.conf\n\n11264000000 bytes total (9876543210 bytes free)"
           },
           {
             "cmd": "show nvram:",
-            "desc": "Shows NVRAM contents",
+            "desc": "NVRAM directory — startup-config, private-config, persistent-vlan-info live here.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show nvram:\nDirectory of nvram:/\n\n  126  -rw-       24567                    <no date>  startup-config\n  127  ----       24567                    <no date>  private-config\n  129  -rw-           0                    <no date>  ifIndex-table\n\n2048000 bytes total (1820000 bytes free)"
           },
           {
             "cmd": "show usb0:",
-            "desc": "Shows USB0 contents",
+            "desc": "USB stick (when inserted) — used for offline image staging.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show usb0:\nDirectory of usb0:/\n\n   12  -rw-   534567890   Apr 15 09:00:00 2026  cat9k_iosxe.17.12.04.SPA.bin\n\n32212254720 bytes total (31677686830 bytes free)"
           },
           {
             "cmd": "show usb1:",
-            "desc": "Shows USB1 contents",
+            "desc": "Second USB slot (if hardware supports it).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show usb1:\n% No such file or directory\n# (USB slot 1 empty)"
           },
           {
             "cmd": "show bootvar",
-            "desc": "Shows boot variables",
+            "desc": "Boot variables: BOOT path, configuration register, image autoboot.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show bootvar\nBOOT variable = flash:packages.conf;\nMANUAL_BOOT variable = no\nBAUD variable = 9600\nENABLE_BREAK variable does not exist\nMANUAL_BOOT variable = no\nCONFIG_FILE variable = \nBOOTLDR variable does not exist\nConfiguration register is 0x102\n\nStandby BOOT variable = flash:packages.conf;\nStandby Configuration register is 0x102"
           },
           {
             "cmd": "show boot system",
-            "desc": "Shows boot system settings",
+            "desc": "Active boot order — which images the bootloader will try in sequence.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show boot system\nBOOT variable = flash:packages.conf;\n\nManual Boot: no\nEnable Break: no\nMode: install"
           },
           {
             "cmd": "show file systems detail",
-            "desc": "Shows detailed file system info",
+            "desc": "File-systems plus per-FS detail: filesystem type, sector size, last-mount status.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show file systems detail\n\n* indicates the current default file system\n  D - default\n  E - encrypted\n  R - read-only\n  W - read-write\n\n  Size(b)       Free(b)   Type   Flags  Prefixes  Detail\n* 11264000000  9876543210   disk      rw   bootflash:  EXT4, mounted, last-fsck OK\n   1024000000   876543210   disk      rw   crashinfo:  EXT4, mounted"
           }
         ],
         "Boot": [
           {
             "cmd": "show rom-monitor",
-            "desc": "Shows ROMMON version",
+            "desc": "ROMmon version per supervisor. ROMmon upgrade is occasionally required to support newer IOS-XE images.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show rom-monitor\nSystem Bootstrap, Version 17.4.1r[FC2], RELEASE SOFTWARE (P)\nCopyright (c) 1994-2026 by cisco Systems, Inc.\nCurrent image running:  Primary Rommon Image\nLast reset cause:  PowerOn\nCAT9K_LITE_IOSXE platform with 4194304 Kbytes of main memory"
           },
           {
             "cmd": "show boot",
-            "desc": "Shows boot configuration",
+            "desc": "Boot variables, autoboot flag, image-install mode, integrity verification.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show boot\n---------------------------\nSwitch 1\n---------------------------\nCurrent Boot Variables:\nBOOT variable = flash:packages.conf;\n\nBoot Variables on next reload:\nBOOT variable = flash:packages.conf;\nManual Boot = no\nEnable Break = no\nBoot Mode = DEVICE\nIPXE Timeout = 0"
           },
           {
             "cmd": "show version | include ROM",
-            "desc": "Shows ROMMON info",
+            "desc": "Surgical extract of bootstrap/ROMmon line from `show version`.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show version | include ROM\nROM: 17.4.1r[FC2]\nBOOTLDR: System Bootstrap, Version 17.4.1r[FC2]"
           },
           {
             "cmd": "show platform integrity",
-            "desc": "Shows image integrity status",
+            "desc": "Secure-boot / image-integrity attestation — confirms running image was signed by Cisco.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity\nPlatform: C9300-48P\n\nBoot Stage 0 (uROM): PASSED\nBoot Stage 1 (BIOS): PASSED\nBoot Stage 2 (Bootloader): PASSED\nBoot Stage 3 (Kernel): PASSED\nBoot Stage 4 (Application): PASSED\n\nOverall Status: TRUSTED"
           },
           {
             "cmd": "show platform integrity verify",
-            "desc": "Verifies image integrity",
+            "desc": "Re-run integrity verification on demand.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity verify\nVerifying boot chain... PASSED\nVerifying running image signature... PASSED\nVerifying TPM PCR values... PASSED\nOverall: TRUSTED"
           },
           {
             "cmd": "show platform integrity sign",
-            "desc": "Shows image signing info",
+            "desc": "Generate a signed integrity report (TPM-backed) for external attestation.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity sign nonce 12345\nPlatform: C9300-48P\nNonce: 12345\nPCR Values:\n  PCR 0: abc123...\n  PCR 1: def456...\n  PCR 2: 789abc...\nSignature: 0xabcdef...\nCertificate Chain: <embedded>"
           },
           {
             "cmd": "show platform integrity status",
-            "desc": "Shows integrity status",
+            "desc": "Compact integrity health check.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity status\nSecure Boot: ENABLED\nTrust Anchor: PASSED\nImage Signature: VERIFIED\nTPM: PRESENT, OPERATIONAL\nOverall: TRUSTED"
           },
           {
             "cmd": "show platform integrity summary",
-            "desc": "Shows integrity summary",
+            "desc": "One-line integrity status — Boolean-style answer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform integrity summary\nPlatform Integrity: TRUSTED (last verified: 14:23:45 Apr 21 2026)"
           }
         ],
         "StackWise": [
           {
             "cmd": "show switch",
-            "desc": "Shows switch stack members",
+            "desc": "StackWise stack members with role (Active/Standby/Member), priority, MAC, state. The single most-used stack command.",
             "type": "show",
             "flagged": false,
-            "example": "Switch#  Role    Mac Address        State\n1        Active  5c5a.c7aa.b100     Ready\n2        Member  5c5a.c7aa.b200     Ready\n3        Member  5c5a.c7aa.b300     Ready"
+            "example": "sw# show switch\nSwitch/Stack Mac Address : aabb.ccdd.0001 - Local Mac Address\nMac persistency wait time: Indefinite\n                                             H/W   Current\nSwitch#   Role    Mac Address     Priority Version  State\n-------------------------------------------------------------------------------------\n*1       Active   aabb.ccdd.0001     15     V01     Ready\n 2       Standby  aabb.ccdd.0002     14     V01     Ready\n 3       Member   aabb.ccdd.0003     1      V01     Ready"
           },
           {
             "cmd": "show switch detail",
-            "desc": "Shows detailed stack info",
+            "desc": "Per-member detail: stack-port state, neighbours, joining state, software image, license.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch detail\nSwitch/Stack Mac Address : aabb.ccdd.0001 - Local Mac Address\n                                             H/W   Current\nSwitch#   Role    Mac Address     Priority Version  State\n-------------------------------------------------------------------------------------\n*1       Active   aabb.ccdd.0001     15     V01     Ready\n  Stack Port Status            Neighbors\n  Switch#  Port 1   Port 2     Port 1   Port 2\n  --------------------------\n     1     OK       OK         3        2\n     2     OK       OK         1        3\n     3     OK       OK         2        1"
           },
           {
             "cmd": "show switch stack-ports",
-            "desc": "Shows stack ports",
+            "desc": "StackWise port state per member — DOWN here = stack-ring broken (degraded performance).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch stack-ports\n  Switch #  Port 1       Port 2\n  --------  ------       ------\n     1      OK           OK\n     2      OK           OK\n     3      OK           OK"
           },
           {
             "cmd": "show switch stack-ring speed",
-            "desc": "Shows stack ring speed",
+            "desc": "Stack-ring throughput per direction — varies by platform (480 Gbps full on 9300, 1.04 Tbps on 9300X).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch stack-ring speed\nStack Ring Speed        : 480G\nStack Ring Configuration: Full\nStack Ring Protocol     : StackWise"
           },
           {
             "cmd": "show switch neighbors",
-            "desc": "Shows stack neighbors",
+            "desc": "Stack neighbour map — which member is on which stack-port of each switch.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch neighbors\n  Switch #    Port 1       Port 2\n  --------    ------       ------\n      1         3            2\n      2         1            3\n      3         2            1"
           },
           {
             "cmd": "show switch redundancy",
-            "desc": "Shows stack redundancy",
+            "desc": "Active/standby redundancy state, last switchover, SSO status.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch redundancy\n    Switchover Reason                          Last\n    ---------------------                      --------\n    Active Unit unavailable                    14:23:45 Apr 19 2026\n\n  Standby Information:\n    Standby Unit:        2\n    State:               STANDBY HOT\n    Software State:      ACTIVE\n    Switchover Mode:     SSO\n    Last Switchover Time: 14:23:45 Apr 19 2026"
           },
           {
             "cmd": "show switch power",
-            "desc": "Shows stack power info",
+            "desc": "Stack-power budget summary across power-sharing or redundant mode.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch power\nPower Stack Name: Powerstack-1\nStack Mode: Power Sharing\nStack Topology: Ring\nTotal Power: 2860 W\nAllocated Power: 980 W\nAvailable Power: 1880 W"
           },
           {
             "cmd": "show switch uptime",
-            "desc": "Shows uptime per switch",
+            "desc": "Per-stack-member uptime — shows when each switch last rebooted.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch uptime\nSwitch 1 uptime: 12 weeks, 3 days, 14 hours, 7 minutes\nSwitch 2 uptime: 12 weeks, 3 days, 14 hours, 5 minutes\nSwitch 3 uptime: 2 days, 8 hours, 12 minutes  <-- recently rebooted"
           },
           {
             "cmd": "show switch stack-power",
-            "desc": "Shows StackPower info",
+            "desc": "StackPower budget and load per member.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch stack-power\nPower Stack          Stack    Stack    Total    Reserved   Allocated  Unused\nName                 Mode     Topolgy  Pwr(W)   Pwr(W)     Pwr(W)     Pwr(W)\n--------------       -------  -------  ------   --------   ---------  ------\nPowerstack-1         SP-PS    Ring     2860     30         980        1850"
           },
           {
             "cmd": "show switch stack-power detail",
-            "desc": "Shows detailed StackPower info",
+            "desc": "Per-switch contribution to and draw from the StackPower budget.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show switch stack-power detail\nPower Stack: Powerstack-1\n  Mode: Power Sharing\n  Topology: Ring\n  Total: 2860 W   Reserved: 30 W   Allocated: 980 W   Unused: 1850 W\n\nSW   PSU-A     PSU-B     Total Power      Power     System    Stack/PoE\n                                          Allocated  Power     Power\n--   -------   -------   -----------      ---------  ------    ---------\n 1   715 W     715 W     1430 W            490 W     245 W     245 W\n 2   715 W     -- W      715 W             245 W     198 W      47 W\n 3   715 W     -- W      715 W             245 W     198 W      47 W"
           }
         ],
         "Redundancy": [
           {
             "cmd": "show redundancy",
-            "desc": "Shows redundancy summary",
+            "desc": "Top-level HA state: SSO mode, active/standby roles, switchover history.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy\nRedundant System Information :\n------------------------------\n       Available system uptime = 12 weeks, 3 days, 14 hours, 7 minutes\nSwitchovers system experienced = 1\n              Standby failures = 0\n        Last switchover reason = active unit failed\n                 Hardware Mode = Duplex\n    Configured Redundancy Mode = sso\n     Operating Redundancy Mode = sso\n              Maintenance Mode = Disabled\n                Communications = Up\n\nCurrent Processor Information :\n------------------------------\n               Active Location = slot 1\n        Current Software state = ACTIVE\n       Uptime in current state = 12 weeks, 3 days, 14 hours, 7 minutes\n\nPeer Processor Information :\n----------------------------\n              Standby Location = slot 2\n        Current Software state = STANDBY HOT\n       Uptime in current state = 12 weeks, 3 days, 14 hours, 5 minutes"
           },
           {
             "cmd": "show redundancy status",
-            "desc": "Shows redundancy status",
+            "desc": "Compact redundancy summary.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy status\nmy state = 13 -ACTIVE\npeer state = 8  -STANDBY HOT\nMode = Duplex\nUnit = Primary\nUnit ID = 1\n\nRedundancy Mode (Operational) = sso\nRedundancy Mode (Configured) = sso\nRedundancy State = sso"
           },
           {
             "cmd": "show redundancy switchover history",
-            "desc": "Shows switchover history",
+            "desc": "Chronological list of every switchover with reason code.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy switchover history\nIndex   Previous       Current        Switchover               Switchover\n        active         active         reason                   time\n-----   --------       --------       ----------               ----------\n1       2              1              active unit failed       14:23:45 Apr 19 2026\n2       1              2              user forced              09:00:00 Feb 14 2026"
           },
           {
             "cmd": "show redundancy config-sync",
-            "desc": "Shows config sync status",
+            "desc": "Config-sync status — confirms standby is sync'd with active. Mismatch here = stale standby config.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy config-sync\nRedundancy Config Sync:\n  Status: Normal\n  Last Standby Sync: 14:25:01 Apr 21 2026\n  Sync state: in-sync\n  Pending sync messages: 0\n\nConfiguration Sync Statistics:\n  Successful Syncs: 12345\n  Failed Syncs: 0\n  Avg sync time: 234 ms"
           },
           {
             "cmd": "show redundancy peer",
-            "desc": "Shows redundancy peer info",
+            "desc": "Standby peer view — what the active sees about its peer (software version, capabilities).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy peer\nPeer (slot 2):\n  Software: cat9k_iosxe.17.12.04.SPA.bin\n  Active state: STANDBY HOT\n  Capabilities: SSO-enabled\n  Last sync: 14:25:01 Apr 21 2026"
           },
           {
             "cmd": "show redundancy state",
-            "desc": "Shows redundancy state",
+            "desc": "Operational redundancy state with detailed timers and last-event reason.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy state\nmy state = 13 -ACTIVE\npeer state = 8  -STANDBY HOT\nMode = Duplex\nUnit = Primary\nUnit ID = 1\n\nRedundancy Mode (Operational) = sso\nRedundancy Mode (Configured) = sso\nRedundancy State = sso\nManual Swact = enabled\nCommunications = Up"
           },
           {
             "cmd": "show redundancy timers",
-            "desc": "Shows redundancy timers",
+            "desc": "HA timer values: keepalive, hold, RPR-to-SSO failover times.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy timers\nRedundancy Timers:\n  RF Keepalive Interval: 4000 ms\n  RF Keepalive Holdtime: 16000 ms\n  RF Notify Timer: 2000 ms\n  RF Switchover Delay: 1000 ms\n  RF Cold Sync Timer: 600 sec"
           },
           {
             "cmd": "show redundancy ha",
-            "desc": "Shows HA status",
+            "desc": "Full HA subsystem view: NSF (Non-Stop Forwarding), graceful restart, ISSU readiness.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy ha\nNon Stop Forwarding\n  IPv4 NSF: Enabled (gen 1)\n  IPv6 NSF: Enabled (gen 1)\n  OSPF NSF: Enabled, helper mode enabled\n  BGP NSF: Enabled, graceful-restart 120s\n  ISSU Ready: YES"
           },
           {
             "cmd": "show redundancy ha statistics",
-            "desc": "Shows HA statistics",
+            "desc": "HA event counters: switchovers, sync attempts/failures, NSF events.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy ha statistics\nRedundancy HA Statistics:\n  Switchovers attempted: 2\n  Switchovers succeeded: 2\n  Standby resets:        0\n  Sync messages sent:    98765432\n  Sync messages received: 98765400\n  Sync failures:         0\n  NSF helper events:     8"
           },
           {
             "cmd": "show redundancy ha detail",
-            "desc": "Shows detailed HA info",
+            "desc": "Per-protocol NSF/GR detail with timers and last-event timestamps.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show redundancy ha detail\nNon Stop Forwarding (NSF) details:\n\n  Protocol      Mode      State        Last Event\n  --------      ----      -----        ----------\n  IPv4          Enabled   Active       14:23:45 Apr 19 2026\n  OSPF          Enabled   Helper       14:23:45 Apr 19 2026\n  BGP           Enabled   Active       14:23:45 Apr 19 2026, GR timer 120s"
           }
         ],
         "Interfaces": [
           {
             "cmd": "show interfaces",
-            "desc": "Shows all interfaces",
+            "desc": "Detailed status + counters for every interface. Use `show interfaces <int>` to scope to one port.",
             "type": "show",
             "flagged": false,
-            "example": "GigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is 7c.21.0d.6a.00.01 (bia 7c.21.0d.6a.00.01)\n  Description: ACCESS-PORT\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:00, output 00:00:00, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0\n  5 minute input rate 22000 bits/sec, 38 packets/sec\n  5 minute output rate 18000 bits/sec, 31 packets/sec\n     14829023 packets input, 8973256722 bytes, 0 no buffer\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     12345678 packets output, 7654321098 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
+            "example": "sw# show interfaces GigabitEthernet1/0/1\nGigabitEthernet1/0/1 is up, line protocol is up (connected)\n  Hardware is Gigabit Ethernet, address is aabb.ccdd.0009 (bia aabb.ccdd.0009)\n  Description: ACCESS-PORT host01\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec\n     reliability 255/255, txload 1/255, rxload 1/255\n  Encapsulation ARPA, loopback not set\n  Keepalive set (10 sec)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  input flow-control is off, output flow-control is unsupported\n  ARP type: ARPA, ARP Timeout 04:00:00\n  Last input 00:00:01, output 00:00:01, output hang never\n  Last clearing of \"show interface\" counters never\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\n  Queueing strategy: fifo\n  Output queue: 0/40 (size/max)\n  5 minute input rate 1856 bits/sec, 2 packets/sec\n  5 minute output rate 1432 bits/sec, 1 packets/sec\n     1234567 packets input, 234567890 bytes, 0 no buffer\n     Received 12 broadcasts (0 IP multicasts)\n     0 runts, 0 giants, 0 throttles\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     0 watchdog, 0 multicast, 0 pause input\n     9876543 packets output, 1234567890 bytes, 0 underruns\n     0 output errors, 0 collisions, 0 interface resets"
           },
           {
             "cmd": "show interfaces status",
-            "desc": "Shows interface status",
+            "desc": "One-line-per-port summary: status, VLAN, duplex, speed, transceiver type. The most-used switch interface command.",
             "type": "show",
             "flagged": false,
-            "example": "Port      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT        connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   UPLINK-TO-DIST     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1            auto   auto 10/100/1000BaseTX\nGi1/0/24  TRUNK-TO-DIST2     connected    trunk      a-full a-1000 10/100/1000BaseTX\nTe1/1/1   40G UPLINK         connected    trunk      full   40G    QSFP+ 40GBASE-SR4"
+            "example": "sw# show interfaces status\nPort      Name               Status       Vlan       Duplex  Speed Type\nGi1/0/1   ACCESS-PORT host01 connected    10         a-full a-1000 10/100/1000BaseTX\nGi1/0/2   Uplink to core     connected    trunk      a-full a-1000 10/100/1000BaseTX\nGi1/0/3                      notconnect   1          auto    auto   10/100/1000BaseTX\nGi1/0/24  ESXi-host-03       err-disable  10         auto    auto   10/100/1000BaseTX\nTe1/1/1   SPINE-01           connected    routed     full   10G    SFP-10GBase-LR\nTe1/1/2   SPINE-02           connected    routed     full   10G    SFP-10GBase-LR"
           },
           {
             "cmd": "show interfaces description",
-            "desc": "Shows interface descriptions",
+            "desc": "Just the description column — quick port-to-label map.",
             "type": "show",
             "flagged": false,
-            "example": "Interface                      Status         Protocol Description\nGi1/0/1                        up             up       ACCESS-PORT\nGi1/0/2                        up             up       UPLINK-TO-DIST\nGi1/0/3                        admin down     down\nGi1/0/24                       up             up       TRUNK-TO-DIST2\nTe1/1/1                        up             up       40G UPLINK\nPo1                            up             up       MEC-TO-DIST"
+            "example": "sw# show interfaces description\nInterface              Status         Protocol Description\nGi1/0/1                up             up       ACCESS-PORT host01\nGi1/0/2                up             up       Uplink to core sw\nGi1/0/12               up             up       AP-OFFICE-01\nGi1/0/24               admin down     down     ESXi-host-03 (decom)\nTe1/1/1                up             up       SPINE-01 100G uplink\nPo1                    up             up       LACP bundle to core"
           },
           {
             "cmd": "show interfaces counters",
-            "desc": "Shows interface counters",
+            "desc": "Bare packet/byte counters per port. Pair with `show interfaces counters errors` for error breakdown.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces counters\n\nPort                          InOctets       InUcastPkts    InMcastPkts    InBcastPkts\nGi1/0/1                       234567890        1234567            12             3\nGi1/0/2                      9876543210        9876543           123            45\nGi1/0/12                     1234567890        1234567            89            12\n\nPort                         OutOctets       OutUcastPkts   OutMcastPkts   OutBcastPkts\nGi1/0/1                      1234567890        9876543            21             4\nGi1/0/2                      8765432109        8765432           987            65"
           },
           {
             "cmd": "show interfaces counters errors",
-            "desc": "Shows interface error counters",
+            "desc": "Per-port error counters: align, FCS, runts, giants. Sustained errors here = bad SFP/cable/duplex mismatch.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces counters errors\n\nPort      Align-Err    FCS-Err    Xmit-Err     Rcv-Err  UnderSize  OutDiscards\nGi1/0/1           0          0           0           0          0            0\nGi1/0/2           0          0           0           0          0            0\nGi1/0/12          0       1245           0        1245          0            0   <-- bad optic/cable\nGi1/0/24          0          0           0           0          0            0\n\nPort       Single-Col  Multi-Col   Late-Col Exces-Col Carri-Sen     Runts     Giants\nGi1/0/1             0          0          0         0         0         0          0\nGi1/0/12            0          0          0         0         0        12         34"
           },
           {
             "cmd": "show interfaces transceiver",
-            "desc": "Shows SFP/optics info",
+            "desc": "Compact transceiver inventory per port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces transceiver\n            If device is externally calibrated, only calibrated values are printed.\n            ++ : high alarm, +  : high warning, -  : low warning, -- : low alarm.\n\n                                           Optical   Optical\n           Temperature  Voltage  Current   Tx Power  Rx Power\nPort       (Celsius)    (Volts)  (mA)      (dBm)     (dBm)\n---------  -----------  -------  --------  --------  --------\nTe1/1/1        35.21      3.27     24.62     -4.20     -6.45\nTe1/1/2        36.45      3.28     25.10     -4.15     -6.30\nTe1/1/3        34.80      3.27     24.50     -4.25     -6.50"
           },
           {
             "cmd": "show interfaces transceiver detail",
-            "desc": "Shows detailed optics info",
+            "desc": "Per-port SFP detail: vendor, PID, serial, full DOM (TX/RX power, temp, voltage, bias).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces TenGigabitEthernet1/1/1 transceiver detail\nTransceiver Detail Information for GigabitEthernet1/1/1:\n\n  Cisco PID:        SFP-10G-LR\n  Vendor Name:      CISCO-FINISAR\n  Vendor OUI:       0x009065\n  Vendor PN:        FTLX1471D3BCL\n  Vendor SN:        ABCD25400000\n  Wavelength:       1310 nm\n  Cable Length:     10 km\n\n            ++ : high alarm, +  : high warning, -  : low warning, -- : low alarm.\n  NA or N/A: not applicable, Tx: transmit, Rx: receive.\n  mA: milliamperes, dBm: decibels (milliwatts).\n\n  Optical   Optical\n  Temperature  Voltage  Current   Tx Power  Rx Power\n  (Celsius)    (Volts)  (mA)      (dBm)     (dBm)\n  -----------  -------  --------  --------  --------\n     35.21      3.27     24.62     -4.20     -6.45\n\n  Thresholds:           High Alarm    High Warn    Low Warn    Low Alarm\n  Temperature (C)         75.00         70.00         0.00        -5.00\n  Voltage (V)              3.46          3.40         3.10         3.00\n  Tx Power (dBm)           4.00          3.00       -9.00       -10.00\n  Rx Power (dBm)           4.00          3.00      -19.00       -20.00"
           },
           {
             "cmd": "show interfaces switchport",
-            "desc": "Shows switchport configuration",
+            "desc": "L2 switchport state per port: mode, native/access VLAN, trunk allowed VLANs, voice VLAN.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces GigabitEthernet1/0/1 switchport\nName: Gi1/0/1\nSwitchport: Enabled\nAdministrative Mode: static access\nOperational Mode: static access\nAdministrative Trunking Encapsulation: dot1q\nOperational Trunking Encapsulation: native\nNegotiation of Trunking: Off\nAccess Mode VLAN: 10 (USER-DATA)\nTrunking Native Mode VLAN: 1 (default)\nVoice VLAN: 20 (USER-VOICE)\nAdministrative private-vlan host-association: none\nOperational private-vlan: none\nTrunking VLANs Enabled: ALL\nPruning VLANs Enabled: 2-1001\n\nProtected: false\nUnknown unicast blocked: disabled\nUnknown multicast blocked: disabled\nAppliance trust: none"
           },
           {
             "cmd": "show interfaces trunk",
-            "desc": "Shows trunk interfaces",
+            "desc": "All trunk ports with native VLAN and allowed/active/forwarding VLAN lists.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces trunk\nPort      Mode         Encapsulation  Status        Native vlan\nGi1/0/2   on           802.1q         trunking      1\nPo1       on           802.1q         trunking      99\n\nPort      Vlans allowed on trunk\nGi1/0/2   1-4094\nPo1       10,20,30,99\n\nPort      Vlans allowed and active in management domain\nGi1/0/2   1,10,20,30,99\nPo1       10,20,30,99\n\nPort      Vlans in spanning tree forwarding state and not pruned\nGi1/0/2   1,10,20,30,99\nPo1       10,20,30,99"
           },
           {
             "cmd": "show interfaces capabilities",
-            "desc": "Shows interface capabilities",
+            "desc": "Per-port hardware capabilities: speeds, duplex, PoE class, transceiver types supported.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces GigabitEthernet1/0/1 capabilities\nGigabitEthernet1/0/1\n  Model:              C9300-48P\n  Type:               10/100/1000BaseTX\n  Speed:              10,100,1000,auto\n  Duplex:             full,auto\n  Trunk encap. type:  802.1Q,ISL\n  Trunk mode:         on,off,desirable,nonegotiate\n  Channel:            yes\n  Broadcast suppression: percentage(0-100)\n  Flowcontrol:        rx-(off,on,desired),tx-(off,on,desired)\n  Fast Start:         yes\n  QoS scheduling:     rx-(2q3t), tx-(1p7q3t)\n  PortSecure:         yes\n  Dot1x:              yes\n  PoE:                Yes, 802.3at PoE+ 30W"
           },
           {
             "cmd": "show interfaces flowcontrol",
-            "desc": "Shows flow control settings",
+            "desc": "Per-port flow-control (802.3x PAUSE) state — admin and operational.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces flowcontrol\nPort       Send FlowControl   Receive FlowControl   RxPause TxPause\n           admin    oper      admin    oper\n--------   -------- --------  -------- --------     ------- -------\nGi1/0/1    off      off       off      off                0       0\nGi1/0/2    off      off       on       on                12       0\nTe1/1/1    on       on        on       on                 5       3"
           },
           {
             "cmd": "show interfaces mtu",
-            "desc": "Shows MTU settings",
+            "desc": "Per-port MTU values. Default 1500; jumbo (9216) common on fabric / iSCSI / NFS uplinks.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces mtu\nPort        Name              MTU\nGi1/0/1     ACCESS-PORT       1500\nGi1/0/2     Uplink to core    9216\nGi1/0/12    AP-OFFICE-01      1500\nTe1/1/1     SPINE-01          9216\nPo1         LACP to core      9216"
           },
           {
             "cmd": "show interfaces summary",
-            "desc": "Shows interface summary",
+            "desc": "One-line summary across all interfaces: input/output rate, drops.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces summary\n *: interface is up\n IHQ: pkts in input hold queue     IQD: pkts dropped from input queue\n OHQ: pkts in output hold queue    OQD: pkts dropped from output queue\n RXBS: rx rate (bits/sec)          RXPS: rx rate (pkts/sec)\n TXBS: tx rate (bits/sec)          TXPS: tx rate (pkts/sec)\n TRTL: throttle count\n\n  Interface             IHQ  IQD   OHQ  OQD     RXBS  RXPS    TXBS  TXPS  TRTL\n----------------------------------------------------------------------\n*GigabitEthernet1/0/1    0    0    0    0     1856     2    1432    1    0\n*GigabitEthernet1/0/2    0    0    0    0   234567   125  198765  100    0"
           },
           {
             "cmd": "show interfaces accounting",
-            "desc": "Shows interface accounting",
+            "desc": "Per-protocol per-interface byte/packet counters (IP, IPv6, ARP, CDP, LLDP, OSPF, etc.).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces accounting\nGigabitEthernet1/0/1\n                Protocol    Pkts In   Chars In   Pkts Out  Chars Out\n                      IP    1234567  234567890    9876543 1234567890\n                     ARP        123      14760         98      11760\n                     CDP         12       2160         12       2280\n                    LLDP          8       1456          8       1392\nGigabitEthernet1/0/2\n                      IP    9876543 1876543210    8765432 1543210987\n                    OSPF       2345     234567       2345     234567"
           },
           {
             "cmd": "show interfaces stats",
-            "desc": "Shows interface statistics",
+            "desc": "Per-interface in/out packet+byte counters across the switching engine.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces stats\nGigabitEthernet1/0/1\n          Switching path    Pkts In   Chars In   Pkts Out  Chars Out\n               Processor       1234     234567        987     234567\n             Route cache    1234567  234567890    9876543 1234567890\n          Distributed cache       0          0          0          0\n                   Total    1235801  234802457    9877530 1234802457"
           },
           {
             "cmd": "show interfaces switchport detail",
-            "desc": "Shows detailed switchport info",
+            "desc": "Same as `show interfaces switchport` but with hidden private-VLAN / protected-port details.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces GigabitEthernet1/0/1 switchport | begin Admin\nAdministrative Mode: static access\nOperational Mode: static access\nAccess Mode VLAN: 10 (USER-DATA)\nTrunking Native Mode VLAN: 1 (default)\nVoice VLAN: 20 (USER-VOICE)\nProtected: false\nUnknown unicast blocked: disabled\nUnknown multicast blocked: disabled\nAppliance trust: trusted"
           },
           {
             "cmd": "show interfaces negotiation",
-            "desc": "Shows negotiation settings",
+            "desc": "Per-port auto-neg result: advertised vs negotiated speeds and duplex.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces GigabitEthernet1/0/1 negotiation\nGigabitEthernet1/0/1\n  Auto-Negotiation:      On\n  Advertised speeds:     10, 100, 1000\n  Advertised duplex:     full, half\n  Link partner advertised:\n    Speeds:              10, 100, 1000\n    Duplex:              full, half\n  Negotiated:            1000-full\n  Pause:                 sym\n  Master/Slave:          Master"
           },
           {
             "cmd": "show interfaces power inline",
-            "desc": "Shows PoE status",
+            "desc": "PoE per-port: admin state, oper state, power drawn, device class, max. Class 4 = 802.3at PoE+ (30W), 6+ = 802.3bt PoE++ (60W+).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces power inline\nAvailable:715.0(w)  Used:245.0(w)  Remaining:470.0(w)\n\nInterface Admin  Oper       Power   Device              Class Max\n                            (Watts)\n--------- ------ ---------- ------- ------------------- ----- ----\nGi1/0/1   auto   on         15.4    IP Phone 7841       3     30.0\nGi1/0/12  auto   on         30.0    CW9166I-ROW         4     30.0\nGi1/0/24  auto   off        0.0     n/a                 n/a   30.0\nGi1/0/48  auto   on         60.0    Catalyst 9166D2     6     60.0"
           },
           {
             "cmd": "show interfaces power inline detail",
-            "desc": "Shows detailed PoE info",
+            "desc": "Per-port PoE detail: power-class negotiation history, last-grant timestamp, request levels.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces GigabitEthernet1/0/12 power inline detail\nInterface: Gi1/0/12\n  Admin state: auto\n  Oper state: on\n  Power Type: Cisco Type 4 (60W)\n  Class: Class 4 (802.3at PoE+)\n  Negotiated Power: 30.0 W\n  Allocated Power: 30.0 W\n  Power Drawn: 28.5 W\n  Last Grant: 14:23:45 Apr 21 2026\n  Device Detected: CW9166I-ROW\n  Power Request Levels: 30000, 15400, 0, 0, 0 mW\n  IEEE Class: 4"
           },
           {
             "cmd": "show interfaces status err-disabled",
-            "desc": "Ports currently err-disabled with reason",
+            "desc": "Just the ports currently in err-disable state — fastest way to find them.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces status err-disabled\nPort      Name                 Status       Reason             Err-disabled Vlans\nGi1/0/24  ESXi-host-03         err-disabled bpduguard         10\nGi1/0/36  printer-floor3       err-disabled psecure-violation  30\n# Recover with `errdisable recovery cause <cause>` or manual `shut`/`no shut`."
           },
           {
             "cmd": "show errdisable recovery",
-            "desc": "Err-disable recovery timers and enabled causes",
+            "desc": "Err-disable auto-recovery configuration — which causes are auto-recovered after the timer.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show errdisable recovery\nErrDisable Reason              Timer Status\n-----------------              --------------\narp-inspection                 Disabled\nbpduguard                      Enabled\nchannel-misconfig (STP)        Enabled\ndhcp-rate-limit                Enabled\ndtp-flap                       Enabled\nlink-flap                      Enabled\nmac-limit                      Enabled\npsecure-violation              Enabled\nsecurity-violation             Disabled\n\nTimer interval: 300 seconds"
           },
           {
             "cmd": "errdisable recovery cause <cause>",
-            "desc": "Enable auto-recovery for a specific err-disable cause",
+            "desc": "Enable auto-recovery for a specific err-disable cause. The interface re-enables after the configured interval.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "sw(config)# errdisable recovery cause bpduguard\nsw(config)# errdisable recovery cause psecure-violation\nsw(config)# errdisable recovery interval 300   ; recover after 5 min\n# Manually clear without waiting:\nsw(config)# interface GigabitEthernet1/0/24\nsw(config-if)# shutdown\nsw(config-if)# no shutdown"
           },
           {
             "cmd": "errdisable recovery interval 300",
-            "desc": "Set auto-recovery interval (seconds)",
+            "desc": "Set the recovery timer (default 300 s = 5 min). Applies to all enabled recovery causes.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "sw(config)# errdisable recovery interval 300\nsw# show errdisable recovery | include Timer\nTimer interval: 300 seconds"
           },
           {
             "cmd": "show idprom interface <int>",
-            "desc": "SFP serial + part number (vendor/lot)",
+            "desc": "SFP/SFP+ EEPROM contents (IDPROM) — vendor data, calibration, fault history. Deep diagnostic.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show idprom interface TenGigabitEthernet1/1/1\nIDPROM for transceiver TenGigabitEthernet1/1/1:\n  Description = SFP-10G-LR\n  Transceiver Type:             0x03 (SFP)\n  Connector Code:               0x07 (LC)\n  Encoding Code:                0x06 (64B66B)\n  Nominal Bitrate per Channel:  10300 Mbps\n  Cisco PID:                    SFP-10G-LR\n  Vendor Name:                  CISCO-FINISAR\n  Vendor Part Number:           FTLX1471D3BCL\n  Vendor Serial Number:         ABCD25400000\n  Vendor Date Code:             250101\n  Cisco Extended ID Number:     0x04"
           },
           {
             "cmd": "show platform software fed switch active punt cpuq rates",
-            "desc": "Control-plane punt rates per queue",
+            "desc": "Per-CPU-queue punt rates — high values for any queue indicate punted-traffic problems.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active punt cpuq rates\nCPU Punt Path Receive Rates\n  CPUQ                              Drop_Rcv   Rcv_Rate    Curr_Rcv_Rate    Avg_Rcv_Rate\n                                    Packets    (pps)       (pps)            (pps)\n   1  CPU_Q_L2_CONTROL                     0         12               12               10\n   5  CPU_Q_TOPOLOGY_CONTROL               0          8                8                7\n  16  CPU_Q_LOGGING                        0          3                3                3\n  20  CPU_Q_CPU_NICE                       0          1                1                1\n  21  CPU_Q_SW_FORWARDING                  0          1                1                1\n# Sustained high rates on a single queue = investigate the protocol (BPDU\n# storm, ARP flood, unresolved L3 next-hop, etc.)."
           },
           {
             "cmd": "show interface GigabitEthernet1/0/1 transceiver detail",
@@ -30847,9 +30963,9 @@
           {
             "flagged": false,
             "cmd": "show lldp neighbors <interface> detail",
-            "desc": "Same per-port neighbour info as CDP but via LLDP — preferred by newer Cisco APs for PoE negotiation.",
+            "desc": "LLDP neighbour detail per port: neighbour name, system description, port, capabilities, mgmt address.",
             "type": "show",
-            "example": "SWITCH-01# show lldp neighbors gigabitethernet 1/0/12 detail"
+            "example": "sw# show lldp neighbors GigabitEthernet1/0/12 detail\n------------------------------------------------\nLocal Intf: Gi1/0/12\nChassis id: 70bd.9685.9c80\nPort id: GigabitEthernet0\nPort Description: GigabitEthernet0\nSystem Name: AP-OFFICE-01\nSystem Description:\nCisco AP Software, [Cupertino] Catalyst 9100 Series Software, Version 17.12.04, RELEASE SOFTWARE (fc1)\n\nTime remaining: 105 seconds\nSystem Capabilities: B,R\nEnabled Capabilities: B,R\nManagement Addresses:\n    IP: 10.16.2.11\nAuto Negotiation - supported, enabled\nPhysical media capabilities:\n    1000baseT(FD)\nMedia Attachment Unit type: 30\nVlan ID: -"
           },
           {
             "flagged": false,
@@ -30863,7 +30979,7 @@
             "cmd": "power inline auto max <milliwatts>",
             "desc": "Permit the port to negotiate up to N mW for 802.3bt-capable APs (e.g. 60000 = 60 W). On 802.3at-only switch HW the effective max is ~30 W regardless.",
             "type": "config",
-            "example": "SWITCH-01(config-if)# power inline auto max 60000"
+            "example": "sw(config)# interface GigabitEthernet1/0/12\nsw(config-if)# power inline auto max 60000\nsw# show interfaces GigabitEthernet1/0/12 power inline | include Max|Class\nClass: Class 4 (802.3at PoE+)\nMax: 60.0 W\n# On 802.3at-only switch hardware the effective max remains ~30W."
           },
           {
             "flagged": false,
@@ -30876,621 +30992,712 @@
         "VLAN": [
           {
             "cmd": "show vlan",
-            "desc": "Shows VLANs",
+            "desc": "VLAN database with member-port lists, status, type. Status \"active\" = operational.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   USER-DATA                        active    Gi1/0/1, Gi1/0/11, Po1\n20   USER-VOICE                       active    Gi1/0/1, Gi1/0/11\n30   SERVERS                          active    Gi1/0/24, Po1\n99   MGMT                             active    Po1\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n\nVLAN Type   SAID    MTU   Parent  RingNo  BridgeNo  Stp BrdgMode Trans1 Trans2\n---- ----- ------- ------ ------ ------- --------- --- -------- ------ ------\n1    enet  100001   1500  -      -       -         -   -        0      0\n10   enet  100010   1500  -      -       -         -   -        0      0"
           },
           {
             "cmd": "show vlan brief",
-            "desc": "Shows VLAN summary",
+            "desc": "Compact VLAN list — id, name, status, member ports. Most common quick check.",
             "type": "show",
             "flagged": false,
-            "example": "VLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   DATA                             active    Gi1/0/1, Gi1/0/2\n20   VOICE                            active    Gi1/0/1\n30   GUEST                            active\n99   NATIVE                           active    Gi1/0/24\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                    act/unsup"
+            "example": "sw# show vlan brief\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi1/0/3, Gi1/0/4, Gi1/0/5\n10   USER-DATA                        active    Gi1/0/1, Po1\n20   USER-VOICE                       active    Gi1/0/1\n30   SERVERS                          active    Gi1/0/24, Po1\n99   MGMT                             active    Po1"
           },
           {
             "cmd": "show vlan id <id>",
-            "desc": "Shows VLAN details",
+            "desc": "Single-VLAN detail: member ports, name, type, MTU, SAID.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan id 10\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n10   USER-DATA                        active    Gi1/0/1, Gi1/0/2, Gi1/0/11, Po1\n\nVLAN Type   SAID    MTU   Parent  RingNo  BridgeNo  Stp BrdgMode Trans1 Trans2\n---- ----- ------- ------ ------ ------- --------- --- -------- ------ ------\n10   enet  100010   1500  -      -       -         -   -        0      0\n\nPrimary Secondary Type              Ports\n------- --------- ----------------- ----------------------------------------"
           },
           {
             "cmd": "show vlan name <name>",
-            "desc": "Shows VLAN by name",
+            "desc": "VLAN lookup by name string (case-insensitive).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan name USER-DATA\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n10   USER-DATA                        active    Gi1/0/1, Po1"
           },
           {
             "cmd": "show vlan internal usage",
-            "desc": "Shows internal VLAN usage",
+            "desc": "Internal VLAN allocation — VLANs 1006-4094 are auto-assigned to routed ports / SVIs on Catalyst 9k.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan internal usage\n\nVLAN Usage\n---- --------------------\n1006 GigabitEthernet1/1/1\n1007 GigabitEthernet1/1/2\n1008 TenGigabitEthernet1/0/24\n1009 online diag vlan0\n1010 online diag vlan1"
           },
           {
             "cmd": "show vlan filter",
-            "desc": "Shows VLAN filters",
+            "desc": "VLAN access-maps (VACL) bound to specific VLANs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan filter\nVLAN Map BLOCK-RFC1918 is filtering VLANs: 10,20"
           },
           {
             "cmd": "show vlan access-map",
-            "desc": "Shows VLAN access maps",
+            "desc": "VACL definitions — match clauses (ACL or MAC ACL) and action (forward/drop/redirect).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan access-map\nVlan access-map \"BLOCK-RFC1918\"  10\n  Match clauses:\n    ip address: NO-RFC1918\n  Action:\n    drop\nVlan access-map \"BLOCK-RFC1918\"  20\n  Match clauses:\n  Action:\n    forward"
           },
           {
             "cmd": "show vlan private-vlan",
-            "desc": "Shows private VLANs",
+            "desc": "Private VLAN (PVLAN) configuration — primary/community/isolated relationships.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan private-vlan\n\nPrimary Secondary Type              Ports\n------- --------- ----------------- ------------------------------------------\n100     101       community         Gi1/0/1, Gi1/0/2\n100     102       community         Gi1/0/3, Gi1/0/4\n100     199       isolated          Gi1/0/5, Gi1/0/6"
           },
           {
             "cmd": "show vlan private-vlan mapping",
-            "desc": "Shows PVLAN mappings",
+            "desc": "PVLAN promiscuous-port mappings (which primary VLAN gets which secondaries).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan private-vlan mapping\nInterface Secondary VLAN\n--------- --------------\nGi1/0/24  101 102 199\n# Gi1/0/24 is the promiscuous port — sees traffic from all secondaries."
           },
           {
             "cmd": "show vlan private-vlan type",
-            "desc": "Shows PVLAN types",
+            "desc": "List each VLAN with its private-VLAN type (primary/community/isolated/normal).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vlan private-vlan type\nVlan       Type\n----       ---------------\n100        primary\n101        community\n102        community\n199        isolated"
           },
           {
             "cmd": "show vtp status",
-            "desc": "VTP version, domain, mode, revision number",
+            "desc": "VTP version, mode, domain, config revision. Best practice: VTP mode transparent or VTPv3 with feature off.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show vtp status\nVTP Version capable             : 1 to 3\nVTP version running              : 3\nVTP Domain Name                  : ACME\nVTP Pruning Mode                 : Disabled\nVTP Traps Generation            : Disabled\nDevice ID                       : aabb.ccdd.0001\nConfiguration last modified by 10.0.0.1 at 4-21-26 14:25:01\nLocal updater ID is 1.1.1.1 on interface Lo0 (lowest numbered VLAN interface found)\nFeature VLAN:\n--------------\nVTP Operating Mode                : Transparent\nNumber of existing VLANs          : 8\nNumber of existing extended VLANs : 0\nConfiguration Revision            : 0"
           },
           {
             "cmd": "show interfaces trunk | include <vlan>",
-            "desc": "Which trunks pass a specific VLAN",
+            "desc": "Confirm a specific VLAN is allowed/active/forwarding on every trunk in one shot.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show interfaces trunk | include 10\nGi1/0/2   on           802.1q         trunking      1\nPo1       on           802.1q         trunking      99\nGi1/0/2   1,10,20,30,99\nPo1       10,20,30,99"
           }
         ],
         "STP": [
           {
             "cmd": "show spanning-tree",
-            "desc": "Shows spanning-tree summary",
+            "desc": "Top-level STP view per VLAN/instance: root bridge, this-bridge ID, per-port roles, costs.",
             "type": "show",
             "flagged": false,
-            "example": "VLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    32778\n             Address     0c4b.f0a1.b200\n             This bridge is the root\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0c4b.f0a1.b200\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.1    P2p Edge\nGi1/0/24            Desg FWD 4         128.24   P2p"
+            "example": "sw# show spanning-tree\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     aabb.cc99.0001\n             Cost        4\n             Port        Po1 (Port-channel1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     aabb.ccdd.0001\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nGi1/0/1             Desg FWD 4         128.9    P2p Edge\nGi1/0/11            Desg FWD 4         128.19   P2p Edge\nPo1                 Root FWD 4         128.65   P2p"
           },
           {
             "cmd": "show spanning-tree detail",
-            "desc": "Shows detailed STP info",
+            "desc": "Verbose STP — per-port BPDU counters, last-topology-change source, age.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree detail | begin VLAN0010\n VLAN0010 is executing the rstp compatible Spanning Tree protocol\n  Bridge Identifier has priority 32768, sysid 10, address aabb.ccdd.0001\n  Configured hello time 2, max age 20, forward delay 15, transmit hold-count 6\n  Current root has priority 24586, address aabb.cc99.0001\n  Root port is 65 (Port-channel1), cost of root path is 4\n  Topology change flag not set, detected flag not set\n  Number of topology changes 12 last change occurred 3w2d ago\n          from Port-channel1\n  Times:  hold 1, topology change 35, notification 2\n          hello 2, max age 20, forward delay 15"
           },
           {
             "cmd": "show spanning-tree vlan <id>",
-            "desc": "Shows STP for VLAN",
+            "desc": "STP for a single VLAN — useful when chasing a per-VLAN root or topology change.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree vlan 10\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     aabb.cc99.0001\n             Cost        4\n             Port        Po1 (Port-channel1)\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     aabb.ccdd.0001\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nGi1/0/1             Desg FWD 4         128.9    P2p Edge\nPo1                 Root FWD 4         128.65   P2p"
           },
           {
             "cmd": "show spanning-tree interface <int>",
-            "desc": "Shows STP for interface",
+            "desc": "Per-port STP state across every VLAN the port participates in.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree interface GigabitEthernet1/0/1\nMst Instance                   Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nVLAN0001            Desg FWD 4         128.9    P2p Edge\nVLAN0010            Desg FWD 4         128.9    P2p Edge\nVLAN0020            Desg FWD 4         128.9    P2p Edge"
           },
           {
             "cmd": "show spanning-tree mst",
-            "desc": "Shows MST configuration",
+            "desc": "MST (802.1s) — all MSTI instances with role/state per port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree mst\n##### MST0    vlans mapped:   1,11-4094\nBridge        address aabb.ccdd.0001  priority      32768 (32768 sysid 0)\nRoot          this switch for the CIST\nRegional Root this switch\nOperational   hello time 2 , forward delay 15, max age 20, txholdcount 6\nConfigured    hello time 2 , forward delay 15, max age 20, max hops 20\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nGi1/0/1             Desg FWD 20000     128.9    P2p Edge\nPo1                 Desg FWD 200       128.65   P2p\n\n##### MST1    vlans mapped:   2-10\nBridge        address aabb.ccdd.0001  priority      32769 (32768 sysid 1)\nRoot          this switch for MST1"
           },
           {
             "cmd": "show spanning-tree mst configuration",
-            "desc": "Shows MST config details",
+            "desc": "MST region: name, revision, VLAN-to-instance mapping. Must match across MST domain or boundary ports go BLOCKING.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree mst configuration\nName      [ACME]\nRevision  1     Instances configured 3\n\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------------\n0         1,11-4094\n1         2-10\n2         50,60,70\n-------------------------------------------------------------------------------"
           },
           {
             "cmd": "show spanning-tree mst detail",
-            "desc": "Shows MST detailed info",
+            "desc": "Detailed MST: per-instance regional root, per-port BPDU counters, topology change history.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree mst 0 detail\n##### MST0    vlans mapped:   1,11-4094\nBridge        address aabb.ccdd.0001  priority      32768 (32768 sysid 0)\nRoot          this switch for the CIST\n  Operational hello time 2, forward delay 15, max age 20, txholdcount 6\n  Configured hello time 2, forward delay 15, max age 20, max hops 20\nGigabitEthernet1/0/1 of MST0 is designated forwarding\nEdge port: yes (default)         port guard : none        (default)\nLink type: point-to-point (auto) bpdu filter: disable     (default)\nBoundary : internal              bpdu guard : enable      (configured)\nBpdus sent 12345, received 0"
           },
           {
             "cmd": "show spanning-tree summary",
-            "desc": "Shows STP summary",
+            "desc": "STP feature summary: mode, root status, total ports per state (FWD/BLK), error events.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree summary\nSwitch is in rapid-pvst mode\nRoot bridge for: none\nExtended system ID                      is enabled\nPortfast Default                        is disabled\nPortfast Edge BPDU Guard Default        is enabled\nPortfast Edge BPDU Filter Default       is disabled\nLoopguard Default                       is disabled\nEtherChannel misconfig guard            is enabled\nUplinkFast                              is disabled\nBackboneFast                            is disabled\nConfigured Pathcost method used is short\n\nName                   Blocking Listening Learning Forwarding STP Active\n---------------------- -------- --------- -------- ---------- ----------\nVLAN0001                      0         0        0          5          5\nVLAN0010                      0         0        0          4          4\nVLAN0020                      0         0        0          3          3\n---------------------- -------- --------- -------- ---------- ----------\n3 vlans                       0         0        0         12         12"
           },
           {
             "cmd": "show spanning-tree inconsistentports",
-            "desc": "Shows inconsistent ports",
+            "desc": "Ports STP has put into inconsistent (blocking) state due to BPDU guard, root guard, loop guard, or PVST simulation failure.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree inconsistentports\n\nName                 Interface                Inconsistency\n-------------------- ------------------------ ------------------\nVLAN0010             GigabitEthernet1/0/24    Root Inconsistent\n\nNumber of inconsistent ports (segments) in the system : 1"
           },
           {
             "cmd": "show spanning-tree backbonefast",
-            "desc": "Shows backbonefast status",
+            "desc": "BackboneFast (PVST+ legacy) statistics — number of inferior BPDUs received and topology-changes triggered.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree backbonefast\nBackboneFast is disabled by default\n\nBackbone Fast Statistics\n------------------------\nNumber of transition via backboneFast (all VLANs)              : 0\nNumber of inferior BPDUs received (all VLANs)                  : 0\nNumber of RLQ request PDUs received (all VLANs)                : 0"
           },
           {
             "cmd": "show spanning-tree root",
-            "desc": "Who is root for each VLAN and via which port",
+            "desc": "Per-VLAN root bridge info: who is root, this-switch cost to reach root, root port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree root\n                                        Root    Hello Max Fwd\nVlan                   Root ID          Cost    Time  Age  Dly  Root Port\n---------------- -------------------- --------- ----- ---  ---  ------------\nVLAN0001         24577 aabb.cc99.0001        4    2   20   15  Po1\nVLAN0010         24586 aabb.cc99.0001        4    2   20   15  Po1\nVLAN0020         24596 aabb.cc99.0001        4    2   20   15  Po1"
           },
           {
             "cmd": "show spanning-tree bridge",
-            "desc": "Local bridge ID per VLAN (priority + MAC)",
+            "desc": "Per-VLAN this-switch bridge info: priority, address, configured timers.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree bridge\n                                                  Hello  Max  Fwd\nVlan                Bridge ID                       Time  Age  Dly  Protocol\n----- ----------------------------------------------- ---- ---- ---- --------\nVLAN0001  32769 (32768,   1) aabb.ccdd.0001              2   20   15  rstp\nVLAN0010  32778 (32768,  10) aabb.ccdd.0001              2   20   15  rstp\nVLAN0020  32788 (32768,  20) aabb.ccdd.0001              2   20   15  rstp"
           },
           {
             "cmd": "spanning-tree guard root",
-            "desc": "Enforce root-guard on a port facing downstream devices",
+            "desc": "Root-guard on a port — if a superior BPDU arrives, the port goes root-inconsistent (blocking) until BPDUs stop. Protects against rogue switches becoming root.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "sw(config)# interface GigabitEthernet1/0/24\nsw(config-if)# spanning-tree guard root\n\n# When triggered:\nsw# show logging | include SPANTREE\n%SPANTREE-2-ROOTGUARD_BLOCK: Root guard blocking port GigabitEthernet1/0/24 on VLAN0010.\nsw# show spanning-tree inconsistentports\nName       Interface                Inconsistency\n---------- ------------------------ ------------------\nVLAN0010   GigabitEthernet1/0/24    Root Inconsistent"
           },
           {
             "cmd": "spanning-tree bpduguard enable",
-            "desc": "Drop/err-disable on any BPDU received (edge ports)",
+            "desc": "BPDU guard on a port — if ANY BPDU arrives, the port goes err-disabled. Pair with `spanning-tree portfast` on edge ports.",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "sw(config)# interface GigabitEthernet1/0/1\nsw(config-if)# spanning-tree portfast\nsw(config-if)# spanning-tree bpduguard enable\n\n# When triggered:\nsw# show logging | include BPDU\n%SPANTREE-2-BLOCK_BPDUGUARD: Received BPDU on port GigabitEthernet1/0/1 with BPDU Guard enabled. Disabling port.\n%PM-4-ERR_DISABLE: bpduguard error detected on Gi1/0/1, putting Gi1/0/1 in err-disable state."
           }
         ],
         "STP_RPVST": [
           {
             "cmd": "show spanning-tree rapid-pvst",
-            "desc": "Shows RPVST summary",
+            "desc": "Rapid-PVST (default mode) — per-VLAN view.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree rapid-pvst\nVLAN0001\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24577\n             Address     aabb.cc99.0001\n             Cost        4\n             Port        Po1 (Port-channel1)\n\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     aabb.cc99.0001"
           },
           {
             "cmd": "show spanning-tree rapid-pvst detail",
-            "desc": "Shows detailed RPVST info",
+            "desc": "Per-VLAN RPVST detail with BPDU counters and timers.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree rapid-pvst detail | head -20\n VLAN0010 is executing the rstp compatible Spanning Tree protocol\n  Bridge Identifier has priority 32768, sysid 10, address aabb.ccdd.0001\n  Current root has priority 24586, address aabb.cc99.0001\n  Root port is 65 (Port-channel1), cost of root path is 4\n  Topology change flag not set, detected flag not set\n  Number of topology changes 12 last change occurred 3w2d ago"
           },
           {
             "cmd": "show spanning-tree rapid-pvst vlan <id>",
-            "desc": "Shows RPVST for VLAN",
+            "desc": "RPVST view for one VLAN.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree rapid-pvst vlan 10\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     aabb.cc99.0001\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     aabb.ccdd.0001\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nGi1/0/1             Desg FWD 4         128.9    P2p Edge\nPo1                 Root FWD 4         128.65   P2p"
           },
           {
             "cmd": "show spanning-tree rapid-pvst interface <int>",
-            "desc": "Shows RPVST for interface",
+            "desc": "RPVST state on a single port across all VLANs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show spanning-tree rapid-pvst interface GigabitEthernet1/0/1\nVlan                Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nVLAN0001            Desg FWD 4         128.9    P2p Edge\nVLAN0010            Desg FWD 4         128.9    P2p Edge\nVLAN0020            Desg FWD 4         128.9    P2p Edge"
           }
         ],
         "EtherChannel": [
           {
             "cmd": "show etherchannel summary",
-            "desc": "Shows EtherChannel summary",
+            "desc": "One-line per port-channel: protocol (LACP/PAgP/static), state, member-port flags. Flag P = bundled, s = suspended, H = hot-standby.",
             "type": "show",
             "flagged": false,
-            "example": "Flags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 1\nNumber of aggregators:           1\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/23(P) Gi1/0/24(P)"
+            "example": "sw# show etherchannel summary\nFlags:  D - down        P - bundled in port-channel\n        I - stand-alone s - suspended\n        H - Hot-standby (LACP only)\n        R - Layer3      S - Layer2\n        U - in use      f - failed to allocate aggregator\n\nNumber of channel-groups in use: 2\nNumber of aggregators:           2\n\nGroup  Port-channel  Protocol    Ports\n------+-------------+-----------+-----------------------------------------------\n1      Po1(SU)         LACP      Gi1/0/47(P)   Gi1/0/48(P)\n10     Po10(SU)        LACP      Gi1/0/23(P)   Gi1/0/24(s)\n\n# (s) = suspended; LACP could not bring the member up — investigate partner."
           },
           {
             "cmd": "show etherchannel detail",
-            "desc": "Shows detailed EtherChannel info",
+            "desc": "Comprehensive EtherChannel detail — member ports, LACP state per port, partner system-id, aggregator info.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show etherchannel detail\n                Channel-group listing:\n                ----------------------\n\nGroup: 1\n----------\nGroup state = L2\nPorts: 2   Maxports = 16\nPort-channels: 1 Max Port-channels = 16\nProtocol:        LACP\nMinimum Links: 0\n\n                Ports in the group:\n                -------------------\nPort: Gi1/0/47\n------------\nPort state    = Up Bndl Sync Hot-Sby\nChannel group = 1           Mode = Active          Gcchange = -\nPort-channel  = Po1         GC   =   -             Pseudo port-channel = Po1\nPort index    = 0           Load = 0x00            Protocol =   LACP\n\nFlags:  S - Device is sending Slow LACPDUs  F - Device is sending Fast LACPDUs\n        A - Device is in Active mode         P - Device is in Passive mode\n\nLocal information:\n                            LACP port     Admin     Oper    Port        Port\nPort      Flags   State     Priority      Key       Key     Number      State\nGi1/0/47  SA      bndl      32768         0x1       0x1     0x12f       0x3D"
           },
           {
             "cmd": "show etherchannel port-channel",
-            "desc": "Shows port-channel info",
+            "desc": "Per-port-channel logical-interface summary plus member-port operational state.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show etherchannel port-channel\n                Channel-group listing:\n                ----------------------\n\nGroup: 1\n----------\nPort-channels in the group:\n----------------------------\nPort-channel: Po1    (Primary Aggregator)\n\nAge of the Port-channel   = 12w3d:14h:07m:23s\nLogical slot/port   = 16/0          Number of ports = 2\nHotStandBy port = null\nPort state          = Port-channel Ag-Inuse\nProtocol            =   LACP\n\nPorts in the Port-channel:\nIndex   Load   Port     EC state        No of bits\n------+------+------+------------------+-----------\n  0     00     Gi1/0/47  Active             0\n  1     00     Gi1/0/48  Active             0"
           },
           {
             "cmd": "show etherchannel load-balance",
-            "desc": "Shows load-balancing method",
+            "desc": "Configured EtherChannel hash algorithm. Default is src-dst-ip; other options: src-mac, dst-mac, src-dst-mac, l4-ports.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show etherchannel load-balance\nEtherChannel Load-Balancing Configuration:\n        src-dst-ip\nmpls label-ip\n\nEtherChannel Load-Balancing Addresses Used Per-Protocol:\nNon-IP: Source XOR Destination MAC address\n  IPv4: Source XOR Destination IP address\n  IPv6: Source XOR Destination IP address\n  MPLS: Label or IP"
           },
           {
             "cmd": "show lacp counters",
-            "desc": "Shows LACP counters",
+            "desc": "LACP PDU counters per port — sent, received, errors. Errors > 0 = partner-side issue or link impairment.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show lacp counters\n             LACPDUs         Marker      Marker Response    LACPDUs\nPort       Sent   Recv     Sent   Recv     Sent   Recv      Pkts Err\n---------------------------------------------------------------------\nChannel group: 1\nGi1/0/47   12345 12340      0      0        0      0          0\nGi1/0/48   12340 12345      0      0        0      0          0\nChannel group: 10\nGi1/0/23   8765   8765      0      0        0      0          0\nGi1/0/24      0      0      0      0        0      0          0  <-- suspended"
           },
           {
             "cmd": "show lacp neighbor",
-            "desc": "Shows LACP neighbors",
+            "desc": "LACP partner (neighbour) info per member port: partner system-id, port-id, flags.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show lacp neighbor\nFlags:  S - Device is requesting Slow LACPDUs\n        F - Device is requesting Fast LACPDUs\n        A - Device is in Active mode      P - Device is in Passive mode\n\nChannel group 1 neighbors\n\nPartner's information:\n                  LACP port                        Admin  Oper   Port    Port\nPort      Flags   Priority  Dev ID         Age    key    Key    Number  State\nGi1/0/47  SA      32768     aabb.cc99.0001  20s   0x0    0x1    0x102   0x3D\nGi1/0/48  SA      32768     aabb.cc99.0001  18s   0x0    0x1    0x103   0x3D"
           },
           {
             "cmd": "show lacp internal",
-            "desc": "Shows internal LACP state",
+            "desc": "Internal LACP state per port — admin/oper keys, port number, priority, flags.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show lacp internal\nFlags:  S - Device is requesting Slow LACPDUs\n        F - Device is requesting Fast LACPDUs\n        A - Device is in Active mode    P - Device is in Passive mode\n\nChannel group 1\n                            LACP port     Admin     Oper    Port      Port\nPort      Flags   State     Priority      Key       Key     Number    State\nGi1/0/47  SA      bndl      32768         0x1       0x1     0x12f     0x3D\nGi1/0/48  SA      bndl      32768         0x1       0x1     0x130     0x3D"
           },
           {
             "cmd": "show pagp neighbor",
-            "desc": "Shows PAgP neighbors",
+            "desc": "PAgP partner info (legacy Cisco-proprietary aggregation — use LACP for new deployments).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show pagp neighbor\n\nChannel group 2 neighbors\n        Partner              Partner          Partner         Partner Group\nPort    Name                 Device ID        Port       Age  Flags   Cap.\nGi1/0/49 sw-distro            aabb.cc99.0002   Gi3/0/1    25s   SC      A0001"
           },
           {
             "cmd": "show pagp internal",
             "desc": "Shows internal PAgP state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show pagp internal\nFlags:  S - Device is sending Slow hello.  C - Device is in Consistent state.\n        A - Device is in Auto mode.        P - PAgP is enabled on device.\n\nChannel group 2\n                                          Hello    Partner   PAgP     Learning  Group\nPort      Flags  State   Timers           Interval Count     Priority Method    Ifindex\nGi1/0/49  SC     U6/S7                    30s      1         128      Any       12"
           },
           {
             "cmd": "show pagp counters",
-            "desc": "Shows PAgP counters",
+            "desc": "PAgP packet counters per port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show pagp counters\n            Information         Flush\nPort       Sent   Recv     Sent   Recv\n----------------------------------------\nChannel group: 2\nGi1/0/49   1234   1230      0      0"
           },
           {
             "cmd": "test etherchannel load-balance interface port-channel<n> ip <src> <dst>",
-            "desc": "Predict outgoing member for a given 5-tuple",
+            "desc": "Predict which member port the hash will pick for a given src/dst IP — confirms ECMP distribution before changing it.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# test etherchannel load-balance interface port-channel 1 ip 10.10.10.20 8.8.8.8\nWould select Gi1/0/47 of Po1\n\nsw# test etherchannel load-balance interface port-channel 1 ip 10.10.10.21 8.8.8.8\nWould select Gi1/0/48 of Po1"
           }
         ],
         "Switching": [
           {
             "cmd": "show mac address-table",
-            "desc": "Shows MAC address table",
+            "desc": "L2 MAC table — VLAN, MAC, type (DYNAMIC/STATIC), port. Aging time configurable; default 300 s.",
             "type": "show",
             "flagged": false,
-            "example": "          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    0050.5612.3456    DYNAMIC     Gi1/0/3\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    7c21.0d6a.0001    STATIC      CPU\n  20    aabb.cc00.1100    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 4"
+            "example": "sw# show mac address-table\n          Mac Address Table\n-------------------------------------------\n\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    aabb.ccdd.0001    STATIC      CPU\n  10    1122.3344.5566    DYNAMIC     Gi1/0/1\n  10    aabb.ccdd.eeff    DYNAMIC     Po1\n  20    1122.3344.5577    DYNAMIC     Gi1/0/1\n  30    2233.4455.6677    DYNAMIC     Po1\n  99    aabb.ccdd.aa01    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 6"
           },
           {
             "cmd": "show mac address-table dynamic",
-            "desc": "Shows dynamic MAC entries",
+            "desc": "Just dynamically-learned MACs (excludes static, CPU, multicast).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table dynamic\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    1122.3344.5566    DYNAMIC     Gi1/0/1\n  10    aabb.ccdd.eeff    DYNAMIC     Po1\n  20    1122.3344.5577    DYNAMIC     Gi1/0/1\nTotal Mac Addresses for this criterion: 3"
           },
           {
             "cmd": "show mac address-table static",
-            "desc": "Shows static MAC entries",
+            "desc": "Static MAC entries — admin-configured or CPU/system reserved.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table static\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n   1    aabb.ccdd.0001    STATIC      CPU\n  10    1234.5678.9abc    STATIC      Gi1/0/12   ; manually pinned\nTotal Mac Addresses for this criterion: 2"
           },
           {
             "cmd": "show mac address-table aging-time",
-            "desc": "Shows MAC aging time",
+            "desc": "MAC aging timer per VLAN. Default 300 s; reduce to ~120 s if FHRP MAC moves are frequent.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table aging-time\nGlobal Aging Time:  300\nVlan    Aging Time\n----    ----------\n   1       300\n  10       300\n  20       120   ; voice VLAN — shorter for faster MAC re-learn"
           },
           {
             "cmd": "show mac address-table count",
-            "desc": "Shows MAC table count",
+            "desc": "Total MAC count per VLAN — quick view of L2 fan-out per segment.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table count\nMac Entries for Vlan 1:\n---------------------------\nDynamic Address Count  :     2\nStatic  Address Count  :     1\nTotal Mac Addresses    :     3\n\nMac Entries for Vlan 10:\n---------------------------\nDynamic Address Count  :   245\nStatic  Address Count  :     1\nTotal Mac Addresses    :   246"
           },
           {
             "cmd": "show mac address-table interface <int>",
-            "desc": "Shows MACs on interface",
+            "desc": "MACs learned on a specific port — find which host(s) live behind it.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table interface GigabitEthernet1/0/1\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    1122.3344.5566    DYNAMIC     Gi1/0/1\n  20    1122.3344.5577    DYNAMIC     Gi1/0/1\nTotal Mac Addresses for this criterion: 2"
           },
           {
             "cmd": "show mac address-table vlan <id>",
-            "desc": "Shows MACs on VLAN",
+            "desc": "MACs in a specific VLAN.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table vlan 10\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    1122.3344.5566    DYNAMIC     Gi1/0/1\n  10    aabb.ccdd.eeff    DYNAMIC     Po1\nTotal Mac Addresses for this criterion: 2"
           },
           {
             "cmd": "show mac address-table multicast",
-            "desc": "Shows multicast MACs",
+            "desc": "Multicast MAC entries (IGMP-snooping populated). 0100.5e... range = IPv4 multicast.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table multicast\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    0100.5e00.0001    STATIC      Gi1/0/1, Po1   ; 224.0.0.1 all-hosts\n  10    0100.5e00.0002    STATIC      Po1            ; 224.0.0.2 all-routers\n  10    0100.5e7f.fffa    IGMP        Gi1/0/2, Gi1/0/3 ; SSDP / mDNS"
           },
           {
             "cmd": "show mac address-table secure",
-            "desc": "Shows port security MACs",
+            "desc": "Sticky MACs learned by port-security (alternative view to `show port-security address`).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table secure\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    1122.3344.5566    STATIC      Gi1/0/1   ; sticky\n  10    1122.3344.5577    STATIC      Gi1/0/1   ; sticky"
           },
           {
             "cmd": "show mac address-table notification",
-            "desc": "Shows MAC notification settings",
+            "desc": "MAC move/learn/age SNMP notification config and counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mac address-table notification\nMAC Notification Feature is Enabled on the switch\nGlobal Interval(secs)   : 1\nGlobal History Size     : 1\nGlobal Interface History Size : 50\n\nHistory Table contents:\nHistory Index 0, Entry Timestamp 12345678, Despatch Timestamp 12345679\nMAC Changed Message :\nOperation: Added Vlan: 10 MAC Addr: 1122.3344.5566 Port: GigabitEthernet1/0/1"
           }
         ],
         "PortSecurity": [
           {
             "cmd": "show port-security",
-            "desc": "Shows port security summary",
+            "desc": "Port-security feature summary across all enabled ports.",
             "type": "show",
             "flagged": false,
-            "example": "Secure Port  MaxSecureAddr  CurrentAddr  SecurityViolation  Security Action\n                (Count)       (Count)          (Count)\n---------------------------------------------------------------------------\n       Gi1/0/1              1            1                  0         Restrict\n       Gi1/0/5              2            2                  0          Protect\n       Gi1/0/24             1            0                  0         Shutdown\n---------------------------------------------------------------------------\nTotal Addresses in System (excluding one mac per port)     : 2\nMax Addresses limit in System (excluding one mac per port) : 4096"
+            "example": "sw# show port-security\nSecure Port  MaxSecureAddr  CurrentAddr  SecurityViolation  Security Action\n                (Count)       (Count)          (Count)\n---------------------------------------------------------------------------\nGi1/0/1                  3            2                  0         Shutdown\nGi1/0/11                 1            1                  0         Shutdown\nGi1/0/36                 1            0                  0      Restrict\n---------------------------------------------------------------------------\nTotal Addresses in System (excluding one mac per port)     : 1\nMax Addresses limit in System (excluding one mac per port) : 4096"
           },
           {
             "cmd": "show port-security interface <int>",
-            "desc": "Shows port security on interface",
+            "desc": "Per-port detail: max MACs, current learned, violations, aging, sticky, last-violation source.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security interface GigabitEthernet1/0/1\nPort Security              : Enabled\nPort Status                : Secure-up\nViolation Mode             : Shutdown\nAging Time                 : 0 mins\nAging Type                 : Absolute\nSecureStatic Address Aging : Disabled\nMaximum MAC Addresses      : 3\nTotal MAC Addresses        : 2\nConfigured MAC Addresses   : 0\nSticky MAC Addresses       : 2\nLast Source Address:Vlan   : 1122.3344.5566:10\nSecurity Violation Count   : 0"
           },
           {
             "cmd": "show port-security address",
-            "desc": "Shows secure MAC addresses",
+            "desc": "All secured MAC addresses across the switch with port, type (sticky/configured/dynamic), aging.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security address\n          Secure Mac Address Table\n-------------------------------------------------------------\nVlan    Mac Address       Type                Ports   Remaining\n                                                      Age (mins)\n----    -----------       ----                -----   ----------\n  10    1122.3344.5566    SecureSticky        Gi1/0/1        -\n  20    1122.3344.5577    SecureSticky        Gi1/0/1        -\n  10    aabb.ccdd.1234    SecureConfigured    Gi1/0/11       -"
           },
           {
             "cmd": "show port-security violation",
-            "desc": "Shows security violations",
+            "desc": "Per-port last-violation detail: timestamp, source MAC, VLAN.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security | include Violation\n          Security Violation Count   : 0\n# Detailed:\nsw# show errdisable detect\nErrDisable Reason            Detection    Mode\n-----------------            ---------    ----\npsecure-violation            Enabled      port"
           },
           {
             "cmd": "show port-security aging",
-            "desc": "Shows aging settings",
+            "desc": "Per-port aging configuration (type Absolute vs Inactivity, time).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security aging interface GigabitEthernet1/0/1\nPort Security              : Enabled\nAging Time                 : 0 mins\nAging Type                 : Absolute\nSecureStatic Address Aging : Disabled"
           },
           {
             "cmd": "show port-security sticky",
-            "desc": "Shows sticky MACs",
+            "desc": "Just the sticky MAC entries (admin-converted or auto-learned).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security | include Sticky\nSticky MAC Addresses : 2\n# Show all sticky MACs across all ports:\nsw# show running-config | include sticky\n switchport port-security mac-address sticky\n switchport port-security mac-address sticky 1122.3344.5566\n switchport port-security mac-address sticky 1122.3344.5577"
           },
           {
             "cmd": "show port-security counters",
-            "desc": "Shows port security counters",
+            "desc": "Total violation counters per port.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security | include Violation\n          Security Violation Count   : 0\n# Per-port:\nsw# show port-security interface Gi1/0/36 | include Violation\nViolation Mode             : Restrict\nSecurity Violation Count   : 1245"
           },
           {
             "cmd": "show port-security summary",
-            "desc": "Shows summary of all ports",
+            "desc": "High-level summary — total secure ports, violations, address counts.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security\nSecure Port  MaxSecureAddr  CurrentAddr  SecurityViolation  Security Action\n                (Count)       (Count)          (Count)\n---------------------------------------------------------------------------\nGi1/0/1                  3            2                  0         Shutdown\nGi1/0/11                 1            1                  0         Shutdown\nGi1/0/36                 1            0               1245        Restrict\n---------------------------------------------------------------------------\nTotal Addresses in System : 3\nMax Addresses limit       : 4096"
           },
           {
             "cmd": "show port-security vlan <id>",
-            "desc": "Shows port security on VLAN",
+            "desc": "Port-security info filtered to a single VLAN.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security vlan 10\nDefault maximum: 1\nVLAN  Maximum   Current\n-----------------------\n  10       3         2"
           },
           {
             "cmd": "show port-security mac-address",
-            "desc": "Shows secure MAC database",
+            "desc": "All secured MAC entries (alias for `show port-security address`).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show port-security address\nVlan    Mac Address       Type                Ports\n  10    1122.3344.5566    SecureSticky        Gi1/0/1\n  20    1122.3344.5577    SecureSticky        Gi1/0/1"
           },
           {
             "cmd": "clear port-security sticky",
-            "desc": "Clear sticky-learnt MACs",
+            "desc": "Clear all sticky-learned MACs. Forces re-learning next time hosts speak.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# clear port-security sticky\nsw# show port-security | include Sticky\nSticky MAC Addresses : 0"
           }
         ],
         "ACL": [
           {
             "cmd": "show access-lists",
-            "desc": "Shows all ACLs",
+            "desc": "All ACLs (IPv4, IPv6, MAC) with per-ACE hit counts.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show access-lists\nExtended IP access list OUTSIDE-IN\n    10 permit tcp any host 198.51.100.10 eq 443 (12345 matches)\n    20 permit tcp any host 198.51.100.10 eq 80 (4321 matches)\n    30 deny ip any any log (98 matches)\n\nStandard IP access list MGMT-NETS\n    10 permit 10.99.99.0, wildcard bits 0.0.0.255 (234 matches)\n\nIPv6 access list IPV6-OUTSIDE-IN\n    sequence 10 permit tcp any host 2001:db8::10 eq www (12 matches)\n\nExtended MAC access list BLOCK-OUI\n    deny  any any 0050.56 0000.00ff aarp\n    permit any any (98765 matches)"
           },
           {
             "cmd": "show ip access-lists",
-            "desc": "Shows IPv4 ACLs",
+            "desc": "Just IPv4 ACLs with hit counters.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip access-lists\nExtended IP access list OUTSIDE-IN\n    10 permit tcp any host 198.51.100.10 eq 443 (12345 matches)\n    20 permit tcp any host 198.51.100.10 eq 80 (4321 matches)\n    30 deny ip any any log (98 matches)"
           },
           {
             "cmd": "show ipv6 access-lists",
             "desc": "Shows IPv6 ACLs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ipv6 access-lists\nIPv6 access list IPV6-OUTSIDE-IN\n    sequence 10 permit tcp any host 2001:db8::10 eq www (12 matches)\n    sequence 20 permit tcp any host 2001:db8::10 eq 443 (45 matches)\n    sequence 30 deny ipv6 any any log (3 matches)"
           },
           {
             "cmd": "show access-lists hardware",
-            "desc": "Shows hardware ACL programming",
+            "desc": "Hardware-installed ACLs — confirms the ASIC has compiled the ACE. Anything in software fallback = severe perf hit.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show access-lists hardware GigabitEthernet1/0/1 ip in\nIP access list OUTSIDE-IN\n    10 permit tcp any host 198.51.100.10 eq 443  [hw matches=12345]\n    20 permit tcp any host 198.51.100.10 eq 80   [hw matches=4321]\n    30 deny ip any any log                       [hw matches=98]\n\nAll ACEs installed in hardware TCAM."
           },
           {
             "cmd": "show platform hardware acl usage",
-            "desc": "Shows ACL hardware usage",
+            "desc": "ACL TCAM utilisation summary per region.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl usage\nFeature/Direction          Total  Used   Free\nL3 IPv4 Ingress             8192   543   7649\nL3 IPv4 Egress              4096   123   3973\nL3 IPv6 Ingress             4096    87   4009\nL2 Mac Ingress              2048    23   2025\n\n# >80% used = approaching TCAM exhaustion; aggregate ACEs to free space."
           },
           {
             "cmd": "show platform hardware acl statistics",
-            "desc": "Shows ACL hardware stats",
+            "desc": "Per-ACE hardware hit counters from the FED.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl statistics OUTSIDE-IN\nACL Name: OUTSIDE-IN, ACL Index: 12\nSeq  Action   Description                        Hits\n10   permit   tcp any host 198.51.100.10 eq 443   12345\n20   permit   tcp any host 198.51.100.10 eq 80     4321\n30   deny     ip any any log                          98"
           },
           {
             "cmd": "show platform hardware acl tcam",
-            "desc": "Shows TCAM ACL usage",
+            "desc": "TCAM-level ACL detail — each row's position, mask, value.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl tcam interface Gi1/0/1 ip in\nTCAM region: IPv4 Ingress\nRow  ACL    Seq  Value/Mask\n0    OUTSIDE-IN 10  Permit tcp 0.0.0.0/0 → 198.51.100.10/32 dport 443\n1    OUTSIDE-IN 20  Permit tcp 0.0.0.0/0 → 198.51.100.10/32 dport 80\n2    OUTSIDE-IN 30  Deny ip 0.0.0.0/0 → 0.0.0.0/0\nTotal: 3 entries"
           },
           {
             "cmd": "show platform hardware acl tcam detail",
-            "desc": "Shows detailed TCAM usage",
+            "desc": "Verbose TCAM dump — every bit of every ACE programmed.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl tcam detail | head -10\nTCAM Region: IPv4 Ingress\n  Capacity: 8192 entries / 8192 stats\n  Used: 543 entries / 234 stats (7%)\n  Total banks: 4\n\nRow 0 (Bank 0):\n  Value: protocol=06 src=00000000/00000000 dst=C6336464/FFFFFFFF dport=01BB\n  Mask:  protocol=FF src=00000000/00000000 dst=FFFFFFFF dport=FFFF\n  Action: permit, stats-counter=1"
           },
           {
             "cmd": "show platform hardware acl counters",
-            "desc": "Shows ACL counters",
+            "desc": "Aggregate ACL hit/miss counters across all ACLs.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl counters\nTotal ACL Hits:      12345678\nTotal ACL Drops:        12345\nTotal Software Fallbacks:    0\nTotal TCAM Misses:           0\n\n# Software fallbacks > 0 = an ACE could not be compiled to hardware."
           },
           {
             "cmd": "show platform hardware acl drops",
-            "desc": "Shows ACL drop counters",
+            "desc": "Packets dropped by ACL programming in the ASIC (different from CPU-evaluated ACL drops).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active acl drops\nACL Drop Reason                Drops\n----                           -----\nIPv4 ACL deny                  12345\nIPv6 ACL deny                     87\nMAC ACL deny                       0\nLOG-only ACE punt drops           98"
           }
         ],
         "QoS": [
           {
             "cmd": "show mls qos",
-            "desc": "Shows QoS status",
+            "desc": "Global MLS QoS state — enabled/disabled and trust mode default. Catalyst 9000 inherits some legacy mls qos commands.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mls qos\nQoS is enabled globally\nPolicy-map for Port-channel is supported\nQoS Trust mode default: untrusted\n\n# On C9000, modern QoS uses MQC (Modular QoS CLI) via service-policy."
           },
           {
             "cmd": "show mls qos interface <int>",
-            "desc": "Shows QoS on interface",
+            "desc": "Per-interface MLS QoS state — trust mode (cos/dscp/untrusted), service-policy, queue-set.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mls qos interface GigabitEthernet1/0/1\nGigabitEthernet1/0/1\ntrust state: trust dscp\ntrust mode: trust dscp\ntrust enabled flag: ena\nCOS override: dis\ndefault COS: 0\nDSCP Mutation Map: Default DSCP Mutation Map\nTrust device: cisco-phone\nqos mode: port-based"
           },
           {
             "cmd": "show mls qos maps",
-            "desc": "Shows QoS maps",
+            "desc": "CoS/DSCP/IP-prec mapping tables — used for ingress classification when trusted.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mls qos maps cos-dscp\n   Cos-dscp map:\n        cos:   0   1   2   3   4   5   6   7\n     -----------------------------------------\n       dscp:   0   8  16  24  32  46  48  56\n\nsw# show mls qos maps dscp-cos\n   Dscp-cos map:\n      d1 :  d2 0  1  2  3  4  5  6  7  8  9\n     ---------------------------------------\n       0 :    00 00 00 00 00 00 00 00 01 01\n       1 :    01 01 01 01 01 01 02 02 02 02\n       2 :    02 02 02 02 03 03 03 03 03 03\n       3 :    03 03 04 04 04 04 04 04 04 04\n       4 :    05 05 05 05 05 05 05 05 06 06\n       5 :    06 06 06 06 06 06 07 07 07 07\n       6 :    07 07 07 07"
           },
           {
             "cmd": "show mls qos queue-set",
-            "desc": "Shows queue-set configuration",
+            "desc": "Egress queue-set thresholds and buffer allocation per queue (4 queues per port on most C9000).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mls qos queue-set 1\nQueueset: 1\nQueue     :       1       2       3       4\n----------------------------------------------\nbuffers   :      25      25      25      25\nthreshold1:     100     200     100     100\nthreshold2:     100     200     100     100\nreserved  :      50      50      50      50\nmaximum   :     400     400     400     400"
           },
           {
             "cmd": "show mls qos statistics",
-            "desc": "Shows QoS statistics",
+            "desc": "Per-interface QoS counters — packets per class, drops per queue.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show mls qos statistics GigabitEthernet1/0/1\nGigabitEthernet1/0/1 (All statistics are in packets)\n\n  dscp: incoming\n-------------------------------\n\n  0  -  4 :                 1234567               12              34               567\n  5  -  9 :                       0                0               0                 0\n[truncated]\n\n  cos: incoming\n-------------------------------\n  0:                          1234567\n  1:                                0\n  5:                            12345  ; voice\n\n  output queues enqueued:\n queue:    threshold1   threshold2   threshold3\n-----------------------------------------------\n queue 0:           0             0       1234567\n queue 1:           0             0        234567\n queue 2:           0             0         12345  ; voice priority\n queue 3:           0             0             0\n\n output queues dropped:\n queue 0:           0             0           234"
           },
           {
             "cmd": "show platform qos queue stats",
-            "desc": "Shows hardware queue stats",
+            "desc": "ASIC-level per-queue stats — enqueued, dropped, total.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos queue stats interface GigabitEthernet1/0/1\nDirection:Egress     Output Class-of-Service Queue Stats:\n\nQueue 0  (DEFAULT/BE) :       enqueued:  1234567   dropped: 234\nQueue 1  (VIDEO)      :       enqueued:   234567   dropped:   0\nQueue 2  (VOICE/LLQ)  :       enqueued:    12345   dropped:   0\nQueue 3  (NETWORK)    :       enqueued:      567   dropped:   0"
           },
           {
             "cmd": "show platform qos interface <int>",
-            "desc": "Shows hardware QoS interface info",
+            "desc": "FED-level QoS per-interface state — policy installed, queue-set, scheduler config.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform software fed switch active qos interface GigabitEthernet1/0/1\nQoS Subblock Information for Interface: GigabitEthernet1/0/1\n  Ingress Policy: TRUST-DSCP\n  Egress Policy : WAN-OUT\n  Queue-set: 1\n  Total Classes: 5  Policers: 1  Markers: 5"
           },
           {
             "cmd": "show platform qos policer",
-            "desc": "Shows policer info",
+            "desc": "Policer configurations and stats per interface.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos policer interface GigabitEthernet1/0/1\nInterface     Direction  PolicerName   CIR(bps)   PIR(bps)   In-Profile  Out-Profile  Drop\nGi1/0/1       in         RATE-LIMIT-1M  1000000  2000000   12345678    234567       12"
           },
           {
             "cmd": "show platform qos scheduler",
-            "desc": "Shows scheduler info",
+            "desc": "Scheduler config per port — priority, bandwidth, shaper params per queue.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos scheduler interface GigabitEthernet1/0/1\nScheduler config for GigabitEthernet1/0/1:\n  Queue 0: BW 60%, no shape\n  Queue 1: BW 20%, no shape\n  Queue 2: Priority (LLQ), policer 30%\n  Queue 3: BW  20%, no shape"
           },
           {
             "cmd": "show platform qos buffer",
-            "desc": "Shows buffer usage",
+            "desc": "Per-queue buffer allocation in the ASIC. Tunable via `qos queue-softmax-multiplier`.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos queue config interface GigabitEthernet1/0/1\nInterface : GigabitEthernet1/0/1\nQueue Threshold Configuration:\n  Queue 0 : softmax 100, hardmax 400, reserved 50\n  Queue 1 : softmax 100, hardmax 400, reserved 50\n  Queue 2 : softmax 100, hardmax 400, reserved 50\n  Queue 3 : softmax 100, hardmax 400, reserved 50"
           },
           {
             "cmd": "show platform hardware fed switch active qos queue config interface <int>",
-            "desc": "Queue config applied in hardware to a port",
+            "desc": "Hardware queue config: max/reserved/threshold per queue.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos queue config interface GigabitEthernet1/0/1\nInterface : GigabitEthernet1/0/1\nQueue Configuration:\n  Queue 0 : threshold1=100, threshold2=200, reserved=50, max=400\n  Queue 1 : threshold1=100, threshold2=200, reserved=50, max=400\n  Queue 2 : threshold1=100, threshold2=200, reserved=50, max=400  (priority)\n  Queue 3 : threshold1=100, threshold2=200, reserved=50, max=400"
           },
           {
             "cmd": "show platform hardware fed switch active qos queue stats interface <int> clear",
-            "desc": "Read then clear hardware queue stats",
+            "desc": "Show hardware queue stats and immediately clear — used to measure deltas in a controlled test.",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show platform hardware fed switch active qos queue stats interface GigabitEthernet1/0/1 clear\n[ Stats shown then zeroed ]\nQueue 0: enqueued=1234567 dropped=234   [cleared]\nQueue 1: enqueued= 234567 dropped=  0   [cleared]\nQueue 2: enqueued=  12345 dropped=  0   [cleared]"
           },
           {
             "cmd": "show policy-map interface <int>",
-            "desc": "Software policy-map counters on an interface",
+            "desc": "Per-interface MQC policy view — class hit counts, drops per class, bandwidth/priority allocation.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show policy-map interface GigabitEthernet1/0/1\n GigabitEthernet1/0/1\n\n  Service-policy output: WAN-OUT\n    Class-map: VOICE (match-any)\n      12345 packets, 1234567 bytes\n      5 minute offered rate 234000 bps, drop rate 0 bps\n      Match: dscp ef (46)\n      priority 30% (300000 kbps)  burst bytes 7500\n      QoS Set:    dscp ef\n        Packets marked 12345\n    Class-map: VIDEO (match-any)\n      9876 packets, 987654 bytes\n      bandwidth 20% (200000 kbps)\n      queue limit 64 packets\n      (queue depth/total drops/no-buffer drops) 0/0/0\n    Class-map: class-default (match-any)\n      54321 packets, 5432100 bytes\n      Fair-queue\n      queue limit 64 packets\n      (queue depth/total drops/no-buffer drops) 0/0/0"
           }
         ],
         "Routing": [
           {
             "cmd": "show ip route",
-            "desc": "Shows IPv4 routing table",
+            "desc": "IPv4 RIB. Default VRF; for VRF use `show ip route vrf <name>`. Compare with `show ip cef` (FIB) for actual forwarding.",
             "type": "show",
             "flagged": false,
-            "example": "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks\nC        10.0.0.0/24 is directly connected, GigabitEthernet0/1\nL        10.0.0.1/32 is directly connected, GigabitEthernet0/1\nO        10.20.0.0/24 [110/2] via 10.0.0.2, 00:14:23, GigabitEthernet0/1\nB        172.16.0.0/16 [200/0] via 1.1.1.1, 1d04h"
+            "example": "sw# show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       O - OSPF, IA - OSPF inter area, N1/N2 - NSSA ext type 1/2\n       E1/E2 - OSPF ext type 1/2, D - EIGRP, EX - EIGRP external\n\nGateway of last resort is 10.0.0.254 to network 0.0.0.0\n\nS*    0.0.0.0/0 [1/0] via 10.0.0.254\n      10.0.0.0/8 is variably subnetted, 4 subnets, 3 masks\nC        10.0.0.0/30 is directly connected, Vlan99\nL        10.0.0.1/32 is directly connected, Vlan99\nO E2     172.16.0.0/16 [110/20] via 10.0.0.2, 03:21:55, Vlan99\nB        192.0.2.0/24 [200/0] via 1.1.1.2, 03:21:55"
           },
           {
             "cmd": "show ip route <prefix>",
-            "desc": "Shows route for prefix",
+            "desc": "Longest-prefix-match lookup with full route detail (source protocol, AD/metric, next-hop, age).",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip route 172.16.10.5\nRouting entry for 172.16.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20, type extern 2\n  Last update from 10.0.0.2 on Vlan99, 03:21:55 ago\n  Routing Descriptor Blocks:\n  * 10.0.0.2, from 2.2.2.2, 03:21:55 ago, via Vlan99\n      Route metric is 20, traffic share count is 1"
           },
           {
             "cmd": "show ip route summary",
-            "desc": "Shows route summary",
+            "desc": "Per-protocol route counts and memory consumption.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip route summary\nIP routing table name is default (0x0)\nIP routing table maximum-paths is 32\nRoute Source     Networks      Subnets     Replicates   Overhead    Memory (bytes)\nconnected           5            0           0          400         1240\nstatic             12            3           0         1320         4180\nospf 1              0          823           0       109344       273936\nbgp 65001           0        11483           0      1525704      3815436\ninternal            8                                              5760\nTotal               25         12309           0       1636768      4100552"
           },
           {
             "cmd": "show ip cef",
-            "desc": "Shows CEF table",
+            "desc": "CEF FIB — actual forwarding table programmed in software/hardware. Differs from RIB when route-cache or fast-path overrides apply.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip cef | head -10\nPrefix              Next Hop             Interface\n0.0.0.0/0           10.0.0.254           Vlan99\n0.0.0.0/8           drop\n0.0.0.0/32          receive\n10.0.0.0/30         attached             Vlan99\n10.0.0.1/32         receive              Vlan99\n10.0.0.2/32         attached             Vlan99\n172.16.0.0/16       10.0.0.2             Vlan99\n192.0.2.0/24        1.1.1.2              Vlan99"
           },
           {
             "cmd": "show ip cef <prefix>",
-            "desc": "Shows CEF entry",
+            "desc": "Per-prefix CEF entry — verifies what the data path uses to forward a given destination.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip cef 8.8.8.8\n0.0.0.0/0\n  nexthop 10.0.0.254 Vlan99"
           },
           {
             "cmd": "show ip arp",
-            "desc": "Shows ARP table",
+            "desc": "ARP cache (default VRF). For per-VRF use `show ip arp vrf <name>`.",
             "type": "show",
             "flagged": false,
-            "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
+            "example": "sw# show ip arp\nProtocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1               -    aabb.ccdd.0001  ARPA   Vlan99\nInternet  10.0.0.2               3    aabb.ccdd.0002  ARPA   Vlan99\nInternet  10.0.0.254             1    1122.3344.5566  ARPA   Vlan99\nInternet  10.10.10.20            5    aabb.ccdd.eeff  ARPA   Vlan10"
           },
           {
             "cmd": "show ip arp detail",
-            "desc": "Shows detailed ARP info",
+            "desc": "Verbose ARP entries with interface, source (dynamic/static/incomplete), age, hardware type.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip arp detail\nProtocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1               -    aabb.ccdd.0001  ARPA   Vlan99 (LOCAL)\nInternet  10.0.0.2               3    aabb.ccdd.0002  ARPA   Vlan99 (DYNAMIC, ALIVE)\nInternet  10.0.0.254             1    1122.3344.5566  ARPA   Vlan99 (DYNAMIC, ALIVE)\nInternet  10.10.10.20            5    aabb.ccdd.eeff  ARPA   Vlan10 (DYNAMIC, ALIVE)"
           },
           {
             "cmd": "show ip protocols",
-            "desc": "Shows routing protocols",
+            "desc": "Running routing protocols summary — process IDs, distance, networks, redistribution, passive interfaces.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip protocols\n*** IP Routing is NSF aware ***\n\nRouting Protocol is \"ospf 1\"\n  Outgoing update filter list for all interfaces is not set\n  Incoming update filter list for all interfaces is not set\n  Router ID 1.1.1.1\n  Number of areas in this router is 1. 1 normal 0 stub 0 nssa\n  Maximum path: 32\n  Routing for Networks:\n    10.0.0.0 0.255.255.255 area 0\n  Passive Interface(s): Loopback0\n  Routing Information Sources:\n    Gateway         Distance      Last Update\n    2.2.2.2              110      03:21:55\n  Distance: (default is 110)"
           },
           {
             "cmd": "show ip forwarding",
-            "desc": "Shows forwarding status",
+            "desc": "Confirm IP routing/forwarding is enabled. Disabled = device is a pure L2 switch.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip forwarding\nIP forwarding is enabled"
           },
           {
             "cmd": "show ip redirects",
-            "desc": "Shows redirect settings",
+            "desc": "Show whether ICMP redirects are sent on each interface. Default enabled — disable on heavily-used L3 ports to suppress redirect storm.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip redirects\n# ICMP redirects state per interface — output depends on platform.\n# More commonly checked via:\nsw# show ip interface Vlan10 | include redirect\n  ICMP redirects are always sent"
           },
           {
             "cmd": "show ip cef exact-route <src> <dst>",
-            "desc": "Exact CEF path selection for a given flow",
+            "desc": "Predict which next-hop / interface CEF will use for a specific (src, dst) — useful with ECMP/hash testing.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip cef exact-route 10.10.10.20 8.8.8.8\n10.10.10.20 -> 8.8.8.8 =>IP adj out of Vlan99, addr 10.0.0.254"
           },
           {
             "cmd": "show ip cef summary",
-            "desc": "CEF FIB size and memory footprint",
+            "desc": "CEF subsystem summary: route count, adjacencies, memory.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip cef summary\nIPv4 CEF is enabled and running\nVRF Default:\n  18234 prefixes (18234/0 fwd/non-fwd)\n  Table id 0x0\n  Database epoch:  0 (18234 entries at this epoch)\n  Adjacency Table has 87 adjacencies"
           },
           {
             "cmd": "show ip arp <ip>",
-            "desc": "ARP entry for a single IP incl. age and MAC",
+            "desc": "ARP lookup for one IP — find its MAC and the interface it was learnt on.",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "sw# show ip arp 10.10.10.20\nProtocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.10.10.20            5    aabb.ccdd.eeff  ARPA   Vlan10"
           },
           {
             "cmd": "show ipv6 neighbors",
             "desc": "IPv6 neighbour-discovery cache (analogous to ARP for IPv6).",
             "type": "show",
             "flagged": false,
-            "example": "IPv6 Address                              Age  Link-layer Addr  Interface\n2001:db8::1                                1   0011.2233.4455  Gi0/0"
+            "example": "sw# show ipv6 neighbors\nIPv6 Address                              Age Link-layer Addr State Interface\n2001:DB8::FE                                3 1122.3344.5566  REACH Vlan99\nFE80::1122:33FF:FE44:5566                   3 1122.3344.5566  REACH Vlan99\nFE80::AABB:CCFF:FEDD:2                      5 aabb.ccdd.0002  REACH Vlan99"
           },
           {
             "cmd": "show ip route 10.10.0.0",
