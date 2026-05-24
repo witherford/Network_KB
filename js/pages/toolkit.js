@@ -19,7 +19,9 @@ const SUBS = {
   // Scripts & builders
   ping:         { label: 'Ping script',         group: 'Scripts & builders',   load: () => import('../toolkit/ping-script.js') },
   dns:          { label: 'DNS script',          group: 'Scripts & builders',   load: () => import('../toolkit/dns-script.js') },
-  mac:          { label: 'Cisco info scripts',  group: 'Scripts & builders',   load: () => import('../toolkit/mac-lookup.js') },
+  oui:          { label: 'OUI lookup',          group: 'Scripts & builders',   load: () => import('../toolkit/oui-list.js') },
+  arpmac:       { label: 'ARP + MAC merge',     group: 'Scripts & builders',   load: () => import('../toolkit/arp-mac-merge.js') },
+  tcl:          { label: 'TCL generator',       group: 'Scripts & builders',   load: () => import('../toolkit/tcl-generator.js') },
   filter:       { label: 'Capture filters',     group: 'Scripts & builders',   load: () => import('../toolkit/filter-builder.js') },
   jsonyaml:     { label: 'JSON / YAML',         group: 'Scripts & builders',   load: () => import('../toolkit/json-yaml.js') },
   regex:        { label: 'Regex builder',       group: 'Scripts & builders',   load: () => import('../toolkit/regex-builder.js') },

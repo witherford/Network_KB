@@ -368,6 +368,68 @@
 }
 .tk-group-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
 
+/* ---------- Toolkit status badges & colour coding ---------- */
+.tk-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.tk-badge.use     { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.tk-badge.dep     { background: var(--warn-bg);    color: var(--warn);    border-color: var(--warn); }
+.tk-badge.avoid   { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+.tk-badge.info    { background: var(--card-2);     color: var(--accent);  border-color: var(--accent); }
+.tk-badge.neutral { background: var(--card-2);     color: var(--text-2);  border-color: var(--border); }
+.tk-badge.yes     { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.tk-badge.no      { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+
+/* Status row colour coding — left stripe keeps :hover intact */
+.tbl tr.tk-row-use   td:first-child { box-shadow: inset 3px 0 0 var(--success); }
+.tbl tr.tk-row-dep   td:first-child { box-shadow: inset 3px 0 0 var(--warn); }
+.tbl tr.tk-row-avoid td:first-child { box-shadow: inset 3px 0 0 var(--danger); }
+
+/* Colour legend */
+.tk-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin: 8px 0 4px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.tk-legend .k { display: inline-flex; align-items: center; gap: 6px; }
+.tk-legend .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid var(--border); }
+.tk-legend .sw.use   { background: var(--success); }
+.tk-legend .sw.dep   { background: var(--warn); }
+.tk-legend .sw.avoid { background: var(--danger); }
+.tk-legend .sw.info  { background: var(--accent); }
+
+/* WIFI feature cards with diagrams */
+.wifi-feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+.wifi-feat {
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--card);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wifi-feat h4 { font-size: 13px; margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wifi-feat .desc { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+.wifi-feat svg { width: 100%; height: auto; display: block; background: var(--card-2); border-radius: 6px; }
+
 /* ---------- Edit-mode banner ---------- */
 .edit-banner {
   position: fixed;
