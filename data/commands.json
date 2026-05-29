@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-24T12:46:46.744Z",
+  "updatedAt": "2026-05-29T15:05:42.721Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -4437,37 +4437,43 @@
             "cmd": "show system log",
             "desc": "System event log: health, config changes, errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Time                 Severity  Subtype     Description\n2026/05/24 08:12:03  info      general     User admin logged in from 10.0.0.5 via Web\n2026/05/24 08:14:55  info      general     panorama-connect: connected to 10.0.0.20\n2026/05/24 09:01:11  high      ha          HA1 link state changed to up"
           },
           {
             "cmd": "request system software check",
             "desc": "Checks for available PAN-OS software updates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Version       Filename                          Released-on             Downloaded  Currently Installed  Latest\n11.1.4        PanOS_vm-11.1.4                   2026/02/12 10:11:01     yes         yes                  no\n11.1.5        PanOS_vm-11.1.5                   2026/04/02 14:32:08     no          no                   yes"
           },
           {
             "cmd": "request system software download version <version>",
             "desc": "Downloads a specific PAN-OS version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Software download job enqueued with jobid 142. Run 'show jobs id 142' to monitor progress."
           },
           {
             "cmd": "request system software install version <version>",
             "desc": "Installs a downloaded PAN-OS version (reboot required)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Executing this command will install a new version of software. It will not take effect until system is restarted.\nDo you want to continue? (y or n)\nSoftware install job enqueued with jobid 143."
           },
           {
             "cmd": "request system restart",
             "desc": "Full system reboot",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Executing this command will disconnect the current session.\nDo you want to continue? (y or n) y\nBroadcast message from root@PA-3220 (Sat May 24 09:30:00 2026):\nThe system is going down for reboot NOW!"
           },
           {
             "cmd": "request system shutdown",
             "desc": "Gracefully powers off the firewall",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Executing this command will shutdown the system.\nDo you want to continue? (y or n) y\nShutdown scheduled. System will power off in 60 seconds."
           },
           {
             "cmd": "show chassis-ready",
@@ -4508,37 +4514,43 @@
             "cmd": "show clock",
             "desc": "System date/time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Sat May 24 09:32:18 UTC 2026"
           },
           {
             "cmd": "show ntp",
             "desc": "NTP servers and sync state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "NTP state:\n  NTP synched to server: 10.0.0.20 (Primary)\nNTP server status:\n  NTP server: 10.0.0.20  Status: Available  Reachable: yes  Authentication-type: none\n  NTP server: 10.0.0.21  Status: Available  Reachable: yes  Authentication-type: none"
           },
           {
             "cmd": "show config running",
             "desc": "Active running config (XML)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "<config version=\"11.1.0\" urldb=\"paloaltonetworks\">\n  <devices>\n    <entry name=\"localhost.localdomain\">\n      <network> ... </network>\n      <vsys> ... </vsys>\n      ...\n    </entry>\n  </devices>\n</config>"
           },
           {
             "cmd": "show config candidate",
             "desc": "Pending config — will be applied on commit",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "<config version=\"11.1.0\" urldb=\"paloaltonetworks\">\n  ... candidate (uncommitted) configuration XML ...\n</config>"
           },
           {
             "cmd": "show config diff",
             "desc": "Diff between candidate and running",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Difference between candidate and running configurations:\n+ rulebase.security.rules.entry[@name='Allow-Web']\n-   action: drop\n+   action: allow\n+   profile-setting.profiles.virus: default"
           },
           {
             "cmd": "debug system maintenance-mode",
             "desc": "Enter maintenance mode (TAC use)",
             "type": "troubleshooting",
-            "flagged": true
+            "flagged": true,
+            "example": "WARNING: maintenance-mode reboots the firewall into the maintenance partition.\nUse only at TAC direction. Continue? (y or n)"
           },
           {
             "cmd": "request jobs id <n>",
@@ -4546,6 +4558,48 @@
             "type": "config",
             "flagged": false,
             "example": "Job ID       : 789\nStatus       : Running\nType         : Policy Push\nProgress     : 60%\nTarget Vsys  : vsys1"
+          },
+          {
+            "cmd": "show system state",
+            "desc": "Dump full runtime state (large XML) — TAC-style deep inspection",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "system: { hostname: PA-3220, model: PA-3220, sn: 0123456789, uptime: 12d 4h 2m, family: 3000 }\nsession: { active: 18233, capacity: 250000 }\n... (very large; usually piped to \"| match <key>\")"
+          },
+          {
+            "cmd": "show system info | match \"uptime|software-version|serial\"",
+            "desc": "Quick triage one-liner — what device, what code, how long up",
+            "type": "show",
+            "flagged": false,
+            "example": "serial:        0123456789\nsoftware-version: 11.1.4\nuptime:        12 days, 4 hours, 2 minutes"
+          },
+          {
+            "cmd": "show system files",
+            "desc": "Lists files in /opt/tmp and other working directories (cores, pcaps)",
+            "type": "show",
+            "flagged": false,
+            "example": "Filename                    Size      Date\n/var/tmp/rx.pcap            412 KB    2026/05/24 09:30:11\n/var/tmp/drop.pcap          1.2 MB    2026/05/24 09:30:11\n/opt/panlogs/cores/         (empty)"
+          },
+          {
+            "cmd": "show system services",
+            "desc": "Lists daemons (mgmtsrvr, varrcvr, etc.) with PID and state",
+            "type": "show",
+            "flagged": false,
+            "example": "Service           PID    Status\nmgmtsrvr          1842   running\nuseridd           2104   running\nlogrcvr           2210   running\nvarrcvr           2218   running"
+          },
+          {
+            "cmd": "show system temperature",
+            "desc": "Per-component temperatures with thresholds and alarm state",
+            "type": "show",
+            "flagged": false,
+            "example": "Component          Temp (C)   Min  Max  Alarm\nCPU                42.1       0    85   no\nSwitch ASIC        38.7       0    80   no\nPSU 1              28.4       0    65   no"
+          },
+          {
+            "cmd": "show system environmentals",
+            "desc": "Power, fan, and temperature health summary",
+            "type": "show",
+            "flagged": false,
+            "example": "Power supplies : 2/2 OK\nFans           : 4/4 OK   Avg speed: 4200 RPM\nTemperatures   : within thresholds"
           }
         ],
         "Interfaces": [
@@ -4553,67 +4607,106 @@
             "cmd": "show interface all",
             "desc": "Operational status and statistics for all interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Network interface info:\nname                state    mac                       speed   duplex  id    mode\nethernet1/1         up       00:1b:17:00:01:01         1000    full    16    layer3\nethernet1/2         up       00:1b:17:00:01:02         1000    full    17    layer3\nethernet1/3         down     00:1b:17:00:01:03         unknown unknown 18    not-configured\nae1                 up       00:1b:17:00:00:01         2000    full    100   aggregate-group"
           },
           {
             "cmd": "show interface <interface-name>",
             "desc": "Live operational status and statistics for a specific interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: ethernet1/1, ID: 16\nLink status:\n  Runtime link speed/duplex/state: 1000/full/up\n  Configured link speed/duplex/state: auto/auto/auto\nMAC address:\n  Port MAC address 00:1b:17:00:01:01\nOperation mode: layer3\nVirtual System: vsys1\nZone: untrust  Virtual-Router: default\nIP addresses:\n  10.0.1.1/24"
           },
           {
             "cmd": "set interface <interface-name> unit <unit> family inet address <ip>",
             "desc": "Assigns an IPv4 address to a logical sub-unit",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network interface ethernet ethernet1/1.10 layer3 ip 10.0.10.1/24\n[edit]"
           },
           {
             "cmd": "set interface <interface-name> mtu <mtu-value>",
             "desc": "Sets the Maximum Transmission Unit for the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network interface ethernet ethernet1/1 layer3 mtu 9000\n[edit]"
           },
           {
             "cmd": "set interface <interface-name> management-profile <profile-name>",
             "desc": "Applies a management profile controlling ping, SSH, HTTPS permissions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network interface ethernet ethernet1/1 layer3 interface-management-profile Allow-Ping\n[edit]"
           },
           {
             "cmd": "set interface <interface-name> comment <description>",
             "desc": "Adds a human-readable description to the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network interface ethernet ethernet1/1 comment \"Uplink to core SW1 Te1/1/1\"\n[edit]"
           },
           {
             "cmd": "debug interface <interface-name> clear counters",
             "desc": "Resets all packet and error counters on the interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Counters cleared for ethernet1/1."
           },
           {
             "cmd": "show interface hardware",
             "desc": "Shows physical hardware details for all interfaces: MAC, speed, duplex",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "name             status    speed    duplex   type     mac\nethernet1/1      up        1000     full     copper   00:1b:17:00:01:01\nethernet1/2      up        10000    full     SFP+ SR  00:1b:17:00:01:02\nethernet1/3      down      auto     auto     copper   00:1b:17:00:01:03"
           },
           {
             "cmd": "show interface <name>",
             "desc": "Full detail: zone, VR, MAC, IPv4/v6, LACP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name: ethernet1/2, ID: 17\nOperation mode: layer3, Zone: trust, Virtual Router: default\nIP: 10.0.2.1/24\nCounters:\n  ipackets: 18234556  ibytes: 4523125678\n  opackets: 18012988  obytes: 4408765432\n  ierrors:  0         oerrors: 0\n  idrops:   12        odrops:  0"
           },
           {
             "cmd": "show interface logical",
             "desc": "Logical/sub-interface summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "name                state    ip                  zone        vsys\nethernet1/1         up       10.0.1.1/24         untrust     vsys1\nethernet1/1.10      up       10.0.10.1/24        users       vsys1\nethernet1/2         up       10.0.2.1/24         trust       vsys1\ntunnel.1            up       n/a                 vpn         vsys1"
           },
           {
             "cmd": "show interface ethernet1/1 transceiver",
             "desc": "SFP info + DOM readings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Slot: 1  Port: 1\nVendor name:    FINISAR CORP.\nPart number:    FTLF8519P2BNL\nSerial number:  PHF1234567\nConnector:      LC\nTransceiver:    1000BASE-SX\nWavelength:     850 nm\nTx Power:       -3.2 dBm\nRx Power:       -5.1 dBm\nTemperature:    42.1 C"
+          },
+          {
+            "cmd": "show interface aggregate-group",
+            "desc": "LACP / aggregate group status and members",
+            "type": "show",
+            "flagged": false,
+            "example": "ae1: state up  members: ethernet1/3 (up), ethernet1/4 (up)\n  bundle speed: 2000 Mbps  hash: src-dst-ip-port\n  LACP partner system-id: 00:23:04:00:00:01"
+          },
+          {
+            "cmd": "show lacp",
+            "desc": "Per-port LACP state (Actor / Partner system-id, port-priority, key)",
+            "type": "show",
+            "flagged": false,
+            "example": "Group: ae1\n  Member        Actor State    Partner State    Sys-ID\n  ethernet1/3   ACTIVE/SYNC    ACTIVE/SYNC      00:23:04:00:00:01\n  ethernet1/4   ACTIVE/SYNC    ACTIVE/SYNC      00:23:04:00:00:01"
+          },
+          {
+            "cmd": "show interface vlan all",
+            "desc": "L3 VLAN sub-interfaces summary",
+            "type": "show",
+            "flagged": false,
+            "example": "VLAN  Interface           IP                Zone\n10    ethernet1/1.10      10.0.10.1/24      users\n20    ethernet1/1.20      10.0.20.1/24      voice"
+          },
+          {
+            "cmd": "show interface tunnel all",
+            "desc": "Tunnel interface status and VPN binding",
+            "type": "show",
+            "flagged": false,
+            "example": "Name        State  IPSec tunnel       Local IP    Remote IP\ntunnel.1    up     AWS-VPN            10.0.1.1    52.10.20.30\ntunnel.2    up     Azure-VPN          10.0.1.1    13.94.55.66\ntunnel.3    down   HQ-Branch          10.0.1.1    203.0.113.55"
           }
         ],
         "Zones": [
@@ -4621,37 +4714,43 @@
             "cmd": "set zone <zone-name> network layer3 <interface-name>",
             "desc": "Assigns a Layer 3 interface to a security zone",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set zone trust network layer3 ethernet1/2\n[edit]"
           },
           {
             "cmd": "set zone <zone-name> network layer2 <interface-name>",
             "desc": "Assigns a Layer 2 interface to a security zone",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set zone trust-l2 network layer2 ethernet1/3\n[edit]"
           },
           {
             "cmd": "set zone <zone-name> enable-user-identification yes",
             "desc": "Enables User-ID on the zone for username-based policies",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set zone trust enable-user-identification yes\n[edit]"
           },
           {
             "cmd": "set zone <zone-name> log-setting <log-profile>",
             "desc": "Attaches a log forwarding profile to the zone",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set zone untrust log-setting SOC-Log-Forwarding\n[edit]"
           },
           {
             "cmd": "show zone all",
             "desc": "Displays configuration of all security zones",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Zone Name      Type      Mode      Interface Count   User-ID\ntrust          layer3    normal    3                 yes\nuntrust        layer3    normal    1                 no\ndmz            layer3    normal    2                 no\nvpn            layer3    normal    1                 no"
           },
           {
             "cmd": "set zone <zone-name> network tap <interface-name>",
             "desc": "Assigns an interface in TAP (passive monitoring) mode to a zone",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set zone tap-zone network tap ethernet1/8\n[edit]"
           }
         ],
         "Routing": [
@@ -4659,85 +4758,141 @@
             "cmd": "show routing route",
             "desc": "Full routing table including all active routes and sources",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VIRTUAL ROUTER: default (id 1)\n  ==========\nflags: A:active, ?:loose, C:connect, H:host, S:static, ~:internal, R:rip, O:ospf\n       B:bgp, Oi:ospf intra-area, Oo:ospf inter-area, O1:ospf ext-type-1, O2:ext-type-2\ndestination          nexthop              metric flags  age   interface\n0.0.0.0/0            10.0.1.254           10     A S    1d    ethernet1/1\n10.0.1.0/24          10.0.1.1             0      A C    1d    ethernet1/1\n10.0.2.0/24          10.0.2.1             0      A C    1d    ethernet1/2\n10.10.0.0/16         10.0.2.254           20     A O    8h    ethernet1/2"
           },
           {
             "cmd": "show routing summary",
             "desc": "Summarised routing table grouped by protocol type",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "VR name                default\nRIB entries            42\nFIB entries            40\nConnected              4\nStatic                 6\nRIP                    0\nOSPF                   28\nBGP                    4"
           },
           {
             "cmd": "show routing fib",
             "desc": "Forwarding Information Base — actual forwarding decisions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Virtual Router: default\ntotal routes shown: 40\nflags: u - up, h - host, g - gateway, e - ecmp, *:preferred path\nid    destination          nexthop           flags interface           mtu\n1     0.0.0.0/0            10.0.1.254        ugh*  ethernet1/1         1500\n2     10.0.1.0/24          0.0.0.0           uc    ethernet1/1         1500"
           },
           {
             "cmd": "test routing fib-lookup virtual-router <vr-name> ip <ip-address>",
             "desc": "Tests which route would be used to forward to a specific IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "runtime route lookup\n--------------------\nvirtual-router: default\ndestination:    8.8.8.8\nresult:\n  interface: ethernet1/1\n  next-hop:  10.0.1.254\n  source:    static\n  metric:    10"
           },
           {
             "cmd": "set virtual-router <vr-name> routing-table ip static-route <name> destination <ip/mask>",
             "desc": "Defines destination network for a static route",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network virtual-router default routing-table ip static-route Default destination 0.0.0.0/0\n[edit]"
           },
           {
             "cmd": "set virtual-router <vr-name> routing-table ip static-route <name> nexthop ip-address <ip>",
             "desc": "Sets next-hop IP for a static route",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network virtual-router default routing-table ip static-route Default nexthop ip-address 10.0.1.254\n[edit]"
           },
           {
             "cmd": "set virtual-router <vr-name> protocol ospf enable yes",
             "desc": "Enables OSPF on the virtual router",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network virtual-router default protocol ospf enable yes\n[edit]"
           },
           {
             "cmd": "set virtual-router <vr-name> protocol bgp enable yes",
             "desc": "Enables BGP on the virtual router",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network virtual-router default protocol bgp enable yes\n[edit]"
           },
           {
             "cmd": "set virtual-router <vr-name> protocol bgp local-as <asn>",
             "desc": "Sets local ASN for BGP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network virtual-router default protocol bgp local-as 65001\n[edit]"
           },
           {
             "cmd": "show routing protocol ospf neighbor",
             "desc": "OSPF neighbour table: state, area, and interface details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Virtual Router: default\nNeighbor Address  Local Address    Area-ID         Pri  State        Lifetime  Hello-Interval  Dead-Interval\n10.0.2.254        10.0.2.1         0.0.0.0         1    Full         00:00:32  10              40\n10.0.3.254        10.0.3.1         0.0.0.1         1    Full         00:00:31  10              40"
           },
           {
             "cmd": "show routing protocol bgp summary",
             "desc": "BGP peer summary: state, prefixes received, and uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Virtual Router: default\nPeer Group/Peer   AS       Local-IP        Peer-IP         State          Up/Down   Pfxs Rcvd/Sent\nISP1/Edge1        65100    10.0.1.1        10.0.1.254      Established    1d 02:11  142  / 4\nISP2/Edge2        65101    10.0.4.1        10.0.4.254      Established    16:42:08  138  / 4"
           },
           {
             "cmd": "show routing fib virtual-router <vr>",
             "desc": "Hardware FIB for a virtual router",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Virtual Router: default\ntotal routes: 40\nflags: u - up, h - host, g - gateway, e - ecmp, *:preferred path\n0.0.0.0/0            10.0.1.254        ugh*  ethernet1/1         1500\n10.0.1.0/24          0.0.0.0           uc    ethernet1/1         1500\n10.10.0.0/16         10.0.2.254        ugh*  ethernet1/2         1500"
           },
           {
             "cmd": "show routing protocol bgp peer",
             "desc": "BGP peer list and state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Peer: Edge1\n  Peer router id  : 10.0.1.254\n  Peer AS         : 65100\n  State           : Established  Status duration: 1d 02:11\n  Local address   : 10.0.1.1 (ethernet1/1)\n  Hold time       : 90 sec\n  Keep-alive      : 30 sec\n  Messages In/Out : 4823 / 4810"
           },
           {
             "cmd": "show routing protocol bgp rib-out peer <peer>",
             "desc": "Prefixes advertised to a BGP peer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Peer: Edge1\nPrefix              Next-hop        Local-Pref  MED   Origin    AS-Path\n0.0.0.0/0           10.0.1.1        100         0     IGP       i\n10.0.0.0/16         10.0.1.1        100         0     IGP       i"
+          },
+          {
+            "cmd": "show routing protocol ospf interface",
+            "desc": "OSPF-enabled interfaces with area, cost and hello/dead timers",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface       Area       Cost  Hello  Dead   Neighbors\nethernet1/2     0.0.0.0    10    10     40     1\nethernet1/3     0.0.0.1    10    10     40     1"
+          },
+          {
+            "cmd": "show routing protocol ospf summary",
+            "desc": "OSPF process summary: router-id, areas, LSA counts",
+            "type": "show",
+            "flagged": false,
+            "example": "Router-ID         : 10.0.1.1\nAreas             : 2\nLSAs (Type-1/2/5) : 32 / 12 / 8\nNeighbors         : 2 Full / 0 Init"
+          },
+          {
+            "cmd": "show routing protocol bgp local-rib",
+            "desc": "BGP Loc-RIB — best paths selected by the router",
+            "type": "show",
+            "flagged": false,
+            "example": "Prefix              Next-hop      LocPref  MED   Origin   AS-Path\n0.0.0.0/0           10.0.1.254    100      0     IGP      65100 i\n10.10.0.0/16        10.0.2.254    100      0     IGP      i"
+          },
+          {
+            "cmd": "show routing protocol bgp rib-in peer <peer>",
+            "desc": "Routes received from a BGP peer (Adj-RIB-In)",
+            "type": "show",
+            "flagged": false,
+            "example": "Peer: Edge1\nPrefix              Next-hop      LocPref  MED   Status\n0.0.0.0/0           10.0.1.254    100      0     best\n198.51.100.0/24     10.0.1.254    100      0     "
+          },
+          {
+            "cmd": "clear routing protocol bgp peer <peer> soft in",
+            "desc": "Soft-clear inbound (re-send route refresh) without dropping the peer",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "BGP soft inbound refresh sent to peer Edge1."
+          },
+          {
+            "cmd": "clear routing protocol bgp peer <peer>",
+            "desc": "Hard-reset a BGP peer (drops + re-establishes)",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "BGP peer Edge1 hard-reset. Session will re-establish in a few seconds."
           }
         ],
         "Security Policies": [
@@ -4745,139 +4900,176 @@
             "cmd": "show running security-policy",
             "desc": "Currently active security policy rules as enforced by the dataplane",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Rules:                  4\n\"Allow-DNS\"  {\n        from any;\n        source any;\n        to any;\n        destination any;\n        application dns;\n        service application-default;\n        action allow;\n}\n\"Allow-Web\" {\n        from trust;\n        source any;\n        to untrust;\n        destination any;\n        application [ web-browsing ssl ];\n        service application-default;\n        action allow;\n}\n\"Default-Deny\" { from any; to any; action deny; }"
           },
           {
             "cmd": "test security-policy-match from <zone> to <zone> source <ip> destination <ip> application <app>",
             "desc": "Simulates traffic and shows which rule would match",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Allow-Web\" {\n        from trust;\n        source any;\n        to untrust;\n        destination any;\n        application [ web-browsing ssl ];\n        action allow;\n}"
           },
           {
             "cmd": "set rulebase security rules <rule-name> from <source-zone>",
             "desc": "Specifies source security zone for the rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web from trust\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> to <destination-zone>",
             "desc": "Specifies destination security zone for the rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web to untrust\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> source <source-address>",
             "desc": "Restricts rule to traffic from a specific source address",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web source Workstations\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> destination <destination-address>",
             "desc": "Restricts rule to traffic destined for a specific address",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web destination any\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> application <application-name>",
             "desc": "Matches rule to a specific App-ID application",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web application [ web-browsing ssl ]\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> action allow/deny/drop",
             "desc": "Sets action: allow, deny (TCP reset), or drop (silent discard)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web action allow\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> log-start yes",
             "desc": "Enables logging at the start of matching sessions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web log-start yes\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> log-end yes",
             "desc": "Enables logging at the end of matching sessions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web log-end yes\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> disabled yes/no",
             "desc": "Enables or disables the rule without deleting it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Old-Rule disabled yes\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> profile-setting profiles virus <av-profile>",
             "desc": "Attaches an Antivirus profile to the rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web profile-setting profiles virus default\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> profile-setting profiles vulnerability <vp-profile>",
             "desc": "Attaches a Vulnerability Protection profile to the rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web profile-setting profiles vulnerability strict\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> profile-setting profiles url-filtering <url-profile>",
             "desc": "Attaches a URL Filtering profile to the rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web profile-setting profiles url-filtering default\n[edit]"
           },
           {
             "cmd": "set rulebase security rules <rule-name> tag [ <tag1> <tag2> ]",
             "desc": "Tags a security rule for grouping and policy filtering",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web tag [ Production WebTraffic ]\n[edit]"
           },
           {
             "cmd": "show running security-policy | match \"<app>\"",
             "desc": "Find rules matching an application name",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Allow-Web\"  application [ web-browsing ssl ]  action allow\n\"DNS-Sinkhole\"  application dns  action allow"
           },
           {
             "cmd": "test security-policy-match source <ip> destination <ip> application <app> protocol 6 destination-port <p>",
             "desc": "Which security rule will match a flow",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Allow-Web\" {\n        from trust;\n        to untrust;\n        application [ web-browsing ssl ];\n        service application-default;\n        action allow;\n}"
           },
           {
             "cmd": "show system setting logging",
             "desc": "Logging mode and rate",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Logging settings:\n  Disk space (logdb)       : 60%\n  Log forwarding enabled   : yes\n  Buffered log forwarding  : yes\n  Threat log auto-clear    : no"
           },
           {
             "cmd": "set rulebase security rules <name> description \"<text>\"",
             "desc": "Add a description to an existing rule",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase security rules Allow-Web description \"Permit user web browsing to internet\"\n[edit]"
           },
           {
             "cmd": "test security-policy-match from <src-zone> to <dst-zone> source <ip> destination <ip> protocol 6 destination-port <p> application <app>",
             "desc": "Most accurate rule match tester — fill in as much as you know",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Allow-Web\" {\n        from trust;\n        source any;\n        to untrust;\n        destination any;\n        application [ web-browsing ssl ];\n        service application-default;\n        action allow;\n}"
           },
           {
             "cmd": "show running rule-use rule-base security type unused vsys vsys1",
             "desc": "Every rule that hasn't matched since last reboot",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Vsys: vsys1\nRule-base: security\nUnused rules:\n  \"Old-Test-Rule\"\n  \"Temp-Allow-Vendor\""
           },
           {
             "cmd": "show running rule-hit-count vsys vsys1 rule-base security",
             "desc": "Rule-hit counters for policy cleanup",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Rule                            Hits\nAllow-DNS                       28341\nAllow-Web                       912045\nBlock-RFC1918-out                  12\nDefault-Deny                      438"
           },
           {
             "cmd": "show rule-hit-count vsys vsys1 rule-base security rules \"<name>\"",
             "desc": "Hit count for a single rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Rule: Allow-Web\nFirst hit timestamp : 2026/05/01 08:00:11\nLast  hit timestamp : 2026/05/24 09:32:55\nHit count           : 912045"
+          },
+          {
+            "cmd": "show running rule-use rule-base security type used vsys vsys1",
+            "desc": "Rules with at least one hit since data was last cleared",
+            "type": "show",
+            "flagged": false,
+            "example": "Vsys: vsys1\nRule-base: security\nUsed rules: Allow-DNS, Allow-Web, Default-Deny"
+          },
+          {
+            "cmd": "request rule-hit-count reset rulebase security",
+            "desc": "Reset all rule-hit counters for the security rulebase",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "Rule-hit-count reset for security rulebase. All counters set to 0."
           }
         ],
         "NAT": [
@@ -4885,49 +5077,71 @@
             "cmd": "show running nat-policy",
             "desc": "All currently active NAT rules as enforced",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Rules:                  2\n\"Outbound-NAT\" {\n        from trust;\n        to untrust;\n        source any;\n        destination any;\n        service any;\n        translate-to \"src: dynamic-ip-and-port (ethernet1/1)\";\n}\n\"Inbound-Web\" {\n        from untrust;\n        to dmz;\n        source any;\n        destination 203.0.113.10;\n        service service-http;\n        translate-to \"dst: 10.0.10.10\";\n}"
           },
           {
             "cmd": "test nat-policy-match source <ip> destination <ip> from <zone> to <zone>",
             "desc": "Simulates traffic to determine which NAT rule applies",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Outbound-NAT\" {\n        source-translation: dynamic-ip-and-port\n        interface: ethernet1/1\n}"
           },
           {
             "cmd": "set rulebase nat rules <rule-name> source-translation dynamic-ip-and-port interface-address interface <interface>",
             "desc": "PAT using the egress interface IP — common for internet-bound traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase nat rules Outbound-NAT source-translation dynamic-ip-and-port interface-address interface ethernet1/1\n[edit]"
           },
           {
             "cmd": "set rulebase nat rules <rule-name> source-translation static-ip bi-directional yes translated-address <ip>",
             "desc": "Static 1:1 NAT with bi-directional translation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase nat rules Server-Static-NAT source-translation static-ip bi-directional yes translated-address 203.0.113.20\n[edit]"
           },
           {
             "cmd": "set rulebase nat rules <rule-name> destination-translation translated-address <ip>",
             "desc": "Destination NAT to redirect inbound traffic to an internal IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase nat rules Inbound-Web destination-translation translated-address 10.0.10.10\n[edit]"
           },
           {
             "cmd": "set rulebase nat rules <rule-name> destination-translation translated-port <port>",
             "desc": "Override destination port for port forwarding scenarios",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set rulebase nat rules Inbound-Web destination-translation translated-port 8080\n[edit]"
           },
           {
             "cmd": "test nat-policy-match from <src-zone> to <dst-zone> source <ip> destination <ip> protocol 6 destination-port <p>",
             "desc": "Which NAT rule will apply to this flow",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "\"Inbound-Web\" {\n        destination-translation:\n                translated-address: 10.0.10.10\n                translated-port: 8080\n}"
           },
           {
             "cmd": "show session all filter nat-rule \"<name>\"",
             "desc": "Sessions matching a specific NAT rule",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session count: 14\nID    Application   State   Src                Dst                NAT-Rule\n1024  web-browsing  ACTIVE  10.0.2.55:51234    203.0.113.10:443   Outbound-NAT\n1025  ssl           ACTIVE  10.0.2.55:51235    93.184.216.34:443  Outbound-NAT"
+          },
+          {
+            "cmd": "show running nat-policy | match \"<rule>\"",
+            "desc": "Search for a NAT rule by name without dumping the whole policy",
+            "type": "show",
+            "flagged": false,
+            "example": "\"Inbound-Web\" {\n        translate-to \"dst: 10.0.10.10 port 8080\";\n}"
+          },
+          {
+            "cmd": "show counter global filter category nat",
+            "desc": "Global counters for NAT (pool exhaustion, port allocation failures)",
+            "type": "show",
+            "flagged": false,
+            "example": "nat_pool_used               842\nnat_pool_exhausted            0\nnat_port_allocation_failed    0"
           }
         ],
         "Network Objects": [
@@ -4935,67 +5149,78 @@
             "cmd": "set address <name> ip-netmask <ip>/<mask>",
             "desc": "Creates an address object for a host or subnet in CIDR notation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set address Workstations ip-netmask 10.0.2.0/24\n[edit]"
           },
           {
             "cmd": "set address <name> ip-range <start-ip> <end-ip>",
             "desc": "Creates an address object for an IP range",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set address DHCP-Pool ip-range 10.0.2.100 10.0.2.200\n[edit]"
           },
           {
             "cmd": "set address <name> fqdn <hostname>",
             "desc": "Creates an address object that resolves an FQDN dynamically",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set address Web-Server fqdn web.example.com\n[edit]"
           },
           {
             "cmd": "show address all",
             "desc": "Lists all address objects",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Address          Type           Value\nWorkstations     ip-netmask     10.0.2.0/24\nDHCP-Pool        ip-range       10.0.2.100-10.0.2.200\nWeb-Server       fqdn           web.example.com\nRFC1918-10       ip-netmask     10.0.0.0/8"
           },
           {
             "cmd": "set address-group <name> static [ <addr1> <addr2> ]",
             "desc": "Creates a static address group",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set address-group Internal-Networks static [ Workstations DHCP-Pool RFC1918-10 ]\n[edit]"
           },
           {
             "cmd": "show address-group all",
             "desc": "Lists all address groups and their members",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Address-group        Type      Members\nInternal-Networks    static    Workstations, DHCP-Pool, RFC1918-10\nCloud-Services       dynamic   match 'tag.cloud'"
           },
           {
             "cmd": "set service <name> protocol tcp port <port-number>",
             "desc": "Creates a TCP service object for a specific port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set service service-https protocol tcp port 443\n[edit]"
           },
           {
             "cmd": "set service <name> protocol udp port <port-number>",
             "desc": "Creates a UDP service object for a specific port",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set service service-dns protocol udp port 53\n[edit]"
           },
           {
             "cmd": "set service-group <name> static [ <svc1> <svc2> ]",
             "desc": "Creates a service group combining multiple service objects",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set service-group Web-Services static [ service-http service-https ]\n[edit]"
           },
           {
             "cmd": "delete address <name>",
             "desc": "Permanently removes an address object",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) delete address Old-Server\n[edit]"
           },
           {
             "cmd": "set tag <name> color <color>",
             "desc": "Creates a tag object with a colour for policy organisation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set tag Production color color1\n[edit]"
           }
         ],
         "VPN": [
@@ -5003,109 +5228,141 @@
             "cmd": "show vpn ipsec-sa",
             "desc": "All active IPSec Security Associations and their status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tunnel name           Gateway      Local addr           Remote addr          Direction  Lifetime  Bytes\nAWS-VPN:tunnel.1      AWS-GW       10.0.1.1             52.10.20.30          out        3540      1.2 GB\nAWS-VPN:tunnel.1      AWS-GW       10.0.1.1             52.10.20.30          in         3540      8.4 GB"
           },
           {
             "cmd": "show vpn ipsec-sa tunnel <tunnel-name>",
             "desc": "IPSec SA details for a specific named tunnel",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tunnel: AWS-VPN\n  Local IP             : 10.0.1.1\n  Peer IP              : 52.10.20.30\n  Inside Interface     : tunnel.1\n  Tunnel Interface     : tunnel.1\n  Encryption           : aes-256-cbc\n  Authentication       : sha256\n  Bytes  in / out      : 8.4 GB / 1.2 GB\n  Packets in / out     : 12,231,442 / 11,889,234\n  Lifetime             : 3540 sec remaining"
           },
           {
             "cmd": "show vpn ike-sa",
             "desc": "All active IKE Phase 1 Security Associations",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Gateway          Peer-IP         Local-IP    Version  State      Lifetime\nAWS-GW           52.10.20.30     10.0.1.1    IKEv2    UP         27340 sec\nAzure-GW         13.94.55.66     10.0.1.1    IKEv2    UP         18722 sec"
           },
           {
             "cmd": "show vpn flow",
             "desc": "Real-time traffic flow stats through all active VPN tunnels",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tunnel name      Local IP    Peer IP        Encap   Decap   Status   Type\ntunnel.1         10.0.1.1    52.10.20.30    OK      OK      active   ipsec\ntunnel.2         10.0.1.1    13.94.55.66    OK      OK      active   ipsec"
           },
           {
             "cmd": "test vpn ipsec-sa tunnel <tunnel-name>",
             "desc": "Initiates IKE negotiation to bring up a specific IPSec tunnel",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Initiate IKE SA: Total 1 gateways found. 1 gateways initiated."
           },
           {
             "cmd": "set network ike gateway <name> authentication pre-shared-key key <key>",
             "desc": "Configures PSK for IKE Phase 1 authentication",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network ike gateway AWS-GW authentication pre-shared-key key <PSK-redacted>\n[edit]"
           },
           {
             "cmd": "set network ike gateway <name> peer-address ip <peer-ip>",
             "desc": "Specifies remote VPN peer IP for this IKE gateway",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network ike gateway AWS-GW peer-address ip 52.10.20.30\n[edit]"
           },
           {
             "cmd": "set network ike gateway <name> protocol ikev2",
             "desc": "Sets IKE version to IKEv2",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network ike gateway AWS-GW protocol ikev2 ike-crypto-profile default\n[edit]"
           },
           {
             "cmd": "set network tunnel ipsec <name> auto-key ike-gateway <gateway-name>",
             "desc": "Associates an IPSec tunnel with an IKE gateway",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set network tunnel ipsec AWS-VPN auto-key ike-gateway AWS-GW\n[edit]"
           },
           {
             "cmd": "show global-protect-gateway current-user",
             "desc": "Lists all users currently connected to GlobalProtect",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "User             Computer       Source IP        Tunnel IP        Login Time            Client-OS\njbloggs          NB-1234        198.51.100.20    10.50.0.12       2026/05/24 08:11:02   Win 11\nasmith           IPHONE-99      203.0.113.4      10.50.0.13       2026/05/24 09:02:18   iOS 17"
           },
           {
             "cmd": "show global-protect-gateway statistics",
             "desc": "GlobalProtect gateway stats: active tunnels, data rates, auth events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Active GlobalProtect users      : 142\nTunnels (active / configured)   : 142 / 500\nBytes  in / out                 : 188.4 GB / 42.1 GB\nLogins (success / failed)        : 1503 / 12"
           },
           {
             "cmd": "test vpn ike-sa gateway <gw>",
             "desc": "Trigger phase-1 negotiation to a specific gateway",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Phase-1 SAs:\n  Gateway: AWS-GW\n  Cookies: i: a1b2c3d4e5f60001  r: f0e1d2c3b4a50001\n  State: established"
           },
           {
             "cmd": "test vpn ipsec-sa tunnel <tun>",
             "desc": "Trigger phase-2 negotiation to a specific tunnel",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Initiate IPSec SA: tunnel.1 attempt sent. Use 'show vpn ipsec-sa tunnel tunnel.1' to verify."
           },
           {
             "cmd": "debug ike global on debug",
             "desc": "Enable verbose IKE debug — view with less mp-log ikemgr.log",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "debug:ike:debug mode enabled.\nUse 'less mp-log ikemgr.log' to view IKE negotiation messages."
           },
           {
             "cmd": "show vpn ipsec-sa tunnel <name>",
             "desc": "Single tunnel detail incl. encrypt/decrypt bytes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tunnel: AWS-VPN\nLocal SPI            : 0xabcd1234   Remote SPI: 0x4321dcba\nEncryption           : aes-256-gcm\nLifetime             : 3540 sec\nStatus               : active"
           },
           {
             "cmd": "show vpn tunnel",
             "desc": "Tunnel state summary (up/down, peer, local/remote proxy-IDs)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name             Type      Status     Local IP     Remote IP\nAWS-VPN          ipsec     up         10.0.1.1     52.10.20.30\nAzure-VPN        ipsec     up         10.0.1.1     13.94.55.66\nHQ-Branch        ipsec     down       10.0.1.1     203.0.113.55"
           },
           {
             "cmd": "clear vpn ike-sa gateway <gw>",
             "desc": "Force IKE re-negotiation to a gateway",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Cleared IKE SA for gateway AWS-GW."
           },
           {
             "cmd": "clear vpn ipsec-sa tunnel <t>",
             "desc": "Force phase-2 re-key on a tunnel",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Cleared IPSec SA for tunnel tunnel.1."
+          },
+          {
+            "cmd": "show vpn gateway",
+            "desc": "IKE gateways with peer-address, version, status",
+            "type": "show",
+            "flagged": false,
+            "example": "Name        Peer-IP         Version   State    Last error\nAWS-GW      52.10.20.30     IKEv2     up       —\nAzure-GW    13.94.55.66     IKEv2     up       —\nHQ-Branch   203.0.113.55    IKEv2     down     IKE phase-1 timeout"
+          },
+          {
+            "cmd": "less mp-log ikemgr.log",
+            "desc": "IKE negotiation log — phase-1/2 messages, proposals, failures",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "2026-05-24 09:30:01 ikemgr: IKE_SA_INIT request sent to 52.10.20.30\n2026-05-24 09:30:01 ikemgr: IKE_AUTH success\n2026-05-24 09:30:02 ikemgr: CHILD_SA established  spi=0xabcd1234"
           }
         ],
         "High Availability": [
@@ -5113,85 +5370,113 @@
             "cmd": "show high-availability state",
             "desc": "Current HA state (active, passive, suspended) and peer status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Enabled: yes\nLocal Information:\n  Mode             : Active-Passive\n  State            : active\n  Priority         : 100\n  Preemptive       : yes\n  Device serial    : 0123456789\n  Mgmt IP          : 10.0.0.1\nPeer Information:\n  State            : passive\n  Mgmt IP          : 10.0.0.2\n  Priority         : 110"
           },
           {
             "cmd": "show high-availability all",
             "desc": "Comprehensive HA config and runtime status for both peers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Enabled         : yes\nMode            : Active-Passive\nGroup ID        : 7\nLocal state     : active   (priority 100)\nPeer  state     : passive  (priority 110)\nHA1   primary   : up   ethernet1/8\nHA1   backup    : up   mgt\nHA2               up   ethernet1/9\nHA2 keep-alive  : enabled"
           },
           {
             "cmd": "show high-availability path-monitoring",
             "desc": "Status of all configured path monitoring links",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Path monitor: enabled\nFailure condition: any\nGroup: Internet\n  Destination       Result\n  10.0.1.254        UP\n  10.0.4.254        UP\nGroup: DC\n  Destination       Result\n  10.10.10.1        UP"
           },
           {
             "cmd": "set high-availability mode active-passive",
             "desc": "Configures HA in active/passive mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set deviceconfig high-availability group 7 mode active-passive\n[edit]"
           },
           {
             "cmd": "set high-availability mode active-active",
             "desc": "Configures HA in active/active mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set deviceconfig high-availability group 7 mode active-active device-id 0\n[edit]"
           },
           {
             "cmd": "set high-availability group <group-id> peer-ip <ip>",
             "desc": "Sets the HA peer device IP address",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set deviceconfig high-availability group 7 peer-ip 10.0.0.2\n[edit]"
           },
           {
             "cmd": "set high-availability election-option priority primary",
             "desc": "Sets this device as preferred primary in HA election",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set deviceconfig high-availability group 7 election-option device-priority 90\n[edit]"
           },
           {
             "cmd": "request high-availability state suspend",
             "desc": "Forces device into suspended HA state — use for planned maintenance",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Suspended HA. This device will not take over if peer fails until resumed."
           },
           {
             "cmd": "request high-availability state functional",
             "desc": "Returns a suspended device to functional HA state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "HA state set to functional. Device will participate in HA election."
           },
           {
             "cmd": "request high-availability sync-to-remote running-config",
             "desc": "Forces immediate running config sync to the HA peer",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Sync to remote initiated. Job ID: 215. Use 'show jobs id 215' to monitor."
           },
           {
             "cmd": "show high-availability control-link statistics",
             "desc": "Displays HA control-link traffic stats and keepalive counters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface: ethernet1/8 (HA1 primary)\n  Tx packets: 18234556    Rx packets: 18234112\n  Tx bytes  : 1.4 GB      Rx bytes  : 1.4 GB\n  Errors    : 0           Drops     : 0"
           },
           {
             "cmd": "show high-availability link-monitoring",
             "desc": "Per-link HA monitoring state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Link monitor: enabled\nFailure condition: any\nInterface     State\nethernet1/1   UP\nethernet1/2   UP\nethernet1/3   DOWN  <-- triggers failover"
           },
           {
             "cmd": "show high-availability flap-statistics",
             "desc": "HA flap history",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total flaps    : 0\nLast flap time : never\nHA1            : 0\nHA2            : 0\nPath-monitor   : 0\nLink-monitor   : 0"
           },
           {
             "cmd": "show high-availability state-synchronization",
             "desc": "HA1/HA2 sync counters and last sync time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Sessions      : 412 / 412 synchronized\nRoutes        : 40  / 40  synchronized\nIPSec SAs     : 2   / 2   synchronized\nLast sync     : 12 sec ago\nStatus        : healthy"
+          },
+          {
+            "cmd": "request high-availability state passive",
+            "desc": "Manually move this device into the passive state",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "HA state set to passive. Device will not forward traffic until peer fails or you set it to active."
+          },
+          {
+            "cmd": "show high-availability transitions",
+            "desc": "History of HA state transitions and reasons",
+            "type": "show",
+            "flagged": false,
+            "example": "Time                 From       To         Reason\n2026/05/24 04:12:08  passive    active     peer link-monitor failure (ethernet1/3)\n2026/05/24 04:18:12  active     passive    peer recovered"
           }
         ],
         "App-ID & Content-ID": [
@@ -5199,49 +5484,57 @@
             "cmd": "show application <name>",
             "desc": "Displays App-ID definition: ports, risk level, category, evasion behaviour",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Application: web-browsing\nCategory   : general-internet\nSubcategory: internet-utility\nRisk       : 4\nPorts      : tcp/80,8080\nTags       : web-app\nDescription: This application is used to browse the World Wide Web."
           },
           {
             "cmd": "show application status",
             "desc": "Summarises App-ID database version and last update timestamp",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Application database version: 8754-8543 (2026/05/23)\nLast update                 : 2026/05/23 18:00:01\nAuto-update                  : enabled"
           },
           {
             "cmd": "request content-id update",
             "desc": "Triggers an immediate Threat/Content-ID signature update",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Content update job enqueued with jobid 218."
           },
           {
             "cmd": "show content-id status",
             "desc": "Displays Content-ID database versions for AV, Wildfire, and URL filtering",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Content version        : 8754-8543\nAntivirus version      : 4685-5210\nWildFire version       : 821231-1\nStatus                 : Up to date"
           },
           {
             "cmd": "show wildfire status",
             "desc": "Wildfire cloud connection status and last submission/verdict times",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "WildFire cloud       : wildfire.paloaltonetworks.com\nConnection           : connected\nSample queue         : 0\nVerdict queue        : 0\nVerdicts received    : 1542"
           },
           {
             "cmd": "request wildfire submit file <path>",
             "desc": "Manually submits a file to Wildfire for sandbox analysis",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "File queued for WildFire submission: /sample.exe  (sha256: a1b2c3...)"
           },
           {
             "cmd": "show threat-detection summary",
             "desc": "Summary of recent threat detections grouped by category",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total threats blocked: 8421 (last 24 hr)\n  Critical : 12\n  High     : 142\n  Medium   : 822\n  Low      : 7445"
           },
           {
             "cmd": "show url-filtering statistics",
             "desc": "URL filtering statistics: categories blocked, total lookups, cache hits",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cache hits           : 1,824,231\nCache misses         : 12,442\nCloud lookups        : 12,442\nCategorisation rate  : 99.3%"
           }
         ],
         "Certificate Management": [
@@ -5249,37 +5542,43 @@
             "cmd": "show certificate <name>",
             "desc": "Displays certificate details: subject, issuer, SAN, validity dates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Certificate: SSL-Decrypt-CA\nSubject     : CN=SSL-Decrypt-CA, O=Acme Corp\nIssuer      : CN=Root-CA, O=Acme Corp\nNot before  : 2025/01/01 00:00:00\nNot after   : 2030/01/01 00:00:00\nStatus      : valid"
           },
           {
             "cmd": "request certificate generate signed-by <ca-name> certificate-name <name> name <cn> signed-by <ca>",
             "desc": "Generates a new certificate signed by an internal CA",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Generated certificate Web-Server signed by Root-CA. Use 'show certificate Web-Server' to view."
           },
           {
             "cmd": "request certificate import format <pem|pkcs12> certificate-name <name> file <path>",
             "desc": "Imports an external certificate from PEM or PKCS12 format",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Imported certificate Web-Server from file web-server.p12. Use 'show certificate Web-Server' to view."
           },
           {
             "cmd": "set certificate-profile <name> CA <cert-name>",
             "desc": "Adds a CA certificate to a certificate profile for client cert verification",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set shared certificate-profile GP-Profile CA Root-CA\n[edit]"
           },
           {
             "cmd": "show certificate-cache",
             "desc": "Displays cached certificate revocation status from OCSP/CRL lookups",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Total cached SSL forward-proxy certificates: 1842\nOldest entry: 2026/05/01 14:22:01\nCache utilisation: 38%"
           },
           {
             "cmd": "request certificate revoke certificate <name>",
             "desc": "Revokes a locally generated certificate",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Revoked certificate Web-Server. CRL will be updated on next publish."
           }
         ],
         "Monitoring & Diagnostics": [
@@ -5294,7 +5593,8 @@
             "cmd": "show session all",
             "desc": "All active firewall sessions: src/dst IPs, ports, application",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "ID       Application    Vsys  Source                Destination          Proto  State   Ingress  Egress\n1024     web-browsing   vsys1 10.0.2.55:51234       203.0.113.10:80      TCP    ACTIVE  eth1/2   eth1/1\n1025     ssl            vsys1 10.0.2.55:51235       93.184.216.34:443    TCP    ACTIVE  eth1/2   eth1/1\n1026     dns            vsys1 10.0.2.55:60112       8.8.8.8:53           UDP    ACTIVE  eth1/2   eth1/1"
           },
           {
             "cmd": "show session id <session-id>",
@@ -5307,13 +5607,15 @@
             "cmd": "clear session all",
             "desc": "Terminates all active sessions immediately — use with extreme caution",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "All sessions have been cleared. Active session count: 0"
           },
           {
             "cmd": "show log traffic",
             "desc": "Traffic log: allowed and denied sessions by security policy",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Time                 Src              Dst              App           Action  Bytes  Rule\n2026/05/24 09:32:01  10.0.2.55        203.0.113.10     web-browsing  allow   8421   Allow-Web\n2026/05/24 09:32:02  10.0.2.55        93.184.216.34    ssl           allow   12K    Allow-Web\n2026/05/24 09:32:03  10.0.2.99        198.51.100.5     unknown-tcp   deny    0      Default-Deny"
           },
           {
             "cmd": "show log threat",
@@ -5326,121 +5628,141 @@
             "cmd": "show log url",
             "desc": "URL filtering log: web access activity and blocked URLs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Time                 Src         URL                          Category         Action\n2026/05/24 09:32:01  10.0.2.55   www.paloalto.com/products    business         allow\n2026/05/24 09:32:14  10.0.2.55   malicious.example.com        command-control  block"
           },
           {
             "cmd": "ping source <source-ip> host <destination-ip>",
             "desc": "ICMP ping from a specific source IP to test reachability",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PING 8.8.8.8 (8.8.8.8) from 10.0.1.1 56(84) bytes of data.\n64 bytes from 8.8.8.8: icmp_seq=1 ttl=120 time=4.21 ms\n64 bytes from 8.8.8.8: icmp_seq=2 ttl=120 time=4.05 ms\n--- 8.8.8.8 ping statistics ---\n2 packets transmitted, 2 received, 0% packet loss"
           },
           {
             "cmd": "traceroute source <source-ip> host <destination-ip>",
             "desc": "Traces network path from a source IP to a destination",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets\n 1  10.0.1.254 (10.0.1.254)  1.123 ms\n 2  198.51.100.1 (198.51.100.1)  4.211 ms\n 3  *  *  *\n 4  8.8.8.8 (8.8.8.8)  6.812 ms"
           },
           {
             "cmd": "debug dataplane packet-diag set filter match source <ip> destination <ip>",
             "desc": "Sets a packet capture filter by source and destination IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet filter: src=10.0.2.55 dst=8.8.8.8 added. Run 'debug dataplane packet-diag set filter on' to activate."
           },
           {
             "cmd": "debug dataplane packet-diag start",
             "desc": "Starts the packet capture using configured filter",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet diagnostic started. Capture stages active."
           },
           {
             "cmd": "debug dataplane packet-diag stop",
             "desc": "Stops an active packet capture session",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet diagnostic stopped. PCAPs are in /var/tmp/."
           },
           {
             "cmd": "debug dataplane packet-diag clear",
             "desc": "Clears all packet diagnostic filters and settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet filters and counters cleared."
           },
           {
             "cmd": "show arp all",
             "desc": "ARP table for all virtual routers and interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "maximum of entries supported :    32000\ndefault timeout: 1800 seconds\ntotal ARP entries in table:   12\ninterface     ip                mac               port              status     ttl\nethernet1/1   10.0.1.254        00:1b:21:aa:bb:01 ethernet1/1       valid      1742\nethernet1/2   10.0.2.55         00:50:56:a0:01:23 ethernet1/2       valid      1801"
           },
           {
             "cmd": "show mac all",
             "desc": "Layer 2 MAC address table (relevant in vwire/L2 deployments",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface         MAC                VLAN     Type\nethernet1/3       00:50:56:a0:01:01  100      dynamic\nethernet1/3       00:50:56:a0:01:02  100      dynamic\nethernet1/4       00:1b:21:aa:bb:02  200      static"
           },
           {
             "cmd": "show counter global filter severity drop",
             "desc": "Every global drop counter — key for policy/NAT/routing drops",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Global counters:\nflow_policy_deny          1842   drop   Session deny by security policy\nflow_no_route             182    drop   No route to destination\nflow_no_session           24     drop   No matching session for non-SYN"
           },
           {
             "cmd": "show counter interface <if>",
             "desc": "Per-interface counters incl. errors and drops",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Interface  : ethernet1/1\nTx packets : 18,234,556    Tx bytes : 4,523,125,678\nRx packets : 18,012,988    Rx bytes : 4,408,765,432\nTx errors  : 0             Rx errors : 12\nTx drops   : 0             Rx drops  : 0"
           },
           {
             "cmd": "show system statistics session",
             "desc": "Session-slot statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Average session size                  : 412 bytes\nSessions per second                   : 1,832\nTCP / UDP / Other                     : 80% / 18% / 2%\nActive sessions                       : 18,233 / 250,000 capacity (7%)"
           },
           {
             "cmd": "show running resource-monitor",
             "desc": "Data-plane CPU, session, and packet-buffer usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Resource monitoring:\nCPU load (mp / dp)              : 22% / 18%\nSession table utilisation       : 7%\nForwarding table utilisation    : 0.2%\nARP table utilisation           : 0.04%"
           },
           {
             "cmd": "less mp-log pan_task.log",
             "desc": "Recent management-plane task logs",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "2026-05-24 09:32:01 INFO  task: Commit job 142 started by admin\n2026-05-24 09:32:08 INFO  task: Commit job 142 completed in 7.42 sec"
           },
           {
             "cmd": "less dp-log pan_packet_diag.log",
             "desc": "Packet-diag log (capture status, errors)",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "2026-05-24 09:30:11 packet-diag: filter1 enabled  src=10.0.2.55 dst=8.8.8.8\n2026-05-24 09:30:11 packet-diag: capture stage receive -> rx.pcap"
           },
           {
             "cmd": "show counter global filter delta yes packet-filter yes",
             "desc": "Only global counters that changed AND match packet-diag filter",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Counters captured since last query (delta), matching packet-filter:\nflow_pkt_received                182\nflow_pkt_processed               180\nflow_pkt_dropped                   2  (flow_policy_deny)"
           },
           {
             "cmd": "show counter global filter severity drop delta yes",
             "desc": "Deltas on drop-class counters since last command",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Counters captured since last query (delta), severity=drop:\nflow_policy_deny                  18\nflow_no_route                      2\nflow_invalid_pkt                   1"
           },
           {
             "cmd": "show system logdb-quota",
             "desc": "Per-log quota usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Quotas (percentage / GB):\nTraffic     35% / 80GB\nThreat      10% / 24GB\nURL          8% / 18GB\nWildFire     5% / 12GB\nTotal used : 58% (152GB / 262GB)"
           },
           {
             "cmd": "show log traffic direction equal backward count 50",
             "desc": "Last 50 traffic-log entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(Most recent 50 traffic logs, newest first — truncated for brevity)\n2026/05/24 09:33:11  10.0.2.55 -> 8.8.8.8       dns     allow Allow-DNS\n2026/05/24 09:33:10  10.0.2.55 -> 203.0.113.10  web     allow Allow-Web\n..."
           },
           {
             "cmd": "show log threat direction equal backward count 50",
             "desc": "Last 50 threat-log entries",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(Most recent 50 threat logs, newest first — truncated for brevity)\n2026/05/24 09:31:48  vuln  high   10.0.2.99  98.137.11.163  spyware/cnc-65532 reset-both\n2026/05/24 09:31:12  url   medium 10.0.2.55  malicious.example.com command-control block"
           },
           {
             "cmd": "show running resource-monitor minute last 60",
@@ -5448,6 +5770,27 @@
             "type": "show",
             "flagged": false,
             "example": "Resource monitoring sampling data (per minute):\n\nCPU load (%) during last 60 minutes\ncore   0   1   2   3   4   5   6   7\navg   34  41  39  37  42  38  35  36\nmax   71  82  78  74  85  76  69  72\n\nResource utilization (%) during last 60 minutes\n                       avg  max\nsession table          18   19\npacket buffer           4    7\npacket descriptor       3    5\npacket descriptor (on-chip)  2  4\n\nThroughput (Mbps) during last 60 minutes\navg: 1842  max: 3104"
+          },
+          {
+            "cmd": "show running tunnel flow all",
+            "desc": "All active tunnel flows (IPSec, GRE, GP) with packet/byte counts",
+            "type": "show",
+            "flagged": false,
+            "example": "Name           Type     State    Pkts in/out         Bytes in/out\ntunnel.1       ipsec    up       12,231,442/11,889K  8.4 GB/1.2 GB\ntunnel.2       ipsec    up       8,221,310/8,118K    5.1 GB/0.9 GB"
+          },
+          {
+            "cmd": "debug dataplane internal pcap reset",
+            "desc": "Reset internal PCAP buffers when debug captures get wedged",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "Dataplane internal PCAP buffers cleared."
+          },
+          {
+            "cmd": "show running global-ippool",
+            "desc": "GP / VPN IP pool usage (allocated vs total)",
+            "type": "show",
+            "flagged": false,
+            "example": "Pool: GP-Pool   Range: 10.50.0.0/16\nAllocated: 142   Available: 65,394   Utilisation: 0.2%"
           }
         ],
         "Commit & Config": [
@@ -5455,109 +5798,127 @@
             "cmd": "commit",
             "desc": "Applies all pending candidate config changes to the running config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit job enqueued with jobid 142. Use 'show jobs id 142' to monitor progress.\n...\nJob 142 finished — Commit succeeded in 7.4 sec."
           },
           {
             "cmd": "validate full",
             "desc": "Validates the candidate config for errors without applying it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Validate job enqueued with jobid 143.\n...\nJob 143 finished — Validate succeeded.  No errors."
           },
           {
             "cmd": "diff config running candidate",
             "desc": "Shows all pending changes between running and candidate config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "+ rulebase.security.rules.entry[@name='Allow-Web']\n+   action: allow\n- rulebase.security.rules.entry[@name='Old-Test']"
           },
           {
             "cmd": "revert config",
             "desc": "Discards all uncommitted changes and reverts to last committed config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Candidate configuration has been reverted to the running configuration."
           },
           {
             "cmd": "save config to <filename>",
             "desc": "Saves the current candidate config to a named backup file",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Configuration saved to running-config_2026-05-24.xml"
           },
           {
             "cmd": "load config from <filename>",
             "desc": "Loads a saved config file into the candidate configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Configuration loaded from saved-2026-05-23.xml. Run 'commit' to activate."
           },
           {
             "cmd": "show config running",
             "desc": "Displays the currently active running configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "<config version=\"11.1.0\" urldb=\"paloaltonetworks\">\n  <devices>\n    <entry name=\"localhost.localdomain\">\n      <network> ... </network>\n      <vsys> ... </vsys>\n      ...\n    </entry>\n  </devices>\n</config>"
           },
           {
             "cmd": "commit partial admin <username>",
             "desc": "Commits only the changes made by a specific administrator",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Partial commit job enqueued (admin=jbloggs only). Job ID 145."
           },
           {
             "cmd": "load config partial from <filename> from-xpath <xpath> to-xpath <xpath>",
             "desc": "Merges a subset of a saved config into the candidate config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Partial config loaded from saved-2026-05-23.xml.  Run 'commit' to activate."
           },
           {
             "cmd": "show config saved",
             "desc": "Displays the most recently committed saved configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Saved configurations:\n  running-config_2026-05-20.xml\n  running-config_2026-05-22.xml\n  pre-upgrade.xml"
           },
           {
             "cmd": "commit force",
             "desc": "Commit even when no operator has made changes (useful post-upgrade)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Forcing commit with errors ignored. Job ID 146."
           },
           {
             "cmd": "request commit-lock add comment \"<reason>\"",
             "desc": "Prevent concurrent commits (multi-admin environments)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit lock added by admin. Reason: \"Change window 09:00-10:00\"."
           },
           {
             "cmd": "configure",
             "desc": "Enter candidate-config mode",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Entering configuration mode\n[edit]\nadmin@PA-3220#"
           },
           {
             "cmd": "show config diff",
             "desc": "Diff between candidate and running config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Difference between candidate and running configurations:\n+ rulebase.security.rules.entry[@name='Allow-Web']\n-   action: drop\n+   action: allow\n+   profile-setting.profiles.virus: default"
           },
           {
             "cmd": "commit description \"<msg>\"",
             "desc": "Commit with audit-log description",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit job enqueued (description: \"Add Allow-Web for new subnet\"). Job ID 147."
           },
           {
             "cmd": "commit partial admin <user>",
             "desc": "Commit only changes owned by a specific admin",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Partial commit job enqueued (admin=asmith only). Job ID 148."
           },
           {
             "cmd": "show commit-locks",
             "desc": "Who currently holds a commit lock",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Type    Locked-by   Time                  Comment\ncommit  admin       2026/05/24 09:00:00   \"Change window 09:00-10:00\""
           },
           {
             "cmd": "request commit-lock remove admin <user>",
             "desc": "Remove a stale commit lock",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit lock for admin removed."
           }
         ],
         "User-ID": [
@@ -5565,73 +5926,85 @@
             "cmd": "show user ip-user-mapping all",
             "desc": "Complete current table of IP address to username mappings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "IP              Vsys   From                User                       IdleTimeout(s)  MaxTimeout(s)\n10.0.2.55       vsys1  AD                  ACME\\jbloggs                  1582            10800\n10.0.2.99       vsys1  Captive-Portal      ACME\\contractor1              298             10800\n10.0.2.100      vsys1  GP                  ACME\\asmith                   3204            10800"
           },
           {
             "cmd": "test user-id ip-user-mapping ip <ip-address>",
             "desc": "Looks up which username is currently mapped to a specific IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "IP: 10.0.2.55\nUser                     : ACME\\jbloggs\nSource                   : AD (Active Directory)\nMapped                   : 2026/05/24 08:11:12\nIdle timeout remaining   : 1582 sec"
           },
           {
             "cmd": "show user user-id-agent statistics",
             "desc": "Connection statistics and event counts for all User-ID agents",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Agent: AD-Agent-01 (10.0.0.50)\n  Status               : connected\n  IP-User mappings     : 2,128\n  Groups in cache      : 184\n  Last update          : 32 sec ago\n  Bytes RX / TX        : 14.2 MB / 1.8 MB"
           },
           {
             "cmd": "set user-id agent <name> host <ip> port <port>",
             "desc": "Configures a connection to a User-ID agent",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# (configure) set user-id-agent AD-Agent-01 host 10.0.0.50 port 5007\n[edit]"
           },
           {
             "cmd": "debug user-id reset",
             "desc": "Resets the User-ID subsystem and clears all mappings — use with caution",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "User-ID daemon reset. All cached mappings dropped. Mappings will repopulate from agents."
           },
           {
             "cmd": "show user group name <group-dn>",
             "desc": "Lists all members of an AD/LDAP group as known to User-ID",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Group: cn=Domain Users,cn=Users,dc=acme,dc=local\nMember count: 1842\nMembers:\n  ACME\\jbloggs\n  ACME\\asmith\n  ..."
           },
           {
             "cmd": "request user-id logout user <username> vsys <vsys>",
             "desc": "Manually removes a user's IP-to-username mapping from the table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "User ACME\\jbloggs logged out from vsys1. IP-User mapping removed."
           },
           {
             "cmd": "show user user-ids all",
             "desc": "Every known username → IP mapping",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Vsys    User                Group memberships  Mappings\nvsys1   ACME\\jbloggs        12                 1 (10.0.2.55)\nvsys1   ACME\\asmith         12                 1 (10.0.2.100)"
           },
           {
             "cmd": "show user ip-user-mapping ip <ip>",
             "desc": "Who is this IP mapped to right now",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "IP             : 10.0.2.55\nUser           : ACME\\jbloggs\nSource         : AD\nIdle timeout   : 1582 sec remaining"
           },
           {
             "cmd": "show user group list",
             "desc": "Known AD groups from User-ID",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Vsys: vsys1\n  cn=Domain Users,cn=Users,dc=acme,dc=local\n  cn=Domain Admins,cn=Users,dc=acme,dc=local\n  cn=VPN-Users,cn=Users,dc=acme,dc=local"
           },
           {
             "cmd": "show user group name \"<grp>\"",
             "desc": "Members of a specific AD group",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Group: cn=VPN-Users,cn=Users,dc=acme,dc=local\nMember count: 412\nMembers:\n  ACME\\jbloggs\n  ACME\\asmith\n  ACME\\contractor1"
           },
           {
             "cmd": "clear user-cache all",
             "desc": "Clear all IP-user mappings (reset User-ID cache)",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "All User-ID cache entries cleared. Mappings will be re-learned from agents."
           }
         ],
         "Panorama": [
@@ -5639,163 +6012,190 @@
             "cmd": "show panorama-status",
             "desc": "Displays Panorama connection state, management server IP, and sync status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Panorama Server 1 : 10.0.0.20  Connected: yes  HA state: active-primary\nPanorama Server 2 : 10.0.0.21  Connected: yes  HA state: passive\nConnection type    : SSL\nPush state         : in-sync"
           },
           {
             "cmd": "request panorama-push to device <serial>",
             "desc": "Pushes pending config from Panorama to a specific managed device",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Push job enqueued. Job ID: 412. Target serial: 0123456789."
           },
           {
             "cmd": "show templates",
             "desc": "Lists all Panorama templates assigned to this device",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name              Description                              Members\nHQ-Network        HQ interface/zone/VR template            PA-3220-1, PA-3220-2\nBranch-Network    Branch firewall template                 PA-220-NYC, PA-220-LON"
           },
           {
             "cmd": "show device-group",
             "desc": "Displays device group membership and config hierarchy",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name           Parent      Devices  Pre-rules  Post-rules\nShared         shared      —         2          1\nHQ-DGs         Shared      2         18         3\nBranches       Shared      14        6          2"
           },
           {
             "cmd": "request license fetch",
             "desc": "Fetches updated licences from the Panorama licence server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "License fetch job enqueued. Job ID 423. Use 'show jobs id 423' to monitor."
           },
           {
             "cmd": "show devicegroups",
             "desc": "List all device groups + their members",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name           Devices    Templates     Pre-rules\nHQ-DGs         2          HQ-Network    18\nBranches       14         Branch-Net    6"
           },
           {
             "cmd": "show devicegroups name <dg>",
             "desc": "Detail for one device group",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Device-Group: HQ-DGs\n  Parent          : Shared\n  Devices         : PA-3220-1 (0123456789), PA-3220-2 (0123456790)\n  Pre-rules       : 18\n  Post-rules      : 3\n  Address objects : 432\n  Service objects : 38"
           },
           {
             "cmd": "show template-stack",
             "desc": "Template stacks + template order",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name            Templates                      Members\nHQ-Stack        HQ-Network, Shared-Net         PA-3220-1, PA-3220-2\nBranch-Stack    Branch-Net, Shared-Net         PA-220-NYC, PA-220-LON"
           },
           {
             "cmd": "show devices all",
             "desc": "All managed firewalls — connection state, version, last commit",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Serial          Hostname        Connected   Model     SW-Version  Last-commit\n0123456789      PA-3220-1       yes         PA-3220   11.1.4      2026/05/24 09:00:00\n0123456790      PA-3220-2       yes         PA-3220   11.1.4      2026/05/24 09:00:00\n9876543210      PA-220-NYC      no          PA-220    10.2.9      2026/05/22 14:01:11"
           },
           {
             "cmd": "show devices connected",
             "desc": "Currently-connected managed devices",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Serial          Hostname        Model     Connected since\n0123456789      PA-3220-1       PA-3220   2026/05/01 08:00:00\n0123456790      PA-3220-2       PA-3220   2026/05/01 08:00:00\n9876543211      PA-220-LON      PA-220    2026/05/24 06:11:18"
           },
           {
             "cmd": "show devices disconnected",
             "desc": "Disconnected managed devices",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Serial          Hostname        Model     Last seen\n9876543210      PA-220-NYC      PA-220    2026/05/24 04:12:08"
           },
           {
             "cmd": "show devices summary",
             "desc": "Device counts by HA + sync state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Connected         : 13 / 14\nHA pairs in-sync  : 5  / 5\nOut-of-sync       : 0\nDisconnected      : 1"
           },
           {
             "cmd": "show log-collector all",
             "desc": "Log-Collector pool — disk, log rate, status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name            Serial         IP             Connected   Free disk\nLC-HQ-1         0987654321     10.0.0.30      yes         88%\nLC-HQ-2         0987654322     10.0.0.31      yes         87%"
           },
           {
             "cmd": "show log-collector connected",
             "desc": "Online Log Collectors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "LC-HQ-1   10.0.0.30   connected   2026/05/01 08:00:00\nLC-HQ-2   10.0.0.31   connected   2026/05/01 08:00:00"
           },
           {
             "cmd": "show log-collector-group",
             "desc": "Log-Collector groups + members",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name            Members             Status\nHQ-LC-Group     LC-HQ-1, LC-HQ-2    healthy"
           },
           {
             "cmd": "show log-collector preference-list",
             "desc": "Log-forwarding preference list per device",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Devices                      Preference list\nPA-3220-1, PA-3220-2         LC-HQ-1 (primary), LC-HQ-2 (secondary)\nBranches                     LC-HQ-1 (primary), LC-HQ-2 (secondary)"
           },
           {
             "cmd": "commit",
             "desc": "Commit pending Panorama config",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit job enqueued with jobid 142. Use 'show jobs id 142' to monitor progress.\n...\nJob 142 finished — Commit succeeded in 7.4 sec."
           },
           {
             "cmd": "commit-all shared-policy",
             "desc": "Push policy to all device groups + their devices",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit-all (shared-policy) job enqueued. Job ID 430. Pushing to all device-groups."
           },
           {
             "cmd": "commit-all shared-policy device-group <dg>",
             "desc": "Push policy to a single device group",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit-all (shared-policy) job enqueued for device-group HQ-DGs. Job ID 431."
           },
           {
             "cmd": "commit-all template <tpl>",
             "desc": "Push template config to its devices",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit-all (template HQ-Network) job enqueued. Job ID 432."
           },
           {
             "cmd": "commit-all template-stack <ts>",
             "desc": "Push a template stack",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Commit-all (template-stack HQ-Stack) job enqueued. Job ID 433."
           },
           {
             "cmd": "request commit-status",
             "desc": "Status of latest commit-all jobs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "In-progress jobs:\n  Job 430  commit-all shared-policy  20% complete  ETA 02:11\nLast completed:\n  Job 429  commit  finished 2026/05/24 09:00:08 (7.4 sec)"
           },
           {
             "cmd": "show jobs id <n>",
             "desc": "Per-job commit details + warnings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Job ID    : 430\nType      : Commit-All-Shared-Policy\nStatus    : FIN\nProgress  : 100%\nElapsed   : 2m 12s\nTargets   : 16 devices (16 success, 0 failed)"
           },
           {
             "cmd": "request batch software upgrade install file <pkg> devices ALL",
             "desc": "Push and install a PAN-OS image across managed devices",
             "type": "config",
-            "flagged": true
+            "flagged": true,
+            "example": "Batch software install job enqueued for 16 devices. Job ID 440. PAN-OS file: PanOS-11.1.5."
           },
           {
             "cmd": "request system software check",
             "desc": "Check for available PAN-OS upgrades",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Version       Filename                          Released-on             Downloaded  Currently Installed  Latest\n11.1.4        PanOS_vm-11.1.4                   2026/02/12 10:11:01     yes         yes                  no\n11.1.5        PanOS_vm-11.1.5                   2026/04/02 14:32:08     no          no                   yes"
           },
           {
             "cmd": "request system software download version <ver>",
             "desc": "Download a PAN-OS version to Panorama",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Software download job enqueued. Job ID 441. Version: 11.1.5."
           },
           {
             "cmd": "request system software install version <ver>",
             "desc": "Install on Panorama itself",
             "type": "config",
-            "flagged": true
+            "flagged": true,
+            "example": "Software install job enqueued. Job ID 442. Version: 11.1.5. Device will need reboot."
           },
           {
             "cmd": "show config pushed-shared-policy",
@@ -5824,13 +6224,15 @@
             "cmd": "show session all filter source <ip> destination <ip>",
             "desc": "Active sessions between two hosts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session count: 2\nID    Application   State   Src                Dst                Proto  Ingress/Egress\n1024  web-browsing  ACTIVE  10.0.2.55:51234    203.0.113.10:80    TCP    eth1/2 / eth1/1\n1025  ssl           ACTIVE  10.0.2.55:51235    93.184.216.34:443  TCP    eth1/2 / eth1/1"
           },
           {
             "cmd": "show session all filter application <app>",
             "desc": "Sessions matched to a specific application",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Session count: 412\nID    Source                Destination         State    Proto  Rule\n1024  10.0.2.55:51234       203.0.113.10:443    ACTIVE   TCP    Allow-Web\n1025  10.0.2.99:51900       198.51.100.20:443   ACTIVE   TCP    Allow-Web\n... (truncated)"
           },
           {
             "cmd": "show session id <n>",
@@ -5843,7 +6245,8 @@
             "cmd": "show session info",
             "desc": "Global session-table statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Number of sessions supported   : 250,000\nNumber of active sessions      : 18,233\nSessions per second (max)      : 5,200\nSession table utilisation      : 7%\nTCP / UDP / ICMP / Other       : 80% / 18% / 1% / 1%"
           },
           {
             "cmd": "show session meter",
@@ -5856,13 +6259,15 @@
             "cmd": "clear session all filter source <ip>",
             "desc": "Clear all sessions for a given source IP",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Cleared 12 sessions with source 10.0.2.55."
           },
           {
             "cmd": "clear session id <n>",
             "desc": "Clear a single session by ID",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Session 1024 cleared."
           },
           {
             "cmd": "show session flow tunnel-id <n>",
@@ -5877,49 +6282,57 @@
             "cmd": "debug dataplane packet-diag set filter match source <ip> destination <ip>",
             "desc": "Install a packet-diag filter",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet filter: src=10.0.2.55 dst=8.8.8.8 added. Run 'debug dataplane packet-diag set filter on' to activate."
           },
           {
             "cmd": "debug dataplane packet-diag set filter on",
             "desc": "Enable the configured filter",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet filter is on. All active filters will match."
           },
           {
             "cmd": "debug dataplane packet-diag set capture stage receive file rx.pcap",
             "desc": "Capture at the \"receive\" stage",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Capture stage 'receive' configured to write to /var/tmp/rx.pcap."
           },
           {
             "cmd": "debug dataplane packet-diag set capture stage drop file drop.pcap",
             "desc": "Capture only dropped packets",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Capture stage 'drop' configured to write to /var/tmp/drop.pcap."
           },
           {
             "cmd": "debug dataplane packet-diag set capture on",
             "desc": "Turn capture on",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet capture is on. PCAPs are being written to /var/tmp/."
           },
           {
             "cmd": "debug dataplane packet-diag set capture off",
             "desc": "Turn capture off",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Packet capture is off. Use 'view-pcap filter-pcap <file>' or scp out."
           },
           {
             "cmd": "view-pcap filter-pcap rx.pcap",
             "desc": "Inspect captured pcap from CLI",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Reading from /var/tmp/rx.pcap, 412 packets:\n1  09:30:11.123  10.0.2.55 -> 8.8.8.8  ICMP echo request id=1024 seq=1\n2  09:30:11.128  8.8.8.8 -> 10.0.2.55  ICMP echo reply   id=1024 seq=1"
           },
           {
             "cmd": "scp export filter-pcap from rx.pcap to <user>@<host>:/tmp/",
             "desc": "Pull captured pcap off the firewall",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "scp: copying /var/tmp/rx.pcap to admin@10.0.0.50:/tmp/rx.pcap ... done (412 KB)."
           }
         ],
         "GlobalProtect": [
@@ -5927,37 +6340,43 @@
             "cmd": "show global-protect-portal current-portal",
             "desc": "Active GlobalProtect Portal config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Portal name: GP-Portal\nHostname   : vpn.acme.com\nAuthentication-profile : SAML-Azure\nAgent users (last 24h) : 1,842"
           },
           {
             "cmd": "show global-protect-gateway current-gateway",
             "desc": "Active GlobalProtect Gateway config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Gateway     : GP-Gateway\nTunnel IPs  : 10.50.0.0/16\nConnected users : 142\nTunnel mode : split-tunnel\nEncryption  : aes-256-gcm"
           },
           {
             "cmd": "show global-protect-gateway current-user",
             "desc": "Connected GP users list",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "User             Computer       Source IP        Tunnel IP        Login Time            Client-OS\njbloggs          NB-1234        198.51.100.20    10.50.0.12       2026/05/24 08:11:02   Win 11\nasmith           IPHONE-99      203.0.113.4      10.50.0.13       2026/05/24 09:02:18   iOS 17"
           },
           {
             "cmd": "show global-protect-gateway statistics",
             "desc": "GP gateway statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Active GlobalProtect users      : 142\nTunnels (active / configured)   : 142 / 500\nBytes  in / out                 : 188.4 GB / 42.1 GB\nLogins (success / failed)        : 1503 / 12"
           },
           {
             "cmd": "show global-protect-gateway flow tunnel-id <n>",
             "desc": "GP tunnel detail",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Tunnel: 12\n  User              : ACME\\jbloggs\n  Source IP         : 198.51.100.20\n  Tunnel IP         : 10.50.0.12\n  Bytes  in / out   : 18.2 MB / 4.8 MB\n  Encryption        : aes-256-gcm"
           },
           {
             "cmd": "request global-protect-gateway client-logout user <user>",
             "desc": "Force-logout a single GP user",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "User ACME\\jbloggs logged out from GlobalProtect gateway. Tunnel terminated."
           }
         ],
         "SSL Decryption": [
@@ -5965,31 +6384,36 @@
             "cmd": "show system setting ssl-decrypt setting",
             "desc": "Decryption global config",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SSL Decryption enabled         : yes\nForward proxy CA               : SSL-Decrypt-CA\nSessions decrypted (current)   : 412\nTotal decrypted (last 24h)     : 14,832,002"
           },
           {
             "cmd": "show system setting ssl-decrypt certificate",
             "desc": "Decryption forward-trust / forward-untrust certs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Forward Trust CA      : SSL-Decrypt-CA  (valid until 2030/01/01)\nForward Untrust CA    : SSL-Untrust-CA  (valid until 2027/06/01)\nActive sessions       : 412"
           },
           {
             "cmd": "show system setting ssl-decrypt session-cache",
             "desc": "Decryption session cache stats",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Cached cert entries : 1,842\nHits / Misses       : 14,801,232 / 12,442\nCache utilisation   : 38%"
           },
           {
             "cmd": "debug dataplane show ssl-decrypt session-summary",
             "desc": "Per-session decryption state",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Active SSL decrypt sessions: 412\n  by-version: TLS1.3: 280  TLS1.2: 130  TLS1.0: 2\n  by-cipher : ECDHE-RSA-AES256-GCM 350  ECDHE-ECDSA-AES128-GCM 60  other 2"
           },
           {
             "cmd": "debug dataplane show ssl-decrypt ssl-stats",
             "desc": "Decryption error counters",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "Handshake successes  : 14,830,221\nHandshake failures   : 1,781\nUnsupported ciphers  : 412\nCert errors          : 248"
           }
         ],
         "URL & Threat Updates": [
@@ -5997,37 +6421,43 @@
             "cmd": "request content upgrade check",
             "desc": "Check for new content (App-ID / Threat) updates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Application & threat content\n  Installed: 8754-8543 (2026/05/23)\n  Latest   : 8755-8555 (2026/05/24)  available"
           },
           {
             "cmd": "request content upgrade download latest",
             "desc": "Download latest content",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Content download job enqueued. Job ID 460. Version: 8755-8555."
           },
           {
             "cmd": "request content upgrade install version latest",
             "desc": "Install latest content",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Content install job enqueued. Job ID 461. Version: 8755-8555."
           },
           {
             "cmd": "request anti-virus upgrade install version latest",
             "desc": "Install latest AV signatures",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Antivirus install job enqueued. Job ID 462. Version: 4685-5211."
           },
           {
             "cmd": "request wildfire upgrade install version latest",
             "desc": "Install latest WildFire signatures",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "WildFire signature install job enqueued. Job ID 463. Version: 821232-1."
           },
           {
             "cmd": "request url-filtering download status",
             "desc": "PAN-DB seed download status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "URL filtering download status:\n  Vendor    : pan-db\n  Status    : up-to-date  (last update 2026/05/24 06:00:01)\n  Db size   : 1.2 GB"
           }
         ],
         "Logging & Reports": [
@@ -6072,6 +6502,307 @@
             "type": "show",
             "flagged": false,
             "example": "Counter Group / Name             Value\nflow_action_close                17234   (matched packet-filter)\nflow_dos_red_drop                421     (matched packet-filter)"
+          }
+        ],
+        "Authentication & Admin": [
+          {
+            "cmd": "show admins",
+            "desc": "List currently logged-in administrators with role and IP",
+            "type": "show",
+            "flagged": false,
+            "example": "Admin       Role         From IP        Session     Idle\nadmin       superuser    10.0.0.5       CLI/SSH     0:12:33\nasmith      device-admin 10.0.0.6       Web         0:01:11"
+          },
+          {
+            "cmd": "show admins all",
+            "desc": "Configured admin users — name, role, authentication profile",
+            "type": "show",
+            "flagged": false,
+            "example": "Name        Role            Auth-profile          Last login\nadmin       superuser       local                 2026/05/24 08:00:00\nasmith      device-admin    SAML-Azure            2026/05/24 09:02:11\njbloggs     audit           TACACS-Cisco          2026/05/22 14:00:01"
+          },
+          {
+            "cmd": "set mgt-config users <user> authentication-profile <profile>",
+            "desc": "Bind an admin user to an external auth profile (RADIUS / TACACS+ / SAML / Kerberos)",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set mgt-config users asmith authentication-profile SAML-Azure\n[edit]"
+          },
+          {
+            "cmd": "set authentication-profile <name> method radius server-profile <srv>",
+            "desc": "Create an authentication profile using a RADIUS server-profile",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set shared authentication-profile RADIUS-Auth method radius server-profile NPS-1\n[edit]"
+          },
+          {
+            "cmd": "set shared server-profile radius <name> server <s> host <ip> port 1812 secret <psk>",
+            "desc": "Define a RADIUS server-profile (host, port, shared secret)",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set shared server-profile radius NPS-1 server NPS-Primary host 10.0.0.50 port 1812 secret <redacted>\n[edit]"
+          },
+          {
+            "cmd": "set shared server-profile tacplus <name> server <s> host <ip> secret <psk>",
+            "desc": "Define a TACACS+ server-profile",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set shared server-profile tacplus ACS-1 server ACS-Primary host 10.0.0.60 secret <redacted>\n[edit]"
+          },
+          {
+            "cmd": "test authentication authentication-profile <profile> username <u> password",
+            "desc": "Test an auth profile end-to-end without logging in",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "Enter password : ********\nTarget vsys is not specified, user \"asmith\" is assumed to be configured with a shared auth profile.\nDo allow list check before sending out authentication request...\nname \"asmith\" is in the allow list.\nAuthentication succeeded for user \"asmith\"."
+          },
+          {
+            "cmd": "less mp-log authd.log",
+            "desc": "Auth daemon log — useful for diagnosing RADIUS/TACACS/SAML failures",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "2026-05-24 09:32:01 authd: RADIUS auth request username=asmith server=10.0.0.50\n2026-05-24 09:32:01 authd: RADIUS Accept (role=device-admin)\n2026-05-24 09:32:08 authd: SAML response received from idp=login.microsoftonline.com"
+          },
+          {
+            "cmd": "show authentication allow-list",
+            "desc": "Effective allow-list applied by current auth profiles",
+            "type": "show",
+            "flagged": false,
+            "example": "Profile           Allow-list\nSAML-Azure        ACME-Admins, ACME-NetEng\nRADIUS-Auth       all\nTACACS-Cisco      ACME-NetEng"
+          },
+          {
+            "cmd": "set deviceconfig system permitted-ip <ip>",
+            "desc": "Lock the management plane down to a list of allowed source IPs/CIDRs",
+            "type": "config",
+            "flagged": true,
+            "example": "# (configure) set deviceconfig system permitted-ip 10.0.0.0/24\n[edit]"
+          }
+        ],
+        "WildFire": [
+          {
+            "cmd": "show wildfire status",
+            "desc": "WildFire cloud connection state, queue depths and verdict counters",
+            "type": "show",
+            "flagged": false,
+            "example": "WildFire cloud      : wildfire.paloaltonetworks.com\nRegion              : us-west\nConnection          : connected\nSample queue depth  : 0\nVerdicts received   : 14,832 (malicious 12, suspicious 4, benign 14,816)"
+          },
+          {
+            "cmd": "show wildfire statistics",
+            "desc": "Submission counters by file type with malicious/benign breakdown",
+            "type": "show",
+            "flagged": false,
+            "example": "Type     Submitted   Malicious   Benign   Pending\nPE         5,142          8       5,130        4\nPDF        2,201          1       2,200        0\nAPK          412          3         409        0\nDOC          908          0         908        0"
+          },
+          {
+            "cmd": "show wildfire local",
+            "desc": "Status of an on-prem WF-500 / WildFire appliance (if used)",
+            "type": "show",
+            "flagged": false,
+            "example": "Local WildFire           : enabled (10.0.0.40)\nHealth                   : up\nCloud forwarding         : enabled\nQueue                    : 0"
+          },
+          {
+            "cmd": "request wildfire registration",
+            "desc": "Re-register with the WildFire cloud (after model change / RMA)",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "WildFire registration job enqueued. Job ID 510."
+          },
+          {
+            "cmd": "show running wildfire-policy",
+            "desc": "WildFire analysis profiles bound to security rules",
+            "type": "show",
+            "flagged": false,
+            "example": "Profile: WF-Strict\n  PE / PDF / Office  -> forward to public cloud\n  APK                -> forward to public cloud\n  ZIP / RAR          -> forward to public cloud"
+          },
+          {
+            "cmd": "show wildfire signature pull",
+            "desc": "WildFire signature pull cadence and last successful pull",
+            "type": "show",
+            "flagged": false,
+            "example": "Last pull : 2026/05/24 09:30:02\nInterval  : 1 minute\nStatus    : up-to-date (signature 821232-1)"
+          }
+        ],
+        "DNS Security": [
+          {
+            "cmd": "show dns-proxy statistics",
+            "desc": "DNS proxy hit/miss/cache statistics",
+            "type": "show",
+            "flagged": false,
+            "example": "Queries received : 1,820,442\nCache hits       : 1,514,201\nCache misses     :   306,241\nUpstream         : 8.8.8.8, 1.1.1.1\nNXDOMAIN         :   18,402"
+          },
+          {
+            "cmd": "show dns-proxy cache all",
+            "desc": "Cached DNS entries (FQDN, TTL, RR type)",
+            "type": "show",
+            "flagged": false,
+            "example": "FQDN                       Type   TTL    Answer\nwww.example.com            A      284    93.184.216.34\ngoogle.com                 A      198    142.250.74.46\nmalicious.example.com      A      sink   sinkholed"
+          },
+          {
+            "cmd": "show dns-security statistics",
+            "desc": "DNS Security cloud lookup volume and verdict breakdown",
+            "type": "show",
+            "flagged": false,
+            "example": "Cloud lookups       : 142,802\nVerdicts:\n  benign            : 140,118\n  command-and-ctrl  :   1,442\n  malware           :     842\n  phishing          :     400"
+          },
+          {
+            "cmd": "show dns-proxy sinkhole",
+            "desc": "Configured sinkhole IPs (IPv4/IPv6) used to redirect malicious DNS",
+            "type": "show",
+            "flagged": false,
+            "example": "Sinkhole IPv4 : 72.5.65.111  (Palo Alto default)\nSinkhole IPv6 : 2600:5200::1\nUse rule(s)  : Anti-Spyware-Strict"
+          },
+          {
+            "cmd": "request dns-security update",
+            "desc": "Force a refresh of DNS Security category lists",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "DNS Security category refresh job enqueued. Job ID 520."
+          }
+        ],
+        "Policy-Based Forwarding": [
+          {
+            "cmd": "show pbf rule all",
+            "desc": "Show all configured PBF rules with action and forwarding next-hop",
+            "type": "show",
+            "flagged": false,
+            "example": "Name             From       Source         App      Action       Egress    Next-hop\nBranch-PBF       trust      10.0.2.0/24    any      forward      tunnel.2  Azure-GW\nMgmt-PBF         trust      10.0.5.0/24    ssh      forward      eth1/9    10.0.5.254"
+          },
+          {
+            "cmd": "show pbf rule <name>",
+            "desc": "Detail for one PBF rule (monitor, symmetric-return, schedule)",
+            "type": "show",
+            "flagged": false,
+            "example": "Rule: Branch-PBF\n  From zone        : trust\n  Source           : 10.0.2.0/24\n  Forward to       : tunnel.2 next-hop Azure-GW\n  Symmetric return : enabled\n  Path monitor     : Azure-Monitor (UP)\n  Schedule         : 24x7"
+          },
+          {
+            "cmd": "show counter global filter category pbf",
+            "desc": "PBF-related global counters (rule hits, monitor failures)",
+            "type": "show",
+            "flagged": false,
+            "example": "pbf_rule_match              18421\npbf_path_monitor_failed        12\npbf_symmetric_return_used    8412"
+          },
+          {
+            "cmd": "test pbf-policy-match from <zone> source <ip> destination <ip>",
+            "desc": "Find which PBF rule a candidate flow would match",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "Match: \"Branch-PBF\" -> forward via tunnel.2 (Azure-GW)"
+          }
+        ],
+        "SD-WAN": [
+          {
+            "cmd": "show sdwan path-monitor",
+            "desc": "Per-link health: latency, jitter, packet loss vs SLA thresholds",
+            "type": "show",
+            "flagged": false,
+            "example": "Link        Latency  Jitter  Loss   Status   SLA\nISP1-MPLS    8 ms     1 ms    0.0%   Healthy  Voice, Video\nISP2-Cable  22 ms     4 ms    0.2%   Healthy  General\nISP3-LTE    62 ms    18 ms    1.4%   Degraded backup-only"
+          },
+          {
+            "cmd": "show sdwan link-policy",
+            "desc": "SD-WAN path-quality policy and the link each app currently rides",
+            "type": "show",
+            "flagged": false,
+            "example": "Policy: Voice-First\n  ms-teams      -> ISP1-MPLS  (latency target 80 ms)\n  saas-general  -> ISP2-Cable\n  default       -> ISP1-MPLS, ISP2-Cable (load-share)"
+          },
+          {
+            "cmd": "show sdwan event",
+            "desc": "SD-WAN link state-change and SLA breach event log",
+            "type": "show",
+            "flagged": false,
+            "example": "2026/05/24 08:12:03  ISP3-LTE  brownout-start  loss=4.2%\n2026/05/24 08:14:01  ISP3-LTE  brownout-end    loss=0.4%\n2026/05/24 09:32:55  ISP2-Cable jitter-spike   jitter=22ms"
+          },
+          {
+            "cmd": "show sdwan session distribution policy <p>",
+            "desc": "How sessions are currently distributed across links by an SD-WAN policy",
+            "type": "show",
+            "flagged": false,
+            "example": "Policy: Voice-First\n  ISP1-MPLS  : 412 sessions (62%)\n  ISP2-Cable : 248 sessions (37%)\n  ISP3-LTE   :   8 sessions (1%) (backup)"
+          },
+          {
+            "cmd": "show sdwan link-statistics",
+            "desc": "Per-link byte / packet / drop counters",
+            "type": "show",
+            "flagged": false,
+            "example": "Link        Pkts in/out         Bytes in/out         Drops\nISP1-MPLS   12,231,442/11,889K  8.4 GB/1.2 GB        0\nISP2-Cable  8,221,310/8,118K    5.1 GB/0.9 GB        12"
+          }
+        ],
+        "Quality of Service": [
+          {
+            "cmd": "show qos statistics",
+            "desc": "QoS class/queue counters per interface",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface: ethernet1/1\nClass    Forwarded   Dropped   Bandwidth used\n1 (RT)   1,842,211       0     12 Mbps\n2        18,224,887     412    142 Mbps\n3         3,221,408      18     22 Mbps"
+          },
+          {
+            "cmd": "show qos interface <if>",
+            "desc": "QoS profile attached to an interface with policer/shaper config",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface : ethernet1/1\nEgress QoS profile : Internet-Egress  (1 Gbps total)\n  Class 1 (Realtime) : guaranteed 50M, max 100M\n  Class 2 (Business) : guaranteed 200M, max 800M\n  Class 3 (Bulk)     : guaranteed 50M, max 1000M (best-effort)"
+          },
+          {
+            "cmd": "show qos policy",
+            "desc": "QoS classification policy — what app/source/zone maps to which class",
+            "type": "show",
+            "flagged": false,
+            "example": "Rule              From    To       App                     Class\nRT-Voice          trust   untrust  ms-teams, sip            1\nBusiness-Web      trust   untrust  web-browsing, ssl        2\nBulk-Backup       trust   untrust  bittorrent, scp          3"
+          },
+          {
+            "cmd": "show qos throttling",
+            "desc": "Any active QoS throttling (policer/shaper drops in last interval)",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface     Class    Drops (1m)    Cause\nethernet1/1   2          412         exceed-policed\nethernet1/1   3           18         shaper-queue-full"
+          }
+        ],
+        "Threat Prevention": [
+          {
+            "cmd": "show threat content",
+            "desc": "Currently installed Threat Prevention (App/Threat) content version",
+            "type": "show",
+            "flagged": false,
+            "example": "Content version          : 8754-8543\nReleased                 : 2026/05/23 18:00:01\nLast upgrade             : 2026/05/24 06:00:01\nAuto-update enabled      : yes"
+          },
+          {
+            "cmd": "show threat id <threat-id>",
+            "desc": "Look up a Threat Vault entry by ID (vulnerability, spyware, virus)",
+            "type": "show",
+            "flagged": false,
+            "example": "Threat ID       : 65532\nName            : Generic.Backdoor.RCE-2026.001\nType            : vulnerability\nSeverity        : critical\nCVE             : CVE-2026-12345\nDefault action  : reset-both"
+          },
+          {
+            "cmd": "show running anti-virus",
+            "desc": "Currently active Antivirus profile bindings and default actions",
+            "type": "show",
+            "flagged": false,
+            "example": "Profile : default\n  HTTP / FTP / SMB / SMTP / POP3 / IMAP : alert (default), block on critical\nProfile : strict\n  HTTP / FTP / SMB / SMTP / POP3 / IMAP : block"
+          },
+          {
+            "cmd": "show running anti-spyware",
+            "desc": "Currently active Anti-Spyware profile bindings",
+            "type": "show",
+            "flagged": false,
+            "example": "Profile : strict\n  DNS sinkhole       : enabled  (sinkhole 72.5.65.111)\n  Reset-both         : critical, high\n  Default action     : alert"
+          },
+          {
+            "cmd": "show running vulnerability",
+            "desc": "Currently active Vulnerability Protection profile bindings",
+            "type": "show",
+            "flagged": false,
+            "example": "Profile : strict\n  Severity critical/high  : reset-both\n  Severity medium          : reset-server\n  Severity low             : alert"
+          },
+          {
+            "cmd": "show counter global filter category threat",
+            "desc": "Global counters for threat engine (resets, blocks, sigs hit)",
+            "type": "show",
+            "flagged": false,
+            "example": "threat_engine_sig_match      18421\nthreat_engine_reset_both       422\nthreat_engine_alert          15822\nthreat_engine_block_url        832"
+          },
+          {
+            "cmd": "less mp-log threat.log",
+            "desc": "Threat-engine debug log (sig load, profile binding errors)",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "2026-05-24 06:00:01 threat: loaded content 8754-8543 (sigs: 142,802)\n2026-05-24 06:00:02 threat: bound strict profile to rule Allow-Web"
           }
         ]
       },
