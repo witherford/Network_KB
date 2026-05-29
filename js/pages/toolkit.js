@@ -38,7 +38,7 @@ const SUBS = {
   wifisec:      { label: 'Security & encryption', group: 'WIFI tools',         load: () => import('../toolkit/wifi-security.js') },
 
   // Palo Alto
-  patraffic:    { label: 'Traffic filters',     group: 'Palo Alto',            load: () => import('../toolkit/pa-traffic-filters.js') },
+  patraffic:    { label: 'Log filters',         group: 'Palo Alto',            load: () => import('../toolkit/pa-traffic-filters.js') },
   paflow:       { label: 'Packet flow diagram', group: 'Palo Alto',            load: () => import('../toolkit/pa-packet-flow.js') },
 
   // Misc
