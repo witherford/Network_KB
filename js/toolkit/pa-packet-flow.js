@@ -34,15 +34,21 @@ const DEFS = `
     </marker>
   </defs>`;
 
-// Helpers: rounded box and text label.
+// Helpers: rounded box and text label. `sub` may be a string or an array of
+// strings (one line each) to support multi-line labels inside boxes without
+// SVG text overflowing the rounded rectangle.
 function box(x, y, w, h, fill, title, sub) {
+  const subLines = sub == null ? [] : (Array.isArray(sub) ? sub : [sub]);
+  const cx = x + w / 2;
+  const titleY = y + (subLines.length ? 18 : Math.round(h / 2) + 4);
+  const subStart = titleY + 14;
   return `
     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"
           fill="${fill}" fill-opacity="0.18" stroke="${fill}" stroke-width="1.5"/>
-    <text x="${x + w / 2}" y="${y + 17}" text-anchor="middle"
+    <text x="${cx}" y="${titleY}" text-anchor="middle"
           fill="currentColor" font-size="12" font-weight="700">${title}</text>
-    ${sub ? `<text x="${x + w / 2}" y="${y + 34}" text-anchor="middle"
-              fill="currentColor" fill-opacity="0.75" font-size="10.5">${sub}</text>` : ''}`;
+    ${subLines.map((s, i) => `<text x="${cx}" y="${subStart + i * 13}" text-anchor="middle"
+          fill="currentColor" fill-opacity="0.75" font-size="10.5">${s}</text>`).join('')}`;
 }
 function diamond(cx, cy, w, h, fill, label, sub) {
   const pts = `${cx},${cy - h/2} ${cx + w/2},${cy} ${cx},${cy + h/2} ${cx - w/2},${cy}`;
@@ -62,88 +68,89 @@ function arrow(x1, y1, x2, y2, label) {
 }
 
 function diagramSvg() {
-  // Layout grid (vertical flow). Width 920, dynamic height.
-  // We lay out each stage as a row. X-positions are precomputed.
-  const W = 920;
+  // Layout grid (vertical flow). Width 960, dynamic height.
+  // Boxes are 64 px tall and use multi-line sub-labels so text never overflows.
+  const W = 960;
   const stages = [];
 
-  // ── Row 1 — Ingress & parsing ──────────────────────────────────────────
+  // ── Row 1 — Ingress & parsing ─────────────────────────────────────────
   stages.push(`
     <g>
-      ${box(40, 20, 200, 56, C.ingress, 'Ingress',           'NIC → packet buffer · L2 parse')}
-      ${box(280, 20, 200, 56, C.ingress, 'Packet Parsing',   'tunnel decap (IPSec / GRE) · IP / TCP / UDP')}
-      ${box(520, 20, 200, 56, C.ingress, 'IP Sanity',        'fragment / TTL / checksum / spoof')}
-      ${arrow(240, 48, 280, 48)}
-      ${arrow(480, 48, 520, 48)}
+      ${box(40, 20, 220, 64, C.ingress, 'Ingress',         ['NIC → packet buffer', 'Layer-2 parse'])}
+      ${box(290, 20, 240, 64, C.ingress, 'Packet Parsing', ['tunnel decap (IPSec / GRE)', 'IP / TCP / UDP'])}
+      ${box(560, 20, 220, 64, C.ingress, 'IP Sanity',      ['fragment · TTL · checksum', 'anti-spoof'])}
+      ${arrow(260, 52, 290, 52)}
+      ${arrow(530, 52, 560, 52)}
     </g>`);
 
-  // ── Row 2 — Flow lookup decision ───────────────────────────────────────
+  // ── Row 2 — Flow lookup decision ──────────────────────────────────────
   stages.push(`
     <g>
-      ${diamond(620, 150, 200, 80, C.decision, 'Flow Lookup',  'session already exists?')}
-      ${arrow(620, 76, 620, 110)}
+      ${diamond(670, 160, 220, 88, C.decision, 'Flow Lookup', 'session already exists?')}
+      ${arrow(670, 84, 670, 116)}
     </g>`);
 
-  // ── Row 3 — Fast path (right) vs Slow path setup (left) ────────────────
-  // Slow path column on the left, fast path callout on the right.
+  // ── Row 3 — Slow path stack (left) vs Fast path (right) ───────────────
+  // Slow path stack: boxes 360 wide, starting at x=40. Fast path box: 200 wide
+  // at x=740 with multi-line sub so the text fits comfortably.
   stages.push(`
     <g>
-      <!-- branch labels -->
-      ${arrow(540, 150, 420, 150, 'No → slow path')}
-      ${arrow(720, 150, 840, 150, 'Yes → fast path')}
+      <!-- branch labels — diagonals pointing into the next box of each path -->
+      ${arrow(560, 160, 220, 220, 'No → slow path')}
+      ${arrow(780, 160, 820, 220, 'Yes → fast path')}
 
       <!-- Slow path stack -->
-      ${box(40, 200, 380, 44, C.slow, 'Zone & Routing lookup', 'ingress zone · FIB / virtual-router · egress zone')}
-      ${box(40, 254, 380, 44, C.slow, 'DoS Protection',        'zone DoS profile · classified / aggregate')}
-      ${box(40, 308, 380, 44, C.slow, 'NAT Policy Evaluation', 'destination NAT first · source NAT after policy')}
-      ${box(40, 362, 380, 44, C.slow, 'Security Pre-Policy',   'allow / deny / drop  ·  zone-to-zone match')}
-      ${box(40, 416, 380, 44, C.slow, 'Session Install',       'allocate session · set timers · install in FW')}
-      ${arrow(230, 244, 230, 254)}
-      ${arrow(230, 298, 230, 308)}
-      ${arrow(230, 352, 230, 362)}
-      ${arrow(230, 406, 230, 416)}
+      ${box(40, 220, 360, 50, C.slow, 'Zone & Routing lookup', 'ingress zone · FIB / VR · egress zone')}
+      ${box(40, 280, 360, 50, C.slow, 'DoS Protection',        'zone DoS profile · classified / aggregate')}
+      ${box(40, 340, 360, 50, C.slow, 'NAT Policy Evaluation', 'destination NAT first · source NAT after policy')}
+      ${box(40, 400, 360, 50, C.slow, 'Security Pre-Policy',   'allow / deny / drop · zone-to-zone match')}
+      ${box(40, 460, 360, 50, C.slow, 'Session Install',       'allocate session · set timers · install in FW')}
+      ${arrow(220, 270, 220, 280)}
+      ${arrow(220, 330, 220, 340)}
+      ${arrow(220, 390, 220, 400)}
+      ${arrow(220, 450, 220, 460)}
 
-      <!-- Fast path box (right) -->
-      ${box(740, 200, 160, 260, C.fast, 'Fast Path',
-        'existing session · skip policy lookup · App-ID re-check · Content-ID inspection if enabled')}
+      <!-- Fast path box (right) — wider, multi-line sub so nothing overflows -->
+      ${box(720, 220, 200, 290, C.fast, 'Fast Path',
+        ['existing session', 'skip policy lookup', 'App-ID re-check', 'Content-ID inspection', 'if profile attached'])}
 
       <!-- Connect slow + fast back into App-ID -->
-      ${arrow(230, 460, 230, 500)}
-      ${arrow(820, 460, 820, 500)}
+      ${arrow(220, 510, 220, 550)}
+      ${arrow(820, 510, 820, 550)}
     </g>`);
 
-  // ── Row 4 — App-ID ─────────────────────────────────────────────────────
+  // ── Row 4 — App-ID ────────────────────────────────────────────────────
   stages.push(`
     <g>
-      ${box(120, 500, 700, 64, C.appid, 'App-ID',
-        'protocol decoder · known apps · unknown-tcp/unknown-udp · application override')}
-      <text x="470" y="586" text-anchor="middle" fill="currentColor" fill-opacity="0.65" font-size="10.5">
+      ${box(120, 550, 720, 64, C.appid, 'App-ID',
+        ['protocol decoder · known apps · unknown-tcp / unknown-udp · application override'])}
+      <text x="480" y="634" text-anchor="middle" fill="currentColor" fill-opacity="0.65" font-size="10.5">
         first few packets establish the application; later packets short-circuit on cached App-ID
       </text>
-      ${arrow(470, 600, 470, 624)}
+      ${arrow(480, 644, 480, 672)}
     </g>`);
 
-  // ── Row 5 — Content-ID stack ───────────────────────────────────────────
+  // ── Row 5 — Content-ID stack ──────────────────────────────────────────
   stages.push(`
     <g>
-      ${box(40, 630, 880, 44, C.content, 'Content-ID — single-pass parallel inspection',
-        'AV · Anti-Spyware · Vulnerability · URL filtering · File Blocking · Data Filtering · WildFire · DNS Security')}
-      ${arrow(470, 674, 470, 698)}
+      ${box(40, 680, 880, 64, C.content, 'Content-ID — single-pass parallel inspection',
+        ['AV · Anti-Spyware · Vulnerability · URL filtering · File Blocking · Data Filtering · WildFire · DNS Security'])}
+      ${arrow(480, 744, 480, 772)}
     </g>`);
 
-  // ── Row 6 — Egress ─────────────────────────────────────────────────────
+  // ── Row 6 — Egress ────────────────────────────────────────────────────
   stages.push(`
     <g>
-      ${box(40, 700, 200, 56, C.egress, 'QoS Marking',       'class / DSCP / 802.1p')}
-      ${box(280, 700, 200, 56, C.egress, 'Source NAT apply', 'translate addresses / ports')}
-      ${box(520, 700, 200, 56, C.egress, 'Encryption / Tunnel', 'IPSec encap · GRE · SSL')}
-      ${box(760, 700, 140, 56, C.egress, 'Fragment / TX',    'MTU · ARP · NIC')}
-      ${arrow(240, 728, 280, 728)}
-      ${arrow(480, 728, 520, 728)}
-      ${arrow(720, 728, 760, 728)}
+      ${box(40, 780, 210, 64, C.egress, 'QoS Marking',        ['class · DSCP · 802.1p'])}
+      ${box(280, 780, 210, 64, C.egress, 'Source NAT apply',  ['translate addresses / ports'])}
+      ${box(520, 780, 210, 64, C.egress, 'Encrypt / Tunnel',  ['IPSec encap · GRE · SSL'])}
+      ${box(760, 780, 160, 64, C.egress, 'Fragment / TX',     ['MTU · ARP · NIC'])}
+      ${arrow(250, 812, 280, 812)}
+      ${arrow(490, 812, 520, 812)}
+      ${arrow(730, 812, 760, 812)}
     </g>`);
 
-  const HEIGHT = 780;
+  const HEIGHT = 870;
   return `
     <svg viewBox="0 0 ${W} ${HEIGHT}" role="img"
          aria-label="PAN-OS packet flow diagram"
@@ -159,6 +166,20 @@ export async function mount(root) {
     `<span class="k"><span class="sw" style="background:${color}"></span> ${esc(label)}</span>`;
 
   root.innerHTML = `
+    <style>
+      .paf-body { font-size: 12.5px; line-height: 1.6; }
+      .paf-body > p { margin: 10px 0; }
+      .paf-body > ul, .paf-body > ol { margin: 8px 0 12px 22px; padding: 0; }
+      .paf-body > ul li, .paf-body > ol li { margin: 3px 0; }
+      .paf-body h5 { font-size: 12.5px; margin: 14px 0 6px; color: var(--text); }
+      .paf-body h5:first-child { margin-top: 4px; }
+      .paf-body .paf-divider { height: 1px; background: var(--border); margin: 14px 0; opacity: 0.6; }
+      .paf-body table.tbl { margin: 8px 0 12px; }
+      .paf-section + .paf-section { margin-top: 10px; }
+      .paf-subsection .paf-body > p:first-child { margin-top: 4px; }
+      .paf-toc a { text-decoration: none; color: var(--accent); }
+      .paf-toc a:hover { text-decoration: underline; }
+    </style>
     <h2 style="font-size:15px;margin-bottom:4px">PAN-OS packet flow</h2>
     <p class="hint" style="margin-bottom:8px">
       How a packet traverses a Palo Alto firewall. The first packet of a new flow walks the
@@ -228,8 +249,10 @@ export async function mount(root) {
 
       ${subsection('paf-s2-1', '2.1 Packet Parsing', `
         <p>Packet parsing starts with the Ethernet (Layer-2) header of the packet received from the wire. The ingress port, 802.1q tag, and destination MAC address are used as keys to look up the ingress logical interface. If the interface is not found, the packet is discarded. The hardware interface counter <code>receive error</code> and global counter <code>flow_rcv_dot1q_tag_err</code> are incremented.</p>
-        <p>Next, the IP header is parsed (Layer-3).</p>
-        <p><strong>IPv4</strong> — the firewall will discard the packet for any of the following reasons:</p>
+
+        <h5>Layer-3 header parsing</h5>
+        <p>After Layer-2, the IP header is parsed. The firewall will discard the packet under the following conditions:</p>
+        <p><strong>IPv4</strong></p>
         <ul>
           <li>Mismatch of Ethernet type and IP version</li>
           <li>Truncated IP header</li>
@@ -240,7 +263,7 @@ export async function mount(root) {
           <li>Martian IP address</li>
           <li>IP checksum errors</li>
         </ul>
-        <p><strong>IPv6</strong> — the firewall will discard the packet for any of the following reasons:</p>
+        <p><strong>IPv6</strong></p>
         <ul>
           <li>Mismatch of Ethernet type and IP version</li>
           <li>Truncated IPv6 header</li>
@@ -248,8 +271,12 @@ export async function mount(root) {
           <li>JumboGram extension (RFC 2675)</li>
           <li>Truncated extension header</li>
         </ul>
-        <p>Next, the Layer-4 (TCP/UDP) header is parsed, if applicable.</p>
-        <p><strong>TCP</strong> — discard the packet for any of the following reasons:</p>
+
+        <div class="paf-divider"></div>
+
+        <h5>Layer-4 header parsing</h5>
+        <p>If applicable, the Layer-4 (TCP/UDP) header is parsed. The firewall will discard the packet under the following conditions:</p>
+        <p><strong>TCP</strong></p>
         <ul>
           <li>TCP header is truncated</li>
           <li>Data-offset field is less than 5</li>
@@ -257,7 +284,7 @@ export async function mount(root) {
           <li>Port is zero</li>
           <li>Invalid combination of TCP flags</li>
         </ul>
-        <p><strong>UDP</strong> — discard the packet for any of the following reasons:</p>
+        <p><strong>UDP</strong></p>
         <ul>
           <li>UDP header truncated</li>
           <li>UDP payload truncated (not an IP fragment and UDP buffer length less than UDP length field)</li>
@@ -461,7 +488,7 @@ function section(id, title, bodyHtml, openByDefault = false) {
     <details id="${id}" class="paf-section" ${openByDefault ? 'open' : ''}
              style="margin:10px 0;border:1px solid var(--border);border-radius:8px;background:var(--card);padding:10px 14px">
       <summary style="cursor:pointer;font-weight:700;font-size:13px;padding:4px 0;color:var(--text)">${title}</summary>
-      <div class="paf-body" style="font-size:12.5px;line-height:1.6;padding-top:6px">
+      <div class="paf-body">
         ${bodyHtml}
       </div>
     </details>`;
@@ -469,13 +496,13 @@ function section(id, title, bodyHtml, openByDefault = false) {
 function subsection(id, title, bodyHtml) {
   return `
     <details id="${id}" class="paf-subsection"
-             style="margin:8px 0;padding:6px 10px 6px 12px;border-left:3px solid var(--accent);background:var(--card-2);border-radius:0 6px 6px 0">
+             style="margin:10px 0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--card-2);border-radius:0 6px 6px 0">
       <summary style="cursor:pointer;font-weight:600;font-size:12.5px;padding:2px 0">${title}</summary>
-      <div style="padding-top:4px">${bodyHtml}</div>
+      <div class="paf-body">${bodyHtml}</div>
     </details>`;
 }
 function note(text) {
-  return `<div style="background:var(--warn-bg);border-left:3px solid var(--warn);padding:8px 10px;border-radius:4px;font-size:11.5px;margin:10px 0;line-height:1.5">
+  return `<div style="background:var(--warn-bg);border-left:3px solid var(--warn);padding:8px 10px;border-radius:4px;font-size:11.5px;margin:12px 0;line-height:1.5">
     <strong>Note:</strong> ${text}
   </div>`;
 }
