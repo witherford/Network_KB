@@ -28,6 +28,56 @@ const DEFAULTS = {
   ip: '10.0.2.55', matchname: 'Windows10'
 };
 
+// Enumerable field values rendered as <select> dropdowns. A field becomes a
+// dropdown when its `fields` entry carries one of these lists as a 3rd element;
+// fields with open-ended values (IPs, ports, names, hashes) stay free-text.
+const OPT = {
+  severity:      ['critical', 'high', 'medium', 'low', 'informational'],
+  endReason:     ['threat', 'policy-deny', 'tcp-rst-from-client', 'tcp-rst-from-server',
+                  'tcp-fin', 'tcp-reuse', 'decrypt-cert-validation', 'decrypt-unsupport-param',
+                  'decrypt-error', 'decoder', 'aged-out', 'resources-unavailable', 'unknown', 'n/a'],
+  threatSubtype: ['vulnerability', 'virus', 'spyware', 'wildfire-virus', 'url', 'file',
+                  'data', 'flood', 'scan', 'packet'],
+  threatAction:  ['alert', 'allow', 'drop', 'reset-client', 'reset-server', 'reset-both',
+                  'block-ip', 'block-url', 'sinkhole'],
+  direction:     ['client-to-server', 'server-to-client'],
+  urlCategory:   ['abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions',
+                  'business-and-economy', 'command-and-control', 'computer-and-internet-info',
+                  'content-delivery-networks', 'copyright-infringement', 'cryptocurrency',
+                  'dating', 'dynamic-dns', 'educational-institutions', 'entertainment-and-arts',
+                  'extremism', 'financial-services', 'gambling', 'games', 'government',
+                  'grayware', 'hacking', 'health-and-medicine', 'high-risk',
+                  'home-and-garden', 'hunting-and-fishing', 'insufficient-content',
+                  'internet-communications-and-telephony', 'internet-portals', 'job-search',
+                  'legal', 'low-risk', 'malware', 'medium-risk', 'military', 'motor-vehicles',
+                  'music', 'newly-registered-domain', 'news', 'not-resolved', 'nudity',
+                  'online-storage-and-backup', 'parked', 'peer-to-peer', 'personal-sites-and-blogs',
+                  'philosophy-and-political-advocacy', 'phishing', 'private-ip-addresses',
+                  'proxy-avoidance-and-anonymizers', 'questionable', 'real-estate',
+                  'real-time-detection', 'recreation-and-hobbies', 'reference-and-research',
+                  'religion', 'search-engines', 'sex-education', 'shareware-and-freeware',
+                  'shopping', 'social-networking', 'society', 'sports', 'stock-advice-and-tools',
+                  'streaming-media', 'swimsuits-and-intimate-apparel', 'training-and-tools',
+                  'translation', 'travel', 'unknown', 'weapons', 'web-advertisements',
+                  'web-based-email', 'web-hosting'],
+  urlAction:     ['alert', 'allow', 'block', 'block-url', 'continue', 'override'],
+  verdict:       ['malicious', 'benign', 'grayware', 'phishing'],
+  authEvent:     ['auth-success', 'auth-failure'],
+  sysSubtype:    ['general', 'ha', 'vpn', 'userid', 'routing', 'nat', 'auth', 'dhcp',
+                  'dnsproxy', 'dos', 'globalprotect', 'ntpd', 'port', 'pppoe', 'ras',
+                  'sslvpn', 'url-filtering'],
+  client:        ['web', 'cli', 'panorama', 'xmlapi'],
+  cmd:           ['add', 'edit', 'delete', 'move', 'set', 'rename', 'clone', 'commit', 'override'],
+  result:        ['succeeded', 'failed'],
+  tlsVersion:    ['tls1.0', 'tls1.1', 'tls1.2', 'tls1.3', 'unknown'],
+  decrypted:     ['yes', 'no'],
+  gpEvent:       ['portal-auth-succ', 'portal-auth-fail', 'gateway-auth-succ',
+                  'gateway-auth-fail', 'tunnel-connect-succ', 'tunnel-disc'],
+  gpTunnelType:  ['ssl-tunnel', 'ipsec'],
+  tunnelType:    ['ipsec', 'gre', 'gtp', 'vxlan'],
+  useridEvent:   ['add', 'delete', 'timeout']
+};
+
 const TABS = [
   // ───── Traffic ─────────────────────────────────────────────────────────
   {
@@ -38,7 +88,7 @@ const TABS = [
       ['srcIP', 'Src IP / CIDR'], ['dstIP', 'Dst IP / CIDR'],
       ['srcPort', 'Src port'], ['dstPort', 'Dst port'],
       ['app', 'App-ID'], ['zone', 'Zone'], ['iface', 'Interface'],
-      ['rule', 'Rule name'], ['endReason', 'End reason'], ['bytes', 'Bytes']
+      ['rule', 'Rule name'], ['endReason', 'End reason', OPT.endReason], ['bytes', 'Bytes']
     ],
     groups: [
       { title: 'Source / destination IP', items: [
@@ -91,9 +141,9 @@ const TABS = [
     label: 'Threat',
     intro: 'Monitor → Logs → <strong>Threat</strong>. CLI: <code>show log threat query "…"</code>.',
     fields: [
-      ['severity','Severity'], ['subtype','Subtype'],
+      ['severity','Severity', OPT.severity], ['subtype','Subtype', OPT.threatSubtype],
       ['threatId','Threat ID'], ['threatName','Threat name'],
-      ['cve','CVE'], ['action','Action'], ['direction','Direction'],
+      ['cve','CVE'], ['action','Action', OPT.threatAction], ['direction','Direction', OPT.direction],
       ['srcIP','Src IP'], ['dstIP','Dst IP'], ['srcuser','Src user']
     ],
     groups: [
@@ -141,7 +191,7 @@ const TABS = [
     intro: 'Monitor → Logs → <strong>URL Filtering</strong> (or Threat with subtype eq url).',
     fields: [
       ['srcIP','Src IP'], ['dstUrl','URL / host substring'],
-      ['category','PAN-DB category'], ['action','Action'], ['srcuser','Src user']
+      ['category','PAN-DB category', OPT.urlCategory], ['action','Action', OPT.urlAction], ['srcuser','Src user']
     ],
     groups: [
       { title: 'Category & action', items: [
@@ -172,7 +222,7 @@ const TABS = [
     label: 'WildFire',
     intro: 'Monitor → Logs → <strong>WildFire Submissions</strong>.',
     fields: [
-      ['filename','Filename'], ['verdict','Verdict'],
+      ['filename','Filename'], ['verdict','Verdict', OPT.verdict],
       ['sha256','SHA-256'], ['reportId','Report ID'], ['srcuser','Src user']
     ],
     groups: [
@@ -205,7 +255,7 @@ const TABS = [
     intro: 'Monitor → Logs → <strong>Authentication</strong>.',
     fields: [
       ['srcuser','Src user'], ['authpolicy','Auth policy'],
-      ['eventid','Event'], ['vsys','vsys'], ['srcIP','Src IP']
+      ['eventid','Event', OPT.authEvent], ['vsys','vsys'], ['srcIP','Src IP']
     ],
     groups: [
       { title: 'Event', items: [
@@ -234,7 +284,7 @@ const TABS = [
     label: 'System',
     intro: 'Monitor → Logs → <strong>System</strong>. CLI: <code>show log system query "…"</code>.',
     fields: [
-      ['severity','Severity'], ['subtype','Subtype'],
+      ['severity','Severity', OPT.severity], ['subtype','Subtype', OPT.sysSubtype],
       ['module','Module'], ['eventid','Event ID'], ['desc','Description contains']
     ],
     groups: [
@@ -273,8 +323,8 @@ const TABS = [
     label: 'Config',
     intro: 'Monitor → Logs → <strong>Configuration</strong>. CLI: <code>show log config query "…"</code>.',
     fields: [
-      ['admin','Admin'], ['client','Client'], ['cmd','Command'],
-      ['path','XPath / object'], ['result','Result']
+      ['admin','Admin'], ['client','Client', OPT.client], ['cmd','Command', OPT.cmd],
+      ['path','XPath / object'], ['result','Result', OPT.result]
     ],
     groups: [
       { title: 'Admin & client', items: [
@@ -306,7 +356,7 @@ const TABS = [
     intro: 'Monitor → Logs → <strong>Decryption</strong> (PAN-OS 10.2+).',
     fields: [
       ['srcIP','Src IP'], ['dstIP','Dst IP'], ['sni','SNI / hostname'],
-      ['tlsVersion','TLS version'], ['errorType','Error'], ['decrypted','Decrypted']
+      ['tlsVersion','TLS version', OPT.tlsVersion], ['errorType','Error'], ['decrypted','Decrypted', OPT.decrypted]
     ],
     groups: [
       { title: 'Decryption outcome', items: [
@@ -338,8 +388,8 @@ const TABS = [
     label: 'GlobalProtect',
     intro: 'Monitor → Logs → <strong>GlobalProtect</strong>.',
     fields: [
-      ['srcuser','Src user'], ['event','Event'],
-      ['srcIP','Src IP / public IP'], ['tunnelType','Tunnel type']
+      ['srcuser','Src user'], ['event','Event', OPT.gpEvent],
+      ['srcIP','Src IP / public IP'], ['tunnelType','Tunnel type', OPT.gpTunnelType]
     ],
     groups: [
       { title: 'Events', items: [
@@ -371,7 +421,7 @@ const TABS = [
     label: 'Tunnel',
     intro: 'Monitor → Logs → <strong>Tunnel Inspection</strong> (GTP / IPSec / GRE inner content).',
     fields: [
-      ['tunnelType','Tunnel type'], ['srcIP','Src IP'], ['dstIP','Dst IP']
+      ['tunnelType','Tunnel type', OPT.tunnelType], ['srcIP','Src IP'], ['dstIP','Dst IP']
     ],
     groups: [
       { title: 'Tunnel type', items: [
@@ -393,7 +443,7 @@ const TABS = [
     label: 'User-ID / HIP',
     intro: 'Monitor → Logs → <strong>User-ID</strong> and <strong>HIP Match</strong>.',
     fields: [
-      ['srcuser','Src user'], ['ip','IP'], ['event','Event'], ['matchname','HIP profile']
+      ['srcuser','Src user'], ['ip','IP'], ['event','Event', OPT.useridEvent], ['matchname','HIP profile']
     ],
     groups: [
       { title: 'User-ID mapping events', items: [
@@ -448,25 +498,30 @@ export async function mount(root) {
     body.innerHTML = `
       <div style="font-size:12px;margin-bottom:8px">${activeTab.intro}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
-        ${activeTab.fields.map(([k, lbl]) => {
+        ${activeTab.fields.map(([k, lbl, options]) => {
           const v = valueState[k] !== undefined ? valueState[k] : (DEFAULTS[k] || '');
+          const control = options
+            ? `<select data-var="${k}">${options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`
+            : `<input type="text" data-var="${k}" value="${esc(v)}">`;
           return `<div class="form-row" style="margin:0">
             <label>${esc(lbl)}</label>
-            <input type="text" data-var="${k}" value="${esc(v)}">
+            ${control}
           </div>`;
         }).join('')}
       </div>
       <div id="lfGroups"></div>`;
 
-    body.querySelectorAll('input[data-var]').forEach(i => {
-      i.addEventListener('input', () => { valueState[i.dataset.var] = i.value; renderGroups(); });
+    body.querySelectorAll('[data-var]').forEach(i => {
+      const onChange = () => { valueState[i.dataset.var] = i.value; renderGroups(); };
+      i.addEventListener('input', onChange);
+      i.addEventListener('change', onChange);
     });
     renderGroups();
   }
 
   function renderGroups() {
     const vals = {};
-    body.querySelectorAll('input[data-var]').forEach(i => { vals[i.dataset.var] = i.value.trim(); });
+    body.querySelectorAll('[data-var]').forEach(i => { vals[i.dataset.var] = i.value.trim(); });
     const out = body.querySelector('#lfGroups');
     out.innerHTML = activeTab.groups.map(g => `
       <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">${esc(g.title)}</h3>
