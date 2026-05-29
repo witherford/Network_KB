@@ -179,52 +179,26 @@ function wireVersionUI() {
       const latest = await refreshLatest({ silent: false });
       const behind = !!(latest && compareVersions(APP_VERSION, latest) < 0);
 
-      // 2. Trigger SW update — re-fetches sw.js byte-for-byte. If a new
-      //    SW is installing/waiting, the existing controllerchange handler
-      //    will reload the page automatically once it activates.
+      // 2. Trigger SW update — re-fetches sw.js byte-for-byte.
       let swResult = 'unsupported';
       if (typeof window.checkForAppUpdate === 'function') {
         swResult = await window.checkForAppUpdate();
       }
 
-      if (swResult === 'updating') {
+      // 3. If either path detected an update, purge ALL caches, unregister
+      //    the SW and hard-reload — guaranteeing the next load is on a
+      //    completely fresh shell with no stale data.
+      if (behind || swResult === 'updating') {
+        latestEl.hidden = false;
+        latestEl.classList.remove('ver-err');
         latestEl.textContent = behind
-          ? `New version ${latest} downloading — page will reload automatically…`
-          : 'Update found — downloading. Page will reload automatically…';
+          ? `New version ${latest} found — clearing cache and reloading…`
+          : 'Update found — clearing cache and reloading…';
+        await purgeAndReload();
         return;
       }
 
-      // 3. Data-only update path: sw.js didn't change (typical for an
-      //    automated GitHub-merge workflow that only edits data/*.json),
-      //    but data/version.json reports a newer build. Purge every data-*
-      //    cache AND the cached js/* shell so the bundled APP_VERSION
-      //    constant refreshes on the next load.
-      if (behind) {
-        latestEl.textContent =
-          `New version ${latest} found — reloading with fresh content…`;
-        try {
-          if ('caches' in window) {
-            const keys = await caches.keys();
-            // Drop every data-* cache (commands.json, etc.)
-            // and shell-* cache so JS modules (incl. version.js) refetch.
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
-          // Best-effort: ask the SW to drop its current registration so
-          // the next navigation re-registers cleanly. Failure is fine —
-          // the cache deletion above is sufficient for a fresh reload.
-          if ('serviceWorker' in navigator) {
-            const reg = await navigator.serviceWorker.getRegistration();
-            if (reg) { try { await reg.unregister(); } catch {} }
-          }
-        } catch { /* ignore — reload will still help */ }
-        // Bypass HTTP cache on reload (modern browsers honour the no-cache
-        // hint for the navigation; falls back to a regular reload otherwise).
-        setTimeout(() => location.reload(), 600);
-        return;
-      }
-
-      // 4. Genuinely up to date — leave the "you are up to date" message
-      //    that refreshLatest already wrote.
+      // 4. Genuinely up to date — refreshLatest already wrote the message.
     } catch (err) {
       latestEl.hidden = false;
       latestEl.textContent = 'Check failed: ' + err.message;
@@ -234,6 +208,27 @@ function wireVersionUI() {
       checkBtn.textContent = orig;
     }
   });
+
+  // Purge every Cache Storage bucket (shell-* and data-*), unregister the SW
+  // so the next navigation re-registers cleanly, then reload with a
+  // cache-busting query string so the browser HTTP cache is also bypassed.
+  async function purgeAndReload() {
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister().catch(() => {})));
+      }
+    } catch { /* best effort — reload still helps */ }
+    setTimeout(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('_v', Date.now().toString(36));
+      window.location.replace(url.toString());
+    }, 600);
+  }
 
   async function refreshLatest({ silent }) {
     try {
