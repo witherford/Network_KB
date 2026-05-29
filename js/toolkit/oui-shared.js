@@ -258,6 +258,82 @@ function parseNeighborTable(text, headerRe) {
   return out;
 }
 
+// Parse DNS lookup output from Windows (nslookup, ping -a) and Linux
+// (nslookup, dig, host, getent hosts). Returns a Map of IPv4 → [hostnames]
+// (de-duplicated, first-seen order). Both forward and reverse lookups are
+// understood. The DNS server's own record — the "Server:" block nslookup
+// prints first — is ignored so it never masquerades as a result.
+export function parseDns(text) {
+  const map = new Map();
+  if (!text || !text.trim()) return map;
+  const ipRe = /\b(\d{1,3}(?:\.\d{1,3}){3})\b/;
+  const isIp = s => /^\d{1,3}(?:\.\d{1,3}){3}$/.test(s);
+  const cleanHost = h => String(h || '').trim().replace(/^["']|["',]+$/g, '').replace(/\.$/, '');
+  const add = (ip, hostRaw) => {
+    if (!ip || !isIp(ip)) return;
+    const host = cleanHost(hostRaw);
+    if (!host || isIp(host)) return;            // a hostname must not itself be an IP
+    let arr = map.get(ip);
+    if (!arr) { arr = []; map.set(ip, arr); }
+    if (!arr.includes(host)) arr.push(host);
+  };
+  // 4.3.2.1.in-addr.arpa → 1.2.3.4
+  const arpaToIp = arpa => {
+    const m = arpa.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.in-addr\.arpa/i);
+    return m ? `${m[4]}.${m[3]}.${m[2]}.${m[1]}` : '';
+  };
+
+  let pendingName = '';   // current nslookup "Name:" ('__server__' inside the Server: block)
+  let inAddrList = false; // continuation IPs under a Windows "Addresses:" block
+
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) { inAddrList = false; pendingName = ''; continue; }
+
+    let m;
+    // Reverse lookups: Linux nslookup ("name ="), host ("domain name pointer"), dig ("IN PTR").
+    if ((m = line.match(/([\d.]+\.in-addr\.arpa)\.?\s+(?:name\s*=|domain name pointer|\d+\s+IN\s+PTR)\s+(\S+)/i))) {
+      add(arpaToIp(m[1]), m[2]); inAddrList = false; pendingName = ''; continue;
+    }
+    // dig forward ANSWER section: "name. TTL IN A 1.2.3.4".
+    if ((m = line.match(/^(\S+?)\.?\s+\d+\s+IN\s+A\s+([\d.]+)/i))) {
+      add(m[2], m[1]); inAddrList = false; pendingName = ''; continue;
+    }
+    // host forward: "name has address 1.2.3.4".
+    if ((m = line.match(/^(\S+)\s+has address\s+([\d.]+)/i))) {
+      add(m[2], m[1]); inAddrList = false; pendingName = ''; continue;
+    }
+    // Windows "ping -a": "Pinging host [1.2.3.4] with ...".
+    if ((m = line.match(/^Pinging\s+(\S+)\s+\[([\d.]+)\]/i))) {
+      add(m[2], m[1]); inAddrList = false; pendingName = ''; continue;
+    }
+    // getent hosts: "1.2.3.4   host [alias ...]".
+    if (!/^(Address|Server)/i.test(line) && (m = line.match(/^([\d.]+)\s+(.+)$/)) && isIp(m[1])) {
+      for (const h of m[2].split(/\s+/)) add(m[1], h);
+      inAddrList = false; pendingName = ''; continue;
+    }
+
+    // nslookup block format (Windows + Linux).
+    if (/^Server\s*:/i.test(line)) { pendingName = '__server__'; inAddrList = false; continue; }
+    if (/^Name\s*:/i.test(line)) {
+      pendingName = line.replace(/^Name\s*:\s*/i, '').trim();
+      inAddrList = false; continue;
+    }
+    if (/^Address(?:es)?\s*:/i.test(line)) {
+      if (pendingName === '__server__') continue;   // that's the resolver, not a result
+      const ip = (line.match(ipRe) || [])[1];
+      if (ip && pendingName) add(ip, pendingName);
+      inAddrList = true; continue;
+    }
+    if (inAddrList && pendingName && pendingName !== '__server__') {
+      const ip = (line.match(/^[\d.]+$/) || [])[0];
+      if (ip) { add(ip, pendingName); continue; }
+      inAddrList = false;
+    }
+  }
+  return map;
+}
+
 export function fmtMac(bare, fmt) {
   if (!bare) return '';
   if (fmt === 'dash')   return bare.match(/.{2}/g).join('-');
