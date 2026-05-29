@@ -39,6 +39,7 @@ const SUBS = {
 
   // Palo Alto
   patraffic:    { label: 'Traffic filters',     group: 'Palo Alto',            load: () => import('../toolkit/pa-traffic-filters.js') },
+  paflow:       { label: 'Packet flow diagram', group: 'Palo Alto',            load: () => import('../toolkit/pa-packet-flow.js') },
 
   // Misc
   worldclock:   { label: 'World clock',         group: 'Other',                load: () => import('../toolkit/worldclock.js') }
