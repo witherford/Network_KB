@@ -42,7 +42,23 @@ export async function mount(root) {
       <span class="spacer" style="flex:1"></span>
       <button class="btn" id="pCsv" title="Export expanded host list as a CSV stub (fill the Status column after running the script)">Export CSV</button>
     </div>
-    <pre class="script-out" id="pOut"></pre>`;
+    <pre class="script-out" id="pOut"></pre>
+    <section class="paste-export" style="margin-top:18px;border-top:1px dashed var(--border);padding-top:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+        <strong style="font-size:13px">Paste ping output → export as CSV</strong>
+        <span class="hint" style="font-size:11px">Windows cmd / PowerShell / Linux ping output</span>
+      </div>
+      <div class="hint" style="font-size:11px;margin-bottom:6px">Columns: <code>Host, IP, Status, Sent, Received, Lost, Loss %, Min (ms), Avg (ms), Max (ms)</code></div>
+      <div class="hint" style="font-size:11px;margin-bottom:6px">Paste raw <code>ping</code> output for one or many hosts. Also accepts the builder's own <code>IP,Status</code> CSV.</div>
+      <textarea id="pPasteTa" rows="6" style="width:100%;font-family:'SF Mono',Consolas,monospace;font-size:12px" placeholder="Paste ping output here…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn primary" id="pPasteExport">Export CSV</button>
+        <button class="btn" id="pPasteCopy">Copy as CSV</button>
+        <button class="btn ghost" id="pPasteClear">Clear</button>
+        <span class="spacer" style="flex:1"></span>
+        <span class="hint" id="pPasteStatus" style="font-size:11px;align-self:center"></span>
+      </div>
+    </section>`;
 
   const resolveHosts = () => {
     const includeNet = root.querySelector('#pIncludeNet').checked;
@@ -78,7 +94,130 @@ export async function mount(root) {
     const csv = 'IP,Status\r\n' + hosts.map(h => `${csvEscape(h)},`).join('\r\n') + '\r\n';
     downloadCsv('ping-targets.csv', csv);
   });
+
+  // ---- Paste ping output → export as CSV ----
+  const pingCsv = () => {
+    const rows = parsePingOutput(root.querySelector('#pPasteTa').value);
+    if (!rows.length) return null;
+    const head = PING_COLS.map(c => c[1]).join(',');
+    const body = rows.map(r => PING_COLS.map(c => csvEscape(r[c[0]])).join(',')).join('\r\n');
+    return head + '\r\n' + body + '\r\n';
+  };
+  const setPasteStatus = t => { root.querySelector('#pPasteStatus').textContent = t; };
+  root.querySelector('#pPasteExport').addEventListener('click', () => {
+    const csv = pingCsv();
+    if (!csv) { toast('No ping results found in pasted text', 'error'); return; }
+    downloadCsv('ping-results.csv', csv);
+    setPasteStatus('Exported ping-results.csv');
+  });
+  root.querySelector('#pPasteCopy').addEventListener('click', () => {
+    const csv = pingCsv();
+    if (!csv) { toast('No ping results found in pasted text', 'error'); return; }
+    copyToClipboard(csv).then(ok => {
+      setPasteStatus(ok ? 'Copied to clipboard' : 'Copy failed');
+      toast(ok ? 'CSV copied' : 'Copy failed', ok ? 'success' : 'error');
+    });
+  });
+  root.querySelector('#pPasteClear').addEventListener('click', () => {
+    root.querySelector('#pPasteTa').value = '';
+    setPasteStatus('');
+  });
+
   build();
+}
+
+// Columns for the paste-output → CSV exporter: [recordKey, headerLabel].
+const PING_COLS = [
+  ['host', 'Host'], ['ip', 'IP'], ['status', 'Status'],
+  ['sent', 'Sent'], ['received', 'Received'], ['lost', 'Lost'], ['loss', 'Loss %'],
+  ['min', 'Min (ms)'], ['avg', 'Avg (ms)'], ['max', 'Max (ms)']
+];
+
+// Parse raw ping output (Windows cmd/PowerShell + Linux/macOS) into row objects.
+// Also accepts the builder's own "IP,Status" CSV. Returns rows in first-seen order.
+function parsePingOutput(text) {
+  if (!text || !text.trim()) return [];
+  const isIp4 = s => /^\d{1,3}(?:\.\d{1,3}){3}$/.test(s);
+  const order = [];
+  const byKey = new Map();
+  let cur = null;
+
+  const rec = (host, ip) => {
+    if (host && !ip && isIp4(host)) { ip = host; host = ''; }   // IP-only target
+    if (host && ip && host === ip) host = '';
+    const key = (ip || host || '').toLowerCase();
+    if (!key) return cur;
+    let r = byKey.get(key);
+    if (!r) {
+      r = { host: host || '', ip: ip || '', status: '', sent: '', received: '',
+            lost: '', loss: '', min: '', avg: '', max: '', _replies: 0, _stats: false };
+      byKey.set(key, r);
+      order.push(r);
+    } else {
+      if (host && !r.host) r.host = host;
+      if (ip && !r.ip) r.ip = ip;
+    }
+    return r;
+  };
+
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    let m;
+
+    // Builder's own CSV passthrough.
+    if (/^ip\s*,\s*status$/i.test(line)) continue;
+    if ((m = line.match(/^([0-9a-fA-F.:]+)\s*,\s*(UP|DOWN)\s*$/i))) {
+      cur = rec('', m[1]); if (cur) { cur.status = m[2].toUpperCase(); cur._stats = true; }
+      continue;
+    }
+
+    // Target headers begin a new per-host block.
+    if ((m = line.match(/^Pinging\s+(\S+?)(?:\s+\[([0-9a-fA-F.:]+)\])?\s+with\b/i))) { cur = rec(m[1], m[2]); continue; }
+    if ((m = line.match(/^PING\s+(\S+?)\s+\(([0-9a-fA-F.:]+)\)/i)))                  { cur = rec(m[1], m[2]); continue; }
+
+    // Statistics-block headers stay on the active target (output is sequential);
+    // only create a record if none is active (e.g. a stats-only paste).
+    if ((m = line.match(/^Ping statistics for\s+(\S+?):?\s*$/i))) { if (!cur) cur = rec('', m[1].replace(/:$/, '')); continue; }
+    if ((m = line.match(/^---\s*(\S+?)\s+ping statistics/i)))     { if (!cur) cur = rec(m[1], ''); continue; }
+
+    // Successful echo replies count toward the active target (switching only on a
+    // new IP when no header preceded them).
+    if ((m = line.match(/^Reply from\s+([\d.]+):.*\bbytes=/i))) {
+      if (!cur || (cur.ip && cur.ip !== m[1])) cur = rec('', m[1]);
+      cur._replies++; continue;
+    }
+    if ((m = line.match(/^\d+\s+bytes from\s+([0-9a-fA-F.:]+?)[:,]/i))) {
+      if (!cur || (cur.ip && cur.ip !== m[1])) cur = rec('', m[1]);
+      cur._replies++; continue;
+    }
+
+    // Windows packet counts.
+    if (cur && (m = line.match(/Sent\s*=\s*(\d+).*Received\s*=\s*(\d+).*Lost\s*=\s*(\d+)\s*\((\d+)%/i))) {
+      cur.sent = m[1]; cur.received = m[2]; cur.lost = m[3]; cur.loss = m[4];
+      cur.status = +m[2] > 0 ? 'UP' : 'DOWN'; cur._stats = true; continue;
+    }
+    // Linux / macOS packet counts.
+    if (cur && (m = line.match(/(\d+)\s+packets transmitted,\s*(\d+)\s+(?:packets\s+)?received.*?([\d.]+)%\s+packet loss/i))) {
+      cur.sent = m[1]; cur.received = m[2]; cur.lost = String(+m[1] - +m[2]); cur.loss = m[3];
+      cur.status = +m[2] > 0 ? 'UP' : 'DOWN'; cur._stats = true; continue;
+    }
+    // Windows RTT.
+    if (cur && (m = line.match(/Minimum\s*=\s*(\d+)ms.*Maximum\s*=\s*(\d+)ms.*Average\s*=\s*(\d+)ms/i))) {
+      cur.min = m[1]; cur.max = m[2]; cur.avg = m[3]; continue;
+    }
+    // Linux / macOS RTT (min/avg/max[/mdev|/stddev]).
+    if (cur && (m = line.match(/min\/avg\/max\S*\s*=\s*([\d.]+)\/([\d.]+)\/([\d.]+)/i))) {
+      cur.min = m[1]; cur.avg = m[2]; cur.max = m[3]; continue;
+    }
+  }
+
+  // Where no statistics block was seen, derive status from reply count.
+  for (const r of order) {
+    if (!r._stats) r.status = r._replies > 0 ? 'UP' : 'DOWN';
+    delete r._replies; delete r._stats;
+  }
+  return order;
 }
 
 function expandHosts(lines, includeNet) {
