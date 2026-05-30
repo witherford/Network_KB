@@ -26,6 +26,13 @@ export async function mount(root) {
         </select>
       </div>
       <div class="form-row">
+        <label>Script output</label>
+        <select id="dSink">
+          <option value="csv">CSV file (dns-results.csv)</option>
+          <option value="terminal">Terminal only</option>
+        </select>
+      </div>
+      <div class="form-row">
         <label>Target OS</label>
         <select id="dOs">
           <option value="ps">Windows PowerShell</option>
@@ -107,14 +114,16 @@ export async function mount(root) {
     const os = $('#dOs').value;
     const type = $('#dType').value;
     const server = $('#dServer').value.trim();
+    const sink = $('#dSink').value;
     const items = targets();
     const stats = $('#dStats');
     stats.textContent = items.length ? `${items.length} target${items.length === 1 ? '' : 's'}` : '';
     if (!items.length) { $('#dOut').textContent = '# No targets'; return; }
-    $('#dOut').textContent = render(os, type, server, items, $('#dMode').value);
+    $('#dOut').textContent = render(os, type, server, items, $('#dMode').value, sink);
   };
 
   $('#dMode').addEventListener('change', build);
+  $('#dSink').addEventListener('change', build);
   $('#dOs').addEventListener('change', build);
   $('#dType').addEventListener('change', build);
   $('#dServer').addEventListener('input', build);
@@ -137,22 +146,27 @@ export async function mount(root) {
   build();
 }
 
-function render(os, type, server, items, mode) {
-  if (os === 'ps') return renderPS(type, server, items, mode);
-  return renderBash(type, server, items, mode);
+function render(os, type, server, items, mode, sink) {
+  if (os === 'ps') return renderPS(type, server, items, mode, sink);
+  return renderBash(type, server, items, mode, sink);
 }
 
 // PowerShell — full type-aware extraction.
-function renderPS(type, server, items, mode) {
+function renderPS(type, server, items, mode, sink) {
   const list = items.map(h => `"${h.replace(/"/g, '`"')}"`).join(', ');
   const serverArg = server ? ` -Server ${server}` : '';
+  // Output sink: CSV mode tees each line to dns-results.csv; terminal mode
+  // just emits the string (PowerShell prints it to the console).
+  const csv = sink === 'csv';
+  const emit = s => csv ? `${s} | Tee-Object -FilePath dns-results.csv` : s;
+  const emitApp = s => csv ? `${s} | Tee-Object -FilePath dns-results.csv -Append` : s;
   return [
     '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
-    '# Also written to dns-results.csv',
+    csv ? '# Also written to dns-results.csv' : '# Terminal output only',
     mode === 'cidr' ? '# Mode: CIDR reverse-DNS sweep (PTR queries)' : null,
     `$targets = @(${list})`,
     `$type    = '${type}'`,
-    '"FQDN,Type,Value,Extra" | Tee-Object -FilePath dns-results.csv',
+    emit('"FQDN,Type,Value,Extra"'),
     'foreach ($t in $targets) {',
     '  try {',
     `    $records = Resolve-DnsName -Name $t -Type $type${serverArg} -ErrorAction Stop |`,
@@ -160,7 +174,7 @@ function renderPS(type, server, items, mode) {
     '    if (-not $records) {',
     '      $records = Resolve-DnsName -Name $t -Type $type' + serverArg + ' -ErrorAction Stop',
     '    }',
-    '    if (-not $records) { "$t,$type,," | Tee-Object -FilePath dns-results.csv -Append; continue }',
+    `    if (-not $records) { ${emitApp('"$t,$type,,"')}; continue }`,
     '    foreach ($r in $records) {',
     '      switch -Wildcard ($r.Type) {',
     "        'A'     { $val = $r.IPAddress;     $extra = $r.TTL }",
@@ -176,23 +190,24 @@ function renderPS(type, server, items, mode) {
     '      }',
     '      $valEsc = if ($val -match \'[",\\r\\n]\') { \'"\' + ($val -replace \'"\',\'""\') + \'"\' } else { $val }',
     '      $exEsc  = if ("$extra" -match \'[",\\r\\n]\') { \'"\' + ("$extra" -replace \'"\',\'""\') + \'"\' } else { "$extra" }',
-    '      "$t,$($r.Type),$valEsc,$exEsc" | Tee-Object -FilePath dns-results.csv -Append',
+    '      ' + emitApp('"$t,$($r.Type),$valEsc,$exEsc"'),
     '    }',
     '  } catch {',
-    '    "$t,$type,UNRESOLVED,$($_.Exception.Message -replace \',\',\';\')" | Tee-Object -FilePath dns-results.csv -Append',
+    '    ' + emitApp('"$t,$type,UNRESOLVED,$($_.Exception.Message -replace \',\',\';\')"'),
     '  }',
     '}'
   ].filter(Boolean).join('\n');
 }
 
 // bash — type-aware parsing of dig +short.
-function renderBash(type, server, items, mode) {
+function renderBash(type, server, items, mode, sink) {
   const serverArg = server ? `@${server} ` : '';
   const list = items.map(h => `"${h.replace(/"/g, '\\"')}"`).join(' ');
+  const csv = sink === 'csv';
   return [
     '#!/usr/bin/env bash',
     '# DNS bulk resolve — outputs CSV: FQDN,Type,Value,Extra',
-    '# Also written to dns-results.csv',
+    csv ? '# Also written to dns-results.csv' : '# Terminal output only',
     mode === 'cidr' ? '# Mode: CIDR reverse-DNS sweep (PTR queries)' : null,
     `targets=(${list})`,
     `TYPE='${type}'`,
@@ -237,7 +252,7 @@ function renderBash(type, server, items, mode) {
     '{',
     '  echo "FQDN,Type,Value,Extra"',
     '  for t in "${targets[@]}"; do resolve_one "$t"; done',
-    '} | tee dns-results.csv'
+    csv ? '} | tee dns-results.csv' : '}'
   ].filter(Boolean).join('\n');
 }
 
