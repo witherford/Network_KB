@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "items": [
+    { "level": 0, "keyword": "emergency",     "meaning": "System unusable",                 "notes": "Cisco: LOG_EMERG — e.g. \"%LINK-0-...\". Most severe." },
+    { "level": 1, "keyword": "alert",         "meaning": "Immediate action required",       "notes": "Cisco: LOG_ALERT — temperature/redundancy failure" },
+    { "level": 2, "keyword": "critical",      "meaning": "Critical condition",              "notes": "Cisco: LOG_CRIT — hardware/PSU fault" },
+    { "level": 3, "keyword": "error",         "meaning": "Error condition",                 "notes": "Cisco: LOG_ERR — interface errors, config errors" },
+    { "level": 4, "keyword": "warning",       "meaning": "Warning condition",               "notes": "Cisco: LOG_WARNING — e.g. duplex mismatch" },
+    { "level": 5, "keyword": "notice",        "meaning": "Normal but significant",          "notes": "Cisco: LOG_NOTICE — link up/down, config changes" },
+    { "level": 6, "keyword": "informational", "meaning": "Informational message",           "notes": "Cisco: LOG_INFO — default \"logging\" level for many platforms" },
+    { "level": 7, "keyword": "debugging",     "meaning": "Debug-level message",             "notes": "Cisco: LOG_DEBUG — verbose; avoid leaving on in production" }
+  ]
+}

@@ -19,11 +19,16 @@ const SUBS = {
   // Scripts & builders
   ping:         { label: 'Ping script',         group: 'Scripts & builders',   load: () => import('../toolkit/ping-script.js') },
   dns:          { label: 'DNS script',          group: 'Scripts & builders',   load: () => import('../toolkit/dns-script.js') },
-  oui:          { label: 'OUI lookup',          group: 'Scripts & builders',   load: () => import('../toolkit/oui-list.js') },
-  arpmac:       { label: 'Cisco merger',        group: 'Scripts & builders',   load: () => import('../toolkit/arp-mac-merge.js') },
   tcl:          { label: 'TCL generator',       group: 'Scripts & builders',   load: () => import('../toolkit/tcl-generator.js') },
-  jsonyaml:     { label: 'JSON / YAML',         group: 'Scripts & builders',   load: () => import('../toolkit/json-yaml.js') },
   regex:        { label: 'Regex builder',       group: 'Scripts & builders',   load: () => import('../toolkit/regex-builder.js') },
+
+  // Parsers & converters
+  oui:          { label: 'OUI lookup',          group: 'Parsers & converters', load: () => import('../toolkit/oui-list.js') },
+  arpmac:       { label: 'Cisco merger',        group: 'Parsers & converters', load: () => import('../toolkit/arp-mac-merge.js') },
+  trace:        { label: 'Traceroute parser',   group: 'Parsers & converters', load: () => import('../toolkit/trace-parse.js') },
+  iface:        { label: 'Show interfaces parser', group: 'Parsers & converters', load: () => import('../toolkit/iface-parse.js') },
+  configdiff:   { label: 'Config diff',         group: 'Parsers & converters', load: () => import('../toolkit/config-diff.js') },
+  jsonyaml:     { label: 'JSON / YAML',         group: 'Parsers & converters', load: () => import('../toolkit/json-yaml.js') },
 
   // Wireshark
   filter:       { label: 'Capture & display filters', group: 'Wireshark',      load: () => import('../toolkit/filter-builder.js') },

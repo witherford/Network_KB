@@ -22,13 +22,169 @@ export async function mount(root) {
       <button class="btn" id="snCopy">Copy table</button>
     </div>
     <div id="snSummary" style="margin-bottom:14px"></div>
-    <div id="snTable"></div>`;
+    <div id="snTable"></div>
+
+    <hr style="margin:22px 0;border:none;border-top:1px solid var(--border)">
+    <h2 style="font-size:15px;margin-bottom:8px">Mask / wildcard converter</h2>
+    <div class="form-row">
+      <label>Prefix, netmask or wildcard (IPv4)</label>
+      <input type="text" id="mkIn" value="/24" placeholder="/24  ·  255.255.255.0  ·  0.0.0.255">
+      <div class="hint">Accepts a CIDR prefix, a dotted netmask, or an ACL wildcard mask — converts to all three.</div>
+    </div>
+    <pre class="script-out" id="mkOut"></pre>
+
+    <hr style="margin:22px 0;border:none;border-top:1px solid var(--border)">
+    <h2 style="font-size:15px;margin-bottom:8px">Supernet / route aggregation</h2>
+    <div class="form-row">
+      <label>IPv4 networks — one per line (CIDR or single host)</label>
+      <textarea id="agIn" style="min-height:92px" placeholder="10.0.0.0/24&#10;10.0.1.0/24&#10;10.0.2.0/24&#10;10.0.3.0/24"></textarea>
+      <div class="hint">Merges contiguous/overlapping ranges into the minimal set of CIDR blocks, and shows the single smallest covering supernet.</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn" id="agGo">Aggregate</button>
+      <button class="btn" id="agCopy">Copy result</button>
+    </div>
+    <pre class="script-out" id="agOut"></pre>`;
 
   root.querySelector('#snGo').addEventListener('click', run);
   root.querySelector('#snCsv').addEventListener('click', () => exportCsv(run()));
   root.querySelector('#snCopy').addEventListener('click', () => copyTable(run()));
   root.querySelector('#snCidr').addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
   run();
+
+  const mkIn = root.querySelector('#mkIn');
+  const mkOut = root.querySelector('#mkOut');
+  const runMask = () => { mkOut.textContent = maskReport(mkIn.value.trim()); };
+  mkIn.addEventListener('input', runMask);
+  runMask();
+
+  const agIn = root.querySelector('#agIn');
+  const agOut = root.querySelector('#agOut');
+  const runAgg = () => { agOut.textContent = aggregateReport(agIn.value); };
+  root.querySelector('#agGo').addEventListener('click', runAgg);
+  agIn.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runAgg(); });
+  root.querySelector('#agCopy').addEventListener('click', () => {
+    if (!agOut.textContent.trim()) return;
+    copyToClipboard(agOut.textContent).then(ok => toast(ok ? 'Copied result' : 'Copy failed', ok ? 'success' : 'error'));
+  });
+}
+
+// ---------- Mask / wildcard converter (IPv4) ----------
+
+function dottedToBigInt32(s) {
+  const parts = s.split('.').map(Number);
+  if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) return null;
+  return (BigInt(parts[0]) << 24n) | (BigInt(parts[1]) << 16n) | (BigInt(parts[2]) << 8n) | BigInt(parts[3]);
+}
+function popcount32(n) {
+  let c = 0n;
+  for (let i = 0n; i < 32n; i++) if ((n >> i) & 1n) c++;
+  return Number(c);
+}
+function maskFromPrefix(p) {
+  return p === 0 ? 0n : (((1n << BigInt(p)) - 1n) << BigInt(32 - p)) & 0xffffffffn;
+}
+function maskReport(input) {
+  if (!input) return '';
+  let prefix = null;
+  const m = input.match(/^\/?(\d{1,2})$/);
+  if (m) {
+    prefix = parseInt(m[1], 10);
+    if (prefix > 32) return '# Prefix must be 0–32';
+  } else {
+    const n = dottedToBigInt32(input.replace(/^\//, ''));
+    if (n === null) return '# Not a valid /prefix, netmask or wildcard';
+    // A netmask has contiguous 1s from the MSB; a wildcard is its inverse.
+    const asMaskPrefix = popcount32(n);
+    const inv = (~n) & 0xffffffffn;
+    if (maskFromPrefix(asMaskPrefix) === n) prefix = asMaskPrefix;                 // looks like a netmask
+    else if (maskFromPrefix(popcount32(inv)) === inv) prefix = popcount32(inv);    // looks like a wildcard
+    else return '# Not a contiguous netmask or wildcard (non-contiguous bits)';
+  }
+  const mask = maskFromPrefix(prefix);
+  const wildcard = (~mask) & 0xffffffffn;
+  const total = 1n << BigInt(32 - prefix);
+  const usable = prefix >= 31 ? total : total - 2n;
+  return [
+    `CIDR prefix   /${prefix}`,
+    `Netmask       ${bigIntToIpv4(mask)}`,
+    `Wildcard      ${bigIntToIpv4(wildcard)}`,
+    `Total addrs   ${total.toString()}`,
+    `Usable hosts  ${usable.toString()}${prefix >= 31 ? '  (point-to-point / host route)' : ''}`
+  ].join('\n');
+}
+
+// ---------- Supernet / route aggregation (IPv4) ----------
+
+function parseRange(token) {
+  const t = token.trim();
+  if (!t) return null;
+  const [addr, pfxStr] = t.split('/');
+  const ip = dottedToBigInt32(addr);
+  if (ip === null) throw new Error(`Invalid address: ${token}`);
+  const prefix = pfxStr === undefined ? 32 : parseInt(pfxStr, 10);
+  if (isNaN(prefix) || prefix < 0 || prefix > 32) throw new Error(`Invalid prefix: ${token}`);
+  const mask = maskFromPrefix(prefix);
+  const start = ip & mask;
+  const end = start + (1n << BigInt(32 - prefix)) - 1n;
+  return { start, end };
+}
+function rangeToCidrs(start, end) {
+  const out = [];
+  let cur = start;
+  while (cur <= end) {
+    // Largest power-of-two block aligned to `cur` (trailing zero bits)…
+    let bits = cur === 0n ? 32 : trailingZeros(cur);
+    // …capped so the block does not overshoot `end`.
+    const remaining = end - cur + 1n;
+    while (bits > 0 && (1n << BigInt(bits)) > remaining) bits--;
+    out.push(`${bigIntToIpv4(cur)}/${32 - bits}`);
+    cur += 1n << BigInt(bits);
+  }
+  return out;
+}
+function trailingZeros(n) {
+  if (n === 0n) return 32;
+  let c = 0;
+  while (((n >> BigInt(c)) & 1n) === 0n && c < 32) c++;
+  return c;
+}
+function smallestSupernet(min, max) {
+  let prefix = 32;
+  while (prefix > 0 && (min >> BigInt(32 - prefix)) !== (max >> BigInt(32 - prefix))) prefix--;
+  return `${bigIntToIpv4(min & maskFromPrefix(prefix))}/${prefix}`;
+}
+function aggregateReport(text) {
+  let ranges;
+  try {
+    ranges = String(text).split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(parseRange).filter(Boolean);
+  } catch (err) {
+    return '# ' + err.message;
+  }
+  if (!ranges.length) return '';
+  ranges.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
+  // Merge overlapping or adjacent ranges.
+  const merged = [{ ...ranges[0] }];
+  for (let i = 1; i < ranges.length; i++) {
+    const last = merged[merged.length - 1];
+    if (ranges[i].start <= last.end + 1n) {
+      if (ranges[i].end > last.end) last.end = ranges[i].end;
+    } else {
+      merged.push({ ...ranges[i] });
+    }
+  }
+  const cidrs = [];
+  for (const r of merged) cidrs.push(...rangeToCidrs(r.start, r.end));
+  const min = ranges[0].start;
+  const max = ranges.reduce((m, r) => (r.end > m ? r.end : m), ranges[0].end);
+  const lines = [];
+  lines.push(`Inputs:        ${ranges.length}  →  aggregated to ${cidrs.length} block(s)`);
+  lines.push('');
+  lines.push('Minimal aggregate blocks:');
+  for (const c of cidrs) lines.push('  ' + c);
+  lines.push('');
+  lines.push(`Smallest single covering supernet: ${smallestSupernet(min, max)}`);
+  return lines.join('\n');
 }
 
 function parseCidr(cidr) {

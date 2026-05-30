@@ -12,6 +12,9 @@ const SHEETS = [
   { key: 'ipv6-special',      label: 'Special IPv6',     cols: ['range', 'rfc', 'use'] },
   { key: 'public-allocations',label: 'Public IP blocks', cols: ['range', 'organization', 'notes'] },
   { key: 'admin-distances',   label: 'Admin distances',  cols: ['protocol', 'distance', 'notes'] },
+  { key: 'icmp-types',        label: 'ICMP types',       cols: ['type', 'code', 'name', 'notes'] },
+  { key: 'syslog-levels',     label: 'Syslog severities',cols: ['level', 'keyword', 'meaning', 'notes'] },
+  { key: 'cli-translator',    label: 'CLI translator',   cols: ['task', 'cisco', 'panos', 'junos'] },
   { key: 'acronyms',          label: 'Acronyms',         cols: ['acronym', 'meaning', 'context'] }
 ];
 
@@ -51,7 +54,7 @@ export async function mount(root) {
       <tbody>
         ${rows.map((r, i) => `<tr>${active.cols.map(c => {
           const v = r[c] ?? '';
-          const mono = (c === 'port' || c === 'number' || c === 'range' || c === 'address' || c === 'distance');
+          const mono = (c === 'port' || c === 'number' || c === 'range' || c === 'address' || c === 'distance' || c === 'type' || c === 'code' || c === 'level' || c === 'cisco' || c === 'panos' || c === 'junos');
           return `<td class="${mono ? 'mono' : ''}">${esc(String(v))}</td>`;
         }).join('')}<td><button class="btn sm ghost" data-row="${i}" title="Copy row">⧉</button></td></tr>`).join('')}
       </tbody>

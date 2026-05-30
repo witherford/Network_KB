@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "items": [
+    { "task": "Enter config mode",        "cisco": "configure terminal",          "panos": "configure",                              "junos": "configure  /  edit" },
+    { "task": "Save / commit config",     "cisco": "write memory  (copy run start)", "panos": "commit",                              "junos": "commit" },
+    { "task": "Show running config",      "cisco": "show running-config",         "panos": "show config running",                    "junos": "show configuration | display set" },
+    { "task": "Show version / sysinfo",   "cisco": "show version",                "panos": "show system info",                       "junos": "show version" },
+    { "task": "Interface brief status",   "cisco": "show ip interface brief",     "panos": "show interface all",                     "junos": "show interfaces terse" },
+    { "task": "Interface counters/errors","cisco": "show interface",              "panos": "show counter interface all",             "junos": "show interfaces extensive" },
+    { "task": "Routing table",            "cisco": "show ip route",               "panos": "show routing route",                     "junos": "show route" },
+    { "task": "ARP table",                "cisco": "show ip arp",                 "panos": "show arp all",                           "junos": "show arp" },
+    { "task": "MAC / switching table",    "cisco": "show mac address-table",      "panos": "show mac all",                           "junos": "show ethernet-switching table" },
+    { "task": "CPU utilisation",          "cisco": "show processes cpu",          "panos": "show running resource-monitor",          "junos": "show chassis routing-engine" },
+    { "task": "System / event log",       "cisco": "show logging",                "panos": "show log system",                        "junos": "show log messages" },
+    { "task": "Ping a host",              "cisco": "ping 8.8.8.8",                "panos": "ping host 8.8.8.8",                       "junos": "ping 8.8.8.8" },
+    { "task": "Traceroute",               "cisco": "traceroute 8.8.8.8",          "panos": "traceroute host 8.8.8.8",                "junos": "traceroute 8.8.8.8" },
+    { "task": "Show neighbours (LLDP)",   "cisco": "show lldp neighbors",         "panos": "show lldp neighbors all",                "junos": "show lldp neighbors" },
+    { "task": "Show BGP summary",         "cisco": "show ip bgp summary",         "panos": "show routing protocol bgp summary",      "junos": "show bgp summary" },
+    { "task": "Discard / abort changes",  "cisco": "end  (no commit model)",      "panos": "revert config",                          "junos": "rollback 0" }
+  ]
+}

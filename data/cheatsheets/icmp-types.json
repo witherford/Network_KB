@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "items": [
+    { "type": 0,  "code": "0",    "name": "Echo Reply",                  "notes": "Ping reply" },
+    { "type": 3,  "code": "0",    "name": "Destination Unreachable",     "notes": "Net unreachable" },
+    { "type": 3,  "code": "1",    "name": "Destination Unreachable",     "notes": "Host unreachable" },
+    { "type": 3,  "code": "2",    "name": "Destination Unreachable",     "notes": "Protocol unreachable" },
+    { "type": 3,  "code": "3",    "name": "Destination Unreachable",     "notes": "Port unreachable" },
+    { "type": 3,  "code": "4",    "name": "Destination Unreachable",     "notes": "Fragmentation needed but DF set — PMTUD black-hole if filtered" },
+    { "type": 3,  "code": "5",    "name": "Destination Unreachable",     "notes": "Source route failed" },
+    { "type": 3,  "code": "9",    "name": "Destination Unreachable",     "notes": "Network administratively prohibited" },
+    { "type": 3,  "code": "10",   "name": "Destination Unreachable",     "notes": "Host administratively prohibited" },
+    { "type": 3,  "code": "13",   "name": "Destination Unreachable",     "notes": "Communication administratively prohibited (ACL/firewall drop)" },
+    { "type": 4,  "code": "0",    "name": "Source Quench",               "notes": "Deprecated (RFC 6633) — legacy congestion control" },
+    { "type": 5,  "code": "0",    "name": "Redirect",                    "notes": "Redirect for the network" },
+    { "type": 5,  "code": "1",    "name": "Redirect",                    "notes": "Redirect for the host" },
+    { "type": 8,  "code": "0",    "name": "Echo Request",                "notes": "Ping request" },
+    { "type": 9,  "code": "0",    "name": "Router Advertisement",        "notes": "ICMP Router Discovery (IRDP)" },
+    { "type": 10, "code": "0",    "name": "Router Solicitation",         "notes": "ICMP Router Discovery (IRDP)" },
+    { "type": 11, "code": "0",    "name": "Time Exceeded",               "notes": "TTL exceeded in transit — traceroute hops" },
+    { "type": 11, "code": "1",    "name": "Time Exceeded",               "notes": "Fragment reassembly time exceeded" },
+    { "type": 12, "code": "0",    "name": "Parameter Problem",           "notes": "Pointer indicates the error" },
+    { "type": 13, "code": "0",    "name": "Timestamp Request",           "notes": "Rarely used; often filtered" },
+    { "type": 14, "code": "0",    "name": "Timestamp Reply",             "notes": "Reply to timestamp request" },
+    { "type": 30, "code": "0",    "name": "Traceroute",                  "notes": "Deprecated (RFC 1393)" }
+  ]
+}
