@@ -4,8 +4,8 @@
 // errors, interface resets). Flags duplex mismatches and non-zero error
 // counters so problem ports jump out. Exportable as CSV.
 
-import { esc, copyToClipboard, toast } from '../utils.js';
-import { toCSV, download } from '../components/io.js';
+import { esc, copyToClipboard, toast, download } from '../utils.js';
+import { toCSV } from '../components/io.js';
 
 const IF_COLS = ['Interface', 'Link', 'Protocol', 'Duplex', 'Speed',
                  'In errors', 'CRC', 'Out errors', 'Resets', 'Flags'];

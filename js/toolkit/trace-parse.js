@@ -3,8 +3,8 @@
 // as CSV. Sibling of the ping paste→CSV converter in ping-script.js, but for
 // the path-discovery workflow rather than reachability.
 
-import { esc, copyToClipboard, toast } from '../utils.js';
-import { toCSV, download } from '../components/io.js';
+import { esc, copyToClipboard, toast, download } from '../utils.js';
+import { toCSV } from '../components/io.js';
 
 const TRACE_COLS = ['Hop', 'Host', 'IP', 'RTT 1 (ms)', 'RTT 2 (ms)', 'RTT 3 (ms)', 'Status'];
 
