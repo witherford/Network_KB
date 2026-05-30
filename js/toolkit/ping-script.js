@@ -17,6 +17,13 @@ export async function mount(root) {
         </select>
       </div>
       <div class="form-row">
+        <label>Script output</label>
+        <select id="pSink">
+          <option value="csv">CSV file (ping-results.csv)</option>
+          <option value="terminal">Terminal only</option>
+        </select>
+      </div>
+      <div class="form-row">
         <label>Count per host</label>
         <input type="number" id="pCount" value="4" min="1" max="9999">
       </div>
@@ -47,12 +54,19 @@ export async function mount(root) {
     const os = root.querySelector('#pOs').value;
     const count = Math.max(1, parseInt(root.querySelector('#pCount').value, 10) || 4);
     const parallel = root.querySelector('#pParallel').checked;
+    const sink = root.querySelector('#pSink').value;
     const hosts = resolveHosts();
     if (!hosts.length) { root.querySelector('#pOut').textContent = '# No hosts to ping'; return; }
-    root.querySelector('#pOut').textContent = renderScript(os, hosts, count, parallel);
+    root.querySelector('#pOut').textContent = renderScript(os, hosts, count, parallel, sink);
   };
 
   root.querySelector('#pBuild').addEventListener('click', build);
+  root.querySelector('#pOs').addEventListener('change', build);
+  root.querySelector('#pSink').addEventListener('change', build);
+  root.querySelector('#pCount').addEventListener('input', build);
+  root.querySelector('#pInput').addEventListener('input', build);
+  root.querySelector('#pIncludeNet').addEventListener('change', build);
+  root.querySelector('#pParallel').addEventListener('change', build);
   root.querySelector('#pCopy').addEventListener('click', () => {
     const out = root.querySelector('#pOut').textContent;
     if (!out) return;
@@ -92,57 +106,79 @@ function expandHosts(lines, includeNet) {
   return out;
 }
 
-function renderScript(os, hosts, count, parallel) {
+function renderScript(os, hosts, count, parallel, sink) {
+  // Output sink: CSV mode writes the IP,Status rows to ping-results.csv;
+  // terminal mode emits them to stdout only (no file write).
+  const csv = sink === 'csv';
   if (os === 'ps') {
     const list = hosts.map(h => `"${h}"`).join(', ');
-    return parallel
-      ? `# PowerShell 7+ parallel ping — outputs CSV: IP,Status\n` +
-        `$hosts = @(${list})\n` +
-        `$results = $hosts | ForEach-Object -Parallel {\n` +
-        `  $r = Test-Connection -ComputerName $_ -Count ${count} -Quiet\n` +
-        `  [pscustomobject]@{IP=$_;Status=if($r){"UP"}else{"DOWN"}}\n` +
-        `} -ThrottleLimit 20\n` +
-        `$results | Export-Csv -Path ping-results.csv -NoTypeInformation\n` +
+    if (parallel) {
+      return [
+        csv ? `# PowerShell 7+ parallel ping — outputs CSV: IP,Status (written to ping-results.csv)`
+            : `# PowerShell 7+ parallel ping — outputs IP,Status to the terminal`,
+        `$hosts = @(${list})`,
+        `$results = $hosts | ForEach-Object -Parallel {`,
+        `  $r = Test-Connection -ComputerName $_ -Count ${count} -Quiet`,
+        `  [pscustomobject]@{IP=$_;Status=if($r){"UP"}else{"DOWN"}}`,
+        `} -ThrottleLimit 20`,
+        csv ? `$results | Export-Csv -Path ping-results.csv -NoTypeInformation` : null,
+        `"IP,Status"`,
         `$results | ForEach-Object { "$($_.IP),$($_.Status)" }`
-      : `# Outputs CSV: IP,Status (also written to ping-results.csv)\n` +
-        `$hosts = @(${list})\n` +
-        `"IP,Status"\n` +
-        `$rows = foreach ($h in $hosts) {\n` +
-        `  $r = Test-Connection -ComputerName $h -Count ${count} -Quiet\n` +
-        `  $s = if ($r) { "UP" } else { "DOWN" }\n` +
-        `  "$h,$s"\n` +
-        `}\n` +
-        `$rows\n` +
-        `$rows | Set-Content -Path ping-results.csv`;
+      ].filter(s => s !== null).join('\n');
+    }
+    return [
+      csv ? `# Outputs CSV: IP,Status (also written to ping-results.csv)`
+          : `# Outputs IP,Status to the terminal`,
+      `$hosts = @(${list})`,
+      `"IP,Status"`,
+      `$rows = foreach ($h in $hosts) {`,
+      `  $r = Test-Connection -ComputerName $h -Count ${count} -Quiet`,
+      `  $s = if ($r) { "UP" } else { "DOWN" }`,
+      `  "$h,$s"`,
+      `}`,
+      `$rows`,
+      csv ? `$rows | Set-Content -Path ping-results.csv` : null
+    ].filter(s => s !== null).join('\n');
   }
   if (os === 'cmd') {
-    // cmd has no real scripting niceties — emit a .bat that writes CSV.
+    if (csv) {
+      // cmd has no real scripting niceties — emit a .bat that writes CSV.
+      return `@echo off\r\n` +
+        `REM Outputs CSV: IP,Status — saved as ping-results.csv\r\n` +
+        `> ping-results.csv echo IP,Status\r\n` +
+        hosts.map(h =>
+          `ping -n ${count} ${h} >nul && (>> ping-results.csv echo ${h},UP) || (>> ping-results.csv echo ${h},DOWN)`
+        ).join('\r\n') + `\r\n` +
+        `type ping-results.csv`;
+    }
     return `@echo off\r\n` +
-      `REM Outputs CSV: IP,Status — saved as ping-results.csv\r\n` +
-      `> ping-results.csv echo IP,Status\r\n` +
+      `REM Outputs IP,Status to the terminal\r\n` +
+      `echo IP,Status\r\n` +
       hosts.map(h =>
-        `ping -n ${count} ${h} >nul && (>> ping-results.csv echo ${h},UP) || (>> ping-results.csv echo ${h},DOWN)`
-      ).join('\r\n') + `\r\n` +
-      `type ping-results.csv`;
+        `ping -n ${count} ${h} >nul && (echo ${h},UP) || (echo ${h},DOWN)`
+      ).join('\r\n');
   }
-  // bash — always CSV: IP,Status
+  // bash
   if (parallel) {
     return `#!/usr/bin/env bash\n` +
-      `# Outputs CSV: IP,Status (written to ping-results.csv)\n` +
+      (csv ? `# Outputs CSV: IP,Status (written to ping-results.csv)\n`
+           : `# Outputs IP,Status to the terminal\n`) +
       `hosts=(${hosts.map(h => `"${h}"`).join(' ')})\n` +
       `probe() { if ping -c ${count} -W 1 "$1" >/dev/null 2>&1; then echo "$1,UP"; else echo "$1,DOWN"; fi; }\n` +
       `export -f probe\n` +
-      `{ echo "IP,Status"; printf '%s\\n' "\${hosts[@]}" | xargs -I{} -P 20 bash -c 'probe "$@"' _ {}; } | tee ping-results.csv`;
+      `{ echo "IP,Status"; printf '%s\\n' "\${hosts[@]}" | xargs -I{} -P 20 bash -c 'probe "$@"' _ {}; }` +
+      (csv ? ` | tee ping-results.csv` : ``);
   }
   return `#!/usr/bin/env bash\n` +
-    `# Outputs CSV: IP,Status (written to ping-results.csv)\n` +
+    (csv ? `# Outputs CSV: IP,Status (written to ping-results.csv)\n`
+         : `# Outputs IP,Status to the terminal\n`) +
     `hosts=(${hosts.map(h => `"${h}"`).join(' ')})\n` +
     `{\n` +
     `  echo "IP,Status"\n` +
     `  for h in "\${hosts[@]}"; do\n` +
     `    if ping -c ${count} -W 1 "$h" >/dev/null 2>&1; then echo "$h,UP"; else echo "$h,DOWN"; fi\n` +
     `  done\n` +
-    `} | tee ping-results.csv`;
+    `}` + (csv ? ` | tee ping-results.csv` : ``);
 }
 
 function csvEscape(v) {

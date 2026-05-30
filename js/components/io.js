@@ -118,7 +118,7 @@ export async function parseXLSX(arrayBuffer) {
  * `columns` is an optional list of expected headers for guidance only —
  * the export honours whatever is actually in the textarea.
  */
-export function pasteAndExport({ root, title = 'Paste output', filename = 'output.csv', columns = null, hint = '' }) {
+export function pasteAndExport({ root, title = 'Paste output', filename = 'output.csv', columns = null, hint = '', header = null, sourceHeaders = [] }) {
   const id = 'pe-' + Math.random().toString(36).slice(2, 8);
   const taId = id + '-ta';
   const wrap = document.createElement('section');
@@ -156,6 +156,22 @@ export function pasteAndExport({ root, title = 'Paste output', filename = 'outpu
     return lines.map(l => l.split(/ {2,}/).map(csvEscape).join(',')).join('\r\n') + '\r\n';
   };
 
+  // Optional header injection: when `header` is supplied, the exported CSV
+  // always begins with that row. Any leading header the script already emitted
+  // (listed in `sourceHeaders`, or a repeat of `header` itself) is stripped so
+  // we never double up.
+  const headerLine = header ? header.join(',') : null;
+  const normHeader = s => s.toLowerCase().replace(/"/g, '').replace(/\s+/g, '');
+  const knownHeaders = new Set(
+    [...sourceHeaders, ...(header ? [headerLine] : [])].map(normHeader)
+  );
+  const applyHeader = csvText => {
+    let lines = csvText.split(/\r?\n/);
+    while (lines.length && lines[lines.length - 1] === '') lines.pop();
+    if (lines.length && knownHeaders.has(normHeader(lines[0]))) lines.shift();
+    return [headerLine, ...lines].join('\r\n') + '\r\n';
+  };
+
   wrap.addEventListener('click', e => {
     const btn = e.target.closest('button[data-act]');
     if (!btn) return;
@@ -163,7 +179,7 @@ export function pasteAndExport({ root, title = 'Paste output', filename = 'outpu
     if (act === 'clear') { ta.value = ''; status.textContent = ''; return; }
     const raw = ta.value;
     if (!raw.trim()) { toast('Paste some output first', 'error'); return; }
-    const csv = detectAndConvert(raw);
+    const csv = header ? applyHeader(detectAndConvert(raw)) : detectAndConvert(raw);
     if (act === 'export') {
       download(filename, csv, 'text/csv');
       status.textContent = 'Exported ' + filename;

@@ -77,8 +77,10 @@ export async function mount(root) {
     root: root.querySelector('#dPaste'),
     title: 'Paste terminal output → export as CSV',
     filename: 'dns-results.csv',
-    columns: ['FQDN', 'Type', 'Value', 'Extra'],
-    hint: `After running the script externally, copy its console output and paste it below. The exporter auto-detects CSV / tab / multi-space output formats.`
+    columns: ['DNS name', 'record type', 'IP address', 'TTL'],
+    header: ['DNS name', 'record type', 'IP address', 'TTL'],
+    sourceHeaders: ['FQDN,Type,Value,Extra'],
+    hint: `After running the script externally, copy its console output and paste it below. The exporter auto-detects CSV / tab / multi-space output and writes a header row: DNS name, record type, IP address, TTL.`
   });
 
   const $ = sel => root.querySelector(sel);
