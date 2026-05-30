@@ -4,13 +4,14 @@
 //   Box 3 — CDP neighbours     (show cdp neighbors [detail])   → port ↔ neighbour
 //   Box 4 — LLDP neighbours    (show lldp neighbors [detail])  → port ↔ neighbour
 //   Box 5 — DNS lookups         (nslookup / dig / host / ping -a) → IP ↔ hostname
+//   Box 6 — Ping results        (ping, Windows or Linux)          → IP ↔ reachability
 //   Final output — merged results joining everything by MAC, interface and IP.
 
 import { copyToClipboard, toast } from '../utils.js';
 import { toCSV } from '../components/io.js';
 import {
   FALLBACK_OUI, loadDb, parseArpInput, parseMacAddressTable,
-  parseCdp, parseLldp, parseDns, normIface, findVendor, normaliseMac, fmtMac, esc, downloadCsv
+  parseCdp, parseLldp, parseDns, parsePing, normIface, findVendor, normaliseMac, fmtMac, esc, downloadCsv
 } from './oui-shared.js';
 
 const ARP_EG = `Internet  10.0.0.1     -    001a.b3c4.5678  ARPA  Vlan10\nInternet  10.0.0.2    12    0050.5612.3456  ARPA  Vlan10`;
@@ -18,13 +19,14 @@ const MAC_EG = `Vlan    Mac Address       Type        Ports\n----    -----------
 const CDP_EG = `Device ID: Switch2.example.com\nEntry address(es):\n  IP address: 10.0.0.250\nPlatform: cisco WS-C2960X,  Capabilities: Switch IGMP\nInterface: GigabitEthernet1/0/1,  Port ID (outgoing port): GigabitEthernet0/24`;
 const LLDP_EG = `Local Intf: Gi1/0/12\nChassis id: aabb.ccdd.eeff\nPort id: Gi0/2\nSystem Name: AP-Floor1\nSystem Description: Cisco Aironet AP\nManagement Addresses:\n    IP: 10.0.0.30`;
 const DNS_EG = `Name:    server1.example.com\nAddress:  10.0.0.2\n\n1.0.0.10.in-addr.arpa   name = gateway.example.com.`;
+const PING_EG = `Reply from 10.0.0.2: bytes=32 time=1ms TTL=128\n\n--- 10.0.0.1 ping statistics ---\n4 packets transmitted, 0 received, 100% packet loss`;
 
 export async function mount(root) {
   let db = FALLBACK_OUI;
 
   root.innerHTML = `
     <h2 style="font-size:15px;margin-bottom:4px">Cisco merger — interface ↔ device mapping</h2>
-    <p class="hint" style="margin-bottom:12px">Paste any combination of the outputs below. The merger joins them into one map: <code>DNS name → IP → MAC → Vendor → VLAN → switchport → connected device</code>. ARP and MAC-table rows join on MAC; CDP and LLDP neighbours attach by switchport; DNS lookups marry a hostname to its IP — so every endpoint and every neighbouring switch/AP/phone lands on the right interface.</p>
+    <p class="hint" style="margin-bottom:12px">Paste any combination of the outputs below. The merger joins them into one map: <code>DNS name → IP → MAC → Vendor → VLAN → switchport → connected device</code>. ARP and MAC-table rows join on MAC; CDP and LLDP neighbours attach by switchport; DNS lookups marry a hostname to its IP; ping results flag reachability — so every endpoint and every neighbouring switch/AP/phone lands on the right interface.</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div class="form-row" style="margin:0">
@@ -46,6 +48,10 @@ export async function mount(root) {
       <div class="form-row" style="margin:0;grid-column:1 / -1">
         <label>Box 5 — DNS lookups (<code>nslookup</code> / <code>dig</code> / <code>host</code> / <code>ping -a</code>, Windows or Linux)</label>
         <textarea id="dnsIn" rows="6" placeholder="${esc(DNS_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(DNS_EG)}</textarea>
+      </div>
+      <div class="form-row" style="margin:0;grid-column:1 / -1">
+        <label>Box 6 — Ping results (<code>ping</code>, Windows or Linux)</label>
+        <textarea id="pingIn" rows="6" placeholder="${esc(PING_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(PING_EG)}</textarea>
       </div>
     </div>
 
@@ -95,10 +101,13 @@ export async function mount(root) {
     const cdp = parseCdp($('#cdpIn').value);
     const lldp = parseLldp($('#lldpIn').value);
     const dnsMap = parseDns($('#dnsIn').value);
+    const pingMap = parsePing($('#pingIn').value);
     const fmt = root.querySelector('input[name="mgFmt"]:checked')?.value || 'colon';
 
     // Resolve an IP to its (comma-separated) DNS name(s).
     const dnsFor = ip => (ip && dnsMap.get(ip) || []).join(', ');
+    // Reachability for an IP: 'Yes' / 'No' / '' when no ping data exists.
+    const pingFor = ip => (ip && pingMap.has(ip)) ? (pingMap.get(ip) ? 'Yes' : 'No') : '';
 
     // Neighbours keyed by canonical local interface.
     const nbr = new Map();
@@ -172,8 +181,8 @@ export async function mount(root) {
       });
     }
 
-    // Marry DNS hostname(s) to every row by its IP.
-    for (const row of merged.values()) row.dns = dnsFor(row.ip);
+    // Marry DNS hostname(s) and ping reachability to every row by its IP.
+    for (const row of merged.values()) { row.dns = dnsFor(row.ip); row.ping = pingFor(row.ip); }
 
     mergedRows = [...merged.values()].sort((a, b) => {
       const va = +a.vlan || 0, vb = +b.vlan || 0;
@@ -220,7 +229,7 @@ export async function mount(root) {
       <div style="overflow-x:auto">
       <table class="lc-table" style="margin-top:6px">
         <thead><tr>
-          <th>VLAN</th><th>DNS name</th><th>IP</th><th>MAC</th><th>Vendor</th><th>Local port</th><th>Type</th>
+          <th>VLAN</th><th>DNS name</th><th>IP</th><th>MAC</th><th>Vendor</th><th>Local port</th><th>Type</th><th>Responds to ping</th>
           <th>Neighbour</th><th>Via</th><th>Remote port</th><th>Platform / OS</th><th>Mgmt IP</th><th style="width:80px">Copy</th>
         </tr></thead>
         <tbody>
@@ -232,6 +241,7 @@ export async function mount(root) {
             <td>${esc(r.vendor)}</td>
             <td><code>${esc(r.interface)}</code></td>
             <td>${esc(r.type)}</td>
+            <td>${r.ping ? `<span class="tk-badge ${r.ping === 'Yes' ? 'yes' : 'no'}">${esc(r.ping)}</span>` : ''}</td>
             <td>${esc(r.neighbor || '')}</td>
             <td>${r.via ? `<span class="tk-badge info">${esc(r.via)}</span>` : ''}</td>
             <td><code>${esc(r.remotePort || '')}</code></td>
@@ -255,16 +265,17 @@ export async function mount(root) {
     });
   }
 
-  const COLS = ['VLAN','DNS name','IP','MAC','Vendor','Local port','Type','Neighbour','Via','Remote port','Platform','Mgmt IP'];
+  const COLS = ['VLAN','DNS name','IP','MAC','Vendor','Local port','Type','Responds to ping','Neighbour','Via','Remote port','Platform','Mgmt IP'];
   function exportRows() {
     return filteredRows().map(r => ({
       VLAN: r.vlan, 'DNS name': r.dns || '', IP: r.ip, MAC: r.mac, Vendor: r.vendor, 'Local port': r.interface, Type: r.type,
+      'Responds to ping': r.ping || '',
       Neighbour: r.neighbor || '', Via: r.via || '', 'Remote port': r.remotePort || '', Platform: r.platform || '', 'Mgmt IP': r.mgmtIp || ''
     }));
   }
 
   $('#mgGo').addEventListener('click', runMerge);
-  ['#arpIn', '#macIn', '#cdpIn', '#lldpIn', '#dnsIn'].forEach(s => $(s).addEventListener('input', runMerge));
+  ['#arpIn', '#macIn', '#cdpIn', '#lldpIn', '#dnsIn', '#pingIn'].forEach(s => $(s).addEventListener('input', runMerge));
   ['#fHideVlan', '#fHidePo', '#fKnown', '#fUnknown', '#fResolved', '#fUnresolved'].forEach(s => $(s).addEventListener('change', paintMerge));
   root.querySelectorAll('input[name="mgFmt"]').forEach(r => r.addEventListener('change', () => {
     const fmt = root.querySelector('input[name="mgFmt"]:checked').value;

@@ -334,6 +334,39 @@ export function parseDns(text) {
   return map;
 }
 
+// Parse ping output from Windows or Linux. Returns a Map of IPv4 → boolean
+// (true = responds, false = no reply). Per-IP result is collapsed to a single
+// boolean, so duplicate replies/timeouts for the same address are filtered out.
+// A real echo reply ("bytes from" / "Reply from … bytes=") wins over a
+// statistics block reporting zero received, so any successful probe counts as up.
+export function parsePing(text) {
+  const map = new Map();
+  if (!text || !text.trim()) return map;
+  const isIp = s => /^\d{1,3}(?:\.\d{1,3}){3}$/.test(s);
+  const setResp = (ip, ok) => {
+    if (!ip || !isIp(ip)) return;
+    if (ok) map.set(ip, true);
+    else if (!map.has(ip)) map.set(ip, false);
+  };
+
+  let statsTarget = '';   // IP whose ping statistics block we're inside
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    let m;
+    // Successful echo replies — Linux "64 bytes from 1.2.3.4:" / Windows "Reply from 1.2.3.4: bytes=".
+    if ((m = line.match(/^\d+\s+bytes from\s+([\d.]+)/i))) { setResp(m[1], true); continue; }
+    if ((m = line.match(/^Reply from\s+([\d.]+):.*\bbytes=/i))) { setResp(m[1], true); continue; }
+    // Statistics headers identify the probed target definitively.
+    if ((m = line.match(/^Ping statistics for\s+([\d.]+)/i))) { statsTarget = m[1]; continue; }   // Windows
+    if ((m = line.match(/^---\s*([\d.]+)\s*ping statistics/i))) { statsTarget = m[1]; continue; } // Linux
+    // Counts inside a statistics block → yes when any packet was received.
+    if (statsTarget && (m = line.match(/Received\s*=\s*(\d+)/i))) { setResp(statsTarget, +m[1] > 0); statsTarget = ''; continue; } // Windows
+    if (statsTarget && (m = line.match(/(\d+)\s+received/i)))      { setResp(statsTarget, +m[1] > 0); statsTarget = ''; continue; } // Linux
+  }
+  return map;
+}
+
 export function fmtMac(bare, fmt) {
   if (!bare) return '';
   if (fmt === 'dash')   return bare.match(/.{2}/g).join('-');
