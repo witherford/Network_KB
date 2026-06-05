@@ -28,6 +28,7 @@ const SUBS = {
   trace:        { label: 'Traceroute parser',   group: 'Parsers & converters', load: () => import('../toolkit/trace-parse.js') },
   iface:        { label: 'Show interfaces parser', group: 'Parsers & converters', load: () => import('../toolkit/iface-parse.js') },
   configdiff:   { label: 'Config diff',         group: 'Parsers & converters', load: () => import('../toolkit/config-diff.js') },
+  ciscover:     { label: 'Cisco version decoder', group: 'Parsers & converters', load: () => import('../toolkit/cisco-version.js') },
   jsonyaml:     { label: 'JSON / YAML',         group: 'Parsers & converters', load: () => import('../toolkit/json-yaml.js') },
 
   // Wireshark
