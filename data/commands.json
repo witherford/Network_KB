@@ -5986,6 +5986,97 @@
             "example": "IP             : 10.0.2.55\nUser           : ACME\\jbloggs\nSource         : AD\nIdle timeout   : 1582 sec remaining"
           },
           {
+            "cmd": "show user ip-user-mapping all type <type>",
+            "desc": "Filter the IP-to-user mapping table by mapping source (which User-ID mechanism learned it).",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping all type GP\n\nIP              Vsys   From   User                IdleTimeout(s)  MaxTimeout(s)\n10.0.2.100      vsys1  GP     ACME\\asmith         3204            10800\n\n# <type> values: UIA (Windows User-ID agent), UID (PAN-OS integrated agent),\n# GP (GlobalProtect), XMLAPI, CP (Authentication/Captive Portal), SSO,\n# SYSLOG, TS (Terminal Server agent), RADIUS, EDIR, NTLM, UNKNOWN."
+          },
+          {
+            "cmd": "show user ip-user-mapping all option count",
+            "desc": "Return just the total number of active IP-to-user mappings (no table) — quick capacity/health check against the platform limit.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping all option count\n\nTotal: 1452 in-use mappings"
+          },
+          {
+            "cmd": "show user ip-user-mapping user <domain\\user>",
+            "desc": "Show the IP address(es) a specific user is currently mapped to.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping user acme\\jbloggs\n\nIP              Vsys   From   User                IdleTimeout(s)  MaxTimeout(s)\n10.0.2.55       vsys1  AD     ACME\\jbloggs        1582            10800"
+          },
+          {
+            "cmd": "show user ip-user-mapping domain <domain>",
+            "desc": "All current mappings within a given NetBIOS / AD domain.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping domain ACME\n\nIP              Vsys   From   User                IdleTimeout(s)  MaxTimeout(s)\n10.0.2.55       vsys1  AD     ACME\\jbloggs        1582            10800\n10.0.2.100      vsys1  GP     ACME\\asmith         3204            10800"
+          },
+          {
+            "cmd": "show user ip-user-mapping-mp all",
+            "desc": "Same IP-to-user table but read from the management-plane User-ID process (idmgr). Compare with the dataplane copy (show user ip-user-mapping all) to spot MP-to-DP sync gaps.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping-mp all\n\nIP              Vsys   From                User                       IdleTimeout(s)  MaxTimeout(s)\n10.0.2.55       vsys1  AD                  ACME\\jbloggs               1582            10800\n10.0.2.100      vsys1  GP                  ACME\\asmith                3204            10800\n\n# The MP copy is the master that idmgr distributes to the dataplane;\n# policy enforcement uses the DP copy. The two should match."
+          },
+          {
+            "cmd": "show user ip-user-mapping-mp ip <ip>",
+            "desc": "Management-plane lookup for a single IP. Handy when the dataplane shows no mapping but the MP does — points to a MP-to-DP distribution problem rather than a learning problem.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping-mp ip 10.0.2.55\n\nIP             : 10.0.2.55\nUser           : ACME\\jbloggs\nFrom           : AD\nIdle timeout   : 1582 sec remaining"
+          },
+          {
+            "cmd": "show user ip-user-mapping-mp all type <type>",
+            "desc": "Management-plane mapping table filtered by source type.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping-mp all type XMLAPI\n\nIP              Vsys   From    User                IdleTimeout(s)  MaxTimeout(s)\n10.0.2.77       vsys1  XMLAPI  ACME\\svc-api        600             3600"
+          },
+          {
+            "cmd": "show user ip-user-mapping-mp all option count",
+            "desc": "Total mapping count on the management plane — compare with the dataplane count to confirm the two planes are in sync.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-user-mapping-mp all option count\n\nTotal: 1452 in-use mappings"
+          },
+          {
+            "cmd": "show user ip-port-user-mapping all",
+            "desc": "IP + source-port-range to user mappings from the Terminal Server (TS) Agent. Used for multi-user hosts (Citrix / RDS) where many users share one IP and are told apart by source port.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-port-user-mapping all\n\nIP              Vsys   User                  Port Start  Port End\n10.4.5.6        vsys1  ACME\\tsuser01         20000       20199\n10.4.5.6        vsys1  ACME\\tsuser02         20200       20399\n10.4.5.6        vsys1  ACME\\tsuser03         20400       20599\n\n# Each user on the shared TS host gets a unique source-port block; the\n# firewall maps a session's source port to the correct user."
+          },
+          {
+            "cmd": "show user ip-port-user-mapping ip <ip>",
+            "desc": "All port-range-to-user allocations for one Terminal Server IP.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-port-user-mapping ip 10.4.5.6\n\nIP              Vsys   User                  Port Start  Port End\n10.4.5.6        vsys1  ACME\\tsuser01         20000       20199\n10.4.5.6        vsys1  ACME\\tsuser02         20200       20399"
+          },
+          {
+            "cmd": "show user ip-port-user-mapping all option count",
+            "desc": "Total number of active IP-port-user (Terminal Server) mappings.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-port-user-mapping all option count\n\nTotal: 240 in-use mappings"
+          },
+          {
+            "cmd": "show user ip-port-user-mapping-mp all",
+            "desc": "Management-plane copy of the Terminal Server IP-port-user table. Compare against the dataplane to confirm TS-agent mappings have been pushed to the DP.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-port-user-mapping-mp all\n\nIP              Vsys   User                  Port Start  Port End\n10.4.5.6        vsys1  ACME\\tsuser01         20000       20199\n10.4.5.6        vsys1  ACME\\tsuser02         20200       20399"
+          },
+          {
+            "cmd": "show user ip-port-user-mapping-mp ip <ip>",
+            "desc": "Management-plane port-range-to-user allocations for one Terminal Server IP.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA> show user ip-port-user-mapping-mp ip 10.4.5.6\n\nIP              Vsys   User                  Port Start  Port End\n10.4.5.6        vsys1  ACME\\tsuser01         20000       20199"
+          },
+          {
             "cmd": "show user group list",
             "desc": "Known AD groups from User-ID",
             "type": "show",
