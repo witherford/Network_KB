@@ -253,6 +253,7 @@ const TABS = [
     key: 'auth',
     label: 'Authentication',
     intro: 'Monitor → Logs → <strong>Authentication</strong>.',
+    tplOver: { eventid: '( event eq $ )' },
     fields: [
       ['srcuser','Src user'], ['authpolicy','Auth policy'],
       ['eventid','Event', OPT.authEvent], ['vsys','vsys'], ['srcIP','Src IP']
@@ -442,6 +443,7 @@ const TABS = [
     key: 'userid',
     label: 'User-ID / HIP',
     intro: 'Monitor → Logs → <strong>User-ID</strong> and <strong>HIP Match</strong>.',
+    tplOver: { event: '( event eq $ )' },
     fields: [
       ['srcuser','Src user'], ['ip','IP'], ['event','Event', OPT.useridEvent], ['matchname','HIP profile']
     ],
@@ -472,24 +474,46 @@ const OPS = [
   ['( )', 'Group expressions; always wrap each condition']
 ];
 
-// Field types offered by the "Build a custom filter" panel. Each entry is
-// [key, label, template, exampleValue] — the template's `$` is replaced with
-// the row's value. Adding a row pre-fills the example so the combined
-// expression is immediately a working sample the user can edit.
-const CUSTOM_FIELDS = [
-  ['src-ip',    'Source IP / CIDR',      '( addr.src in $ )',  '10.0.0.0/24'],
-  ['dst-ip',    'Destination IP / CIDR', '( addr.dst in $ )',  '8.8.8.8'],
-  ['either-ip', 'Either-direction IP',   '( addr in $ )',      '10.0.0.5'],
-  ['src-port',  'Source port',           '( port.src eq $ )',  '1024'],
-  ['dst-port',  'Destination port',      '( port.dst eq $ )',  '443'],
-  ['app',       'Application (App-ID)',  '( app eq $ )',       'ssl'],
-  ['src-zone',  'Source zone',           '( zone.src eq $ )',  'trust'],
-  ['dst-zone',  'Destination zone',      '( zone.dst eq $ )',  'untrust'],
-  ['rule',      'Rule name',             "( rule eq '$' )",    'Allow-Web'],
-  ['action',    'Action',                '( action eq $ )',    'deny'],
-  ['srcuser',   'Source user',           "( srcuser eq '$' )", 'ACME\\jbloggs']
-];
-const CF_MAP = Object.fromEntries(CUSTOM_FIELDS.map(f => [f[0], { label: f[1], tpl: f[2], example: f[3] }]));
+// PAN-OS condition template for each field key, used by the dynamic filter
+// builder. `$` is replaced with the row's value. Example values come from
+// DEFAULTS. A tab may override a key via its `tplOver` (e.g. the auth log's
+// "event" field uses `event` rather than `eventid`).
+const TPL = {
+  srcIP: '( addr.src in $ )', dstIP: '( addr.dst in $ )',
+  srcPort: '( port.src eq $ )', dstPort: '( port.dst eq $ )',
+  app: '( app eq $ )', zone: '( zone.src eq $ )', iface: '( interface.src eq $ )',
+  rule: "( rule eq '$' )", endReason: '( session_end_reason eq $ )', bytes: '( bytes geq $ )',
+  severity: '( severity eq $ )', subtype: '( subtype eq $ )',
+  threatId: '( threatid eq $ )', threatName: "( name-of-threatid contains '$' )",
+  cve: "( cve contains '$' )", action: '( action eq $ )', direction: '( direction eq $ )',
+  srcuser: "( srcuser eq '$' )", dstUrl: "( url contains '$' )", category: '( category eq $ )',
+  filename: "( filename contains '$' )", verdict: '( verdict eq $ )',
+  sha256: "( filedigest eq '$' )", reportId: '( report_id eq $ )',
+  authpolicy: "( authpolicy eq '$' )", eventid: '( eventid eq $ )', vsys: '( vsys eq $ )',
+  module: '( module eq $ )', desc: "( description contains '$' )",
+  admin: "( admin eq '$' )", client: '( client eq $ )', cmd: '( cmd eq $ )',
+  path: "( path contains '$' )", result: '( result eq $ )',
+  sni: "( sni eq '$' )", tlsVersion: '( tls-version eq $ )', errorType: "( error contains '$' )",
+  decrypted: '( decrypted eq $ )', event: '( event-id eq $ )', tunnelType: '( tunnel-type eq $ )',
+  ip: '( ip eq $ )', matchname: "( matchname eq '$' )"
+};
+
+// Condition template for a key on a given tab (honouring per-tab overrides).
+function tplFor(tab, key) {
+  return (tab.tplOver && tab.tplOver[key]) || TPL[key] || `( ${key} eq $ )`;
+}
+// Enumerable option list for a key on a tab (3rd element of its field entry).
+function optsFor(tab, key) {
+  const f = tab.fields.find(x => x[0] === key);
+  return f && f[2];
+}
+// Default seed value for a key on a tab. For enumerable fields, fall back to
+// the first option when the generic DEFAULT isn't one of the allowed values.
+function defaultValue(tab, key) {
+  const opts = optsFor(tab, key);
+  const d = DEFAULTS[key] || '';
+  return opts && !opts.includes(d) ? opts[0] : d;
+}
 
 function fill(tpl, vals) {
   return tpl.replace(/\$\{(\w+)\}/g, (_, k) => vals[k] || `<${k}>`);
@@ -510,104 +534,110 @@ export async function mount(root) {
   const body = root.querySelector('#lfBody');
   const nav = root.querySelector('#lfNav');
   let activeTab = TABS[0];
-  const valueState = {}; // persisted across tab switches per field key
 
-  // Custom multi-value builder state (shared across tabs).
-  let customRows = [{ type: 'src-ip', value: CF_MAP['src-ip'].example }];
-  let withinOp = 'or';
+  // Per-tab builder state: rows (each {type, value}) plus the within-group
+  // operator. Seeded lazily from each tab's fields so the default boxes mirror
+  // the original fixed field set (src IP / dst IP / ports / App-ID / …).
+  const tabState = {};
+  function stateFor(tab) {
+    if (!tabState[tab.key]) {
+      tabState[tab.key] = {
+        rows: tab.fields.map(f => ({ type: f[0], value: defaultValue(tab, f[0]) })),
+        op: 'or'
+      };
+    }
+    return tabState[tab.key];
+  }
 
   function renderTab() {
     for (const b of nav.querySelectorAll('.ftab')) b.classList.toggle('active', b.dataset.tab === activeTab.key);
     body.innerHTML = `
-      <div style="font-size:12px;margin-bottom:8px">${activeTab.intro}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
-        ${activeTab.fields.map(([k, lbl, options]) => {
-          const v = valueState[k] !== undefined ? valueState[k] : (DEFAULTS[k] || '');
-          const control = options
-            ? `<select data-var="${k}">${options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`
-            : `<input type="text" data-var="${k}" value="${esc(v)}">`;
-          return `<div class="form-row" style="margin:0">
-            <label>${esc(lbl)}</label>
-            ${control}
-          </div>`;
-        }).join('')}
-      </div>
+      <div style="font-size:12px;margin-bottom:10px">${activeTab.intro}</div>
       <div id="lfCustom"></div>
+      <h3 style="font-size:13px;margin:22px 0 4px;color:var(--muted)">Ready-made filters &amp; examples</h3>
+      <p class="hint" style="margin:0 0 4px;font-size:11px">Curated expressions for this log type — their values track the builder above.</p>
       <div id="lfGroups"></div>`;
-
-    body.querySelectorAll('[data-var]').forEach(i => {
-      const onChange = () => { valueState[i.dataset.var] = i.value; renderGroups(); };
-      i.addEventListener('input', onChange);
-      i.addEventListener('change', onChange);
-    });
     renderCustom();
     renderGroups();
   }
 
-  // Combine the custom rows into one PAN-OS expression: same field types are
-  // joined with the chosen operator (OR by default) and wrapped, then the
-  // distinct field groups are AND-ed together.
-  function buildCustomExpr() {
+  // Combine the active tab's rows into one PAN-OS expression: rows of the same
+  // field type are joined with the chosen operator (OR/AND) and wrapped, then
+  // the distinct field groups are AND-ed together.
+  function buildExpr() {
+    const { rows, op } = stateFor(activeTab);
     const groups = {}; const order = [];
-    for (const r of customRows) {
+    for (const r of rows) {
       const v = (r.value || '').trim();
-      const f = CF_MAP[r.type];
-      if (!v || !f) continue;
-      const expr = f.tpl.replace('$', v);
+      if (!v) continue;
+      const expr = tplFor(activeTab, r.type).replace('$', v);
       if (!groups[r.type]) { groups[r.type] = []; order.push(r.type); }
       groups[r.type].push(expr);
     }
     const parts = order.map(t => groups[t].length === 1
       ? groups[t][0]
-      : '( ' + groups[t].join(' ' + withinOp + ' ') + ' )');
+      : '( ' + groups[t].join(' ' + op + ' ') + ' )');
     return parts.join(' and ');
   }
 
-  function updateCustomExpr() {
+  function updateExpr() {
     const out = body.querySelector('#cfOut');
-    if (out) out.textContent = buildCustomExpr() || '# Add at least one field with a value';
+    if (out) out.textContent = buildExpr() || '# Add a field value to build a filter';
+    renderGroups(); // library values track the builder
   }
 
   function renderCustom() {
     const host = body.querySelector('#lfCustom');
     if (!host) return;
+    const st = stateFor(activeTab);
     host.innerHTML = `
-      <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">Build a custom filter — combine multiple values</h3>
-      <div class="hint" style="margin-bottom:8px">Add as many Source/Destination IPs, ports, apps and more as you need. Repeated field types are joined with the operator below; different fields are AND-ed. Each added field is pre-filled with an editable example.</div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px">
-        <div id="cfRows">
-          ${customRows.map((r, i) => customRowHtml(r, i)).join('')}
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+          <strong style="font-size:14px">Filter builder</strong>
+          <span class="hint" style="font-size:11px">Pick a field, set a value, add more with “+”. Same field twice → joined by the operator; different fields → AND-ed.</span>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <div id="cfRows">
+          ${st.rows.map((r, i) => rowHtml(r, i, st.rows.length)).join('')}
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
           <button class="btn sm" id="cfAdd">+ Add field</button>
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin:0">Combine repeated fields with
             <select id="cfOp" style="width:auto">
-              <option value="or"${withinOp === 'or' ? ' selected' : ''}>OR</option>
-              <option value="and"${withinOp === 'and' ? ' selected' : ''}>AND</option>
+              <option value="or"${st.op === 'or' ? ' selected' : ''}>OR</option>
+              <option value="and"${st.op === 'and' ? ' selected' : ''}>AND</option>
             </select>
           </label>
         </div>
-        <pre class="script-out" id="cfOut" style="margin-top:10px"></pre>
+        <pre class="script-out" id="cfOut" style="margin-top:12px"></pre>
         <div style="margin-top:6px"><button class="btn sm primary" id="cfCopy">Copy filter</button></div>
       </div>`;
-    updateCustomExpr();
+    updateExpr();
   }
 
-  function customRowHtml(r, i) {
-    const ex = CF_MAP[r.type] ? CF_MAP[r.type].example : '';
-    return `<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;flex-wrap:wrap">
-      <select data-cf-type="${i}" style="width:auto;min-width:180px">
-        ${CUSTOM_FIELDS.map(f => `<option value="${f[0]}"${f[0] === r.type ? ' selected' : ''}>${esc(f[1])}</option>`).join('')}
+  function rowHtml(r, i, total) {
+    const opts = optsFor(activeTab, r.type);
+    const valCtl = opts
+      ? `<select data-cf-val="${i}" style="flex:1;min-width:160px">${opts.map(o => `<option${o === r.value ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`
+      : `<input type="text" data-cf-val="${i}" value="${esc(r.value)}" placeholder="${esc(DEFAULTS[r.type] || '')}" style="flex:1;min-width:160px">`;
+    return `<div class="form-row" style="flex-direction:row;align-items:center;gap:8px;margin:0 0 6px;flex-wrap:wrap">
+      <select data-cf-type="${i}" style="width:auto;min-width:170px" title="Field">
+        ${activeTab.fields.map(f => `<option value="${f[0]}"${f[0] === r.type ? ' selected' : ''}>${esc(f[1])}</option>`).join('')}
       </select>
-      <input type="text" data-cf-val="${i}" value="${esc(r.value)}" placeholder="${esc(ex)}" style="flex:1;min-width:160px">
-      <button class="btn sm ghost" data-cf-del="${i}" title="Remove field"${customRows.length <= 1 ? ' disabled' : ''}>✕</button>
+      ${valCtl}
+      <button class="btn sm ghost" data-cf-del="${i}" title="Remove field"${total <= 1 ? ' disabled' : ''}>✕</button>
     </div>`;
   }
 
   function renderGroups() {
-    const vals = {};
-    body.querySelectorAll('[data-var]').forEach(i => { vals[i.dataset.var] = i.value.trim(); });
+    const st = stateFor(activeTab);
+    const vals = { ...DEFAULTS };
+    const used = {};
+    for (const r of st.rows) {
+      const v = (r.value || '').trim();
+      if (v && !used[r.type]) { vals[r.type] = v; used[r.type] = 1; }
+    }
     const out = body.querySelector('#lfGroups');
+    if (!out) return;
     out.innerHTML = activeTab.groups.map(g => `
       <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">${esc(g.title)}</h3>
       <table class="tbl">
@@ -623,25 +653,25 @@ export async function mount(root) {
       </table>`).join('');
   }
 
-  // One delegated click handler on the body for all copy buttons across tabs,
-  // plus the custom-builder add / remove / copy buttons.
+  // Delegated click handler: builder add / remove / copy + library copy buttons.
   body.addEventListener('click', async e => {
-    const add = e.target.closest('#cfAdd');
-    if (add) {
-      customRows.push({ type: 'src-ip', value: CF_MAP['src-ip'].example });
+    const st = stateFor(activeTab);
+    if (e.target.closest('#cfAdd')) {
+      const key = activeTab.fields[0][0];
+      st.rows.push({ type: key, value: defaultValue(activeTab, key) });
       renderCustom();
       return;
     }
     const del = e.target.closest('[data-cf-del]');
     if (del) {
       const i = +del.dataset.cfDel;
-      if (customRows.length > 1) { customRows.splice(i, 1); renderCustom(); }
+      if (st.rows.length > 1) { st.rows.splice(i, 1); renderCustom(); }
       return;
     }
     const cfCopy = e.target.closest('#cfCopy');
     if (cfCopy) {
-      const expr = buildCustomExpr();
-      if (!expr) { toast('Add at least one field with a value', 'warn'); return; }
+      const expr = buildExpr();
+      if (!expr) { toast('Add a field value first', 'warn'); return; }
       const ok = await copyToClipboard(expr);
       const orig = cfCopy.textContent;
       cfCopy.textContent = ok ? 'Copied ✓' : 'Failed';
@@ -658,32 +688,36 @@ export async function mount(root) {
     setTimeout(() => { btn.textContent = orig; }, 900);
   });
 
-  // Custom-builder value typing — update the expression without re-rendering
-  // (keeps input focus).
+  // Live value typing (text inputs) — recompute without re-rendering (keeps focus).
   body.addEventListener('input', e => {
-    const inp = e.target.closest('[data-cf-val]');
+    const inp = e.target.closest('input[data-cf-val]');
     if (!inp) return;
-    const r = customRows[+inp.dataset.cfVal];
-    if (r) { r.value = inp.value; updateCustomExpr(); }
+    const r = stateFor(activeTab).rows[+inp.dataset.cfVal];
+    if (r) { r.value = inp.value; updateExpr(); }
   });
 
-  // Field-type change — swap example values that the user hasn't customised,
-  // then re-render the row to refresh its placeholder; operator change just
-  // recomputes the expression.
+  // Dropdown changes: value <select>, field-type <select>, or the operator.
   body.addEventListener('change', e => {
+    const st = stateFor(activeTab);
+    const valSel = e.target.closest('select[data-cf-val]');
+    if (valSel) {
+      const r = st.rows[+valSel.dataset.cfVal];
+      if (r) { r.value = valSel.value; updateExpr(); }
+      return;
+    }
     const typeSel = e.target.closest('[data-cf-type]');
     if (typeSel) {
-      const r = customRows[+typeSel.dataset.cfType];
+      const r = st.rows[+typeSel.dataset.cfType];
       if (!r) return;
-      const oldEx = CF_MAP[r.type] ? CF_MAP[r.type].example : '';
       const newType = typeSel.value;
-      if ((r.value || '').trim() === '' || r.value === oldEx) r.value = CF_MAP[newType].example;
+      // Swap in the new field's example unless the user typed a custom value.
+      if ((r.value || '').trim() === '' || r.value === defaultValue(activeTab, r.type)) r.value = defaultValue(activeTab, newType);
       r.type = newType;
       renderCustom();
       return;
     }
     const op = e.target.closest('#cfOp');
-    if (op) { withinOp = op.value; updateCustomExpr(); }
+    if (op) { st.op = op.value; updateExpr(); }
   });
 
   nav.addEventListener('click', e => {
