@@ -472,6 +472,25 @@ const OPS = [
   ['( )', 'Group expressions; always wrap each condition']
 ];
 
+// Field types offered by the "Build a custom filter" panel. Each entry is
+// [key, label, template, exampleValue] — the template's `$` is replaced with
+// the row's value. Adding a row pre-fills the example so the combined
+// expression is immediately a working sample the user can edit.
+const CUSTOM_FIELDS = [
+  ['src-ip',    'Source IP / CIDR',      '( addr.src in $ )',  '10.0.0.0/24'],
+  ['dst-ip',    'Destination IP / CIDR', '( addr.dst in $ )',  '8.8.8.8'],
+  ['either-ip', 'Either-direction IP',   '( addr in $ )',      '10.0.0.5'],
+  ['src-port',  'Source port',           '( port.src eq $ )',  '1024'],
+  ['dst-port',  'Destination port',      '( port.dst eq $ )',  '443'],
+  ['app',       'Application (App-ID)',  '( app eq $ )',       'ssl'],
+  ['src-zone',  'Source zone',           '( zone.src eq $ )',  'trust'],
+  ['dst-zone',  'Destination zone',      '( zone.dst eq $ )',  'untrust'],
+  ['rule',      'Rule name',             "( rule eq '$' )",    'Allow-Web'],
+  ['action',    'Action',                '( action eq $ )',    'deny'],
+  ['srcuser',   'Source user',           "( srcuser eq '$' )", 'ACME\\jbloggs']
+];
+const CF_MAP = Object.fromEntries(CUSTOM_FIELDS.map(f => [f[0], { label: f[1], tpl: f[2], example: f[3] }]));
+
 function fill(tpl, vals) {
   return tpl.replace(/\$\{(\w+)\}/g, (_, k) => vals[k] || `<${k}>`);
 }
@@ -493,6 +512,10 @@ export async function mount(root) {
   let activeTab = TABS[0];
   const valueState = {}; // persisted across tab switches per field key
 
+  // Custom multi-value builder state (shared across tabs).
+  let customRows = [{ type: 'src-ip', value: CF_MAP['src-ip'].example }];
+  let withinOp = 'or';
+
   function renderTab() {
     for (const b of nav.querySelectorAll('.ftab')) b.classList.toggle('active', b.dataset.tab === activeTab.key);
     body.innerHTML = `
@@ -509,6 +532,7 @@ export async function mount(root) {
           </div>`;
         }).join('')}
       </div>
+      <div id="lfCustom"></div>
       <div id="lfGroups"></div>`;
 
     body.querySelectorAll('[data-var]').forEach(i => {
@@ -516,7 +540,68 @@ export async function mount(root) {
       i.addEventListener('input', onChange);
       i.addEventListener('change', onChange);
     });
+    renderCustom();
     renderGroups();
+  }
+
+  // Combine the custom rows into one PAN-OS expression: same field types are
+  // joined with the chosen operator (OR by default) and wrapped, then the
+  // distinct field groups are AND-ed together.
+  function buildCustomExpr() {
+    const groups = {}; const order = [];
+    for (const r of customRows) {
+      const v = (r.value || '').trim();
+      const f = CF_MAP[r.type];
+      if (!v || !f) continue;
+      const expr = f.tpl.replace('$', v);
+      if (!groups[r.type]) { groups[r.type] = []; order.push(r.type); }
+      groups[r.type].push(expr);
+    }
+    const parts = order.map(t => groups[t].length === 1
+      ? groups[t][0]
+      : '( ' + groups[t].join(' ' + withinOp + ' ') + ' )');
+    return parts.join(' and ');
+  }
+
+  function updateCustomExpr() {
+    const out = body.querySelector('#cfOut');
+    if (out) out.textContent = buildCustomExpr() || '# Add at least one field with a value';
+  }
+
+  function renderCustom() {
+    const host = body.querySelector('#lfCustom');
+    if (!host) return;
+    host.innerHTML = `
+      <h3 style="font-size:13px;margin:18px 0 6px;color:var(--muted)">Build a custom filter — combine multiple values</h3>
+      <div class="hint" style="margin-bottom:8px">Add as many Source/Destination IPs, ports, apps and more as you need. Repeated field types are joined with the operator below; different fields are AND-ed. Each added field is pre-filled with an editable example.</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div id="cfRows">
+          ${customRows.map((r, i) => customRowHtml(r, i)).join('')}
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+          <button class="btn sm" id="cfAdd">+ Add field</button>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin:0">Combine repeated fields with
+            <select id="cfOp" style="width:auto">
+              <option value="or"${withinOp === 'or' ? ' selected' : ''}>OR</option>
+              <option value="and"${withinOp === 'and' ? ' selected' : ''}>AND</option>
+            </select>
+          </label>
+        </div>
+        <pre class="script-out" id="cfOut" style="margin-top:10px"></pre>
+        <div style="margin-top:6px"><button class="btn sm primary" id="cfCopy">Copy filter</button></div>
+      </div>`;
+    updateCustomExpr();
+  }
+
+  function customRowHtml(r, i) {
+    const ex = CF_MAP[r.type] ? CF_MAP[r.type].example : '';
+    return `<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;flex-wrap:wrap">
+      <select data-cf-type="${i}" style="width:auto;min-width:180px">
+        ${CUSTOM_FIELDS.map(f => `<option value="${f[0]}"${f[0] === r.type ? ' selected' : ''}>${esc(f[1])}</option>`).join('')}
+      </select>
+      <input type="text" data-cf-val="${i}" value="${esc(r.value)}" placeholder="${esc(ex)}" style="flex:1;min-width:160px">
+      <button class="btn sm ghost" data-cf-del="${i}" title="Remove field"${customRows.length <= 1 ? ' disabled' : ''}>✕</button>
+    </div>`;
   }
 
   function renderGroups() {
@@ -538,8 +623,32 @@ export async function mount(root) {
       </table>`).join('');
   }
 
-  // One delegated click handler on the body for all copy buttons across tabs.
+  // One delegated click handler on the body for all copy buttons across tabs,
+  // plus the custom-builder add / remove / copy buttons.
   body.addEventListener('click', async e => {
+    const add = e.target.closest('#cfAdd');
+    if (add) {
+      customRows.push({ type: 'src-ip', value: CF_MAP['src-ip'].example });
+      renderCustom();
+      return;
+    }
+    const del = e.target.closest('[data-cf-del]');
+    if (del) {
+      const i = +del.dataset.cfDel;
+      if (customRows.length > 1) { customRows.splice(i, 1); renderCustom(); }
+      return;
+    }
+    const cfCopy = e.target.closest('#cfCopy');
+    if (cfCopy) {
+      const expr = buildCustomExpr();
+      if (!expr) { toast('Add at least one field with a value', 'warn'); return; }
+      const ok = await copyToClipboard(expr);
+      const orig = cfCopy.textContent;
+      cfCopy.textContent = ok ? 'Copied ✓' : 'Failed';
+      if (!ok) toast('Copy failed', 'error');
+      setTimeout(() => { cfCopy.textContent = orig; }, 900);
+      return;
+    }
     const btn = e.target.closest('button[data-copy]');
     if (!btn) return;
     const ok = await copyToClipboard(btn.dataset.copy);
@@ -547,6 +656,34 @@ export async function mount(root) {
     btn.textContent = ok ? '✓' : '✗';
     if (!ok) toast('Copy failed', 'error');
     setTimeout(() => { btn.textContent = orig; }, 900);
+  });
+
+  // Custom-builder value typing — update the expression without re-rendering
+  // (keeps input focus).
+  body.addEventListener('input', e => {
+    const inp = e.target.closest('[data-cf-val]');
+    if (!inp) return;
+    const r = customRows[+inp.dataset.cfVal];
+    if (r) { r.value = inp.value; updateCustomExpr(); }
+  });
+
+  // Field-type change — swap example values that the user hasn't customised,
+  // then re-render the row to refresh its placeholder; operator change just
+  // recomputes the expression.
+  body.addEventListener('change', e => {
+    const typeSel = e.target.closest('[data-cf-type]');
+    if (typeSel) {
+      const r = customRows[+typeSel.dataset.cfType];
+      if (!r) return;
+      const oldEx = CF_MAP[r.type] ? CF_MAP[r.type].example : '';
+      const newType = typeSel.value;
+      if ((r.value || '').trim() === '' || r.value === oldEx) r.value = CF_MAP[newType].example;
+      r.type = newType;
+      renderCustom();
+      return;
+    }
+    const op = e.target.closest('#cfOp');
+    if (op) { withinOp = op.value; updateCustomExpr(); }
   });
 
   nav.addEventListener('click', e => {
