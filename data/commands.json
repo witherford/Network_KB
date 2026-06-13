@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-29T15:05:42.721Z",
+  "updatedAt": "2026-06-13T18:43:23.182Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -6424,6 +6424,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "scp: copying /var/tmp/rx.pcap to admin@10.0.0.50:/tmp/rx.pcap ... done (412 KB)."
+          },
+          {
+            "cmd": "debug dataplane packet-diag show setting",
+            "desc": "Display the currently configured packet-diag filter criteria and capture stage settings so you can confirm the filter is active before starting a capture",
+            "type": "show",
+            "flagged": false,
+            "example": "  Packet filter:\n    src-ip    : 10.1.1.100\n    dst-ip    : 10.2.2.200\n    src-port  : any\n    dst-port  : any\n    proto     : any\n    non-ip    : no\n  Stages captured:\n    receive   : enabled  → file: /var/log/pan/rx.pcap\n    drop      : enabled  → file: /var/log/pan/drop.pcap\n    transmit  : disabled"
           }
         ],
         "GlobalProtect": [
@@ -6813,6 +6820,13 @@
             "type": "show",
             "flagged": false,
             "example": "Link        Pkts in/out         Bytes in/out         Drops\nISP1-MPLS   12,231,442/11,889K  8.4 GB/1.2 GB        0\nISP2-Cable  8,221,310/8,118K    5.1 GB/0.9 GB        12"
+          },
+          {
+            "cmd": "test sdwan link-path vpn-name <vpn> id <id>",
+            "desc": "Trigger an on-demand SD-WAN path-monitor probe on a specific VPN link and display the latest latency, jitter, and packet-loss measurements",
+            "type": "show",
+            "flagged": false,
+            "example": "SD-WAN path monitor test for VPN: HQ-Branch01  Link ID: 1\n  Local:  198.51.100.1  Remote: 203.0.113.5\n  Latency:      12 ms\n  Jitter:        2 ms\n  Packet Loss:   0 %\n  Status: UP   Threshold: latency ≤ 100ms  jitter ≤ 30ms  loss ≤ 5%"
           }
         ],
         "Quality of Service": [
@@ -6930,7 +6944,8 @@
             "cmd": "openssl ecparam -name secp384r1 -genkey -noout -out ec.key",
             "desc": "Generate an ECC private key using the secp384r1 (P-384) curve",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(P-384 / secp384r1 private key written to ec.key — no console output on success)\n\nVerify with:\n  openssl pkey -in ec.key -noout -text | head -5\n  Private-Key: (384 bit)\n  ASN1 OID: secp384r1\n  NIST CURVE: P-384"
           },
           {
             "cmd": "openssl genpkey -algorithm ed25519 -out ed25519.key",
@@ -6969,45 +6984,52 @@
           },
           {
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa3072.key",
-            "desc": "Generate 3072-bit RSA key via genpkey (modern API)",
+            "desc": "Generate a 3072-bit RSA private key using the modern genpkey interface — NIST recommended minimum past 2030",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "...++++++++++++++++++++++++++++++++++++++++++++++\n...++++++++++++++++++++++++++++++++++++++++++++++++++\n(3072-bit RSA key written to rsa3072.key)"
           },
           {
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out rsa4096.key",
-            "desc": "Generate password-protected 4096-bit RSA key",
+            "desc": "Generate a passphrase-protected 4096-bit RSA key encrypted with AES-256-CBC using the unified genpkey subcommand",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Enter PEM pass phrase:\nVerifying - Enter PEM pass phrase:\n(Encrypted RSA-4096 key written to rsa4096enc.key)"
           },
           {
             "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-384 -out ec384.key",
-            "desc": "P-384 EC key via genpkey",
+            "desc": "Generate a P-384 EC private key via the unified genpkey interface — equivalent to ecparam -name secp384r1",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(EC P-384 private key written to ec384.key — no console output)\n\nVerify with:\n  openssl pkey -in ec384.key -text -noout | grep \"NIST CURVE\"\n  NIST CURVE: P-384"
           },
           {
             "cmd": "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-521 -out ec521.key",
-            "desc": "P-521 EC key via genpkey",
+            "desc": "Generate a P-521 EC private key — the highest-security NIST curve, 521-bit field",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(EC P-521 private key written to ec521.key — no console output)\n\nVerify with:\n  openssl pkey -in ec521.key -text -noout | grep \"NIST CURVE\"\n  NIST CURVE: P-521"
           },
           {
             "cmd": "openssl genpkey -algorithm X25519 -out x25519.key",
-            "desc": "X25519 key for modern ECDH",
+            "desc": "Generate an X25519 key pair used for Diffie-Hellman key agreement (not signing) — Curve25519-based, used in TLS 1.3",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(X25519 private key written to x25519.key — no console output)\n\nVerify with:\n  openssl pkey -in x25519.key -text -noout\n  X25519 Private-Key:\n  priv:\n      <32-byte hex>"
           },
           {
             "cmd": "openssl genpkey -algorithm X448 -out x448.key",
-            "desc": "X448 key (higher security level than X25519)",
+            "desc": "Generate an X448 key pair for Diffie-Hellman key exchange — Curve448 (Goldilocks), 224-bit security level",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(X448 private key written to x448.key — no console output)\n\nVerify with:\n  openssl pkey -in x448.key -text -noout\n  X448 Private-Key:\n  priv:\n      <56-byte hex>"
           },
           {
             "cmd": "openssl genpkey -algorithm ed448 -out ed448.key",
-            "desc": "Ed448 signing key",
+            "desc": "Generate an Ed448 private key for digital signatures — Curve448-based signing, available in OpenSSL 1.1.1+",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(Ed448 private key written to ed448.key — no console output)\n\nVerify with:\n  openssl pkey -in ed448.key -text -noout\n  ED448 Private-Key:\n  priv:\n      <57-byte hex>\n  pub:\n      <57-byte hex>"
           },
           {
             "cmd": "openssl ecparam -list_curves",
@@ -7018,9 +7040,10 @@
           },
           {
             "cmd": "openssl ecparam -name prime256v1 -out ecparams.pem",
-            "desc": "Save EC parameters to a file",
+            "desc": "Write P-256 (prime256v1) elliptic curve parameters to a PEM file — used as input for tools that need a separate params file",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(ecparams.pem written — no console output)\n\nContents of ecparams.pem:\n  -----BEGIN EC PARAMETERS-----\n  BggqhkjOPQMBBw==\n  -----END EC PARAMETERS-----"
           },
           {
             "cmd": "openssl rand -out random.bin 256",
@@ -7031,9 +7054,10 @@
           },
           {
             "cmd": "openssl rand -hex 16",
-            "desc": "Print 16 random bytes hex (32 chars) — token / IV material",
+            "desc": "Generate 16 cryptographically random bytes and output as 32 lowercase hex characters — useful for AES-128 key material",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "9f3a1b2c4d5e6f708192a3b4c5d6e7f8\n\n(output is 32 hex chars = 16 random bytes; run again for a different value)"
           }
         ],
         "Key Inspection & Manipulation": [
@@ -7662,63 +7686,73 @@
         "TLS Client Testing": [
           {
             "cmd": "openssl s_client -connect hostname:443",
-            "desc": "Connect to a TLS endpoint and display the full certificate chain and handshake",
+            "desc": "Open a raw TLS connection to a host and print the full certificate chain, negotiated cipher suite, TLS version, and session details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\ndepth=2 C=US, O=DigiCert Inc, CN=DigiCert Global Root CA\ndepth=1 C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\ndepth=0 CN=hostname\n---\nCipher    : TLS_AES_256_GCM_SHA384\nProtocol  : TLSv1.3\nServer Temp Key: X25519, 253 bits\nVerification: OK\n---\nSSL-Session:\n  Protocol  : TLSv1.3\n  Cipher    : TLS_AES_256_GCM_SHA384\n  Timeout   : 7200 (sec)\n---"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -servername hostname",
-            "desc": "Connect with SNI (Server Name Indication) — required for virtual hosting",
+            "desc": "Connect with explicit SNI (Server Name Indication) in the TLS ClientHello — required for virtual-hosted HTTPS to receive the correct certificate",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nSNI hostname: hostname\ndepth=0 CN=hostname\n---\nProtocol  : TLSv1.3\nCipher    : TLS_AES_256_GCM_SHA384\nVerification: OK"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -showcerts",
-            "desc": "Connect and display every certificate in the chain",
+            "desc": "Display all certificates in the chain returned by the server (leaf + intermediates) — essential for verifying chain completeness",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nCertificate chain\n 0 s:CN=hostname\n   i:C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\n-----BEGIN CERTIFICATE-----\n<leaf cert PEM>\n-----END CERTIFICATE-----\n 1 s:C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\n   i:C=US, O=DigiCert Inc, CN=DigiCert Global Root CA\n-----BEGIN CERTIFICATE-----\n<intermediate PEM>\n-----END CERTIFICATE-----"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -CAfile ca.crt",
-            "desc": "Connect and validate the certificate against a specific CA bundle",
+            "desc": "Verify the server certificate against a specific CA bundle file; returns verify return code 0 (ok) if valid, or an error code and reason if not",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\ndepth=2 CN=Root CA\ndepth=1 CN=Intermediate CA\ndepth=0 CN=hostname\n---\nVerify return code: 0 (ok)\nProtocol  : TLSv1.3\n\n# If untrusted:\nVerify return code: 20 (unable to get local issuer certificate)"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -tls1_2",
-            "desc": "Force TLS 1.2 only for the connection test",
+            "desc": "Force the TLS handshake to use TLS 1.2 only — confirms whether the server still supports TLS 1.2 when TLS 1.3 is preferred",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nProtocol  : TLSv1.2\nCipher    : ECDHE-RSA-AES256-GCM-SHA384\nVerification: OK\n\n# If TLS 1.2 is disabled on server:\n140...SSL routines:ssl_check_version_downgrade:inappropriate fallback"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -tls1_3",
-            "desc": "Force TLS 1.3 only for the connection test",
+            "desc": "Force TLS 1.3 negotiation — confirms TLS 1.3 support and shows which AEAD cipher suite is selected",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nProtocol  : TLSv1.3\nCipher    : TLS_AES_256_GCM_SHA384\nServer Temp Key: X25519, 253 bits\nVerification: OK"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -cipher ECDHE-RSA-AES256-GCM-SHA384",
-            "desc": "Test connectivity using a specific cipher suite",
+            "desc": "Attempt connection using a specific TLS 1.2 cipher suite — the server will reject the handshake if the cipher is not in its configured list",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nProtocol  : TLSv1.2\nCipher    : ECDHE-RSA-AES256-GCM-SHA384\n\n# If cipher not supported by server:\n140...SSL routines:SSL3_GET_SERVER_HELLO:no shared cipher"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -status",
-            "desc": "Request OCSP stapling status information during the TLS handshake",
+            "desc": "Request an OCSP staple from the server during the TLS handshake — shows the certificate revocation status inline without a separate OCSP query",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\nOCSP response:\n======================================\nOCSP Response Data:\n  OCSP Response Status: successful (0x0)\n  Response Type: Basic OCSP Response\n  Cert Status: Good\n  This Update: Jun 10 10:00:00 2026 GMT\n  Next Update: Jun 17 10:00:00 2026 GMT\n======================================\nProtocol  : TLSv1.3"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 2>/dev/null | openssl x509 -noout -dates",
-            "desc": "Check certificate expiry dates directly from a live TLS endpoint",
+            "desc": "One-liner pipeline that extracts the leaf certificate and prints only its validity dates — quick cert expiry check without parsing the full s_client output",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "notBefore=Jan  1 00:00:00 2026 GMT\nnotAfter=Dec 31 23:59:59 2026 GMT\n\n# Tip: check days remaining:\nopenssl s_client -connect hostname:443 2>/dev/null | openssl x509 -noout -enddate -checkend 2592000\n# Exit 0 = valid for >30 days; Exit 1 = expires within 30 days"
           },
           {
             "cmd": "openssl s_client -connect hostname:25 -starttls smtp",
-            "desc": "Test TLS on SMTP using STARTTLS negotiation",
+            "desc": "Connect to an SMTP server and negotiate TLS via STARTTLS — then inspect the resulting TLS session parameters and certificate",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\n220 mail.hostname.com ESMTP Postfix\nEHLO openssl.client.test\n250-mail.hostname.com\n250-STARTTLS\n220 2.0.0 Ready to start TLS\nProtocol  : TLSv1.3\nCipher    : TLS_AES_256_GCM_SHA384\nVerification: OK"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -no_ssl3 -no_tls1 -no_tls1_1",
@@ -8146,63 +8180,73 @@
         "Hashing & HMAC": [
           {
             "cmd": "openssl dgst -sha256 <file>",
-            "desc": "Computes SHA?256 hash",
+            "desc": "Compute the SHA-256 digest of a file and print the hex hash — equivalent to sha256sum",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA2-256(<file>)= e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n\n# Empty file produces the above constant (zero-length message digest)"
           },
           {
             "cmd": "openssl dgst -sha1 <file>",
-            "desc": "Computes SHA?1 hash",
+            "desc": "Compute the SHA-1 hash of a file — legacy; avoid for new security designs due to collision vulnerability (SHAttered attack)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA1(<file>)= da39a3ee5e6b4b0d3255bfef95601890afd80709\n\n# That is the SHA-1 of an empty file; real files produce a 40-char hex string"
           },
           {
             "cmd": "openssl dgst -md5 <file>",
-            "desc": "Computes MD5 hash",
+            "desc": "Compute the MD5 hash of a file — cryptographically broken; safe only for non-security checksums such as detecting accidental corruption",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "MD5(<file>)= d41d8cd98f00b204e9800998ecf8427e\n\n# That is the MD5 of an empty file; collisions can be engineered so never use for security"
           },
           {
             "cmd": "openssl dgst -sha512 <file>",
-            "desc": "Computes SHA?512 hash",
+            "desc": "Compute the SHA-512 digest of a file; 512-bit output — suitable for high-security hashing where SHA-256 output length is insufficient",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA2-512(<file>)= cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce\n47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n\n(128 hex chars = 64 bytes)"
           },
           {
             "cmd": "openssl dgst -r -sha256 <file>",
-            "desc": "Outputs hash in reversed format",
+            "desc": "Print the SHA-256 hash in BSD reverse format (hash followed by filename) — compatible with sha256sum -c check files",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 *<file>\n\n# Save output and later verify:\nopenssl dgst -r -sha256 <file> > checksums.txt\nopenssl dgst -r -sha256 -check checksums.txt"
           },
           {
             "cmd": "openssl dgst -sha256 file.txt",
-            "desc": "Compute the SHA-256 digest of a file",
+            "desc": "Hash the literal file file.txt with SHA-256 — identical to the generic form but with a concrete filename",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA2-256(file.txt)= 2c624232cdd221771294dfbb310acbc8b93f0a9a38bb34f1f4b7b5c1ad7fe19b"
           },
           {
             "cmd": "openssl dgst -sha512 file.txt",
-            "desc": "Compute the SHA-512 digest of a file",
+            "desc": "Hash file.txt with SHA-512 — produces a 128-character hex digest; useful when SHA-256 is insufficient for a compliance requirement",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA2-512(file.txt)= a2bc23d78abc...  (128 hex chars)\n\n# Compare programmatically:\nopenssl dgst -sha512 -binary file.txt | xxd -p"
           },
           {
             "cmd": "openssl dgst -md5 file.txt",
-            "desc": "Compute the MD5 digest of a file (legacy use only — not for security)",
+            "desc": "Compute MD5 hash of file.txt — note MD5 is not collision-resistant; use SHA-256 or above for any security purpose",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "MD5(file.txt)= 5d41402abc4b2a76b9719d911017c592"
           },
           {
             "cmd": "openssl dgst -sha256 -c file.txt",
-            "desc": "SHA-256 with colon-separated hex output",
+            "desc": "Compute SHA-256 hash and output each byte separated by colons — useful for visual byte-by-byte comparison or certificate fingerprint display",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA2-256(file.txt)= 2c:62:42:32:cd:d2:21:77:12:94:df:bb:31:0a:cb:c8:b9:3f:0a:9a:38:bb:34:f1:f4:b7:b5:c1:ad:7f:e1:9b"
           },
           {
             "cmd": "openssl dgst -sha3-256 file.txt",
-            "desc": "SHA3-256 hash of a file",
+            "desc": "Compute SHA3-256 hash using the Keccak sponge construction — NIST FIPS 202 standard, distinct from SHA-2; available in OpenSSL 1.1.1+",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "SHA3-256(file.txt)= a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a\n\n# Verify OpenSSL supports SHA3:\nopenssl list -digest-algorithms | grep sha3"
           },
           {
             "cmd": "openssl dgst -sha3-512 file.txt",
@@ -14652,6 +14696,13 @@
             "type": "show",
             "flagged": false,
             "example": "Start: 2026-05-01T19:55:14+0100\nHOST: web01                       Loss%   Snt   Last   Avg  Best  Wrst StDev\n  1.|-- 10.0.0.1                   0.0%   100    0.4    0.5   0.3   1.1   0.1\n  2.|-- 10.0.255.1                 0.0%   100    1.2    1.4   1.0   3.5   0.4\n  3.|-- 100.64.0.41                2.0%   100   12.4   12.7  11.8  18.4   1.2\n  4.|-- 195.66.224.105             0.0%   100   13.1   13.2  12.7  15.0   0.5\n  5.|-- 1.1.1.1                    0.0%   100   13.8   13.9  13.4  16.2   0.4"
+          },
+          {
+            "cmd": "networkctl list",
+            "desc": "List all network links managed by systemd-networkd with their type, operational state, and setup state",
+            "type": "show",
+            "flagged": false,
+            "example": "IDX LINK    TYPE     OPERATIONAL SETUP     \n  1 lo      loopback carrier     unmanaged \n  2 eth0    ether    routable    configured\n  3 wlan0   wlan     dormant     configuring\n\n3 links listed."
           }
         ],
         "Diagnostics": [
@@ -14873,63 +14924,73 @@
         "Ref 01. File & Directory Navigation": [
           {
             "cmd": "ls",
-            "desc": "# List files in the current directory",
+            "desc": "List files and directories in the current directory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var"
           },
           {
             "cmd": "ls -l",
-            "desc": "# Long format listing",
+            "desc": "Long format listing — shows permissions, owner, group, size, and modification time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "total 64\ndrwxr-xr-x  2 root root 4096 Jun  1 10:00 bin\ndrwxr-xr-x 20 root root 4096 Jun  1 10:00 etc\n-rw-r--r--  1 root root 1234 Jun  1 10:00 file.txt"
           },
           {
             "cmd": "ls -lha",
-            "desc": "# Long format, hidden files, human-readable sizes",
+            "desc": "Long format with hidden files and human-readable sizes (K, M, G)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "total 96K\ndrwxr-xr-x  2 user user 4.0K Jun  1 10:00 .\ndrwxr-xr-x 20 root root 4.0K Jun  1 10:00 ..\n-rw-r--r--  1 user user 3.5K Jun  1 10:00 .bashrc\n-rw-r--r--  1 user user 1.2K Jun  1 10:00 file.txt"
           },
           {
             "cmd": "ls -t",
-            "desc": "# Sort by modification time",
+            "desc": "Sort directory listing by modification time, newest first",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "newfile.sh  config.conf  archive.tar.gz  old_backup.bak"
           },
           {
             "cmd": "ls -S",
-            "desc": "# Sort by file size",
+            "desc": "Sort directory listing by file size, largest first",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "large_backup.tar.gz  database.db  config.conf  readme.txt"
           },
           {
             "cmd": "ls -1",
-            "desc": "# One file per line",
+            "desc": "List one entry per line — useful for piping to other commands or scripts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "bin\nboot\netc\nhome\nlib\nusr\nvar"
           },
           {
             "cmd": "ls --group-directories-first",
-            "desc": "# Directories first",
+            "desc": "Show directories before files within the alphabetical listing",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "config/\ndata/\nlogs/\nscripts/\napp.conf\napp.log\nREADME.md"
           },
           {
             "cmd": "ls -d */",
-            "desc": "# List only directories",
+            "desc": "List only directories in the current path (trailing slash confirms each entry is a directory)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "bin/  boot/  dev/  etc/  home/  lib/  lib64/  opt/  proc/  root/  sys/  tmp/  usr/  var/"
           },
           {
             "cmd": "ls --sort=time",
-            "desc": "# Sort by time",
+            "desc": "Sort by modification time; equivalent to ls -t",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "latest.log  yesterday.log  archive-2026-06-01.log"
           },
           {
             "cmd": "ls --sort=size",
-            "desc": "# Sort by size",
+            "desc": "Sort by file size descending; equivalent to ls -S",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "bigdump.sql  backup.tar.gz  config.json  notes.txt"
           },
           {
             "cmd": "ls -R",
@@ -15501,63 +15562,73 @@
         "Ref 06. Networking Commands": [
           {
             "cmd": "ip -br a",
-            "desc": "# Brief IP address listing",
+            "desc": "Show all interfaces with their IP addresses in a compact one-line-per-interface format",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "lo               UNKNOWN        127.0.0.1/8 ::1/128\neth0             UP             192.168.1.10/24 fe80::1/64\ndocker0          DOWN"
           },
           {
             "cmd": "ip -4 a",
-            "desc": "# IPv4 addresses only",
+            "desc": "Show only IPv4 addresses assigned to all network interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1: lo:\n    inet 127.0.0.1/8 scope host lo\n2: eth0:\n    inet 192.168.1.10/24 brd 192.168.1.255 scope global eth0"
           },
           {
             "cmd": "ip -6 a",
-            "desc": "# IPv6 addresses only",
+            "desc": "Show only IPv6 addresses assigned to all interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1: lo:\n    inet6 ::1/128 scope host\n2: eth0:\n    inet6 fe80::1a2b:3c4d:5e6f:7a8b/64 scope link"
           },
           {
             "cmd": "ip -4 r",
-            "desc": "# IPv4 routing table",
+            "desc": "Display the IPv4 routing table with destination networks, gateways, and egress interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "default via 192.168.1.1 dev eth0 proto dhcp metric 100\n10.0.0.0/8 via 10.1.1.1 dev eth1 proto static\n192.168.1.0/24 dev eth0 proto kernel scope link"
           },
           {
             "cmd": "ip link",
-            "desc": "# Show link layer info",
+            "desc": "Show Layer-2 link state for all interfaces — flags, MTU, MAC address, and operational state",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN\n    link/loopback 00:00:00:00:00:00\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP\n    link/ether 00:11:22:33:44:55 brd ff:ff:ff:ff:ff:ff"
           },
           {
             "cmd": "ip neigh flush all",
-            "desc": "# Clear ARP cache",
+            "desc": "Flush (clear) all ARP / NDP neighbour table entries, forcing fresh resolution on the next transmission",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success; neighbour cache cleared)"
           },
           {
             "cmd": "ip route get 8.8.8.8",
-            "desc": "# Show route to specific host",
+            "desc": "Show the exact kernel route used to reach a specific IP, including the source address and egress interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "8.8.8.8 via 192.168.1.1 dev eth0 src 192.168.1.10 uid 1000\n    cache"
           },
           {
             "cmd": "ping host",
-            "desc": "# Test connectivity",
+            "desc": "Send ICMP echo requests to a host to test basic IP connectivity and measure round-trip time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PING example.com (93.184.216.34) 56(84) bytes of data.\n64 bytes from 93.184.216.34: icmp_seq=1 ttl=55 time=12.3 ms\n64 bytes from 93.184.216.34: icmp_seq=2 ttl=55 time=11.9 ms\n\n--- example.com ping statistics ---\n2 packets transmitted, 2 received, 0% packet loss"
           },
           {
             "cmd": "ping -s 1024 host",
-            "desc": "# Large packet ping",
+            "desc": "Send ICMP packets with a 1024-byte payload to test path MTU and fragmentation behaviour",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "PING host (10.0.0.1) 1024(1052) bytes of data.\n1032 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.456 ms\n\n# If fragmentation occurs, reduce -s until ping succeeds to find path MTU"
           },
           {
             "cmd": "curl url",
-            "desc": "# Fetch a URL",
+            "desc": "Fetch a URL with an HTTP GET request and print the response body to stdout",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "<!DOCTYPE html>\n<html>\n<head><title>Example Domain</title></head>\n<body>\n<h1>Example Domain</h1>\n<p>This domain is for use in illustrative examples.</p>\n</body>\n</html>"
           },
           {
             "cmd": "curl -I url",
@@ -16029,63 +16100,73 @@
         "Ref 09. Systemd Service Management": [
           {
             "cmd": "systemctl status service",
-            "desc": "# Check service status",
+            "desc": "Show the current status of a systemd unit — running state, active/failed, recent journal lines, PID, and cgroup",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "● nginx.service - A high performance web server\n   Loaded: loaded (/lib/systemd/system/nginx.service; enabled)\n   Active: active (running) since Mon 2026-06-13 10:00:00 UTC; 2h ago\n Main PID: 1234 (nginx)\n   CGroup: /system.slice/nginx.service\n           ├─1234 nginx: master\n           └─1235 nginx: worker\nJun 13 10:00:00 host nginx[1234]: Listening on 0.0.0.0:80"
           },
           {
             "cmd": "systemctl start service",
-            "desc": "# Start service",
+            "desc": "Start a systemd unit immediately without enabling it for automatic start at boot",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success; service starts in the background)\n\n# Verify:\nsystemctl is-active nginx\nactive"
           },
           {
             "cmd": "systemctl stop service",
-            "desc": "# Stop service",
+            "desc": "Stop a running systemd unit gracefully — sends SIGTERM, then SIGKILL if the service does not exit within the timeout",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success)\n\n# Verify:\nsystemctl is-active nginx\ninactive"
           },
           {
             "cmd": "systemctl restart service",
-            "desc": "# Restart service",
+            "desc": "Stop then immediately start a unit — briefly interrupts service; use reload instead if the service supports it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success; service restarts)\n\n# Confirm it came back up:\nsystemctl is-active nginx\nactive"
           },
           {
             "cmd": "systemctl reload service",
-            "desc": "# Reload config without restart",
+            "desc": "Send a reload signal (SIGHUP or equivalent) to apply configuration changes without stopping the process",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success; config reloaded without downtime)\n\n# Not all services support reload; check:\ncat /lib/systemd/system/nginx.service | grep ExecReload"
           },
           {
             "cmd": "systemctl reload-or-restart service",
-            "desc": "# Reload if supported",
+            "desc": "Reload configuration if supported; fall back to a full restart if not — the safest one-liner for config changes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(no output on success)"
           },
           {
             "cmd": "systemctl enable service",
-            "desc": "# Enable at boot",
+            "desc": "Create the symlinks that cause a unit to be automatically started at boot via the appropriate target",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service\n→ /lib/systemd/system/nginx.service."
           },
           {
             "cmd": "systemctl disable service",
-            "desc": "# Disable at boot",
+            "desc": "Remove the boot-start symlinks so the unit will no longer start automatically; the service remains installed",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Removed /etc/systemd/system/multi-user.target.wants/nginx.service."
           },
           {
             "cmd": "systemctl mask service",
-            "desc": "# Prevent from starting",
+            "desc": "Symlink the unit to /dev/null, preventing it from being started manually or automatically — stronger than disable",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Created symlink /etc/systemd/system/nginx.service → /dev/null.\n\n# To undo:\nsystemctl unmask nginx"
           },
           {
             "cmd": "systemctl unmask service",
-            "desc": "# Remove mask",
+            "desc": "Reverse a mask — removes the /dev/null symlink so the unit can be started and enabled again",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Removed /etc/systemd/system/nginx.service."
           },
           {
             "cmd": "systemctl is-active service",
@@ -19139,61 +19220,71 @@
             "cmd": "host <ip>",
             "desc": "Captures packets to or from a specific IP",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "host 192.168.1.10\n→ Captures all packets to or from 192.168.1.10 regardless of protocol (TCP, UDP, ICMP, ARP, etc.)"
           },
           {
             "cmd": "src host <ip>",
             "desc": "Captures packets from a specific source IP",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "src host 10.0.0.5\n→ Only packets whose source IP is 10.0.0.5 are captured"
           },
           {
             "cmd": "dst host <ip>",
             "desc": "Captures packets to a specific destination IP",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "dst host 10.0.0.1\n→ Only packets destined for 10.0.0.1 are captured"
           },
           {
             "cmd": "net <subnet>",
             "desc": "Captures packets within a subnet",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "net 192.168.1.0/24\n→ Captures all traffic where source or destination falls within 192.168.1.0/24\n\n# Also valid with mask notation:\nnet 10.0.0.0 mask 255.0.0.0"
           },
           {
             "cmd": "port <port>",
             "desc": "Captures packets on a specific port",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "port 443\n→ Captures all TCP or UDP traffic on port 443 (HTTPS); matches both src and dst port\n\n# Combine with host:\nhost 10.0.0.1 and port 443"
           },
           {
             "cmd": "tcp port <port>",
             "desc": "Captures TCP packets on a port",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "tcp port 80\n→ Captures only TCP port 80 (HTTP) — excludes UDP traffic on port 80\n\n# Capture a range:\ntcp portrange 8080-8090"
           },
           {
             "cmd": "udp port <port>",
             "desc": "Captures UDP packets on a port",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "udp port 53\n→ Captures only UDP DNS queries and responses on port 53; excludes TCP DNS (zone transfers)"
           },
           {
             "cmd": "icmp",
             "desc": "Captures ICMP packets",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "icmp\n→ Captures all ICMPv4 echo requests, replies, unreachables, and time-exceeded messages\n\n# Combine with host:\nicmp and host 192.168.1.1"
           },
           {
             "cmd": "icmp6",
             "desc": "Captures ICMPv6 packets",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "icmp6\n→ Captures ICMPv6 traffic including Neighbor Discovery (ND), Router Solicitation, and IPv6 pings\n\n# Filter to pings only:\nicmp6[icmp6type] == 128"
           },
           {
             "cmd": "arp",
             "desc": "Captures ARP packets",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "arp\n→ Captures all ARP broadcast and unicast frames — useful for detecting ARP storms, spoofing, or IP conflicts"
           },
           {
             "cmd": "ether host <mac>",
@@ -19614,61 +19705,71 @@
             "cmd": "tshark -D",
             "desc": "Lists all capture interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -D\n1. eth0\n2. wlan0\n3. lo (Loopback)\n4. any (Pseudo-device, captures on all interfaces)\n5. nflog\n6. nfqueue\n7. usbmon1"
           },
           {
             "cmd": "tshark -i <iface>",
             "desc": "Captures on a specific interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -i eth0\nCapturing on 'eth0'\n  1 0.000000 192.168.1.10 → 8.8.8.8   DNS 80 Standard query 0x1234 A example.com\n  2 0.012345  8.8.8.8 → 192.168.1.10 DNS 96 Standard query response 0x1234 A 93.184.216.34\n  3 0.013210 192.168.1.10 → 10.0.0.1  TLSv1.3 134 Client Hello\n^C\n3 packets captured"
           },
           {
             "cmd": "tshark -i <iface> -f \"<filter>\"",
             "desc": "Applies a capture filter",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -i eth0 -f \"tcp port 443\"\nCapturing on 'eth0'\n  1 0.000000 192.168.1.10 → 10.0.0.1  TLSv1.3 134 Client Hello\n  2 0.001234  10.0.0.1 → 192.168.1.10 TLSv1.3 897 Server Hello, Certificate, Server Hello Done\n  3 0.003456 192.168.1.10 → 10.0.0.1  TLSv1.3  66 Change Cipher Spec, Finished\n^C\n3 packets captured"
           },
           {
             "cmd": "tshark -Y \"<display-filter>\"",
             "desc": "Applies a display filter",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -i eth0 -Y \"http.request.method == GET\"\n  1 0.000000 192.168.1.10 → 93.184.216.34 HTTP 365 GET / HTTP/1.1\n  2 1.234560 192.168.1.10 → 93.184.216.34 HTTP 402 GET /favicon.ico HTTP/1.1\n\n# Read from file with display filter:\ntshark -r capture.pcap -Y \"dns.flags.response == 1 and dns.flags.rcode > 0\""
           },
           {
             "cmd": "tshark -w <file.pcap>",
             "desc": "Writes capture to file",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -i eth0 -w capture.pcap\nCapturing on 'eth0'\n^C\n4823 packets captured\n\n# With rotation (100 MB files, keep last 5):\ntshark -i eth0 -w capture.pcap -b filesize:102400 -b files:5"
           },
           {
             "cmd": "tshark -r <file.pcap>",
             "desc": "Reads a capture file",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -r capture.pcap\n  1 0.000000 10.0.0.1 → 10.0.0.2  TCP 74 12345 → 80 [SYN] Seq=0 Win=65535 Len=0\n  2 0.000234 10.0.0.2 → 10.0.0.1  TCP 74    80 → 12345 [SYN, ACK] Seq=0 Ack=1\n  3 0.000468 10.0.0.1 → 10.0.0.2  TCP 66 12345 → 80 [ACK] Seq=1 Ack=1\n  4 0.001000 10.0.0.1 → 10.0.0.2  HTTP 365 GET / HTTP/1.1"
           },
           {
             "cmd": "tshark -z io",
-            "desc": "stat",
+            "desc": "Display IO statistics — use with -qz io,stat,<interval> to bucket throughput by time window",
             "type": "Shows IO statistics",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -r capture.pcap -qz io,stat,10\n===================================================================\n| IO Statistics                                                   |\n| Interval size: 10 secs                                         |\n|-----------------------------------------------------------------|\n| Duration type:   secs                                          |\n|          Start  Stop  Frames   Bytes                           |\n| Interval 0      10    1234     567890                          |\n| Interval 10     20    2345     1234567                         |\n==================================================================="
           },
           {
             "cmd": "tshark -z conv,tcp -r capture.pcap",
             "desc": "Display TCP conversation statistics from a capture (talkers, bytes, duration)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -r capture.pcap -qz conv,tcp\n================================================================================\nTCP Conversations\nFilter:<No Filter>\n                                                 |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |\n                                                 | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |\n192.168.1.10:12345    <-> 93.184.216.34:443       34    34567      31   678901     65   713468    0.000000000          2.3453\n10.0.0.1:54321        <-> 10.0.0.2:80             12     8901      18   456789     30   465690    0.523100000          0.9871"
           },
           {
             "cmd": "tshark -z endpoints,tcp -r capture.pcap",
             "desc": "Display TCP endpoint statistics from a capture (per-host packets/bytes)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -r capture.pcap -qz endpoints,tcp\n================================================================================\nTCP Endpoints\nFilter:<No Filter>\n                  |  Address  | Packets | Bytes  | Tx Packets | Tx Bytes | Rx Packets | Rx Bytes |\n  192.168.1.10        65      713468       34       34567        31      678901\n  93.184.216.34       65      713468       31      678901        34       34567\n================================================================================"
           },
           {
             "cmd": "tshark -z expert",
             "desc": "Shows expert info warnings/errors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "tshark -r capture.pcap -qz expert\nExpert Infos\n  Severity   Group         Summary\n  Warning    Sequence      TCP segment not captured [Reassembly error, protocol: TCP]\n  Warning    Sequence      Previous segment(s) not captured [Reassembly error]\n  Chat       Sequence      Connection establish request (SYN): server port 443\n  Chat       Sequence      Connection establish acknowledge (SYN+ACK): server port 443"
           },
           {
             "cmd": "tshark -z http",
@@ -26449,6 +26550,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Running command: vm-support\nGenerating ESXi support bundle...\nBundle file: /vmfs/volumes/DS-FAST/esx-esxi01-2026-06-12--09.42.tgz"
+          },
+          {
+            "cmd": "esxcli hardware platform get",
+            "desc": "Display hardware platform details including vendor, product name, serial number, BIOS version, and UUID — useful for asset tracking and support cases",
+            "type": "show",
+            "flagged": false,
+            "example": "Platform Information\n  UUID: 00000000-1111-2222-3333-444444444444\n  Product Name: ProLiant DL380 Gen10\n  Vendor Name: HPE\n  Serial Number: CZ12345678\n  IPMI Supported: true\n  BIOS Version: U30\n  BIOS Release Date: 11/05/2023\n  BIOS Build Date: 11/05/2023"
           }
         ]
       },
@@ -27185,6 +27293,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "asa# packet-tracer input outside tcp 203.0.113.42 54321 198.51.100.10 443 detailed\n\nPhase: 1  Type: ROUTE-LOOKUP    Result: ALLOW\n  found next-hop 10.10.10.10 using egress ifc inside\nPhase: 2  Type: ACCESS-LIST      Result: ALLOW\n  rule-id: 268435457 (access-list OUTSIDE-IN line 10)\n  config: access-list OUTSIDE-IN extended permit tcp any host 198.51.100.10 eq 443\nPhase: 3  Type: NAT              Result: ALLOW\n  rule-id: 268435460 (object WEB-PRIVATE nat static)\n  Static translate 198.51.100.10/443 → 10.10.10.10/443\nPhase: 4  Type: NAT              Result: ALLOW  (reverse path)\nPhase: 5  Type: INSPECT          Result: ALLOW  (inspect-tcp)\nPhase: 6  Type: FLOW-CREATION    Result: ALLOW\n  New flow created with id 67890, packet dispatched to next module\n\nResult:\n  input-interface: outside\n  output-interface: inside\n  Action: allow"
+          },
+          {
+            "cmd": "clear nat counters",
+            "desc": "Reset NAT translation hit counters to zero — useful before testing a new NAT rule to confirm it is being matched",
+            "type": "config",
+            "flagged": false,
+            "example": "! Run immediately before testing, then verify with:\nshow nat detail\n! Look for non-zero \"translate_hits\" to confirm rule is matching"
           }
         ]
       },
@@ -28292,6 +28407,13 @@
             "type": "show",
             "flagged": false,
             "example": "{\n    \"TransitGatewayRouteTables\": [{\n        \"TransitGatewayRouteTableId\": \"tgw-rtb-0abc1234\",\n        \"TransitGatewayId\": \"tgw-0abc1234\",\n        \"State\": \"available\",\n        \"DefaultAssociationRouteTable\": true,\n        \"DefaultPropagationRouteTable\": true\n    }]\n}"
+          },
+          {
+            "cmd": "aws ec2 describe-vpc-peering-connections --filters Name=status-code,Values=active --query \"VpcPeeringConnections[].[VpcPeeringConnectionId,RequesterVpcInfo.VpcId,AccepterVpcInfo.VpcId,Status.Code]\" --output table",
+            "desc": "List all active VPC peering connections showing the peering ID, requester VPC, accepter VPC, and current status",
+            "type": "show",
+            "flagged": false,
+            "example": "-------------------------------------------------------------------\n|           DescribeVpcPeeringConnections                          |\n+-------------------+---------------+---------------+-----------+\n| pcx-0a1b2c3d4e5f | vpc-11111111  | vpc-22222222  | active    |\n| pcx-0b2c3d4e5f6a | vpc-33333333  | vpc-44444444  | active    |\n+-------------------+---------------+---------------+-----------+"
           }
         ]
       },
@@ -28305,63 +28427,73 @@
         "System": [
           {
             "cmd": "show system",
-            "desc": "Displays SDX system summary",
+            "desc": "Display overall SDX system information including hostname, software version, management IP, and cluster role",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Hostname:      sdx-01.corp.local\nSoftware Ver:  14.1-21.57\nManagement IP: 10.10.10.5\nState:         Primary\nUptime:        12 days, 4 hours, 32 minutes"
           },
           {
             "cmd": "show system version",
-            "desc": "Shows SDX firmware version",
+            "desc": "Show the SDX Management Service (SVM) version and build number installed on the appliance",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Management Service Version : 14.1 Build 21.57\nBuild Date:                : Jan 15 2026 09:44:12\nPackage Version:           : 14.1-21.57_nc_64.tgz"
           },
           {
             "cmd": "show system backup",
-            "desc": "Lists system backups",
+            "desc": "List all available system backup archives stored on the SDX management service",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name                              Size       Created\n--------------------------------  ---------  ----------------------\nnsfullconf_sdx-01_20260601.tgz   248.3 MB   Tue Jun  1 02:00:01 2026\nnsfullconf_sdx-01_20260531.tgz   247.9 MB   Mon May 31 02:00:01 2026"
           },
           {
             "cmd": "show system backup <name>",
-            "desc": "Shows details of a specific backup",
+            "desc": "Show details of a specific backup archive including creation date, size, and the entities it contains",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Name:        nsfullconf_sdx-01_20260601.tgz\nCreated:     Tue Jun  1 02:00:01 2026\nSize:        248.3 MB\nType:        Full\nEntities:    VPX Configs, SSL Certs, Networking, HA Pair"
           },
           {
             "cmd": "show system user",
-            "desc": "Lists SDX users",
+            "desc": "List all configured SDX administrative user accounts and their permission groups",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Username      Group          Status    Last Login\n-----------  -------------  --------  ----------------------\nnsroot        superuser      enabled   2026-06-13 09:12:45\nadmin         read-write     enabled   2026-06-12 15:44:03\nauditor       read-only      enabled   2026-06-10 08:30:11"
           },
           {
             "cmd": "show system user <username>",
-            "desc": "Shows details for a user",
+            "desc": "Show detailed properties of a specific SDX admin account including group membership and last login time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Username:       admin\nGroup:          read-write\nStatus:         enabled\nEmail:          admin@corp.local\nTimeout:        900 seconds\nLast Login:     2026-06-12 15:44:03 from 10.10.10.100"
           },
           {
             "cmd": "show system config",
-            "desc": "Displays full SDX configuration",
+            "desc": "Display the current SDX system-level configuration such as NTP servers, DNS settings, SNMP, and syslog targets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Hostname:        sdx-01.corp.local\nDNS Primary:     10.10.10.53\nDNS Secondary:   10.10.10.54\nNTP Server:      pool.ntp.org\nSyslog Server:   10.10.10.200 (UDP 514)\nSNMP Trap Dest:  10.10.10.201"
           },
           {
             "cmd": "show system storage",
-            "desc": "Shows SDX storage usage",
+            "desc": "Show disk usage for the SDX flash partition and other storage volumes used by management files, logs, and VPX images",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Mount Point       Total    Used     Free     Use%\n/flash            40 GB   12.3 GB  27.7 GB   31%\n/var              60 GB   18.6 GB  41.4 GB   31%\n/var/mps/upload   40 GB    5.2 GB  34.8 GB   13%"
           },
           {
             "cmd": "show system uptime",
-            "desc": "Displays uptime",
+            "desc": "Display how long the SDX Management Service has been running since last reboot",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "System Uptime:     12 days, 4 hours, 32 minutes, 18 seconds\nLast Reboot:       Sat May 31 18:00:05 2026\nReboot Reason:     Software upgrade to 14.1-21.57"
           },
           {
             "cmd": "show system alarms",
-            "desc": "Lists active alarms",
+            "desc": "List all active system alarms and alerts on the SDX, such as high CPU, disk usage, or VPX health issues",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Severity   Type                Message                          Raised\n--------   -----------------   ------------------------------   ----------------------\nWarning    Disk Usage          /var usage exceeds 80% threshold  2026-06-13 08:15:22\nInfo       VPX State Change    VPX-02 transitioned to DOWN       2026-06-12 22:30:11\n\n(2 alarms active)"
           },
           {
             "cmd": "show system alarms -detail",
@@ -38352,6 +38484,13 @@
             "type": "config",
             "flagged": false,
             "example": "(HA offline-relocate VM 100 to pve02 initiated; VM will be stopped then started on target)"
+          },
+          {
+            "cmd": "ha-manager status detail",
+            "desc": "Show detailed HA manager state for every managed resource — includes current node placement, goal state, error count, and last state-change reason",
+            "type": "show",
+            "flagged": false,
+            "example": "quorum OK\nmaster node1 (active, max_worker: 4)\n\nService vm:100:\n  state: started\n  node: node1\n  group: (none)\n  error_count: 0\n  crm_state: started\n\nService vm:101:\n  state: started\n  node: node2\n  group: production\n  error_count: 0\n  crm_state: started"
           }
         ],
         "ZFS": [
@@ -39791,6 +39930,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# aaa authentication login default group TAC local\nswitch(config)# aaa authentication login console local  ; protect console from AAA failures\nswitch# show aaa authentication\n         default: group TAC local\n         console: local"
+          },
+          {
+            "cmd": "show tacacs-server statistics",
+            "desc": "Display per-server TACACS+ authentication/authorisation/accounting request counts, success/fail totals, and round-trip time statistics",
+            "type": "show",
+            "flagged": false,
+            "example": "Server: 10.10.10.50\n  Authentication requests: 1248   successes: 1240   failures: 8\n  Authorization  requests:  623   successes:  623   failures: 0\n  Accounting     requests:  623   successes:  623   failures: 0\n  Average RTT: 4 ms   Max RTT: 18 ms"
           }
         ],
         "Logging / Monitoring": [
@@ -41377,6 +41523,13 @@
             "type": "show",
             "flagged": false,
             "example": "AirMatch radar events:\nTime                 AP         Radio  Old Ch  New Ch\n2026-06-12 07:14:32  ap-floor1  0      44      36      (DFS triggered)"
+          },
+          {
+            "cmd": "show ap radio-database ap-name <name>",
+            "desc": "Display the ARM radio database entry for a specific AP — includes current channel, transmit power, neighbour AP list, and interference scores used by ARM",
+            "type": "show",
+            "flagged": false,
+            "example": "AP: office-ap-01  Radio: 0 (2.4 GHz)\n  Channel: 6   Tx Power: 15 dBm   Coverage Index: 3\n  Neighbour count: 8   Co-channel APs: 2\n  Interference score: 14  Noise floor: -92 dBm\nAP: office-ap-01  Radio: 1 (5 GHz)\n  Channel: 36  Tx Power: 18 dBm   Coverage Index: 2\n  Neighbour count: 4   Co-channel APs: 0\n  Interference score: 2   Noise floor: -95 dBm"
           }
         ],
         "Authentication / RADIUS": [
@@ -42467,6 +42620,13 @@
             "type": "config",
             "flagged": false,
             "example": "router(config)# interface GigabitEthernet0/0/1\nrouter(config-if)# vrf forwarding TENANT-A\n% Interface GigabitEthernet0/0/1 IP address removed due to enabling VRF TENANT-A\nrouter(config-if)# ip address 10.50.0.1 255.255.255.0\nrouter(config-if)# no shutdown"
+          },
+          {
+            "cmd": "show ip cef vrf <vrf> <prefix>",
+            "desc": "Display the CEF (Cisco Express Forwarding) entry for a specific prefix inside a VRF — shows next-hop, outgoing interface, and MPLS label stack",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ip cef vrf TENANT-A 10.10.10.0/24\n10.10.10.0/24, epoch 0\n  local label info: global/2003\n  nexthop 10.1.1.2 GigabitEthernet0/0/1 label [101 24007]\n  nexthop 10.1.1.6 GigabitEthernet0/0/2 label [201 24007]"
           }
         ],
         "QoS": [
