@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-05-29T15:05:42.721Z",
+  "updatedAt": "2026-06-14T18:42:14.721Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5791,6 +5791,13 @@
             "type": "show",
             "flagged": false,
             "example": "Pool: GP-Pool   Range: 10.50.0.0/16\nAllocated: 142   Available: 65,394   Utilisation: 0.2%"
+          },
+          {
+            "cmd": "show resource-monitor",
+            "desc": "Rolling CPU, memory, and disk utilisation history for both management plane and data plane — useful for spotting trends before an alert triggers",
+            "type": "show",
+            "flagged": false,
+            "example": "Resource monitor: (values as % utilization)\n5-second average:\n  dataplane:   cpu  38%   memory  61%\n  management:  cpu  12%   memory  44%\n1-minute average:\n  dataplane:   cpu  35%   memory  61%\n  management:  cpu   9%   memory  44%\n15-minute average:\n  dataplane:   cpu  33%   memory  60%"
           }
         ],
         "Commit & Config": [
@@ -5919,6 +5926,13 @@
             "type": "config",
             "flagged": false,
             "example": "Commit lock for admin removed."
+          },
+          {
+            "cmd": "request system private-data-reset",
+            "desc": "Factory-resets all private configuration data — admin credentials, certificates, private keys, and logs — while preserving the base OS image. Required before RMA or resale. IRREVERSIBLE",
+            "type": "config",
+            "flagged": true,
+            "example": "Warning: This operation will permanently delete all private data including\n  configurations, administrator accounts, certificates, and logs.\n  The device will reboot and return to factory defaults.\n  Type \"yes\" to confirm: yes\n\nPrivate data reset initiated. System will reboot momentarily."
           }
         ],
         "User-ID": [
@@ -6366,6 +6380,13 @@
             "type": "show",
             "flagged": false,
             "example": "Flow ID         : 54321\nSession ID      : 23456\nSource IP       : 192.168.1.1\nDestination IP  : 10.0.0.1\nProtocol        : UDP\nApplication     : DNS\nBytes In        : 7890\nBytes Out       : 2345\nTTL             : 80"
+          },
+          {
+            "cmd": "show session distribution",
+            "desc": "Displays how active sessions are distributed across dataplane CPU cores — use to identify session imbalance when a single core is near 100% while others are idle",
+            "type": "show",
+            "flagged": false,
+            "example": "Session distribution:\n  DP0:  Core 0: 2156  Core 1: 2089  Core 2: 2201  Core 3: 2134\n  DP1:  Core 0: 1980  Core 1: 2050  Core 2: 1995  Core 3: 2040\n  Total active sessions: 16645\n  Max sessions: 131072\n  Session utilization: 12%"
           }
         ],
         "Packet Diagnostics": [
@@ -7664,19 +7685,22 @@
             "cmd": "openssl s_client -connect hostname:443",
             "desc": "Connect to a TLS endpoint and display the full certificate chain and handshake",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\ndepth=2 C=US, O=DigiCert Inc, CN=DigiCert Global Root CA\ndepth=1 C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\ndepth=0 CN=example.com\n---\nCertificate chain\n 0 s:CN=example.com\n   i:C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\n---\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_256_GCM_SHA384\n    Session-ID: A3F2...\n    Master-Key: (empty for TLS 1.3)\n---\nread R BLOCK\nclosed"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -servername hostname",
             "desc": "Connect with SNI (Server Name Indication) — required for virtual hosting",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Without -servername the server may return its default (catch-all) cert.\n# With SNI, it returns the cert for the virtual host.\nCONNECTED(00000003)\n...\nSubject Name: CN=hostname.example.com\nSAN: hostname.example.com\n...\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_256_GCM_SHA384"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -showcerts",
             "desc": "Connect and display every certificate in the chain",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\n---\nCertificate chain\n 0 s:CN=example.com\n   i:C=US, O=Let's Encrypt, CN=R3\n-----BEGIN CERTIFICATE-----\nMIIE...(leaf cert PEM)\n-----END CERTIFICATE-----\n 1 s:C=US, O=Let's Encrypt, CN=R3\n   i:C=US, O=Internet Security Research Group, CN=ISRG Root X1\n-----BEGIN CERTIFICATE-----\nMIIF...(intermediate PEM)\n-----END CERTIFICATE-----\n---\n# Paste each PEM block into a .crt to inspect or import individually."
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -CAfile ca.crt",
@@ -7688,13 +7712,15 @@
             "cmd": "openssl s_client -connect hostname:443 -tls1_2",
             "desc": "Force TLS 1.2 only for the connection test",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# If the server supports TLS 1.2 you see:\nCONNECTED(00000003)\n...\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n\n# If TLS 1.2 is disabled server-side:\nCONNECTED(00000003)\nwrite:errno=104\n# or: alert handshake failure"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -tls1_3",
             "desc": "Force TLS 1.3 only for the connection test",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Server accepts TLS 1.3:\nCONNECTED(00000003)\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_256_GCM_SHA384\n\n# Server does not support TLS 1.3 (legacy server):\nCONNECTED(00000003)\nSSL-Session:\n    Protocol  : TLSv1.2   ← negotiated down\n# Or: handshake failure if server is strict"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -cipher ECDHE-RSA-AES256-GCM-SHA384",
@@ -7706,7 +7732,8 @@
             "cmd": "openssl s_client -connect hostname:443 -status",
             "desc": "Request OCSP stapling status information during the TLS handshake",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "CONNECTED(00000003)\n...\nOCSP response:\n======================================\nOCSP Response Data:\n    OCSP Response Status: successful (0x0)\n    Response Type: Basic OCSP Response\n    Cert Status: Good\n    This Update: Jun 14 08:00:00 2026 GMT\n    Next Update: Jun 21 08:00:00 2026 GMT\n======================================\n# If no OCSP staple is returned: OCSP response: no response sent"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 2>/dev/null | openssl x509 -noout -dates",
@@ -7718,25 +7745,29 @@
             "cmd": "openssl s_client -connect hostname:25 -starttls smtp",
             "desc": "Test TLS on SMTP using STARTTLS negotiation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "220 mail.example.com ESMTP\nEHLO openssl.client\n250-mail.example.com\n250 STARTTLS\nSTARTTLS\n220 Ready to start TLS\nCONNECTED(00000003)\n...\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n# Also works with: -starttls ftp | imap | ldap | pop3 | xmpp"
           },
           {
             "cmd": "openssl s_client -connect hostname:443 -no_ssl3 -no_tls1 -no_tls1_1",
             "desc": "Test that only TLS 1.2+ is accepted by the server",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# If server correctly rejects old protocols:\nCONNECTED(00000003)\nSSL-Session:\n    Protocol  : TLSv1.2   (or TLSv1.3)\n\n# Verifying TLS 1.0/1.1 are truly disabled:\nopenssl s_client -connect hostname:443 -tls1_1\n  → handshake failure  ✓ good\nopenssl s_client -connect hostname:443 -tls1\n  → handshake failure  ✓ good"
           },
           {
             "cmd": "openssl s_server -key private.key -cert cert.crt -accept 4433 -www",
             "desc": "Start a simple TLS test server on port 4433 for client testing",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Server side — starts listening:\nUsing default temp DH parameters\nCiphers supported in s_server binary\n...\nSECURE Renegotiation IS supported\n\n# Client connects:  openssl s_client -connect 127.0.0.1:4433\n# Server logs:\nClient IP: 127.0.0.1\nSSL_accept:before SSL initialization\nSSL_accept:TLSv1.3 read client hello\nSSL_accept:TLSv1.3 write server hello\nSSL_accept:SSLv3/TLS write certificate\nSSL_accept:TLSv1.3 write finished\nACCEPT"
           },
           {
             "cmd": "openssl speed rsa2048",
             "desc": "Benchmark RSA 2048-bit sign and verify operations per second",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Doing 2048 bits private rsa's for 10s: 18722 2048 bits private RSA's in 10.00s\nDoing 2048 bits public rsa's for 10s: 605743 2048 bits public RSA's in 10.01s\n             sign    verify    sign/s verify/s\nrsa 2048 bits 0.000534s 0.000017s   1872.2  60513.8\n# sign/s is the critical metric for TLS handshake capacity under load"
           },
           {
             "cmd": "openssl speed ecdhp256",
@@ -14360,19 +14391,22 @@
             "cmd": "ip r",
             "desc": "Shows routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip r\n\ndefault via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.100 metric 100\n10.0.0.0/8 via 192.168.1.1 dev eth0 proto static metric 100\n172.16.0.0/12 via 192.168.1.1 dev eth0 proto static metric 100\n192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100\n\nKey fields:\n  via   = next-hop gateway\n  dev   = egress interface\n  proto = route source (kernel=connected, dhcp, static)\n  src   = preferred source IP for packets leaving this route"
           },
           {
             "cmd": "ip -6 r",
             "desc": "Shows IPv6 routing table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip -6 r\n\n::1 dev lo proto kernel metric 256 pref medium\n2001:db8::/64 dev eth0 proto kernel metric 256 expires 86099sec pref medium\nfe80::/64 dev eth0 proto kernel metric 256 pref medium\ndefault via fe80::1 dev eth0 proto ra metric 100 pref medium\n\nproto ra = learned via Router Advertisement (SLAAC/RA)\nexpires  = SLAAC prefix lifetime countdown"
           },
           {
             "cmd": "ip neigh",
             "desc": "Shows ARP/ND cache",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip neigh\n\n192.168.1.1   dev eth0 lladdr 00:50:56:8f:ab:cd REACHABLE\n192.168.1.50  dev eth0 lladdr 00:0c:29:aa:bb:cc STALE\n192.168.1.200 dev eth0                           FAILED\n\nStates:\n  REACHABLE — confirmed reachable within the last neighbour timeout\n  STALE     — cache entry exists but not recently confirmed\n  FAILED    — ARP resolution failed; host may be down or unreachable"
           },
           {
             "cmd": "ss -tulpn",
@@ -14385,25 +14419,29 @@
             "cmd": "ss -s",
             "desc": "Shows socket summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ss -s\n\nTotal: 158 (kernel 164)\nTCP:   14 (estab 4, closed 6, orphaned 0, timewait 2)\nTransport Total     IP        IPv6\n*         164       -         -\nRAW       0         0         0\nUDP       8         5         3\nTCP       8         6         2\nINET      16        11        5\nFRAG      0         0         0"
           },
           {
             "cmd": "ss -tan",
             "desc": "Shows TCP connections",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ss -tan\n\nState   Recv-Q  Send-Q  Local Address:Port   Peer Address:Port  Process\nLISTEN  0       128     0.0.0.0:22           0.0.0.0:*\nLISTEN  0       128     0.0.0.0:443          0.0.0.0:*\nESTAB   0       0       192.168.1.10:22      192.168.1.50:54321\nESTAB   0       0       192.168.1.10:443     203.0.113.5:49201\nTIME-WAIT 0     0       192.168.1.10:443     203.0.113.6:49198\n\nFlags: -t TCP  -a all  -n no DNS resolution"
           },
           {
             "cmd": "ss -uan",
             "desc": "Shows UDP sockets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ss -uan\n\nState    Recv-Q  Send-Q  Local Address:Port   Peer Address:Port\nUNCONN   0       0       127.0.0.53%lo:53     0.0.0.0:*\nUNCONN   0       0       127.0.0.1:323         0.0.0.0:*\nUNCONN   0       0       0.0.0.0:68            0.0.0.0:*\nUNCONN   0       0       0.0.0.0:5353          0.0.0.0:*\n\nPort 53 = systemd-resolved  Port 323 = chronyd  Port 68 = DHCP client\nPort 5353 = mDNS"
           },
           {
             "cmd": "ethtool <iface>",
             "desc": "Shows NIC settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ethtool eth0\n\nSettings for eth0:\n        Supported ports: [ TP ]\n        Supported link modes:   1000baseT/Full\n                                10000baseT/Full\n        Speed: 1000Mb/s\n        Duplex: Full\n        Auto-negotiation: on\n        Port: Twisted Pair\n        Link detected: yes\n\nIf \"Link detected: no\" the cable or SFP is the first thing to swap."
           },
           {
             "cmd": "ethtool -S <iface>",
@@ -14415,7 +14453,8 @@
             "cmd": "ip link show",
             "desc": "Shows all network interfaces",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip link show\n\n1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT\n    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT qlen 1000\n    link/ether 00:50:56:8f:12:ab brd ff:ff:ff:ff:ff:ff\n3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT qlen 1000\n    link/ether 00:50:56:8f:12:ac brd ff:ff:ff:ff:ff:ff\n\nstate UP = L2 link is up;  state DOWN = cable/SFP issue or admin-down"
           },
           {
             "cmd": "ip link set <iface> up",
@@ -14433,7 +14472,8 @@
             "cmd": "ip addr add <ip>/<mask> dev <iface>",
             "desc": "Adds an IP address to an interface",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Add a secondary IP to eth0:\n$ sudo ip addr add 192.168.1.200/24 dev eth0\n\n# Confirm:\n$ ip addr show eth0\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 ...\n    inet 192.168.1.100/24 brd 192.168.1.255 scope global eth0\n    inet 192.168.1.200/24 scope global secondary eth0\n\n# NOTE: This change is not persistent across reboots. To persist it,\n# add the address to /etc/network/interfaces or a systemd-networkd unit."
           },
           {
             "cmd": "ip addr del <ip>/<mask> dev <iface>",
@@ -14445,7 +14485,8 @@
             "cmd": "ip route add <network> via <gateway>",
             "desc": "Adds a static route",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Add a static route for 10.0.0.0/8 via 192.168.1.1:\n$ sudo ip route add 10.0.0.0/8 via 192.168.1.1 dev eth0\n\n# Verify:\n$ ip route show\n10.0.0.0/8 via 192.168.1.1 dev eth0\ndefault via 192.168.1.1 dev eth0 proto dhcp ...\n\n# Not persistent — add to /etc/network/interfaces (Debian) or\n# /etc/sysconfig/network-scripts/route-eth0 (RHEL) to survive reboots."
           },
           {
             "cmd": "ip route del <network> via <gateway>",
@@ -18069,61 +18110,71 @@
             "cmd": "ip.addr == 10.0.0.1",
             "desc": "Match packets to or from a single host",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in the Wireshark filter bar or with tshark -Y\n# Matches any frame where 10.0.0.1 appears as source OR destination.\nFrame 42: 74 bytes  10.0.0.1 → 10.0.0.50  TCP 80 → 54321 [SYN,ACK]\nFrame 43: 60 bytes  10.0.0.50 → 10.0.0.1  TCP 54321 → 80  [ACK]\n# Use \"Follow TCP Stream\" on any matching frame to reconstruct the session."
           },
           {
             "cmd": "ip.src == 10.0.0.1",
             "desc": "Packets sourced from a given IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows only frames originating from 10.0.0.1 — one direction only.\nFrame 42:  10.0.0.1 → 10.0.0.50  TCP [SYN]\nFrame 44:  10.0.0.1 → 10.0.0.50  HTTP GET /index.html\n# Pair with ip.dst == 10.0.0.1 to see the reply stream separately."
           },
           {
             "cmd": "ip.dst == 10.0.0.1",
             "desc": "Packets destined to a given IP",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows only frames arriving at 10.0.0.1.\nFrame 43:  10.0.0.50 → 10.0.0.1  TCP [SYN,ACK]\nFrame 47:  10.0.0.50 → 10.0.0.1  HTTP 200 OK (text/html)\n# Useful for counting inbound traffic volume or spotting unexpected senders."
           },
           {
             "cmd": "ip.addr == 10.0.0.0/24",
             "desc": "CIDR — whole subnet, source or destination",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches any packet where source OR destination falls in the /24 subnet.\n# Wireshark expands the CIDR internally; works with /8, /16, /24, /32.\nFrame 5:  10.0.0.1  → 10.0.0.50   ARP  Who has 10.0.0.50?\nFrame 6:  10.0.0.50 → 10.0.0.1    ARP  10.0.0.50 is at 00:0c:29:aa:bb:cc\nFrame 7:  10.0.0.1  → 10.0.0.50   TCP [SYN]"
           },
           {
             "cmd": "not (ip.addr == 10.0.0.1)",
             "desc": "Exclude anything involving a specific host",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Hides all traffic involving 10.0.0.1 — useful when that host is noisy\n# and you want to focus on other conversation.\n# Equivalent: !(ip.addr == 10.0.0.1)\nFrame 55:  10.0.0.2 → 8.8.8.8  DNS Standard query A example.com\nFrame 56:  8.8.8.8  → 10.0.0.2 DNS Standard query response A 93.184.216.34\n# All 10.0.0.1 frames are suppressed from view; the capture is unchanged."
           },
           {
             "cmd": "ip.addr == 10.0.0.1 and ip.addr == 10.0.0.2",
             "desc": "Conversation between two specific hosts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Both addresses must appear in each frame — effectively a conversation filter.\n# Identical to using the \"Follow Stream\" right-click on a matching packet.\nFrame 10: 10.0.0.1 → 10.0.0.2  TCP [SYN]\nFrame 11: 10.0.0.2 → 10.0.0.1  TCP [SYN,ACK]\nFrame 12: 10.0.0.1 → 10.0.0.2  TCP [ACK]\n# Only these two hosts are shown; any third-party traffic is hidden."
           },
           {
             "cmd": "ipv6.addr == 2001:db8::1",
             "desc": "Match an IPv6 host",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# IPv6 equivalent of ip.addr — matches source or destination.\n# Use ipv6.src and ipv6.dst for directional filtering.\nFrame 20: 2001:db8::1 → 2001:db8::2  ICMPv6 Echo Request\nFrame 21: 2001:db8::2 → 2001:db8::1  ICMPv6 Echo Reply\n# Combine with tcp.port or udp.port to narrow by service."
           },
           {
             "cmd": "eth.addr == aa:bb:cc:dd:ee:ff",
             "desc": "Match by MAC (source or destination)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches frames where the MAC appears in either src or dst Ethernet header.\n# Useful when the MAC is known but IP has changed (DHCP, failover).\nFrame 3: aa:bb:cc:dd:ee:ff → ff:ff:ff:ff:ff:ff  ARP Who has 192.168.1.1?\nFrame 4: 00:50:56:8f:00:01 → aa:bb:cc:dd:ee:ff  ARP 192.168.1.1 is at 00:50:56:8f:00:01\n# Use eth.src or eth.dst to restrict to one direction."
           },
           {
             "cmd": "eth.dst == ff:ff:ff:ff:ff:ff",
             "desc": "All Ethernet broadcasts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Captures all Ethernet-level broadcasts — ARP requests, some DHCP, NetBIOS.\nFrame 1:  00:11:22:aa:bb:cc → ff:ff:ff:ff:ff:ff  ARP Who has 10.0.0.1?\nFrame 2:  00:de:ad:be:ef:01 → ff:ff:ff:ff:ff:ff  DHCP Discover\nFrame 3:  00:50:79:66:68:09 → ff:ff:ff:ff:ff:ff  NetBIOS Name Service\n# High broadcast rate (>100/s on a VLAN) suggests a broadcast storm or misconfiguration."
           },
           {
             "cmd": "vlan.id == 20",
             "desc": "Frames tagged with a specific VLAN",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches 802.1Q-tagged frames with VLAN ID 20.\n# Note: Wireshark must see the raw tagged frames (e.g. from a SPAN/mirror port);\n# access-port captures have the tag stripped by the switch.\nFrame 5:  10.20.0.1 → 10.20.0.50  TCP [SYN]  (VLAN 20)\nFrame 6:  10.20.0.50 → 10.20.0.1  TCP [SYN,ACK] (VLAN 20)\n# Combine: vlan.id == 20 and tcp.port == 443 to narrow to HTTPS on VLAN 20."
           },
           {
             "cmd": "frame.len > 1500",
@@ -20396,6 +20447,20 @@
             "type": "show",
             "flagged": false,
             "example": "R1(config)# ip multicast-routing\nR1(config)# ip multicast-routing distributed   ! hardware-accelerated\n\nR1# show ip mroute | head -3\nIP Multicast Routing Table\nFlags: D - Dense, S - Sparse, B - Bidir Group, ...\n\nWhat it means:\n- Globally enables IPv4 multicast routing. Required before\n  per-interface PIM commands take effect.\n- \"distributed\" : hardware acceleration (most modern Cisco\n  platforms — improves multicast forwarding rate).\n- After enabling, also configure \"ip pim sparse-mode\" on each\n  interface that should participate."
+          },
+          {
+            "cmd": "show track",
+            "desc": "Lists all IP SLA tracking objects with current Up/Down state, number of state changes, and what uses the tracked object (HSRP group, static route, EEM)",
+            "type": "show",
+            "flagged": false,
+            "example": "Track 1\n  IP SLA 1 reachability\n  Reachability is Up\n    11 changes, last change 00:05:10\n  Tracked by:\n    HSRP GigabitEthernet0/0 1\n\nTrack 2\n  IP SLA 2 reachability\n  Reachability is Down\n    3 changes, last change 00:01:45\n  Tracked by:\n    Static IP routing 0.0.0.0 0.0.0.0 distance 1"
+          },
+          {
+            "cmd": "show ip policy",
+            "desc": "Shows which route-map is applied as a policy-based routing (PBR) policy on each interface — confirms PBR is active before troubleshooting unexpected forwarding",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface      Route map\nGigabitEthernet0/0   MARK-VOIP\nGigabitEthernet0/1   ISP-FAILOVER"
           }
         ],
         "Routing › OSPF": [
@@ -24171,6 +24236,13 @@
             "type": "show",
             "flagged": false,
             "example": "Switch# show platform hardware fed switch active fwd-asic resource tcam utilization\n\nResource              Total       Used        %Used   Avail\nACL TCAM (input)      1024        342         33%     682\nACL TCAM (output)     1024        145         14%     879\nQoS TCAM              512         88          17%     424\nNetFlow Sampler       64          12          18%     52\nMac TCAM              16384       2042        12%     14342\n\nWhat it means:\n- TCAM utilisation per resource class on Catalyst.\n- ACL TCAM is most-watched on edge platforms — exhaustion drops\n  ACLs to software (slow-path).\n- \"Avail\" running low (>80% used) = simplify ACLs / QoS policies\n  or scale to a larger platform."
+          },
+          {
+            "cmd": "show standby brief",
+            "desc": "Single-line-per-group HSRP status table showing interface, group number, priority, preempt flag (P), state, active router IP, standby router IP, and virtual IP",
+            "type": "show",
+            "flagged": false,
+            "example": "                     P indicates configured to preempt.\n                     |\nInterface   Grp  Pri P State    Active          Standby         Virtual IP\nGi0/0         1  110 P Active   local           192.168.1.2     192.168.1.254\nGi0/1        10  100   Standby  10.0.0.1        local           10.0.0.254"
           }
         ],
         "VLANs": [
@@ -24903,6 +24975,13 @@
             "type": "show",
             "flagged": false,
             "example": "Switch(config)# lacp system-priority 100\n\nSwitch# show lacp sys-id\n100, 0050.5612.3456\n\nWhat it means:\n- LACP system-priority across the device. Combines with chassis\n  MAC to form the system ID.\n- Lower priority = \"winner\" of the LACP partner role decisions.\n- Default 32768. Adjust only when one side explicitly should\n  control bundle decisions (rarely needed)."
+          },
+          {
+            "cmd": "debug lacp",
+            "desc": "Enables LACP event debug output: PDU send/receive, state-machine transitions, and bundle formation events — disable immediately after capture with \"undebug all\"",
+            "type": "debug",
+            "flagged": false,
+            "example": "*Mar  1 00:01:23.456: LACP-5-BUNDLECOMPAT: Gi1/0/1 is compatible, will be bundled into Po1\n*Mar  1 00:01:23.457: LACP-5-BUNDLE: Gi1/0/1 added to aggregation Po1\n*Mar  1 00:01:23.789: LACP-5-BUNDLE: Gi1/0/2 added to aggregation Po1\n*Mar  1 00:01:24.001: LACP: Gi1/0/1 Tx PDU to 0050.56ff.aabb sys 0x8000,00e0.1e11.2233 key 0x0101 port 0x8001 state 0x3d"
           }
         ],
         "QoS": [
@@ -27505,6 +27584,13 @@
             "type": "show",
             "flagged": false,
             "example": "Name       ReceivedUnicastPackets  ReceivedBytes  SentBytes\n----       ----------------------  -------------  ---------\nEthernet            4821034       5832145920  1231453120\nWi-Fi                     0                0           0"
+          },
+          {
+            "cmd": "route print",
+            "desc": "Displays the full IPv4 and IPv6 routing tables including interface list, active routes, persistent routes, and default gateway — classic cmd.exe alternative to Get-NetRoute",
+            "type": "show",
+            "flagged": false,
+            "example": "===========================================================================\nInterface List\n  6...00 50 56 8f 12 ab ......vmxnet3 Ethernet Adapter\n  1...........................Software Loopback Interface 1\n===========================================================================\n\nIPv4 Route Table\n===========================================================================\nActive Routes:\nNetwork Destination        Netmask          Gateway       Interface  Metric\n          0.0.0.0          0.0.0.0      192.168.1.1    192.168.1.10     25\n        127.0.0.0        255.0.0.0         On-link         127.0.0.1    331\n      192.168.1.0    255.255.255.0         On-link     192.168.1.10    281\n      192.168.1.10  255.255.255.255         On-link     192.168.1.10    281\n        224.0.0.0        240.0.0.0         On-link         127.0.0.1    331\nDefault Gateway:       192.168.1.1"
           }
         ],
         "Processes": [
@@ -28307,13 +28393,15 @@
             "cmd": "show system",
             "desc": "Displays SDX system summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system\n\nHostname: sdx-dc-01\nIP:       10.10.10.100  Netmask: 255.255.255.0\nGateway:  10.10.10.1\nVersion:  SDX 14.1 Build 21.57\nPlatform: SDX 22000\nUptime:   45 days, 3 hours, 22 minutes\nCPUs: 2  Memory: 65536 MB  Disk: 1200 GB\n\nWhat it means:\n- Hostname / IP confirm you are on the right appliance.\n- Version and Platform are needed for compatibility checks and SR filing.\n- Uptime resets after every reboot — a recent value may indicate an unplanned restart."
           },
           {
             "cmd": "show system version",
             "desc": "Shows SDX firmware version",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system version\n\nSDX 14.1: Build 21.57.nc, Date: Mar  5 2026, 14:22:30"
           },
           {
             "cmd": "show system backup",
@@ -28355,7 +28443,8 @@
             "cmd": "show system uptime",
             "desc": "Displays uptime",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system uptime\n\nSystem uptime: 45 days, 3 hours, 22 minutes, 10 seconds"
           },
           {
             "cmd": "show system alarms",
@@ -28373,13 +28462,15 @@
             "cmd": "show system health",
             "desc": "Displays system health summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system health\n\nOverall Health: Good\nCPU:           12%  (threshold 80%)\nMemory:        43%  (threshold 90%)\nDisk /flash:   28%  (threshold 85%)\nFan status:    All OK\nPSU status:    All OK\nTemperature:   Inlet 26°C  CPU 48°C  — All within limits"
           },
           {
             "cmd": "show system processes",
             "desc": "Lists running system processes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system processes\n\nPID   Name           CPU%  MEM(MB)  State\n----  -------------  ----  -------  -------\n1234  mgmtsvr         2.1    128.4  Running\n1235  snmpd           0.0     32.1  Running\n1236  syslogd         0.0     18.6  Running\n1237  vpx_mgr         3.4    512.0  Running\n1238  xenapi          4.2    256.8  Running"
           },
           {
             "cmd": "show system processes -detail",
@@ -28403,13 +28494,15 @@
             "cmd": "show system date",
             "desc": "Displays system date/time",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system date\n\nSat Jun 14 10:30:45 UTC 2026"
           },
           {
             "cmd": "show system ntp",
             "desc": "Shows NTP configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system ntp\n\nNTP Sync Status : Synchronized\nReference Server: 10.10.10.1\nStratum         : 3\nOffset          : 0.002 ms\nLast Sync       : Jun 14 10:28:01 UTC 2026"
           },
           {
             "cmd": "show system ntp servers",
@@ -28433,7 +28526,8 @@
             "cmd": "show system hostname",
             "desc": "Displays hostname",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hostname\n\nHostname: sdx-datacenter-01"
           },
           {
             "cmd": "show system hardware",
@@ -28451,7 +28545,8 @@
             "cmd": "show system hardware fans",
             "desc": "Shows fan status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware fans\n\nFan  Status  Speed (RPM)\n---  ------  -----------\n1    OK      2480\n2    OK      2510\n3    OK      2490\n4    OK      2505\n\nNote: Fan failure triggers a critical alarm and will be shown as FAILED."
           },
           {
             "cmd": "show system hardware psu",
@@ -28463,7 +28558,8 @@
             "cmd": "show system hardware temperature",
             "desc": "Shows temperature sensors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware temperature\n\nSensor          Temp (°C)  Threshold (°C)  Status\n-------------   ---------  ---------------  ------\nInlet           27         45               OK\nOutlet          41         60               OK\nCPU Package 0   52         85               OK\nCPU Package 1   49         85               OK\n\nNote: A CRITICAL alarm fires when any sensor exceeds its threshold."
           },
           {
             "cmd": "show system hardware voltage",
@@ -39009,6 +39105,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# vpc domain 1\nswitch(config-vpc-domain)# peer-switch\nswitch(config-vpc-domain)# peer-keepalive destination 10.99.99.2 source 10.99.99.1 vrf management\nswitch(config-vpc-domain)# peer-gateway\nswitch(config-vpc-domain)# delay restore 150\nswitch(config-vpc-domain)# auto-recovery\nswitch(config-vpc-domain)# ip arp synchronize\nswitch(config-vpc-domain)# end\n\nswitch# show vpc brief\nLegend:\n                (*) - local vPC is down, forwarding via vPC peer-link\n\nvPC domain id                     : 1\nPeer status                       : peer adjacency formed ok\nvPC keep-alive status             : peer is alive\nConfiguration consistency status  : success\nPer-vlan consistency status       : success\nType-2 consistency status         : success\nvPC role                          : primary\nNumber of vPCs configured         : 2\nPeer Gateway                      : Enabled\nDual-active excluded VLANs        : -\nGraceful Consistency Check        : Enabled\nAuto-recovery status              : Enabled, timer is off.(timeout = 240s)\nDelay-restore status              : Timer is off.(timeout = 150s)"
+          },
+          {
+            "cmd": "show vpc brief",
+            "desc": "Compact VPC status table: domain, role, peer-link state, keepalive status, and per-vPC VLAN consistency — faster read than the full show vpc output",
+            "type": "show",
+            "flagged": false,
+            "example": "vPC domain id                     : 1\nvPC Peer Status               : peer adjacency formed ok\nvPC Keep-Alive Status         : peer is alive\nvPC role                      : primary\n\nId    Port   Status Consistency Reason    Active vlans\n----  ------ ------ ----------- ------    ------------\n10    Po10   up     success     success   1,10,20,100-102\n20    Po20   up     success     success   1,10,20"
           }
         ],
         "Routing": [
@@ -40482,6 +40585,13 @@
             "type": "config",
             "flagged": false,
             "example": "(Interface 1/1/1 attached to VRF MGMT — note: removes any existing L3 config on interface)"
+          },
+          {
+            "cmd": "show vrf detail",
+            "desc": "Extended VRF listing including route distinguisher, import/export route targets, associated interfaces, and per-VRF unicast/multicast route counts",
+            "type": "show",
+            "flagged": false,
+            "example": "VRF: default\n  Route Distinguisher: none\n  Interfaces: 1/1/1, 1/1/2, loopback0\n  Routes: 24 unicast\n\nVRF: MGMT\n  Route Distinguisher: none\n  Interfaces: mgmt\n  Routes: 2 unicast\n\nVRF: Customer-A\n  Route Distinguisher: 65001:100\n  Import RT: 65001:100\n  Export RT: 65001:100\n  Interfaces: 1/1/3, 1/1/4\n  Routes: 18 unicast"
           }
         ],
         "VSX / VSF": [
