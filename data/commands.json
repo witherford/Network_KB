@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-14T18:42:14.721Z",
+  "updatedAt": "2026-06-15T18:44:19.531Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -6951,7 +6951,8 @@
             "cmd": "openssl ecparam -name secp384r1 -genkey -noout -out ec.key",
             "desc": "Generate an ECC private key using the secp384r1 (P-384) curve",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Generates the key silently — no stdout on success.\nopenssl ecparam -name secp384r1 -genkey -noout -out ec.key\n\n# Verify the key was created:\nopenssl pkey -in ec.key -text -noout\nPrivate-Key: (384 bit)\npriv:\n    27:ab:cd:ef:01:23:45:67:89:ab:cd:ef:...\npub:\n    04:1a:2b:3c:4d:5e:6f:70:81:92:a3:b4:...\nASN1 OID: secp384r1\nNIST CURVE: P-384\n\n# secp384r1 (P-384) offers 192-bit security — suitable for TLS 1.3 key exchange."
           },
           {
             "cmd": "openssl genpkey -algorithm ed25519 -out ed25519.key",
@@ -6992,7 +6993,8 @@
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa3072.key",
             "desc": "Generate 3072-bit RSA key via genpkey (modern API)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa3072.key\n..................................+++\n.............+++\n\n# Verify:\nopenssl pkey -in rsa3072.key -text -noout | head -5\nPrivate-Key: (3072 bit, 2 primes)\nmodulus:\n    00:c3:7a:b2:...\n\n# 3072-bit RSA provides ~128-bit security — the NIST recommended minimum through 2030."
           },
           {
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out rsa4096.key",
@@ -7080,7 +7082,8 @@
             "cmd": "openssl rsa -in <key> -check",
             "desc": "Checks RSA key integrity",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl rsa -in private.key -check\nRSA key ok\n\n# If the key is corrupted:\nopenssl rsa -in corrupted.key -check\nunable to load Private Key\n140736123456789:error:0909006C:PEM routines:get_name:no start line:...\n\n# Check and simultaneously display the key components (verbose):\nopenssl rsa -in private.key -check -text -noout | head -10\nRSA key ok\nPrivate-Key: (2048 bit, 2 primes)\nmodulus:\n    00:b3:e4:f5:a6:b7:c8:d9:ea:fb:0c:1d:2e:3f:40:...\npublicExponent: 65537 (0x10001)\n\n# Use before deploying to confirm the key file wasn't truncated or corrupted."
           },
           {
             "cmd": "openssl rsa -in <key> -pubout -out <pubkey>",
@@ -7276,6 +7279,13 @@
             "type": "config",
             "flagged": false,
             "example": "Using configuration from openssl-ca.cnf\n(CRL written to ca.crl)"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes",
+            "desc": "Generate a self-signed certificate and private key in a single command (-nodes = no passphrase)",
+            "example": "# Generates key.pem and cert.pem in the current directory\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes \\\n  -subj \"/C=GB/ST=London/O=MyOrg/CN=internal.example.com\"\n\nGenerating a RSA private key\n...............................................................................................++++\n........++++\nwriting new private key to 'key.pem'\n\n# Verify the result:\nopenssl x509 -in cert.pem -noout -subject -dates\nsubject=C = GB, ST = London, O = MyOrg, CN = internal.example.com\nnotBefore=Jun 15 09:00:00 2026 GMT\nnotAfter=Jun 15 09:00:00 2027 GMT\n\n# Add SANs (required by modern browsers): append -addext \"subjectAltName=DNS:internal.example.com\""
           }
         ],
         "Certificate Inspection": [
@@ -7283,7 +7293,8 @@
             "cmd": "openssl x509 -in cert.crt -text -noout",
             "desc": "Display full certificate details: subject, issuer, SANs, validity, extensions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl x509 -in cert.crt -text -noout\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number: 04:a3:b2:c1:d0:e9:f8:a7:b6:c5:d4:e3:f2:a1:b0\n    Signature Algorithm: sha256WithRSAEncryption\n        Issuer: C=GB, O=Example CA, CN=Example Intermediate CA\n        Validity\n            Not Before: Jun 15 00:00:00 2025 GMT\n            Not After : Jun 15 23:59:59 2026 GMT\n        Subject: C=GB, O=Example Ltd, CN=www.example.com\n        Subject Public Key Info: Public Key Algorithm: rsaEncryption (2048 bit)\n        X509v3 extensions:\n            X509v3 Subject Alternative Name:\n                DNS:www.example.com, DNS:example.com\n            X509v3 Key Usage: Digital Signature, Key Encipherment\n            X509v3 Extended Key Usage: TLS Web Server Authentication\n            X509v3 Basic Constraints: CA:FALSE"
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -subject",
@@ -7481,7 +7492,8 @@
             "cmd": "openssl verify -CAfile ca.crt cert.crt",
             "desc": "Verify a certificate is properly signed by the specified CA",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl verify -CAfile ca.crt cert.crt\ncert.crt: OK\n\n# Failure examples:\nopenssl verify -CAfile ca.crt expired.crt\nCN = expired.example.com\nerror 10 at 0 depth lookup: certificate has expired\nerror expired.crt: verification failed\n\nopenssl verify -CAfile ca.crt wrong-ca.crt\nCN = test.example.com\nerror 20 at 0 depth lookup: unable to get local issuer certificate\nerror wrong-ca.crt: verification failed\n\n# Full chain with intermediate:\nopenssl verify -CAfile root-ca.crt -untrusted intermediate.crt cert.crt\ncert.crt: OK"
           },
           {
             "cmd": "openssl verify -CAfile ca.crt -untrusted intermediate.crt cert.crt",
@@ -7678,6 +7690,13 @@
             "desc": "Build a concatenated PEM chain (leaf → root)",
             "type": "config",
             "flagged": false
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl pkcs12 -export -out bundle.pfx -inkey private.key -in cert.crt -certfile chain.crt",
+            "desc": "Bundle a private key, certificate, and CA chain into a PKCS#12 (.pfx) file for Windows/IIS import",
+            "example": "# Prompts for an export password to protect the PFX\nopenssl pkcs12 -export -out bundle.pfx -inkey private.key -in cert.crt -certfile chain.crt\nEnter Export Password:\nVerifying - Enter Export Password:\n\n# Verify the resulting PFX:\nopenssl pkcs12 -info -in bundle.pfx -noout\nMAC: sha256, Iteration 2048\nMAC length: 32, salt length: 20\nPKCS7 Encrypted data: ...\n    Certificate bag\n    Certificate bag  (intermediate)\n    PKCS8 Shrouded Keybag\n\n# Import on Windows: double-click bundle.pfx and follow the certificate import wizard."
           }
         ],
         "TLS Client Testing": [
@@ -7993,7 +8012,8 @@
             "cmd": "openssl ciphers -v \"ALL:!aNULL:!eNULL\"",
             "desc": "All ciphers this OpenSSL build supports with no anon/null ciphers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl ciphers -v \"ALL:!aNULL:!eNULL\"\nTLS_AES_256_GCM_SHA384         TLSv1.3  Kx=any    Au=any  Enc=AESGCM(256)          Mac=AEAD\nTLS_CHACHA20_POLY1305_SHA256   TLSv1.3  Kx=any    Au=any  Enc=CHACHA20/POLY1305(256) Mac=AEAD\nTLS_AES_128_GCM_SHA256         TLSv1.3  Kx=any    Au=any  Enc=AESGCM(128)          Mac=AEAD\nECDHE-ECDSA-AES256-GCM-SHA384  TLSv1.2  Kx=ECDH   Au=ECDSA Enc=AESGCM(256)        Mac=AEAD\nECDHE-RSA-AES256-GCM-SHA384    TLSv1.2  Kx=ECDH   Au=RSA  Enc=AESGCM(256)         Mac=AEAD\nECDHE-ECDSA-CHACHA20-POLY1305  TLSv1.2  Kx=ECDH   Au=ECDSA Enc=CHACHA20/POLY1305  Mac=AEAD\n...\n# Count total: openssl ciphers \"ALL:!aNULL:!eNULL\" | tr : '\n' | wc -l\n# List only high-strength: openssl ciphers -v \"HIGH:!aNULL:!MD5\""
           },
           {
             "cmd": "openssl ciphers -v \"DEFAULT\"",
@@ -8067,7 +8087,8 @@
             "cmd": "openssl s_client -connect host:443 -servername host -msg",
             "desc": "Print each TLS protocol message direction + type as it flies by",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl s_client -connect example.com:443 -servername example.com -msg\n>>> TLS 1.3 Handshake [length 0125], ClientHello\n    0300  01 21 03 03 ...\n<<< TLS 1.3 Handshake [length 007a], ServerHello\n    0300  02 76 03 03 ...\n<<< TLS 1.3 ChangeCipherSpec [length 0001]\n    14 03 03 00 01 01\n<<< TLS 1.3 Handshake [length 00xx], EncryptedExtensions\n<<< TLS 1.3 Handshake [length 03xx], Certificate\n<<< TLS 1.3 Handshake [length 0xxx], CertificateVerify\n<<< TLS 1.3 Handshake [length 0030], Finished\n>>> TLS 1.3 ChangeCipherSpec [length 0001]\n>>> TLS 1.3 Handshake [length 0030], Finished\n---\nProtocol  : TLSv1.3\nCipher    : TLS_AES_256_GCM_SHA384\n# Each >>> = outbound (client); <<< = inbound (server).\n# Use -debug for hex dumps of every byte, or -trace for parsed extensions."
           },
           {
             "cmd": "openssl s_client -connect host:443 -servername host -debug",
@@ -8179,7 +8200,8 @@
             "cmd": "openssl dgst -sha256 <file>",
             "desc": "Computes SHA?256 hash",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl dgst -sha256 /path/to/firmware.bin\nSHA2-256(/path/to/firmware.bin)= e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n\n# Compare against a published checksum:\necho \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  firmware.bin\" | sha256sum -c\nfirmware.bin: OK\n\n# HMAC with a secret key:\nopenssl dgst -sha256 -hmac \"mysecretkey\" file.txt\nHMAC-SHA2-256(file.txt)= 4c1f6b2a9d3e8f7a5b0c2d1e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2"
           },
           {
             "cmd": "openssl dgst -sha1 <file>",
@@ -8369,7 +8391,8 @@
             "cmd": "openssl dgst -sha256 -sign private.key -out sig.bin file.txt",
             "desc": "Digitally sign a file using an RSA private key",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Sign a file\nopenssl dgst -sha256 -sign private.key -out sig.bin file.txt\n# (no output on success — sig.bin is created)\n\n# Verify the signature (requires the corresponding public key)\nopenssl dgst -sha256 -verify public.key -signature sig.bin file.txt\nVerified OK\n\n# If tampered:\nopenssl dgst -sha256 -verify public.key -signature sig.bin modified_file.txt\nVerification Failure\n\n# Extract public key from private key first if needed:\nopenssl rsa -in private.key -pubout -out public.key"
           },
           {
             "cmd": "openssl dgst -sha256 -verify public.key -signature sig.bin file.txt",
@@ -8419,7 +8442,8 @@
             "cmd": "openssl speed -evp aes-256-gcm",
             "desc": "Benchmark AES-256-GCM via EVP (uses AES-NI if available)",
             "type": "troubleshooting",
-            "flagged": false
+            "flagged": false,
+            "example": "openssl speed -evp aes-256-gcm\nDoing AES-256-GCM for 3s on 16 size blocks: 92345678 AES-256-GCM's in 3.00s\nDoing AES-256-GCM for 3s on 64 size blocks: 28901234 AES-256-GCM's in 3.00s\nDoing AES-256-GCM for 3s on 256 size blocks: 8345678 AES-256-GCM's in 3.00s\nDoing AES-256-GCM for 3s on 1024 size blocks: 2234567 AES-256-GCM's in 3.00s\nDoing AES-256-GCM for 3s on 8192 size blocks: 289012 AES-256-GCM's in 3.00s\n\ntype              16 bytes   64 bytes  256 bytes 1024 bytes 8192 bytes\naes-256-gcm    492,777.5k  615,738.6k  711,509.3k  763,076.6k  788,635.6k\n\n# Values well above 500 MB/s indicate AES-NI hardware acceleration is active.\n# Check: openssl speed -evp aes-256-gcm vs openssl speed aes-256-cbc\n#        GCM >> CBC confirms AES-NI is used for authenticated encryption."
           },
           {
             "cmd": "openssl speed -evp sha256",
@@ -14447,7 +14471,8 @@
             "cmd": "ethtool -S <iface>",
             "desc": "Shows NIC statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# ethtool -S eth0\nNIC statistics:\n     rx_packets: 4589234\n     tx_packets: 1234567\n     rx_bytes: 3456789012\n     tx_bytes: 987654321\n     rx_errors: 0\n     tx_errors: 0\n     rx_dropped: 12\n     rx_missed_errors: 0\n     tx_aborted_errors: 0\n     tx_carrier_errors: 0\n\n# Non-zero rx_dropped / rx_missed_errors can indicate NIC buffer overruns;\n# consider increasing ring buffers: ethtool -G eth0 rx 4096"
           },
           {
             "cmd": "ip link show",
@@ -14498,13 +14523,15 @@
             "cmd": "ip -s link",
             "desc": "Shows interface statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# ip -s link\n1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN\n    RX:  bytes  packets errors dropped  missed   mcast\n    123456    1234      0      0       0       0\n    TX:  bytes  packets errors dropped carrier collsns\n    123456    1234      0      0       0       0\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP\n    RX:  bytes  packets errors dropped  missed   mcast\n    1234567890 8901234      0      0       0    1234\n    TX:  bytes  packets errors dropped carrier collsns\n    9876543210 7654321      0      0       0       0\n\n# Persistent dropped/errors indicate hardware or cabling issues."
           },
           {
             "cmd": "ip -s neigh",
             "desc": "Shows ARP/ND statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# ip -s neigh\n192.168.1.1 dev eth0 lladdr aa:bb:cc:dd:ee:ff ref 1 used 0/0/4 probes 0 REACHABLE\n192.168.1.10 dev eth0 lladdr 11:22:33:44:55:66 ref 1 used 12/12/20 probes 0 STALE\n192.168.1.20 dev eth0  FAILED\nfe80::1 dev eth0 lladdr aa:bb:cc:dd:ee:ff router ref 1 REACHABLE\n\n# STALE = not used recently, will be re-validated on next send.\n# FAILED = ARP requests sent but no reply received."
           },
           {
             "cmd": "bridge link",
@@ -14516,13 +14543,15 @@
             "cmd": "bridge vlan",
             "desc": "Shows VLAN filtering configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# bridge vlan\nport              vlan-id\neth0              1 PVID Egress Untagged\neth1              1 PVID Egress Untagged\n                  10\n                  20\neth2              10 PVID Egress Untagged\n                  20\n\n# PVID = port VLAN ID — the default VLAN for untagged ingress frames.\n# \"Egress Untagged\" = strip the tag before forwarding out this port."
           },
           {
             "cmd": "bridge fdb show",
             "desc": "Shows MAC forwarding table",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# bridge fdb show\n33:33:00:00:00:01 dev eth0 self permanent\n01:00:5e:00:00:01 dev eth0 self permanent\naa:bb:cc:dd:ee:ff dev veth0 master docker0\n8a:7b:12:34:56:78 dev veth1 master docker0\nff:ff:ff:ff:ff:ff dev eth0 self permanent\n\n# Each line: MAC → port (dev) → bridge (master).\n# \"permanent\" entries are static; others age out (default 300 s)."
           },
           {
             "cmd": "tc qdisc show",
@@ -14693,6 +14722,41 @@
             "type": "show",
             "flagged": false,
             "example": "Start: 2026-05-01T19:55:14+0100\nHOST: web01                       Loss%   Snt   Last   Avg  Best  Wrst StDev\n  1.|-- 10.0.0.1                   0.0%   100    0.4    0.5   0.3   1.1   0.1\n  2.|-- 10.0.255.1                 0.0%   100    1.2    1.4   1.0   3.5   0.4\n  3.|-- 100.64.0.41                2.0%   100   12.4   12.7  11.8  18.4   1.2\n  4.|-- 195.66.224.105             0.0%   100   13.1   13.2  12.7  15.0   0.5\n  5.|-- 1.1.1.1                    0.0%   100   13.8   13.9  13.4  16.2   0.4"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "nc -zv host port",
+            "desc": "Test TCP connectivity to a specific host and port without sending data (-z scan, -v verbose)",
+            "example": "# nc -zv 10.0.0.1 443\nConnection to 10.0.0.1 443 port [tcp/https] succeeded!\n\n# nc -zv 10.0.0.1 8080\nnc: connect to 10.0.0.1 port 8080 (tcp) failed: Connection refused\n\n# Useful to confirm firewall allows the path without needing curl or a full client.\n# Add -w 3 to set a 3-second timeout: nc -zvw3 host port"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "lsof -n -i TCP",
+            "desc": "List all open TCP connections with owning process (-n skips DNS resolution for speed)",
+            "example": "COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME\nnginx     1234    root    6u  IPv4  23456      0t0  TCP *:80 (LISTEN)\nnginx     1234    root    8u  IPv4  23789      0t0  TCP 10.0.0.5:80->192.168.1.10:54321 (ESTABLISHED)\nsshd      5678    root    3u  IPv4  34567      0t0  TCP *:22 (LISTEN)\npython3   9012    user    4u  IPv4  45678      0t0  TCP *:8080 (LISTEN)\n\n# Filter to a specific port: lsof -n -i TCP:443\n# Filter to established only: lsof -n -i TCP -s TCP:ESTABLISHED"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "iptables -t nat -L -n -v",
+            "desc": "List all NAT table rules (PREROUTING, POSTROUTING, OUTPUT) with packet counters",
+            "example": "Chain PREROUTING (policy ACCEPT 1234 packets, 98765 bytes)\n target   prot opt in   out   source      destination\n DNAT     tcp  --  any  any   0.0.0.0/0  0.0.0.0/0   tcp dpt:80 to:10.0.0.5:8080\n\nChain INPUT (policy ACCEPT 0 packets, 0 bytes)\n target   prot opt in   out   source      destination\n\nChain OUTPUT (policy ACCEPT 567 packets, 45678 bytes)\n target   prot opt in   out   source      destination\n\nChain POSTROUTING (policy ACCEPT 890 packets, 67890 bytes)\n target   prot opt in   out   source      destination\n MASQUERADE  all  --  any  eth0  10.0.0.0/24  0.0.0.0/0\n\n# pkts/bytes counters reset on reboot; -Z resets them without removing rules."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "conntrack -L",
+            "desc": "Display all entries in the kernel connection tracking table (requires conntrack-tools)",
+            "example": "# conntrack -L\ntcp  6 299 ESTABLISHED src=192.168.1.10 dst=10.0.0.1 sport=54321 dport=443 \\\n  src=10.0.0.1 dst=192.168.1.10 sport=443 dport=54321 [ASSURED] mark=0 use=1\ntcp  6 115 TIME_WAIT src=192.168.1.11 dst=10.0.0.1 sport=56789 dport=80 \\\n  src=10.0.0.1 dst=192.168.1.11 sport=80 dport=56789 [ASSURED] mark=0 use=1\nudp  17 28 src=192.168.1.10 dst=8.8.8.8 sport=53412 dport=53 \\\n  src=8.8.8.8 dst=192.168.1.10 sport=53 dport=53412 mark=0 use=1\nconntrack v1.4.6 (conntrack-tools): 3 flow entries have been shown.\n\n# Filter by state: conntrack -L --state ESTABLISHED\n# Watch in real time: conntrack -E"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "python3 -m http.server 8080",
+            "desc": "Serve the current directory over HTTP on port 8080 — quick file sharing without installing a web server",
+            "example": "# Run in the directory you want to share\npython3 -m http.server 8080\nServing HTTP on 0.0.0.0 port 8080 (http://0.0.0.0:8080/) ...\n192.168.1.10 - - [15/Jun/2026 09:12:34] \"GET / HTTP/1.1\" 200 -\n192.168.1.10 - - [15/Jun/2026 09:12:35] \"GET /myfile.tar.gz HTTP/1.1\" 200 -\n\n# Bind to a specific interface: python3 -m http.server 8080 --bind 10.0.0.1\n# Change directory first: python3 -m http.server 8080 --directory /tmp/share\n# No authentication — only use on trusted networks."
           }
         ],
         "Diagnostics": [
@@ -14707,7 +14771,8 @@
             "cmd": "journalctl -u <service>",
             "desc": "Shows logs for a specific service",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# journalctl -u ssh --since \"1 hour ago\"\nJun 15 09:12:01 hostname sshd[1234]: Server listening on 0.0.0.0 port 22.\nJun 15 09:15:23 hostname sshd[1235]: Accepted publickey for alice from 192.168.1.10 port 54321 ssh2\nJun 15 09:15:23 hostname sshd[1235]: pam_unix(sshd:session): session opened for user alice by (uid=0)\nJun 15 09:45:11 hostname sshd[1236]: Failed password for root from 203.0.113.1 port 60123 ssh2\nJun 15 09:45:11 hostname sshd[1236]: Connection closed by 203.0.113.1 port 60123 [preauth]\n\n# -f to follow live logs; -n 50 to show last 50 lines.\n# Use --since \"2026-06-15 09:00\" --until \"2026-06-15 10:00\" for a time slice."
           },
           {
             "cmd": "journalctl -b",
@@ -14720,13 +14785,15 @@
             "cmd": "journalctl -k",
             "desc": "Shows kernel logs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# journalctl -k --since \"today\"\nJun 15 08:00:01 hostname kernel: Linux version 6.1.0-21 (gcc version 12.2.0) #1 SMP\nJun 15 08:00:02 hostname kernel: Command line: BOOT_IMAGE=/vmlinuz-6.1.0-21 root=/dev/sda1\nJun 15 08:00:05 hostname kernel: ACPI: IRQ0 used by override.\nJun 15 09:45:11 hostname kernel: eth0: Link is Up - 1Gbps/Full - flow control rx/tx\nJun 15 09:50:33 hostname kernel: oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),task=python3\nJun 15 09:50:33 hostname kernel: Out of memory: Killed process 12345 (python3) score 821\n\n# Equivalent to dmesg but with proper timestamps and persistent across reboots."
           },
           {
             "cmd": "dmesg -T",
             "desc": "Shows kernel ring buffer with timestamps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# dmesg -T | tail -20\n[Mon Jun 15 08:00:01 2026] Linux version 6.1.0 (gcc) #1 SMP PREEMPT\n[Mon Jun 15 08:00:15 2026] eth0: renamed from veth123abc\n[Mon Jun 15 09:45:11 2026] eth0: Link is Up - 1Gbps/Full - flow control rx/tx\n[Mon Jun 15 09:46:00 2026] eth0: NIC Link is Down\n[Mon Jun 15 09:46:15 2026] eth0: Link is Up - 1Gbps/Full - flow control rx/tx\n[Mon Jun 15 10:12:03 2026] EXT4-fs error (device sda1): ext4_validate_block_bitmap ...\n\n# -T converts monotonic timestamps to human-readable wall clock time.\n# Filter for network events: dmesg -T | grep -i \"eth|link|nic\""
           },
           {
             "cmd": "systemctl status <service>",
@@ -14739,13 +14806,15 @@
             "cmd": "systemctl list-units --failed",
             "desc": "Shows failed systemd units",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# systemctl list-units --failed\n  UNIT                  LOAD   ACTIVE SUB    DESCRIPTION\n● nginx.service          loaded failed failed A high performance web server\n● networking.service     loaded failed failed Raise network interfaces\n\nLOAD   = Reflects whether the unit definition was properly loaded.\nACTIVE = The high-level unit activation state.\nSUB    = The low-level unit activation state.\n2 loaded units listed.\n\n# Investigate a failed unit: journalctl -u nginx.service --since \"30 min ago\"\n# Reset the failed state: systemctl reset-failed nginx.service"
           },
           {
             "cmd": "systemctl list-timers",
             "desc": "Shows active timers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# systemctl list-timers\nNEXT                        LEFT          LAST                        PASSED  UNIT                    ACTIVATES\nMon 2026-06-15 10:00:00 UTC 14min left   Mon 2026-06-15 09:00:00 UTC 46min   apt-daily.timer         apt-daily.service\nMon 2026-06-15 12:00:00 UTC 2h 14min     Mon 2026-06-14 12:00:00 UTC 21h     logrotate.timer         logrotate.service\nTue 2026-06-16 00:00:00 UTC 13h 14min    Mon 2026-06-15 00:00:00 UTC 9h      apt-daily-upgrade.timer apt-daily-upgrade.service\n\n3 timers listed.\n\n# Shows all active timers with their next/last run times.\n# Useful for understanding what cron-equivalent tasks are scheduled."
           },
           {
             "cmd": "ps aux",
@@ -17079,6 +17148,13 @@
             "desc": "# Set ring buffer size",
             "type": "show",
             "flagged": false
+          },
+          {
+            "type": "config",
+            "flagged": false,
+            "cmd": "ip link add vlan10 link eth0 type vlan id 10",
+            "desc": "Create an 802.1Q tagged VLAN sub-interface (VLAN 10) on top of eth0",
+            "example": "# Create the VLAN interface\nip link add vlan10 link eth0 type vlan id 10\n\n# Assign an IP address\nip addr add 192.168.10.1/24 dev vlan10\n\n# Bring it up\nip link set vlan10 up\n\n# Verify\nip -d link show vlan10\n3: vlan10@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n    link/ether aa:bb:cc:dd:ee:ff brd ff:ff:ff:ff:ff:ff\n    vlan protocol 802.1Q id 10 <REORDER_HDR>\n\n# Remove: ip link del vlan10"
           }
         ],
         "Ref 18. Disk & Partition Management": [
@@ -18212,7 +18288,8 @@
             "cmd": "tcp.port == 443",
             "desc": "TCP traffic on port 443 (either direction)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in the Wireshark filter bar or pass to tshark -Y\n# Matches any TCP frame where either srcport OR dstport is 443.\nFrame 1:  192.168.1.10:54321 → 10.0.0.1:443   TCP [SYN]\nFrame 2:  10.0.0.1:443       → 192.168.1.10:54321  TCP [SYN,ACK]\nFrame 3:  192.168.1.10:54321 → 10.0.0.1:443   TCP [ACK]\nFrame 4:  192.168.1.10:54321 → 10.0.0.1:443   TLSv1.3 Client Hello\nFrame 5:  10.0.0.1:443       → 192.168.1.10:54321  TLSv1.3 Server Hello\n\n# To see both directions of one session: tcp.stream == <n>\n# Right-click any frame → Follow → TLS Stream to decrypt (with SSLKEYLOGFILE)."
           },
           {
             "cmd": "tcp.srcport == 22",
@@ -18230,7 +18307,8 @@
             "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 0",
             "desc": "SYN-only — new connection attempts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Isolates only the initial SYN (new connection attempts, not SYN-ACKs).\n# Useful for: spotting port scans, counting new connections, detecting half-open floods.\nFrame 1:  192.168.1.10:56789 → 10.0.0.1:80    TCP [SYN] Seq=0\nFrame 9:  192.168.1.10:56790 → 10.0.0.1:443   TCP [SYN] Seq=0\nFrame 17: 192.168.1.10:56791 → 10.0.0.1:8080  TCP [SYN] Seq=0\n\n# A single source hitting many ports in rapid succession = port scan.\n# Combine with: ip.src == 203.0.113.0/24 to scope to a subnet.\n# Inverse (SYN-ACKs only): tcp.flags.syn == 1 and tcp.flags.ack == 1"
           },
           {
             "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 1",
@@ -18340,7 +18418,8 @@
             "cmd": "http",
             "desc": "All HTTP traffic",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows all decoded HTTP/1.x frames (requires traffic on port 80 or a port\n# configured under Analyze → Decode As → HTTP).\nFrame 42: GET /index.html HTTP/1.1\nFrame 43: HTTP/1.1 200 OK  (text/html, 2345 bytes)\nFrame 68: POST /api/login HTTP/1.1\nFrame 69: HTTP/1.1 401 Unauthorized\n\n# Note: https traffic is TLS-encrypted; use the tls.* filter family for that.\n# To also catch HTTP on non-standard ports: tcp.port == 8080 and http"
           },
           {
             "cmd": "http.request",
@@ -18456,7 +18535,8 @@
             "cmd": "tls.handshake.type == 1",
             "desc": "ClientHello — inspect SNI, cipher list, versions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows only TLS ClientHello messages — one per new TLS session.\n# Useful for: extracting SNI, auditing cipher suites, measuring TLS version distribution.\nFrame 4:   192.168.1.10 → 10.0.0.1   TLSv1.3 Client Hello SNI=example.com\nFrame 18:  192.168.1.11 → 10.0.0.1   TLSv1.3 Client Hello SNI=api.example.com\nFrame 55:  192.168.1.12 → 10.0.0.1   TLSv1.2 Client Hello SNI=legacy.example.com\n\n# Extract all SNIs with tshark:\n#   tshark -r in.pcap -Y \"tls.handshake.type==1\" \\\n#     -T fields -e tls.handshake.extensions_server_name | sort -u\n# ServerHello (type 2): shows negotiated cipher and TLS version."
           },
           {
             "cmd": "tls.handshake.type == 2",
@@ -18536,7 +18616,8 @@
             "cmd": "dns.qry.name contains \"example.com\"",
             "desc": "Queries for a specific name",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches any DNS query or response whose question name contains \"example.com\".\nFrame 12: Standard query A www.example.com\nFrame 13: Standard query response A www.example.com → 93.184.216.34\nFrame 45: Standard query A api.example.com\nFrame 46: Standard query response A api.example.com → 10.0.0.5\n\n# Exact match (use == instead of contains):\n#   dns.qry.name == \"www.example.com\"\n# Show only NXDOMAIN (name not found):\n#   dns.flags.response == 1 and dns.flags.rcode == 3"
           },
           {
             "cmd": "dns.qry.type == 1",
@@ -18666,7 +18747,8 @@
             "cmd": "arp.opcode == 1",
             "desc": "ARP requests only",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows only ARP request frames — the \"who has X?\" half of ARP exchange.\nFrame 3:  Who has 192.168.1.1?  Tell 192.168.1.10   ARP Request\nFrame 7:  Who has 192.168.1.20? Tell 192.168.1.10   ARP Request\nFrame 11: Who has 192.168.1.1?  Tell 192.168.1.11   ARP Request\n\n# Complement (replies only): arp.opcode == 2\n# Detect ARP storms (DoS or misconfiguration):\n#   arp.opcode == 1 && !_ws.col.info contains \"Retransmission\"\n# Gratuitous ARP (IP conflict probe): arp.duplicate-address-detected"
           },
           {
             "cmd": "arp.opcode == 2",
@@ -18912,7 +18994,8 @@
             "cmd": "ospf.msg == 1",
             "desc": "OSPF Hello packets",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches OSPF Hello packets — the liveness probes sent every HelloInterval (default 10 s).\nFrame 5:   10.0.0.1 → 224.0.0.5  OSPF Hello  Router ID 1.1.1.1\nFrame 15:  10.0.0.2 → 224.0.0.5  OSPF Hello  Router ID 2.2.2.2\nFrame 25:  10.0.0.1 → 224.0.0.5  OSPF Hello  Router ID 1.1.1.1\n\n# Missing hellos on a link = adjacency failure (check timer mismatch or MTU issue).\n# Other OSPF message types:\n#   ospf.msg == 2  DB Description (DBD)\n#   ospf.msg == 3  Link State Request (LSR)\n#   ospf.msg == 4  Link State Update (LSU)\n#   ospf.msg == 5  Link State Acknowledgement (LSAck)"
           },
           {
             "cmd": "eigrp",
@@ -19190,7 +19273,8 @@
             "cmd": "host <ip>",
             "desc": "Captures packets to or from a specific IP",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "# Capture filter syntax (BPF) — entered in the \"Capture Options\" dialog\n# or passed to tshark with -f. Applied in the kernel before frames reach Wireshark.\n\n# Capture all traffic to/from 10.0.0.1:\ntshark -i eth0 -f \"host 10.0.0.1\" -w host.pcap\n\n# Combine conditions:\n#   host 10.0.0.1 and port 443    — HTTPS traffic only\n#   host 10.0.0.1 and not port 22 — everything except SSH\n#   src host 10.0.0.1             — outbound from this host only\n\n# BPF is evaluated in kernel — much more efficient than display filters for long captures."
           },
           {
             "cmd": "src host <ip>",
@@ -19529,7 +19613,8 @@
             "cmd": "Statistics → Conversations",
             "desc": "Top talkers by pair (IPv4/v6, TCP, UDP tabs)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Menu: Statistics → Conversations  (shortcut: none; filter bar shortcut: Ctrl+Alt+C)\n# Shows talker pairs grouped by protocol tab: Ethernet / IPv4 / IPv6 / TCP / UDP\n\n# TCP Conversations example output:\nAddress A           Port A  Address B           Port B  Packets Bytes   Duration\n192.168.1.10        54321   10.0.0.1            443     2341    3.2 MB  45.123 s\n192.168.1.11        56789   10.0.0.1            80       456    128 KB   2.456 s\n192.168.1.10        60123   8.8.8.8             53        12    1.1 KB   0.234 s\n\n# Click any row → Apply as Filter → \"Selected\" to drill down into that conversation.\n# \"Follow Stream\" button opens the stream reassembly view directly."
           },
           {
             "cmd": "Statistics → Endpoints",
@@ -19785,7 +19870,8 @@
             "cmd": "tshark -r in.pcap -qz io,stat,10",
             "desc": "Bucketed IO stats every 10s for the whole capture",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# -q suppresses per-packet output; -z io,stat,10 prints throughput every 10 seconds.\ntshark -r in.pcap -qz io,stat,10\n\n===================================================================\n| IO Statistics                                                   |\n|                                                                 |\n| Duration: 60.123456 secs                                        |\n| Interval: 10 secs                                               |\n|                                                                 |\n| Col 1: Frames and bytes                                         |\n|-------|------|---------|------|---------|------|---------|-------|\n|       |Col 1 |         |Col 1|         |Col 1|         |Col 1 |\n|Interval|Frames|  Bytes |Frames|  Bytes|Frames|  Bytes |Frames|\n|  0<>10 |  1234|  987654|  ...|     ...|  ...|     ...|  ...|\n| 10<>20 |   987|  765432|  ...|     ...|  ...|     ...|  ...|\n\n# Reveals traffic bursts and quiet periods — useful for capacity planning."
           },
           {
             "cmd": "tshark -r in.pcap -qz conv,tcp",
@@ -19840,6 +19926,20 @@
             "desc": "Quick summary: duration, packets, bytes, drops",
             "type": "show",
             "flagged": false
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "tshark -r in.pcap -T json > out.json",
+            "desc": "Decode every packet in a pcap and export the full dissection tree as JSON — useful for scripting and log ingestion",
+            "example": "# Produces one JSON object per packet; pipe through jq for querying:\ntshark -r in.pcap -T json | jq '.[] | ._source.layers | {src: .ip.ip_src, dst: .ip.ip_dst, proto: .frame[\"frame.protocols\"]}'\n\n# Example output (truncated):\n[\n  {\n    \"_index\": \"packets-2026-06-15\",\n    \"_source\": {\n      \"layers\": {\n        \"frame\": { \"frame.number\": \"1\", \"frame.len\": \"74\", \"frame.protocols\": \"eth:ethertype:ip:tcp\" },\n        \"ip\":    { \"ip.src\": \"10.0.0.1\", \"ip.dst\": \"10.0.0.50\" },\n        \"tcp\":   { \"tcp.srcport\": \"443\", \"tcp.dstport\": \"54321\", \"tcp.flags\": \"0x0012\" }\n      }\n    }\n  }\n]\n\n# Filter before export: tshark -r in.pcap -Y \"http\" -T json > http_only.json"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "tshark -r in.pcap -Y \"http.request\" -T fields -e frame.number -e ip.src -e http.request.method -e http.request.uri",
+            "desc": "Extract HTTP request summary (frame, source IP, method, URI) as tab-separated fields — fast log extraction",
+            "example": "# Output is tab-separated; redirect to a file for further processing:\ntshark -r in.pcap -Y \"http.request\" \\\n  -T fields \\\n  -e frame.number \\\n  -e ip.src \\\n  -e http.request.method \\\n  -e http.request.uri \\\n  -E header=y -E separator=,\n\nframe.number,ip.src,http.request.method,http.request.uri\n42,192.168.1.10,GET,/index.html\n43,192.168.1.10,GET,/assets/logo.png\n67,192.168.1.11,POST,/api/login\n89,192.168.1.10,GET,/favicon.ico\n\n# Swap http.request.uri for http.response.code to extract response codes instead."
           }
         ]
       },
@@ -28687,7 +28787,8 @@
             "cmd": "show chassis",
             "desc": "Shows chassis summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show chassis\n\nChassis Model:  SDX 22000\nSerial Number:  AB1234567890\nSlots:          4\nPopulated Slots: 3 (slots 1, 2, 4)\nChassis Status: Operational\nManagement IP:  10.10.10.100\nManagement MAC: aa:bb:cc:dd:ee:ff\nFirmware:       SDX 14.1 Build 21.57\n\nWhat it means:\n- Populated Slots shows physical cards installed; gaps indicate empty or failed slots.\n- Chassis Status \"Operational\" confirms management plane is healthy.\n- Use \"show chassis status\" for real-time fan/PSU/temperature detail."
           },
           {
             "cmd": "show chassis status",
@@ -28699,7 +28800,8 @@
             "cmd": "show chassis fans",
             "desc": "Shows chassis fan status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show chassis fans\n\nFan  Location       Status  Speed (RPM)  Threshold\n---  -------------  ------  -----------  ---------\n1    Front-Left     OK      2480         <500 FAIL\n2    Front-Right    OK      2510         <500 FAIL\n3    Rear-Left      OK      2490         <500 FAIL\n4    Rear-Right     OK      2505         <500 FAIL\n\nAll fans operating within normal parameters.\n\nWhat it means:\n- Any fan showing FAILED will generate a critical alarm and may trigger thermal throttling.\n- If RPM drops below threshold with status \"DEGRADED\", plan a maintenance window."
           },
           {
             "cmd": "show chassis psu",
@@ -28785,7 +28887,8 @@
             "cmd": "show backplane",
             "desc": "Shows backplane configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show backplane\n\nBackplane Status:  Active\nBackplane Speed:   10 Gbps\nBackplane Type:    PCIe\nNumber of Links:   4\nActive Links:      4\nFailed Links:      0\n\nWhat it means:\n- The backplane interconnects the management card to VPX/physical NICs.\n- Failed Links > 0 indicates a hardware fault; raise a Citrix support case."
           },
           {
             "cmd": "show backplane interfaces",
@@ -28847,7 +28950,8 @@
             "cmd": "show sslchip",
             "desc": "Shows SSL chip allocation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show sslchip\n\nChip  Slot  Status     Allocated  Available  Crypto Ops/s\n----  ----  ---------  ---------  ---------  -----------\n1     1     Active     2          6          45000\n2     1     Active     1          7          38000\n3     2     Active     0          8          0\n4     2     Standby    0          8          0\n\nTotal SSL Chips: 4\nActive:          3\nStandby:         1\n\nWhat it means:\n- \"Allocated\" shows chips bound to VPX instances.\n- Chips in Standby state take over if an Active chip fails.\n- High Crypto Ops/s combined with low Available indicates SSL offload saturation."
           },
           {
             "cmd": "show sslchip -detail",
@@ -28903,7 +29007,8 @@
             "cmd": "show cpu",
             "desc": "Shows CPU usage summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show cpu\n\nCPU  Core  Usage %  System %  User %   Idle %\n---  ----  -------  --------  ------   ------\n0    0     12.5     3.2       9.3      87.5\n0    1     8.3      2.1       6.2      91.7\n0    2     5.0      1.5       3.5      95.0\n0    3     15.8     4.1       11.7     84.2\nAll  Avg   10.4     2.7       7.7      89.6\n\nWhat it means:\n- SDX management CPU — separate from per-VPX data-plane CPUs.\n- Sustained Usage > 80% on any core warrants investigation (show system processes)."
           },
           {
             "cmd": "show cpu -detail",
@@ -29027,7 +29132,8 @@
             "cmd": "show vpx",
             "desc": "Lists all VPX instances",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show vpx\n\nName       Status   vCPUs  Memory(MB)  SSL Chips  IP           Build\n---------  -------  -----  ----------  ---------  -----------  --------------------\nvpx-01     Up       4      8192        2          10.10.10.11  NSVPX 14.1 Build 21\nvpx-02     Up       2      4096        1          10.10.10.12  NSVPX 14.1 Build 21\nvpx-dev    Down     2      2048        0          10.10.10.13  NSVPX 13.1 Build 49\n\nWhat it means:\n- \"SSL Chips\" shows dedicated hardware crypto acceleration allocated to each VPX.\n- \"Down\" status means the VPX OS is not running — use \"start vm <name>\" to bring it up.\n- Compare Build across VPXs to identify inconsistent firmware versions."
           },
           {
             "cmd": "show vpx <name>",
@@ -29455,7 +29561,8 @@
             "cmd": "show vm",
             "desc": "Lists all VMs on SDX",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show vm\n\nName       State    CPUs  Memory(MB)  Disk(GB)  IP Address    Version\n---------  -------  ----  ----------  --------  ------------  --------------------\nvpx-01     Running  4     8192        100       10.10.10.11   NSVPX 14.1 Build 21\nvpx-02     Running  2     4096        100       10.10.10.12   NSVPX 14.1 Build 21\nvpx-dev    Halted   2     2048        100       10.10.10.13   NSVPX 13.1 Build 49\n\nTotal VMs: 3   Running: 2   Halted: 1\n\nWhat it means:\n- Halted VMs are shut down but retain their configuration and disk.\n- Use \"show vm <name>\" for network bindings, CPU pinning, and SSL chip allocation."
           },
           {
             "cmd": "show vm <name>",
@@ -29509,7 +29616,8 @@
             "cmd": "show vm cpu",
             "desc": "Shows VM CPU allocation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show vm cpu\n\nVM Name    vCPU  Host CPU  Usage %  State\n---------  ----  --------  -------  -------\nvpx-01     0     2         8.2      Running\nvpx-01     1     3         12.5     Running\nvpx-01     2     4         6.1      Running\nvpx-01     3     5         9.8      Running\nvpx-02     0     6         3.4      Running\nvpx-02     1     7         5.7      Running\n\nWhat it means:\n- \"Host CPU\" shows physical core pinning — helps identify NUMA affinity issues.\n- Imbalanced per-vCPU usage may indicate VPX queue depth or interrupt skew."
           },
           {
             "cmd": "show vm memory",
@@ -30201,7 +30309,8 @@
             "cmd": "show logs",
             "desc": "Shows system logs",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show logs\n[Jun 15 09:10:01] INFO  [mgmtsvr] System startup complete. Version SDX 14.1 Build 21.57\n[Jun 15 09:12:34] INFO  [vpx_mgr] VPX vpx-01 started successfully\n[Jun 15 09:14:22] WARN  [netmon]  Interface 1/4 link down detected\n[Jun 15 09:14:35] INFO  [netmon]  Interface 1/4 link restored\n[Jun 15 10:05:00] ERROR [sslchip] SSL chip 2 reset — recovered automatically\n\nWhat it means:\n- WARN/ERROR entries are the primary focus for incident investigation.\n- Use \"show logs xen\" to see Xen hypervisor events separately.\n- Use \"show logs -detail\" for millisecond timestamps and process IDs."
           },
           {
             "cmd": "show logs -detail",
@@ -30261,7 +30370,8 @@
             "cmd": "show events",
             "desc": "Shows system events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show events\n\nTime                  Severity  Source      Message\n--------------------  --------  ----------  -----------------------------------------------\n2026-06-15 10:05:00   CRITICAL  SSL         SSL chip 2 reset — auto-recovered\n2026-06-15 09:14:22   MAJOR     Network     Interface 1/4 link down\n2026-06-15 09:14:35   CLEAR     Network     Interface 1/4 link restored\n2026-06-15 08:00:15   MINOR     VPX         VPX vpx-02 CPU usage exceeded 75%\n2026-06-14 22:00:00   INFO      System      Scheduled backup completed successfully\n\nWhat it means:\n- CRITICAL / MAJOR events need immediate attention.\n- CLEAR events confirm a previous alarm resolved — confirm with monitoring."
           },
           {
             "cmd": "show events -detail",
