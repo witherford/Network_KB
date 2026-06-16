@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-14T18:42:14.721Z",
+  "updatedAt": "2026-06-16T18:43:30.696Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -4893,6 +4893,20 @@
             "type": "troubleshooting",
             "flagged": true,
             "example": "BGP peer Edge1 hard-reset. Session will re-establish in a few seconds."
+          },
+          {
+            "cmd": "show routing protocol ospf database",
+            "desc": "Display the OSPF link-state database listing all LSA types, ages, and advertising routers",
+            "type": "show",
+            "flagged": false,
+            "example": "> show routing protocol ospf database\n\nOSPF database, Area 0.0.0.0\n  Type      LS ID         Adv Router    Seq #      Age    Checksum\n  router    1.1.1.1       1.1.1.1       0x80000004  412    0x003c4a\n  router    2.2.2.2       2.2.2.2       0x80000003  396    0x0027a1\n  router    3.3.3.3       3.3.3.3       0x80000005  228    0x005f12\n  network   10.0.12.2     2.2.2.2       0x80000002  396    0x00a4b3\n  summary   192.168.10.0  2.2.2.2       0x80000001  396    0x00d182\n\nWhat it means:\n- Type \"router\"  = Router LSA (each router's own links)\n- Type \"network\" = Network LSA (DR-generated for broadcast segments)\n- Type \"summary\" = Summary LSA (ABR inter-area routes)\n- Age increments each second; LSAs are refreshed at 1800 s and expire at 3600 s."
+          },
+          {
+            "cmd": "show routing protocol bgp peer-detail peer <peer-ip>",
+            "desc": "Show detailed BGP peer information: negotiated capabilities, hold timer, and session state",
+            "type": "show",
+            "flagged": false,
+            "example": "> show routing protocol bgp peer-detail peer 203.0.113.1\n\nPeer:                 203.0.113.1\nRemote AS:            65002\nStatus:               Established\nUptime:               3d 14h 22m\nBGP Version:          4\nHold Timer:           90 s (negotiated)\nKeepalive Interval:   30 s\nLocal Router-ID:      198.51.100.1\nRemote Router-ID:     203.0.113.1\n\nNegotiated Capabilities:\n  Route Refresh:        yes\n  4-byte AS:            yes\n  Graceful Restart:     yes  (restart time 120 s)\n  Add-Path (Receive):   no\n  Add-Path (Send):      no\n\nPrefixes:\n  Received:  4200\n  Accepted:  4200\n  Sent:      12"
           }
         ],
         "Security Policies": [
@@ -6526,6 +6540,20 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Handshake successes  : 14,830,221\nHandshake failures   : 1,781\nUnsupported ciphers  : 412\nCert errors          : 248"
+          },
+          {
+            "cmd": "show running decryption-policy",
+            "desc": "Display the currently active SSL/TLS decryption rules from the running policy",
+            "type": "show",
+            "flagged": false,
+            "example": "> show running decryption-policy\n\nRule 1: \"Decrypt-Outbound-SSL\"\n  From: Trust         To: Untrust\n  Source: any         Destination: any\n  Service: ssl        Category: any\n  Action: decrypt     Type: ssl-forward-proxy\n  Certificate Profile: corp-forward-trust\n  Profile: default-decryption\n\nRule 2: \"No-Decrypt-Finance\"\n  From: Trust         To: Untrust\n  Source: any         Destination: finance-category\n  Action: no-decrypt\n  Description: Exempt banking sites from decryption\n\nWhat it means:\n- Rules are evaluated top-down; first match wins.\n- \"no-decrypt\" rules must be above broader decrypt rules for exemptions to apply."
+          },
+          {
+            "cmd": "test decryption-policy-match from <src-zone> to <dst-zone> source <src-ip> destination <dst-ip> destination-port <port>",
+            "desc": "Test which SSL/TLS decryption rule applies to a specific traffic flow",
+            "type": "show",
+            "flagged": false,
+            "example": "> test decryption-policy-match from Trust to Untrust source 10.0.1.50 destination 1.2.3.4 destination-port 443\n\nRule matched: \"Decrypt-Outbound-SSL\"\n  Action:              decrypt\n  Type:                ssl-forward-proxy\n  Certificate Profile: corp-forward-trust\n  Decryption Profile:  default-decryption\n\n# Use this before committing a new decryption policy to confirm that\n# traffic is hitting the intended rule (especially exemption rules)."
           }
         ],
         "URL & Threat Updates": [
@@ -6951,7 +6979,8 @@
             "cmd": "openssl ecparam -name secp384r1 -genkey -noout -out ec.key",
             "desc": "Generate an ECC private key using the secp384r1 (P-384) curve",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "(ECC P-384 private key written to ec.key — no console output on success)\n# Verify the key was created correctly:\nopenssl ec -in ec.key -text -noout | head -6\nread EC key\nPrivate-Key: (384 bit)\npriv:\n    00:a1:2b:3c:4d:5e:6f:7a:8b:9c:0d:1e:2f:3a:...\npub:\n    04:b5:c6:d7:..."
           },
           {
             "cmd": "openssl genpkey -algorithm ed25519 -out ed25519.key",
@@ -6992,7 +7021,8 @@
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa3072.key",
             "desc": "Generate 3072-bit RSA key via genpkey (modern API)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "Generating RSA private key, 3072 bit long modulus\n..............................................+++++\n.......................................+++++\ne is 65537 (0x010001)\n\n# Verify: openssl rsa -in rsa3072.key -text -noout | head -3\nRSA Private-Key: (3072 bit, 2 primes)"
           },
           {
             "cmd": "openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out rsa4096.key",
@@ -7016,7 +7046,8 @@
             "cmd": "openssl genpkey -algorithm X25519 -out x25519.key",
             "desc": "X25519 key for modern ECDH",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "(X25519 private key written to x25519.key — no output on success)\n# Verify:\nopenssl pkey -in x25519.key -text -noout\nX25519 Private-Key:\npriv:\n    78:e3:41:2b:9c:5d:0f:a3:44:e7:82:bf:1c:60:d5:\n    3a:91:46:fe:2d:c8:77:b4:0e:59:3f:1a:2b:7c:e8:\n    8d:6a"
           },
           {
             "cmd": "openssl genpkey -algorithm X448 -out x448.key",
@@ -7054,7 +7085,8 @@
             "cmd": "openssl rand -hex 16",
             "desc": "Print 16 random bytes hex (32 chars) — token / IV material",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "b9e3f42d8c1a5e7f0d234a6b89c07f51\n# Each run produces a different 32-char hex string (16 random bytes).\n# For a 32-byte key: openssl rand -hex 32\n# For base64 output: openssl rand -base64 16"
           }
         ],
         "Key Inspection & Manipulation": [
@@ -7080,13 +7112,15 @@
             "cmd": "openssl rsa -in <key> -check",
             "desc": "Checks RSA key integrity",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl rsa -in private.key -check\nRSA key ok\n# If the key file is corrupted:\nRSA key error: n does not equal p * q\n# Use this before deploying a key to ensure it is mathematically consistent."
           },
           {
             "cmd": "openssl rsa -in <key> -pubout -out <pubkey>",
             "desc": "Extracts public key",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl rsa -in private.key -pubout -out public.key\nwriting RSA key\n# Output public.key in PEM format (-----BEGIN PUBLIC KEY-----)\n# Verify extracted public key:\nopenssl rsa -pubin -in public.key -text -noout | head -4\nRSA Public-Key: (2048 bit)\nModulus:\n    00:c4:e5:f6:..."
           },
           {
             "cmd": "openssl pkey -in <key> -pubout",
@@ -7358,7 +7392,8 @@
             "cmd": "openssl x509 -in <cert> -text -noout",
             "desc": "Displays certificate details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl x509 -in cert.crt -text -noout\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number: 04:ab:cd:ef:01:23:45:67\n        Signature Algorithm: sha256WithRSAEncryption\n        Issuer: C=GB, O=Example CA Ltd, CN=Example TLS Issuing CA\n        Validity\n            Not Before: Jan  1 00:00:00 2024 GMT\n            Not After : Jan  1 00:00:00 2025 GMT\n        Subject: CN=www.example.com, O=Example Ltd, C=GB\n        X509v3 Subject Alternative Name:\n            DNS:www.example.com, DNS:example.com\n        X509v3 Key Usage: Digital Signature, Key Encipherment\n        X509v3 Extended Key Usage: TLS Web Server Authentication"
           },
           {
             "cmd": "openssl x509 -in <cert> -issuer -noout",
@@ -7376,7 +7411,8 @@
             "cmd": "openssl x509 -in <cert> -dates -noout",
             "desc": "Shows certificate validity dates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl x509 -in cert.crt -dates -noout\nnotBefore=Jan  1 00:00:00 2024 GMT\nnotAfter =Jan  1 00:00:00 2025 GMT\n# Quick way to check if a certificate is still within its validity window.\n# For a live server: openssl s_client -connect host:443 2>/dev/null </dev/null | openssl x509 -noout -dates"
           },
           {
             "cmd": "openssl x509 -in <cert> -fingerprint -noout",
@@ -7779,13 +7815,15 @@
             "cmd": "openssl s_client -connect <host:443>",
             "desc": "Tests SSL/TLS connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl s_client -connect example.com:443\nCONNECTED(00000003)\ndepth=2 C=US, O=DigiCert Inc, CN=DigiCert Global Root CA\ndepth=1 C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\ndepth=0 CN=example.com\nverify return:1\n---\nCertificate chain\n 0 s:CN=example.com\n   i:C=US, O=DigiCert Inc, CN=DigiCert TLS RSA SHA256 2020 CA1\n---\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_128_GCM_SHA256\n    Timeout   : 7200 (sec)\n    Verify return code: 0 (ok)\n---"
           },
           {
             "cmd": "openssl s_client -connect <host:443> -servername <sni>",
             "desc": "Tests SSL/TLS with SNI",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> openssl s_client -connect 10.1.1.100:443 -servername www.example.com\n# -servername sets the TLS SNI extension — required when one IP hosts\n# multiple virtual sites (each with its own certificate).\nCONNECTED(00000003)\ndepth=1 CN=Example CA\ndepth=0 CN=www.example.com\n---\nCertificate presented for: www.example.com\nProtocol : TLSv1.3\nCipher   : TLS_AES_256_GCM_SHA384\nVerify return code: 0 (ok)"
           },
           {
             "cmd": "openssl s_client -connect <host:443> -tls1_2",
@@ -12194,7 +12232,8 @@
             "cmd": "pwd",
             "desc": "# show current working directory",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> pwd\n/home/user/project/src\n# Shows the absolute path of the current working directory.\n# Useful in scripts: DIR=$(pwd)"
           }
         ],
         "tree  # show directory tree": [
@@ -12202,49 +12241,57 @@
             "cmd": "tree -L 2",
             "desc": "# limit tree depth to 2 levels",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> tree -L 2 /var/www\n/var/www\n├── html\n│   ├── index.html\n│   ├── css\n│   └── js\n└── logs\n    ├── access.log\n    └── error.log\n2 directories, 4 files"
           },
           {
             "cmd": "tree -a",
             "desc": "# include hidden files in tree",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> tree -a /home/user\n/home/user\n├── .bashrc\n├── .bash_profile\n├── .ssh\n│   ├── authorized_keys\n│   └── known_hosts\n└── projects\n    └── app\n# -a includes hidden dot-files and directories that tree omits by default."
           },
           {
             "cmd": "stat file",
             "desc": "# show detailed file metadata",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> stat /etc/passwd\n  File: /etc/passwd\n  Size: 2847          Blocks: 8          IO Block: 4096   regular file\nDevice: fd01h/64769d  Inode: 394         Links: 1\nAccess: (0644/-rw-r--r--)  Uid: (0/root)   Gid: (0/root)\nAccess: 2026-06-15 09:22:11.000000000 +0000\nModify: 2026-05-01 14:30:05.000000000 +0000\nChange: 2026-05-01 14:30:05.000000000 +0000"
           },
           {
             "cmd": "realpath file",
             "desc": "# show absolute resolved path",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> realpath ../config/app.conf\n/etc/myapp/config/app.conf\n# Resolves relative paths and symlinks to their absolute canonical path.\n# Useful in scripts to avoid ambiguity: FILE=$(realpath \"$1\")"
           },
           {
             "cmd": "readlink file",
             "desc": "# show symlink target",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> readlink /usr/bin/python3\npython3.11\n> readlink -f /usr/bin/python3\n/usr/bin/python3.11\n# readlink without -f shows just the symlink target.\n# readlink -f resolves the full canonical path (follows all symlinks)."
           },
           {
             "cmd": "pushd dir",
             "desc": "# push directory to stack and change into it",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> pushd /etc/nginx\n/etc/nginx ~\n# pushd changes to /etc/nginx and saves the previous directory on a stack.\n# The stack is shown after the command: leftmost = current directory.\n# Use popd to return to the previous directory."
           },
           {
             "cmd": "popd",
             "desc": "# return to previous directory from stack",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> popd\n~\n# Removes the top directory from the stack and changes back to it.\n# Works as an undo for the last pushd.\n# Stack before: /etc/nginx ~   →   after: ~"
           },
           {
             "cmd": "dirs -v",
             "desc": "# list directory stack with indexes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> dirs -v\n 0  /etc/nginx\n 1  ~\n 2  /var/log\n# Lists the directory stack with index numbers.\n# Use \"pushd +2\" to switch directly to index 2 (/var/log)."
           }
         ],
         "rm file  # remove file": [
@@ -12252,7 +12299,8 @@
             "cmd": "rm -rf dir",
             "desc": "# force remove directory recursively",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> rm -rf old_build/\n# Recursively removes the directory and all its contents without prompting.\n# DANGER: irreversible — always double-check the path before running.\n# Safer alternative: move to /tmp first, then delete:\nmv old_build/ /tmp/old_build_$(date +%s) && rm -rf /tmp/old_build_*/"
           },
           {
             "cmd": "rm -f file",
@@ -18180,7 +18228,8 @@
             "cmd": "frame.len > 1500",
             "desc": "Jumbo frames or fragmented IP above 1500",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches any frame larger than the standard Ethernet MTU of 1500 bytes.\n# Use to detect jumbo frames (MTU 9000), GRE/VXLAN overhead inflating\n# frame size, or IP fragmentation above expected thresholds.\nFrame 312: 1514 bytes  10.0.0.1 → 10.0.0.2  TCP [PSH,ACK]  (just over MTU)\nFrame 318: 2960 bytes  10.0.0.1 → 10.0.0.2  TCP [PSH,ACK]  (jumbo)\nFrame 401: 9014 bytes  10.0.0.1 → 10.0.0.2  TCP [PSH,ACK]  (9K jumbo)"
           },
           {
             "cmd": "frame.time >= \"2026-04-24 09:00:00\" and frame.time <= \"2026-04-24 09:05:00\"",
@@ -18212,7 +18261,8 @@
             "cmd": "tcp.port == 443",
             "desc": "TCP traffic on port 443 (either direction)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches all TCP segments where source OR destination port is 443.\n# Equivalent to: tcp.srcport == 443 or tcp.dstport == 443\nFrame 5:  192.168.1.5   → 93.184.216.34  TCP  54321 → 443 [SYN]\nFrame 6:  93.184.216.34 → 192.168.1.5    TCP  443 → 54321 [SYN,ACK]\nFrame 7:  192.168.1.5   → 93.184.216.34  TLSv1.3  ClientHello\nFrame 8:  93.184.216.34 → 192.168.1.5    TLSv1.3  ServerHello, Certificate"
           },
           {
             "cmd": "tcp.srcport == 22",
@@ -18230,7 +18280,8 @@
             "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 0",
             "desc": "SYN-only — new connection attempts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Captures only the first SYN of a TCP three-way handshake (not SYN-ACK).\n# Use to count connection attempts, detect port scans (high rate of SYNs\n# to multiple ports), or measure new-connection setup rate.\nFrame 1:  10.0.0.5 → 10.0.0.1   TCP  52345 → 80  [SYN] Seq=0 Win=64240\nFrame 3:  10.0.0.5 → 10.0.0.1   TCP  52346 → 443 [SYN] Seq=0 Win=64240\nFrame 9:  10.0.0.5 → 10.0.0.1   TCP  52347 → 22  [SYN] Seq=0 Win=64240"
           },
           {
             "cmd": "tcp.flags.syn == 1 and tcp.flags.ack == 1",
@@ -18242,7 +18293,8 @@
             "cmd": "tcp.flags.reset == 1",
             "desc": "All RST packets — connections aborted",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows all TCP segments with the RST flag set.\n# RST on a SYN → port is closed or the host is actively rejecting connections.\n# RST on an established connection → abnormal teardown (app crash, firewall).\nFrame 25:  10.0.0.1 → 10.0.0.5   TCP  80 → 52345 [RST,ACK]  # port closed\nFrame 88:  10.0.0.5 → 10.0.0.1   TCP  52345 → 80 [RST]       # app abort\n# High RST rate → firewall block, misconfigured server, or SYN flood."
           },
           {
             "cmd": "tcp.flags.fin == 1",
@@ -18254,7 +18306,8 @@
             "cmd": "tcp.analysis.retransmission",
             "desc": "TCP retransmits (marked by Wireshark heuristics)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Wireshark expert-analysis flag set when a segment is retransmitted\n# because no ACK was received within the retransmission timeout (RTO).\n# High count indicates packet loss or severe congestion on the path.\nFrame 102:  10.0.0.1 → 10.0.0.5  [TCP Retransmission] 80 → 52345 Seq=1451 Len=1460\nFrame 118:  10.0.0.1 → 10.0.0.5  [TCP Retransmission] 80 → 52345 Seq=1451 Len=1460\n# Also see: tcp.analysis.fast_retransmission (triple-dup-ACK recovery)"
           },
           {
             "cmd": "tcp.analysis.fast_retransmission",
@@ -18456,7 +18509,8 @@
             "cmd": "tls.handshake.type == 1",
             "desc": "ClientHello — inspect SNI, cipher list, versions",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches TLS ClientHello messages — the very first TLS handshake record.\n# Expand TLS → Handshake Protocol in the packet details pane to inspect:\n#   • SNI extension (server name the client is connecting to)\n#   • Supported cipher suites offered by client\n#   • Supported TLS versions (TLS 1.2, TLS 1.3)\nFrame 15:  192.168.1.5 → 93.184.216.34  TLSv1.3  ClientHello  SNI=example.com\nFrame 29:  192.168.1.5 → 10.0.0.1       TLSv1.3  ClientHello  SNI=intranet.corp"
           },
           {
             "cmd": "tls.handshake.type == 2",
@@ -18530,7 +18584,8 @@
             "cmd": "dns.flags.response == 1",
             "desc": "DNS responses only",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Shows only DNS response messages (QR bit = 1).\n# Pair with dns.flags.rcode != 0 to isolate failed lookups.\nFrame 44:  8.8.8.8 → 192.168.1.5   DNS  Standard query response  A 93.184.216.34\nFrame 47:  8.8.8.8 → 192.168.1.5   DNS  Standard query response  NXDOMAIN\nFrame 51:  8.8.8.8 → 192.168.1.5   DNS  Standard query response  SERVFAIL\n# Filter DNS errors:  dns.flags.response == 1 and dns.flags.rcode != 0"
           },
           {
             "cmd": "dns.qry.name contains \"example.com\"",
@@ -18666,7 +18721,8 @@
             "cmd": "arp.opcode == 1",
             "desc": "ARP requests only",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Captures only ARP Who-Has requests (opcode 1).\n# Useful for detecting gratuitous ARPs, IP conflicts, or ARP scanning.\nFrame 1:  Broadcast  ARP  Who has 192.168.1.1?    Tell 192.168.1.5\nFrame 8:  Broadcast  ARP  Who has 192.168.1.254?  Tell 192.168.1.10\n# Detect ARP scans: many ARP requests in short time from a single source.\n# Pair with arp.opcode == 2 to see corresponding Is-At replies."
           },
           {
             "cmd": "arp.opcode == 2",
@@ -18906,7 +18962,8 @@
             "cmd": "ospf",
             "desc": "All OSPF packets (Hello, LSA, DBD)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Matches all OSPF packets: Hello, DBD (Database Description),\n# LSR (Link State Request), LSU (Link State Update), LSAck.\nFrame 3:  10.0.0.1 → 224.0.0.5  OSPF  Hello  RID=1.1.1.1  Area=0.0.0.0\nFrame 7:  10.0.0.1 → 10.0.0.2   OSPF  DB Description  MTU=1500\nFrame 11: 10.0.0.1 → 10.0.0.2   OSPF  LS Update  Router LSA\n# Drill down:  ospf.msg == 1  (Hello only)\n#              ospf.msg == 4  (LSU only — contains actual topology data)"
           },
           {
             "cmd": "ospf.msg == 1",
@@ -19190,7 +19247,8 @@
             "cmd": "host <ip>",
             "desc": "Captures packets to or from a specific IP",
             "type": "capture",
-            "flagged": false
+            "flagged": false,
+            "example": "# Capture-filter syntax (set before capture starts — not a display filter).\n# Captures all packets where source OR destination matches <ip>.\n# Example: host 192.168.1.100\n# Use in the Capture Options → Capture filter field, or on the CLI:\ntshark -i eth0 -f \"host 192.168.1.100\"\n# Opposite (exclude a host): not host 192.168.1.100\n# Both directions to/from two hosts: host 10.0.0.1 and host 10.0.0.2"
           },
           {
             "cmd": "src host <ip>",
@@ -20461,6 +20519,27 @@
             "type": "show",
             "flagged": false,
             "example": "Interface      Route map\nGigabitEthernet0/0   MARK-VOIP\nGigabitEthernet0/1   ISP-FAILOVER"
+          },
+          {
+            "cmd": "show mpls forwarding-table",
+            "desc": "Display the MPLS Label Forwarding Information Base (LFIB): local labels, operations, and next-hops",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls forwarding-table\nLocal  Outgoing    Prefix              Bytes Label  Outgoing   Next Hop\nLabel  Label or    or Tunnel Id        Switched      interface\n       Tab/Tunnel\n16     Pop Label   10.0.1.0/24         1024          Gi0/1      10.0.0.2\n17     18          10.0.2.0/24         512           Gi0/1      10.0.0.2\n18     No Label    192.168.10.0/24[V]  0             aggregate/vrf1\n19     Aggregate   10.0.3.0/24         256           -          -\n\nWhat it means:\n- \"Pop Label\" = PHP (Penultimate Hop Popping); label removed before forwarding.\n- \"No Label\"  = destination is directly connected in a VRF.\n- \"Aggregate\" = locally originated label, no outgoing interface."
+          },
+          {
+            "cmd": "show mpls interfaces",
+            "desc": "Show all interfaces enabled for MPLS label switching with their protocol and LDP status",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls interfaces\nInterface              IP            Tunnel   BGP Static Operational\nGigabitEthernet0/0     Yes (ldp)     No       No  No     Yes\nGigabitEthernet0/1     Yes (ldp)     No       No  No     Yes\nLoopback0              No            No       No  No     No\n\nWhat it means:\n- \"Yes (ldp)\"   = LDP is enabled and distributing labels on this interface.\n- \"Operational\" = MPLS is actively processing labelled packets.\n- Loopback is typically excluded from MPLS forwarding but used as router-ID."
+          },
+          {
+            "cmd": "show mpls ldp bindings",
+            "desc": "Display all LDP label bindings: the local label assigned to each prefix and remote labels received from LDP peers",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls ldp bindings\n  lib entry: 10.0.1.0/24, rev 6\n        local binding:  label: 16\n        remote binding: lsr: 10.0.0.2:0, label: 18\n        remote binding: lsr: 10.0.0.3:0, label: 21\n  lib entry: 10.0.2.0/24, rev 8\n        local binding:  label: 17\n        remote binding: lsr: 10.0.0.2:0, label: 19\n\nWhat it means:\n- \"local binding\"  = label this router advertises to its LDP peers.\n- \"remote binding\" = labels received from each peer for the same prefix.\n- The LFIB selects the best remote label for the chosen next-hop."
           }
         ],
         "Routing › OSPF": [
@@ -28048,6 +28127,20 @@
             "type": "show",
             "flagged": false,
             "example": "----------------------------------------------------------------------\n|                    DescribeDBInstances                             |\n+-----------+-----------+-------------+----------+--------------------+\n| prod-db   | available | db.t3.large | postgres | prod-db.abc123.eu-west-2.rds.amazonaws.com |\n| staging-db| available | db.t3.small | postgres | staging-db.def456.eu-west-2.rds.amazonaws.com |\n+-----------+-----------+-------------+----------+--------------------+"
+          },
+          {
+            "cmd": "aws ec2 create-snapshot --volume-id <vol-id> --description \"<description>\"",
+            "desc": "Create a point-in-time EBS snapshot of a volume for backup or AMI creation",
+            "type": "show",
+            "flagged": false,
+            "example": "> aws ec2 create-snapshot --volume-id vol-0a1b2c3d4e5f67890 --description \"Pre-upgrade backup 2026-06-16\"\n{\n    \"SnapshotId\": \"snap-0a1b2c3d4e5f67890\",\n    \"VolumeId\":   \"vol-0a1b2c3d4e5f67890\",\n    \"State\":      \"pending\",\n    \"StartTime\":  \"2026-06-16T10:00:00.000Z\",\n    \"Progress\":   \"0%\",\n    \"Description\":\"Pre-upgrade backup 2026-06-16\"\n}\n# Poll until complete:\naws ec2 describe-snapshots --snapshot-ids snap-0a1b2c3d4e5f67890 --query \"Snapshots[0].State\""
+          },
+          {
+            "cmd": "aws ec2 describe-snapshots --owner-ids self --query \"Snapshots[].[SnapshotId,VolumeId,State,Progress,StartTime]\" --output table",
+            "desc": "List all EBS snapshots owned by the current account with their status and creation time",
+            "type": "show",
+            "flagged": false,
+            "example": "> aws ec2 describe-snapshots --owner-ids self --query \"Snapshots[].[SnapshotId,VolumeId,State,Progress,StartTime]\" --output table\n---------------------------------------------------------------------------\n| DescribeSnapshots                                                       |\n+-----------------------+----------------------+----------+------+--------+\n| snap-0a1b2c3d4e5f678  | vol-0a1b2c3d4e5f678 | completed| 100% | 2026-06-16T10:05:12Z |\n| snap-0b2c3d4e5f67891  | vol-0b2c3d4e5f67891 | completed| 100% | 2026-06-15T02:00:05Z |\n| snap-0c3d4e5f6789012  | vol-0c3d4e5f6789012 | pending  | 23%  | 2026-06-16T10:00:00Z |\n+-----------------------+----------------------+----------+------+--------+"
           }
         ],
         "S3": [
@@ -28407,37 +28500,43 @@
             "cmd": "show system backup",
             "desc": "Lists system backups",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system backup\n\nName                      Date                      Type\n------------------------  ------------------------  ------\ndaily_backup_20260614     2026-06-14 02:00:01       Full\ndaily_backup_20260613     2026-06-13 02:00:03       Full\nmanual_pre_upgrade        2026-06-10 14:22:31       Full\n\n3 backup(s) stored  →  /var/mps/backup/\n\nWhat it means:\n- Full backups include SDX configuration, VPX metadata, and XenServer state.\n- Review dates to confirm automated backups are running before upgrades."
           },
           {
             "cmd": "show system backup <name>",
             "desc": "Shows details of a specific backup",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system backup daily_backup_20260614\n\nName:      daily_backup_20260614\nDate:      2026-06-14 02:00:01\nType:      Full\nSize:      423 MB\nLocation:  /var/mps/backup/daily_backup_20260614.tar.gz\nStatus:    Complete\nVersion:   SDX 14.1 Build 21.57"
           },
           {
             "cmd": "show system user",
             "desc": "Lists SDX users",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system user\n\nUsername    Groups              Auth Type  Status\n----------  ------------------  ---------  -------\nnsroot      supergroup          Local      Enabled\nadmin       nsoperatorsgroup    Local      Enabled\nsvc_monitor readonly            Local      Enabled\n\n3 user(s) configured"
           },
           {
             "cmd": "show system user <username>",
             "desc": "Shows details for a user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system user nsroot\n\nUsername:      nsroot\nGroups:        supergroup\nAuth Type:     Local\nPassword Type: SHA512\nStatus:        Enabled\nExternal Auth: No\nLast Login:    2026-06-14 09:15:33 from 10.10.10.20"
           },
           {
             "cmd": "show system config",
             "desc": "Displays full SDX configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system config\n\nHostname:       sdx-dc-01\nIP Address:     10.10.10.100\nNetmask:        255.255.255.0\nGateway:        10.10.10.1\nDNS Primary:    8.8.8.8\nDNS Secondary:  8.8.4.4\nNTP Servers:    pool.ntp.org\nTimezone:       UTC\nSSH:            Enabled (port 22)\nHTTPS:          Enabled (port 443)\nSNMP:           Enabled (community: public)"
           },
           {
             "cmd": "show system storage",
             "desc": "Shows SDX storage usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system storage\n\nMount Point     Total     Used      Free      Use%\n--------------  --------  --------  --------  ----\n/               50.0 GB   15.2 GB   34.8 GB    30%\n/var            200.0 GB  45.6 GB   154.4 GB   23%\n/flash          4.0 GB    1.8 GB    2.2 GB     45%\n\nWhat it means:\n- /var/mps holds VPX images and backups — monitor closely.\n- /flash approaching capacity causes SDX upgrade failures."
           },
           {
             "cmd": "show system uptime",
@@ -28450,13 +28549,15 @@
             "cmd": "show system alarms",
             "desc": "Lists active alarms",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system alarms\n\nAlarm ID  Severity  Category  Message                          Raised\n--------  --------  --------  -------------------------------  -------------------\n1042      CRITICAL  CPU       CPU usage exceeded 90%           2026-06-14 08:22:11\n1043      MAJOR     Memory    Free memory below 20% threshold  2026-06-14 08:22:15\n\n2 active alarm(s)"
           },
           {
             "cmd": "show system alarms -detail",
             "desc": "Shows detailed alarm information",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system alarms -detail\n\nAlarm ID:   1042\nSeverity:   CRITICAL\nCategory:   CPU\nMessage:    CPU usage exceeded 90% threshold\nRaised:     2026-06-14 08:22:11\nCleared:    Not Cleared\nDetails:    CPU-0: 94%  CPU-1: 91%  Average: 92.5%\nThreshold:  90%\n\nAlarm ID:   1043\nSeverity:   MAJOR\nCategory:   Memory\nMessage:    Free memory below 20% threshold\nRaised:     2026-06-14 08:22:15\nCleared:    Not Cleared\nDetails:    Total: 65536 MB  Used: 56320 MB  Free: 9216 MB (14%)\nThreshold:  20% free"
           },
           {
             "cmd": "show system health",
@@ -28476,7 +28577,8 @@
             "cmd": "show system processes -detail",
             "desc": "Shows detailed process information",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system processes -detail\n\nPID    Process               CPU%  MEM%  State    Uptime\n-----  --------------------  ----  ----  -------  ----------\n1      init                  0.0   0.1   sleep    45d 3h 11m\n342    sdxd                  1.2   3.4   running  45d 3h 11m\n891    httpd                 0.5   1.1   running  45d 2h 55m\n1203   vssd                  0.3   0.8   running  45d 3h 10m\n2451   postgres              2.1   8.2   running  45d 3h 11m\n3104   snmpd                 0.1   0.3   running  45d 3h 09m"
           },
           {
             "cmd": "show system services",
@@ -28533,7 +28635,8 @@
             "cmd": "show system hardware",
             "desc": "Shows hardware summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware\n\nModel:          SDX 22000-40G\nSerial Number:  SDX1234ABCD5678\nPlatform:       SDX 22000\nChassis:        2-slot\nCPU:            Intel Xeon E5-2697 @ 2.60 GHz  (24 cores / 48 threads)\nMemory:         65536 MB (64 GB)\nDisk:           2 × 1.2 TB SAS (RAID-1)\nNIC Ports:      40 × 10GE SFP+\nSSL Chips:      2 × Nitrox III\nSDX Version:    14.1 Build 21.57\nBIOS Version:   2.5.1"
           },
           {
             "cmd": "show system hardware -detail",
@@ -40555,6 +40658,13 @@
             "type": "config",
             "flagged": false,
             "example": "(BGP AS 65001 configured; eBGP session to AS 65002 neighbor 1.2.3.4 activated for IPv4)"
+          },
+          {
+            "cmd": "show ip ospf neighbor detail",
+            "desc": "Display detailed OSPF neighbor information including state, dead timer, and DR/BDR roles",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show ip ospf neighbor detail\n\nNeighbor 2.2.2.2 on interface 1/1/49\n  In the area 0.0.0.0 via interface 1/1/49\n  Neighbor priority is 1, state is Full, 6 state changes\n  DR is 10.0.12.2 (2.2.2.2), BDR is 10.0.12.1 (1.1.1.1)\n  Options is E (external routing)\n  Dead timer due in 00:00:35\n  Neighbor is up for 3d 14h 22m\n  Database summary list: 0\n  Link state request list: 0\n  Link state retransmission list: 0\n\nWhat it means:\n- \"Full\" = adjacency is complete; LSDBs are synchronised.\n- Dead timer < 10 s while state is Full indicates a flapping link.\n- DR/BDR roles show which router controls the broadcast segment."
           }
         ],
         "VRF": [
