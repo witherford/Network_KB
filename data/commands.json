@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-17T19:05:31.360Z",
+  "updatedAt": "2026-06-19T18:40:44.700Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -7482,31 +7482,36 @@
             "cmd": "openssl x509 -in cert.crt -noout -ext keyUsage",
             "desc": "Just the keyUsage extension",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -ext keyUsage\n\nX509v3 Key Usage: critical\n    Digital Signature, Key Encipherment\n\n# \"critical\" means a client MUST honour this field.\n# Digital Signature  → can sign data (TLS auth, code signing)\n# Key Encipherment   → can wrap a symmetric key (classic RSA TLS key exchange)\n# Missing keyUsage or incorrect bits cause TLS handshake failures on strict clients."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -ext authorityInfoAccess",
             "desc": "AIA extension — OCSP URL and CA issuer URL",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -ext authorityInfoAccess\n\nAuthority Information Access:\n    OCSP - URI:http://ocsp.r3.lencr.org\n    CA Issuers - URI:http://r3.i.lencr.org/\n\n# Two sub-fields:\n#  OCSP        → URL to check real-time revocation status (RFC 6960).\n#                Used by clients that support OCSP stapling / live checks.\n#  CA Issuers  → URL to fetch the issuing CA certificate when it is not\n#                bundled in the TLS handshake — helps rebuild the chain."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -ext crlDistributionPoints",
             "desc": "CRL Distribution Points",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -ext crlDistributionPoints\n\nX509v3 CRL Distribution Points:\n    Full Name:\n      URI:http://crl.r3.lencr.org/r3.crl\n\n# The CRL (Certificate Revocation List) endpoint.\n# Clients download this file to check whether the cert has been revoked.\n# CRLs can be large; OCSP (see authorityInfoAccess) is the lighter alternative."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -issuer_hash",
             "desc": "Hash of the issuer name (used by OpenSSL CAfile symlinks)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -issuer_hash\n244b5494\n\n# The 8-character hex hash of the issuer Distinguished Name.\n# OpenSSL's c_rehash tool creates symlinks named <hash>.0, <hash>.1 … in a\n# CApath directory so that SSL_CTX_load_verify_locations() can locate the\n# correct issuing CA by name hash alone — without loading every file.\n# Two certs issued by the same CA will share the same issuer_hash."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -subject_hash",
             "desc": "Hash of the subject name (c_rehash symlink target)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in ca.crt -noout -subject_hash\n244b5494\n\n# The 8-character hex hash of the Subject DN.\n# c_rehash uses this to name the symlink: 244b5494.0 → ca.crt\n# When a cert's issuer_hash matches a CA's subject_hash, OpenSSL\n# can automatically locate and verify the chain without a full bundle file.\n# Tip: subject_hash of a CA == issuer_hash of the certs it signed."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -checkend 604800",
@@ -7519,13 +7524,22 @@
             "cmd": "openssl x509 -in cert.crt -noout -startdate -enddate",
             "desc": "NotBefore + NotAfter in one command",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -startdate -enddate\nnotBefore=Jun  1 00:00:00 2025 GMT\nnotAfter =Aug 30 23:59:59 2025 GMT\n\n# Quick validity window check — no need to parse the full -text output.\n# Pipe through 'date -d' to get human-relative time:\n#   openssl x509 -in cert.crt -noout -enddate | cut -d= -f2 | xargs -I{} date -d '{}'\n# Automate expiry monitoring in scripts by comparing against $(date +%s)."
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -text -certopt no_pubkey,no_sigdump",
             "desc": "Full cert minus noisy pubkey + signature hex",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl x509 -in server.crt -noout -text -certopt no_pubkey,no_sigdump\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number:\n            04:b3:9a:2c:f9:82:d1:aa:73:4e:00:00:00:28:31:cc\n        Signature Algorithm: sha256WithRSAEncryption\n        Issuer: C=US, O=Let's Encrypt, CN=R3\n        Validity\n            Not Before: Jun  1 00:00:00 2025 GMT\n            Not After : Aug 30 23:59:59 2025 GMT\n        Subject: CN=example.com\n        X509v3 Extensions:\n            X509v3 Subject Alternative Name:\n                DNS:example.com, DNS:www.example.com\n            X509v3 Key Usage: critical\n                Digital Signature\n            X509v3 Extended Key Usage:\n                TLS Web Server Authentication, TLS Web Client Authentication\n\n# -certopt no_pubkey,no_sigdump strips the hundreds of hex lines for the\n# public key modulus and the signature — leaving the fields you actually read."
+          },
+          {
+            "cmd": "openssl verify -CAfile ca-chain.crt cert.crt",
+            "desc": "Verify a certificate against a local CA chain file",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl verify -CAfile ca-chain.crt server.crt\nserver.crt: OK\n\n# If the chain is incomplete or the cert is revoked / expired:\n$ openssl verify -CAfile ca-chain.crt expired.crt\nerror 10 at 0 depth lookup: certificate has expired\n\n# Depth 0 = the leaf cert; depth 1 = intermediate CA; depth 2 = root CA.\n# Use -partial_chain to allow verification against an intermediate CA\n# without requiring the root in the CAfile.\n# Combine with -crl_check -CRLfile crl.pem to verify against a local CRL."
           }
         ],
         "Verification & Matching": [
@@ -7710,19 +7724,22 @@
             "cmd": "openssl pkcs12 -export -out legacy.pfx -inkey private.key -in cert.crt -legacy",
             "desc": "PFX encrypted with legacy RC2/3DES algorithms (for old Java/Windows)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl pkcs12 -export -out legacy.pfx -inkey private.key -in cert.crt -legacy\nEnter Export Password: ••••••••\nVerifying - Enter Export Password: ••••••••\n\n# Creates a PFX bundle encrypted with RC2-40/3DES (legacy PKCS#12 algorithms).\n# Required when importing into:\n#   - Java keystores with older PKCS12 default algorithms (JDK < 11)\n#   - Windows Server 2003 / IIS 6\n#   - Some Cisco, F5, and older Citrix appliances\n# Without -legacy, OpenSSL 3.x defaults to AES-256/SHA-256 which those\n# older platforms cannot decrypt."
           },
           {
             "cmd": "openssl pkcs12 -in bundle.pfx -clcerts -nokeys -out client-only.crt",
             "desc": "Extract only the client-cert leaf from a PFX",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl pkcs12 -in bundle.pfx -clcerts -nokeys -out client-only.crt\nEnter Import Password: ••••••••\nMAC verified OK\n\n$ cat client-only.crt\n-----BEGIN CERTIFICATE-----\nMIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw\n...\n-----END CERTIFICATE-----\n\n# -clcerts  → include only the end-entity (leaf) certificate\n# -nokeys   → omit the private key (safe to share)\n# The output is PEM-encoded and can be sent to a CA or loaded into a browser."
           },
           {
             "cmd": "openssl pkcs12 -in bundle.pfx -cacerts -nokeys -out ca-chain.crt",
             "desc": "Extract only the CA chain (no leaf, no key)",
             "type": "config",
-            "flagged": false
+            "flagged": false,
+            "example": "$ openssl pkcs12 -in bundle.pfx -cacerts -nokeys -out ca-chain.crt\nEnter Import Password: ••••••••\nMAC verified OK\n\n$ openssl crl2pkcs7 -nocrl -certfile ca-chain.crt | openssl pkcs7 -print_certs -noout\nsubject=C=US, O=Let's Encrypt, CN=R3\nissuer=C=US, O=Internet Security Research Group, CN=ISRG Root X1\n\n# -cacerts  → include only the CA / intermediate certificates (not the leaf)\n# -nokeys   → strip the private key\n# Useful to extract the chain bundle separately so you can verify it:\n#   openssl verify -CAfile ca-chain.crt leaf.crt"
           },
           {
             "cmd": "openssl pkcs7 -print_certs -in chain.p7b -out chain.pem",
@@ -8037,6 +8054,13 @@
             "desc": "Extract just cipher/protocol/session-ID fields",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -tls1_3 -status",
+            "desc": "Connect using TLS 1.3 only and request OCSP staple from the server",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl s_client -connect example.com:443 -tls1_3 -status -servername example.com\nCONNECTED(00000003)\nOCSP response:\n======================================\nOCSP Response Status: successful (0x0)\nResponse Type: Basic OCSP Response\nCert Status: Good\nThis Update: Jun 19 00:00:00 2026 GMT\nNext Update: Jun 26 00:00:00 2026 GMT\n======================================\ndepth=2 C=US, O=ISRG, CN=ISRG Root X1\ndepth=1 C=US, O=Let's Encrypt, CN=R3\ndepth=0 CN=example.com\n...\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_256_GCM_SHA384\n    Session-ID: A3B2...\n\n# -tls1_3  → forces TLS 1.3 only; server falls back to alert if not supported\n# -status  → sends a Certificate Status Request extension; server returns OCSP staple\n# A \"Cert Status: Good\" OCSP staple proves the cert is not revoked, eliminating\n# a separate OCSP round-trip for the client."
           }
         ],
         "TLS Server Testing": [
@@ -13229,13 +13253,15 @@
             "cmd": "nmcli device status",
             "desc": "# NetworkManager device list",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nmcli device status\nDEVICE   TYPE      STATE         CONNECTION\neth0     ethernet  connected     office-wired\nwlan0    wifi      connected     CorpWiFi-5GHz\ndocker0  bridge    unmanaged     --\nlo       loopback  unmanaged     --\n\n# STATE values: connected / disconnected / unmanaged / unavailable / connecting\n# CONNECTION column shows the active profile name; '--' means no profile active.\n# Use 'nmcli device show <iface>' for full IP/DNS/gateway detail."
           },
           {
             "cmd": "nmcli connection show",
             "desc": "# list connections",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nmcli connection show\nNAME               UUID                                  TYPE      DEVICE\noffice-wired       a1b2c3d4-1111-2222-3333-444455556666  ethernet  eth0\nCorpWiFi-5GHz      b2c3d4e5-aaaa-bbbb-cccc-ddddeeeeffff  wifi      wlan0\nVPN-HQ             c3d4e5f6-0000-1111-2222-333344445555  vpn       --\n\n# Lists all saved NetworkManager connection profiles.\n# DEVICE column shows which interface is currently using the profile.\n# '--' in DEVICE means the profile exists but is not currently active.\n# Use 'nmcli con show <name>' for full key-value details of a profile."
           },
           {
             "cmd": "nmcli connection up name",
@@ -14684,7 +14710,8 @@
             "cmd": "ip -s neigh",
             "desc": "Shows ARP/ND statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip -s neigh\n10.0.0.1 dev eth0 lladdr 00:1a:2b:3c:4d:5e used 12/5/3 probes 0 REACHABLE\n10.0.0.254 dev eth0 lladdr aa:bb:cc:dd:ee:ff used 120/60/10 probes 1 STALE\nfe80::1 dev eth0 lladdr 00:1a:2b:3c:4d:5e used 5/2/1 probes 0 REACHABLE\n\n# -s adds usage statistics: used <last-used-sec>/<last-confirmed-sec>/<last-updated-sec>\n# REACHABLE → ARP recently confirmed; STALE → entry aged out, will probe on next send\n# FAILED   → probe unanswered; NOARP → static/loopback; PERMANENT → manually set"
           },
           {
             "cmd": "bridge link",
@@ -14718,31 +14745,36 @@
             "cmd": "tc class show",
             "desc": "Shows traffic control classes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ tc class show dev eth0\nclass htb 1:1 root rate 1Gbit ceil 1Gbit burst 1375b cburst 1375b\nclass htb 1:10 parent 1:1 prio 1 rate 500Mbit ceil 1Gbit burst 1563b cburst 1563b\nclass htb 1:20 parent 1:1 prio 2 rate 200Mbit ceil 1Gbit burst 1563b cburst 1563b\n\n# Shows HTB (Hierarchical Token Bucket) classes for traffic shaping.\n# rate  = guaranteed bandwidth  |  ceil = maximum burst bandwidth\n# prio  = scheduling priority within the parent class\n# Use 'tc -s class show dev eth0' to include byte/packet counters."
           },
           {
             "cmd": "tc filter show",
             "desc": "Shows traffic control filters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ tc filter show dev eth0\nfilter parent 1: protocol ip pref 10 u32 chain 0\nfilter parent 1: protocol ip pref 10 u32 chain 0 fh 800: ht divisor 1\nfilter parent 1: protocol ip pref 10 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 flowid 1:10\n  match c0a80a00/ffffff00 at 16    # dst 192.168.10.0/24 → class 1:10 (VoIP)\n\n# Shows tc classifiers that steer packets to specific qdisc classes.\n# u32 filters match on bit fields in the packet header (here: dst subnet).\n# flowid 1:10 directs matched packets to HTB class 1:10."
           },
           {
             "cmd": "iptables -L -n -v",
             "desc": "Lists IPv4 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ iptables -L -n -v\nChain INPUT (policy DROP 42 packets, 3192 bytes)\n pkts bytes target     prot opt in     out     source          destination\n 1428  112K ACCEPT     all  --  lo     *       0.0.0.0/0       0.0.0.0/0\n  892 71680 ACCEPT     tcp  --  eth0   *       0.0.0.0/0       0.0.0.0/0   tcp dpt:22\n  340 27200 ACCEPT     tcp  --  eth0   *       0.0.0.0/0       0.0.0.0/0   tcp dpt:443\n  126 10080 DROP       tcp  --  *      *       10.5.0.0/24     0.0.0.0/0\n\nChain FORWARD (policy DROP 0 packets, 0 bytes)\nChain OUTPUT (policy ACCEPT 4201 packets, 312K bytes)\n\n# -n suppresses DNS lookups (faster); -v adds packet/byte counters and interface\n# pkts/bytes counters reset on reboot; use 'iptables -Z' to zero them manually."
           },
           {
             "cmd": "ip6tables -L -n -v",
             "desc": "Lists IPv6 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip6tables -L -n -v\nChain INPUT (policy DROP 0 packets, 0 bytes)\n pkts bytes target  prot opt in   out  source     destination\n    5   400 ACCEPT  all      lo   *    ::/0       ::/0\n   12  1024 ACCEPT  tcp      eth0 *    ::/0       ::/0   tcp dpt:443\n    8   640 ACCEPT  ipv6-icmp eth0 *   ::/0       ::/0\n\nChain FORWARD (policy DROP)\nChain OUTPUT (policy ACCEPT 234 packets, 18432 bytes)\n\n# Same flags as iptables but for IPv6.  Note 'ipv6-icmp' is the protocol\n# name for ICMPv6 (NDP, Router Advertisements, etc.) — allow it or IPv6 breaks."
           },
           {
             "cmd": "nft list ruleset",
             "desc": "Displays full nftables ruleset",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nft list ruleset\ntable inet filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n        iif lo accept\n        ct state established,related accept\n        tcp dport 22 accept\n        tcp dport { 80, 443 } accept\n        ip protocol icmp accept\n        counter drop\n    }\n    chain forward {\n        type filter hook forward priority 0; policy drop;\n    }\n    chain output {\n        type filter hook output priority 0; policy accept;\n    }\n}\n\n# nftables replaces iptables/ip6tables/arptables/ebtables in one unified tool.\n# 'inet' tables match both IPv4 and IPv6.  Use 'nft -j list ruleset' for JSON."
           },
           {
             "cmd": "systemctl restart network",
@@ -14772,7 +14804,8 @@
             "cmd": "nmcli connection up <name>",
             "desc": "Activates a connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nmcli connection up office-wired\nConnection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/3)\n\n$ nmcli device status\nDEVICE  TYPE      STATE      CONNECTION\neth0    ethernet  connected  office-wired\n\n# Activates a saved connection profile on its associated device.\n# Useful after a 'nmcli con down' or to switch a Wi-Fi interface between profiles.\n# For VPNs: nmcli con up VPN-HQ  (requires pre-configured credentials in the profile)."
           },
           {
             "cmd": "nmcli connection down <name>",
@@ -14784,7 +14817,8 @@
             "cmd": "dhclient <iface>",
             "desc": "Requests DHCP lease",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ dhclient eth0\n$ ip a show eth0\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500\n    inet 192.168.1.105/24 brd 192.168.1.255 scope global dynamic eth0\n       valid_lft 86350sec preferred_lft 86350sec\n\n# Requests a new DHCP lease on eth0.  Use when the interface was configured\n# statically but you want to switch to DHCP, or after 'dhclient -r'.\n# -v flag shows DISCOVER/OFFER/REQUEST/ACK dialogue verbosely.\n# For systemd-based distros, prefer 'networkctl renew eth0' or nmcli."
           },
           {
             "cmd": "dhclient -r <iface>",
@@ -14905,6 +14939,20 @@
             "type": "config",
             "flagged": false,
             "example": "$ ip tunnel add gre1 mode gre local 10.0.0.10 remote 10.0.0.20 ttl 255\n$ ip link set gre1 up\n$ ip addr add 172.16.0.1/30 dev gre1\n$ ip route add 192.168.100.0/24 dev gre1\n$ ip tunnel show gre1\ngre1: ip/ip  remote 10.0.0.20  local 10.0.0.10  ttl 255\n\n# GRE encapsulates IP-in-IP; protocol number 47 (visible in Wireshark: gre filter).\n# No encryption — combine with IPsec for secure tunnelling.\n# ip6tnl: use mode ip6ip6 for IPv6-in-IPv6 tunnels.\n# Remove: ip tunnel del gre1"
+          },
+          {
+            "cmd": "tcpdump -i eth0 -nn -w /tmp/cap.pcap -c 1000",
+            "desc": "# capture 1000 packets on eth0 to a pcap file (no DNS/port name resolution)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tcpdump -i eth0 -nn -w /tmp/cap.pcap -c 1000\ntcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes\n1000 packets captured\n1000 packets received by filter\n0 packets dropped by kernel\n\n# Open the resulting file in Wireshark or replay with tcpdump:\n#   tcpdump -r /tmp/cap.pcap -nn\n# Add a BPF capture filter to narrow scope:\n#   tcpdump -i eth0 -nn -w /tmp/cap.pcap 'host 10.0.0.5 and port 443'\n# -nn  → no DNS/service name resolution (faster, avoids DNS noise in capture)\n# -c   → stop after N packets; omit to capture until Ctrl-C"
+          },
+          {
+            "cmd": "ip route show table all",
+            "desc": "# display routes from all routing tables (main, local, policy routes)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ ip route show table all\ndefault via 10.0.0.1 dev eth0 proto dhcp metric 100\n10.0.0.0/24 dev eth0 proto kernel scope link src 10.0.0.5\n\n# Policy routing tables (visible only with 'table all'):\nbroadcast 10.0.0.0 dev eth0 table local proto kernel scope link src 10.0.0.5\nlocal 10.0.0.5 dev eth0 table local proto kernel scope host src 10.0.0.5\nbroadcast 10.0.0.255 dev eth0 table local proto kernel scope link src 10.0.0.5\n\n# Tables:\n#   main  (table 254) → normal routes (default)\n#   local (table 255) → kernel-managed local/broadcast routes\n#   <N>               → custom policy-routing tables (see /etc/iproute2/rt_tables)\n# Use with 'ip rule show' to see policy-routing rules that direct traffic\n# to specific tables based on source IP, fwmark, or incoming interface."
           }
         ],
         "Diagnostics": [
@@ -15131,6 +15179,27 @@
             "desc": "Checks if service is active",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "journalctl -u <service> -f --since \"1 hour ago\"",
+            "desc": "# follow live log output for a service, showing only the last hour",
+            "type": "show",
+            "flagged": false,
+            "example": "$ journalctl -u nginx -f --since \"1 hour ago\"\nJun 19 09:10:01 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:01] \"GET /api/health HTTP/1.1\" 200 12\nJun 19 09:10:14 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:14] \"POST /api/login HTTP/1.1\" 401 38\nJun 19 09:10:22 web01 nginx[1245]: 2026/06/19 09:10:22 [warn] 1245#1245: *42 upstream response timeout\nJun 19 09:10:22 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:22] \"GET /api/data HTTP/1.1\" 502 162\n^C\n\n# -u <service>            → filter to one systemd unit\n# -f                      → follow (like tail -f)\n# --since \"1 hour ago\"    → start output 1 hour back, then follow forward\n# Ctrl-C to stop following.  Omit --since to follow from the current tail only."
+          },
+          {
+            "cmd": "nmap -sV --open -p 22,80,443 <host>",
+            "desc": "# probe specific ports on a host and identify running services + versions",
+            "type": "show",
+            "flagged": false,
+            "example": "$ nmap -sV --open -p 22,80,443 10.0.0.5\nStarting Nmap 7.94 ( https://nmap.org )\nNmap scan report for 10.0.0.5\nHost is up (0.0023s latency).\n\nPORT    STATE SERVICE VERSION\n22/tcp  open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.4 (Ubuntu Linux; protocol 2.0)\n80/tcp  open  http    nginx 1.24.0\n443/tcp open  ssl/https nginx 1.24.0\n\nService detection performed. Please report any incorrect results at https://nmap.org/submit/ .\nNmap done: 1 IP address (1 host up) scanned in 6.43 seconds\n\n# -sV      → probe open ports to determine service/version\n# --open   → show only open ports (suppress filtered/closed)\n# -p       → comma-separated port list  (use -p- for all 65535 ports)"
+          },
+          {
+            "cmd": "iperf3 -c <host> -t 10 -P 4",
+            "desc": "# run a 10-second bandwidth test to an iperf3 server using 4 parallel streams",
+            "type": "show",
+            "flagged": false,
+            "example": "# Server side (run first):\n$ iperf3 -s\n-----------------------------------------------------------\nServer listening on 5201\n\n# Client side:\n$ iperf3 -c 10.0.0.10 -t 10 -P 4\nConnecting to host 10.0.0.10, port 5201\n[ ID] Interval         Transfer     Bitrate         Retr\n[  4] 0.00-10.00 sec  1.12 GBytes   962 Mbits/sec    0  sender\n[  6] 0.00-10.00 sec  1.09 GBytes   935 Mbits/sec    0  sender\n[  8] 0.00-10.00 sec  1.10 GBytes   945 Mbits/sec    0  sender\n[ 10] 0.00-10.00 sec  1.11 GBytes   953 Mbits/sec    0  sender\n[SUM] 0.00-10.00 sec  4.42 GBytes  3795 Mbits/sec    0  sender\n\n# -c <host>  → target iperf3 server\n# -t 10      → test duration in seconds\n# -P 4       → number of parallel TCP streams (simulates multi-threaded apps)\n# Retr = TCP retransmit count; non-zero indicates congestion or packet loss"
           }
         ],
         "Ref 01. File & Directory Navigation": [
@@ -18509,61 +18578,71 @@
             "cmd": "tcp.analysis.out_of_order",
             "desc": "Packets arriving out of order",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.analysis.out_of_order\nFrame 241: 1514 bytes  10.1.0.5 → 10.1.0.1  TCP [TCP Out-Of-Order] seq=8001 ack=1\nFrame 245: 1514 bytes  10.1.0.5 → 10.1.0.1  TCP [TCP Out-Of-Order] seq=6487 ack=1\n\n# Wireshark tags a segment \"Out-Of-Order\" when its sequence number is LOWER\n# than the highest already-seen seq on that stream (not a retransmit, but\n# arrived after a later segment).\n# Common causes:\n#   - Asymmetric routing (two paths, different latencies)\n#   - Load-balanced flows reaching the capture point in non-seq order\n# Occasional OOO is normal.  Sustained OOO points to a path problem."
           },
           {
             "cmd": "tcp.analysis.lost_segment",
             "desc": "Segments never seen — capture gaps or real loss",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.analysis.lost_segment\nFrame 108: 66 bytes  10.2.0.1 → 10.2.0.8  TCP [TCP Previous segment not captured]\nFrame 112: 66 bytes  10.2.0.8 → 10.2.0.1  TCP [TCP Dup ACK 104#1]\n\n# \"Previous segment not captured\" means Wireshark detected a gap in sequence\n# numbers — the segment before this one was never seen at this capture point.\n# Two interpretations:\n#   1. The segment was genuinely lost (retransmit will follow)\n#   2. The capture was started mid-stream or a packet was dropped by the NIC\n# Look for a retransmit (tcp.analysis.retransmission) within 1 RTO (~200ms)\n# to distinguish real loss from capture gaps."
           },
           {
             "cmd": "tcp.analysis.zero_window",
             "desc": "Receiver window closed — receiver-side back-pressure",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.analysis.zero_window\nFrame 320: 66 bytes  10.0.0.8 → 10.0.0.1  TCP [TCP ZeroWindow] seq=1 ack=1 Win=0\nFrame 321: 66 bytes  10.0.0.1 → 10.0.0.8  TCP [TCP Window Full] seq=1 ack=1\nFrame 340: 66 bytes  10.0.0.8 → 10.0.0.1  TCP [TCP ZeroWindowProbe] seq=1 ack=1 Win=0\n\n# ZeroWindow: the RECEIVER has advertised Win=0 — its receive buffer is full.\n# The sender must pause until a Window Update arrives.\n# Common causes: slow application, GC pause, disk I/O bottleneck on the receiver.\n# Check the time between ZeroWindow and the next Window Update to quantify\n# the back-pressure delay.  Use tcp.analysis.zero_window_probe to find probes."
           },
           {
             "cmd": "tcp.analysis.window_update",
             "desc": "Window-size updates",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.analysis.window_update\nFrame 341: 66 bytes  10.0.0.8 → 10.0.0.1  TCP [TCP Window Update] seq=1 ack=1 Win=65535\n\n# A pure ACK carrying a LARGER window size than the previous ACK from the\n# same direction — the receiver is reopening its buffer.\n# Use alongside tcp.analysis.zero_window to measure the stall duration:\n#   Time(Window Update) - Time(Zero Window) = receiver stall\n# If window updates are frequent, the receiver is oscillating — investigate\n# application processing speed or socket buffer sizing (net.core.rmem_max)."
           },
           {
             "cmd": "tcp.analysis.flags",
             "desc": "All Wireshark TCP analysis tags in one filter",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.analysis.flags\n# This matches ANY frame carrying a Wireshark TCP analysis annotation, including:\n#   [TCP Retransmission]\n#   [TCP Fast Retransmission]\n#   [TCP Out-Of-Order]\n#   [TCP Dup ACK]\n#   [TCP ZeroWindow]\n#   [TCP Window Full]\n#   [TCP Previous segment not captured]\n#   [TCP Keep-Alive]\n#   [TCP ACKed unseen segment]\n\nFrame 91:  [TCP Dup ACK 88#1]\nFrame 94:  [TCP Retransmission]\nFrame 108: [TCP ZeroWindow]\nFrame 140: [TCP Fast Retransmission]\n\n# Use as a quick triage filter to surface all anomalies in one view.\n# Then refine with the specific sub-filters (e.g. tcp.analysis.retransmission)\n# to focus on one failure mode at a time."
           },
           {
             "cmd": "tcp.window_size_value == 0",
             "desc": "Advertised window is zero",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.window_size_value == 0\nFrame 320: 10.0.0.8 → 10.0.0.1  TCP Win=0  [TCP ZeroWindow]\nFrame 341: 10.0.0.8 → 10.0.0.1  TCP Win=0  [TCP ZeroWindowProbe]\n\n# Unlike tcp.analysis.zero_window (which is a Wireshark heuristic),\n# tcp.window_size_value == 0 checks the RAW advertised window field.\n# They usually match, but tcp.window_size_value is more precise when\n# Wireshark's sequence tracking is confused by asymmetric capture.\n# Note: tcp.window_size (no _value) is the SCALED window; if Window Scaling\n# is in use, a raw value of 0 == 0 scaled."
           },
           {
             "cmd": "tcp.len > 0",
             "desc": "TCP segments that actually carry payload",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.len > 0\n# Hides pure ACKs, SYNs, FINs, window probes — shows only data-carrying segments.\nFrame 12: 1514 bytes  10.0.0.1 → 10.0.0.5  TCP len=1460 [PSH,ACK]\nFrame 15: 1514 bytes  10.0.0.1 → 10.0.0.5  TCP len=1460 [PSH,ACK]\nFrame 18:  245 bytes  10.0.0.1 → 10.0.0.5  TCP len=179  [PSH,ACK]\n\n# Useful for:\n#   - Measuring actual data throughput (Statistics → IO Graphs while this filter active)\n#   - Isolating payloads when debugging application-layer issues\n#   - Counting transferred bytes:  tshark -Y 'tcp.len>0' -T fields -e tcp.len | paste -sd+ | bc"
           },
           {
             "cmd": "tcp.stream eq 0",
             "desc": "First TCP stream — right-click → Follow Stream to set this",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: tcp.stream eq 0\n# Shows all packets belonging to TCP stream #0 (the first stream in the capture).\n# Each unique 4-tuple (src_ip, src_port, dst_ip, dst_port) gets a stream index.\n\nFrame 1:  SYN         10.0.0.5:54321 → 10.0.0.1:80\nFrame 2:  SYN,ACK     10.0.0.1:80    → 10.0.0.5:54321\nFrame 3:  ACK         10.0.0.5:54321 → 10.0.0.1:80\nFrame 4:  HTTP GET /  10.0.0.5:54321 → 10.0.0.1:80\nFrame 5:  HTTP 200    10.0.0.1:80    → 10.0.0.5:54321\n\n# Tip: Right-click any TCP packet → Follow → TCP Stream.\n# Wireshark sets this filter automatically with the correct stream number.\n# Increment to step through streams: tcp.stream eq 1, tcp.stream eq 2 …"
           },
           {
             "cmd": "udp.port == 53",
             "desc": "DNS queries/responses",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: udp.port == 53\n# Matches all DNS traffic (both queries and responses) on standard UDP/53.\nFrame 5:   10.0.0.5 → 10.0.0.1  DNS Standard query A www.example.com\nFrame 6:   10.0.0.1 → 10.0.0.5  DNS Standard query response A 93.184.216.34\n\n# Combine with dns.flags.response == 0 for queries only,\n# or dns.flags.response == 1 for responses only.\n# Use dns.qry.name contains \"evil\" to hunt for suspicious domains.\n# For DNS-over-TCP (large responses, zone transfers): tcp.port == 53"
           },
           {
             "cmd": "udp.length > 512",
             "desc": "Large UDP datagrams — e.g. DNS EDNS0 responses",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Apply in display-filter bar: udp.length > 512\n# Matches UDP datagrams whose length field exceeds 512 bytes.\nFrame 88:  10.0.0.1 → 10.0.0.5  UDP len=1420  DNS (EDNS0 ANY response)\nFrame 92:  10.0.0.5 → 10.0.0.1  UDP len=980   SSDP\n\n# DNS traditionally limited responses to 512 bytes (RFC 1035).  Large UDP\n# DNS responses (>512) use EDNS0 (RFC 6891) — the client signals support\n# via an OPT record.  Fragmented large DNS UDP is an amplification risk.\n# Beyond DNS: large UDP may indicate NFS, QUIC, gaming traffic, or SSDP/mDNS.\n# Verify MTU and PMTUD settings if oversized UDP causes consistent drops."
           },
           {
             "cmd": "tcp.options.mss_val < 1460",
@@ -19876,6 +19955,13 @@
             "type": "show",
             "flagged": false,
             "example": "192.168.1.42  api.example.com\n192.168.1.42  fonts.googleapis.com\n192.168.1.99  registry.example.org\n192.168.1.42  cdn.example.com"
+          },
+          {
+            "cmd": "tcp port 443 and not host 10.0.0.1",
+            "desc": "Capture TLS traffic on port 443 but exclude a specific host — useful to remove monitoring/scanner noise",
+            "type": "show",
+            "flagged": false,
+            "example": "# Start capture in Wireshark: Capture → Options → enter filter in Capture filter box\n# Or via tshark:\n#   tshark -i eth0 -f 'tcp port 443 and not host 10.0.0.1' -w /tmp/tls.pcap\n\n# BPF syntax notes:\n#   and / or / not   → boolean operators\n#   host <ip>        → matches src OR dst\n#   src host <ip>    → source only\n#   dst host <ip>    → destination only\n#   port <n>         → src OR dst port\n#   tcp / udp        → protocol qualifier\n\n# Common extensions of this pattern:\n#   'tcp port 443 and (host 10.0.0.5 or host 10.0.0.6)' → two specific hosts\n#   'tcp port 443 and net 192.168.0.0/16'                → entire subnet\n#   'tcp port 443 and not net 10.0.0.0/8'                → exclude RFC 1918"
           }
         ],
         "Analysis & Statistics": [
@@ -19959,6 +20045,13 @@
             "type": "config",
             "flagged": false,
             "example": "# Menu: Analyze → Display Filter Macros\n# Lets you define reusable display filter shortcuts.\n# Example — define macro \"mysrv\" as \"ip.addr == 10.0.0.10\":\n#   Name: mysrv   Text: ip.addr == 10.0.0.10\n# Use in filter bar: ${mysrv} and tcp.port == 443\n# Macros persist across sessions and can be exported/imported."
+          },
+          {
+            "cmd": "frame.time_delta > 1",
+            "desc": "Frames with more than 1 second gap since the previous frame — useful to find idle periods or application pauses",
+            "type": "show",
+            "flagged": false,
+            "example": "# Apply in display-filter bar: frame.time_delta > 1\nFrame 201: time_delta=2.341s  10.0.0.5 → 10.0.0.1  TCP [ACK]  # 2.3s gap — likely a server think-time\nFrame 348: time_delta=1.005s  10.0.0.1 → 10.0.0.5  HTTP 200 OK\n\n# frame.time_delta is the elapsed time from the PREVIOUS frame in the capture.\n# Use it to find:\n#   - Long server think-times (gap between client request and server response)\n#   - Application-level pauses (GC, DB query, lock wait)\n#   - Idle keepalive gaps\n# Combine: frame.time_delta > 0.5 && tcp.stream eq 5  (pauses in a specific flow)"
           }
         ],
         "Coloring Rules & Workflow": [
@@ -28813,37 +28906,43 @@
             "cmd": "show system backup",
             "desc": "Lists system backups",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system backup\n\nBackup Name              Date                   Size      Type\n------------------------ ---------------------- --------- -------\nbackup-2026-06-17.tgz    06/17/2026 02:00:01    142 MB    Full\nbackup-2026-06-10.tgz    06/10/2026 02:00:03    140 MB    Full\nbackup-2026-06-03.tgz    06/03/2026 02:00:02    138 MB    Full\n\n# Lists all system-level backups stored on the SDX.\n# Each backup includes the SDX management configuration, VPX provisioning\n# data, and the ns.conf for each hosted VPX instance.\n# Tip: restore with 'restore system backup <name>'."
           },
           {
             "cmd": "show system backup <name>",
             "desc": "Shows details of a specific backup",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system backup backup-2026-06-17.tgz\n\nName:        backup-2026-06-17.tgz\nDate:        06/17/2026 02:00:01\nSize:        142 MB\nType:        Full\nDescription: Scheduled nightly backup\nLocation:    /var/nsinstall/backup/backup-2026-06-17.tgz\n\n# Detailed metadata for a specific backup archive.\n# Verify the Date and Size before restoring to ensure it is a recent\n# and complete backup — partial backups may appear in the list if\n# a backup job was interrupted."
           },
           {
             "cmd": "show system user",
             "desc": "Lists SDX users",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system user\n\nUsername   Type          Last Login               Status\n---------- ------------- ------------------------ --------\nnsroot     Administrator 06/19/2026 08:41:12      Enabled\nadmin-soc  Operator      06/18/2026 14:22:05      Enabled\nreadonly1  ReadOnly      06/15/2026 10:00:33      Enabled\n\n# Lists all local SDX management user accounts.\n# Type: Administrator (full access) / Operator / ReadOnly\n# Use to audit who has access before a maintenance window."
           },
           {
             "cmd": "show system user <username>",
             "desc": "Shows details for a user",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system user admin-soc\n\nUsername:     admin-soc\nType:         Operator\nEmail:        soc-team@example.com\nLast Login:   06/18/2026 14:22:05\nLogin IP:     10.10.10.45\nStatus:       Enabled\nSession Timeout: 30 minutes\n\n# Detailed view of a specific user.  Login IP shows the last source address\n# which is useful for auditing unexpected remote access.\n# Change password: set system user <name> -password <new> -confirmPassword <new>"
           },
           {
             "cmd": "show system config",
             "desc": "Displays full SDX configuration",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system config\n\nHostname:             sdx-dc-01\nSystem IP Address:    10.10.10.100\nNetmask:              255.255.255.0\nDefault Gateway:      10.10.10.1\nDNS Primary:          8.8.8.8\nDNS Secondary:        8.8.4.4\nNTP Server:           pool.ntp.org\nTimezone:             GMT+0:00\nSNMP Manager:         10.10.1.50\nSyslog Server:        10.10.1.60:514\nLACP:                 Enabled\nManagement VLAN:      10\n\n# Full SDX chassis management configuration.  Useful as a baseline snapshot\n# before changes and for comparing against a known-good config backup."
           },
           {
             "cmd": "show system storage",
             "desc": "Shows SDX storage usage",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system storage\n\nVolume     Total    Used     Free     Use%   Mount\n---------- -------- -------- -------- ------ ----------\n/          50 GB    18 GB    32 GB    36%    /\n/var       200 GB   87 GB    113 GB   43%    /var\n/flash     8 GB     1.2 GB   6.8 GB   15%    /flash\n/var/nsinstall 150 GB 60 GB  90 GB    40%    /var/nsinstall\n\n# /var/nsinstall holds VPX images, backups, and upgrade packages — monitor\n# this volume; it fills when many VPX images or old backups accumulate.\n# Clean old backups with 'rm system backup <name>' when disk > 70%."
           },
           {
             "cmd": "show system uptime",
@@ -28856,13 +28955,15 @@
             "cmd": "show system alarms",
             "desc": "Lists active alarms",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system alarms\n\nAlarm ID  Severity  Message                                       Date\n--------- --------- --------------------------------------------- --------------------\n1042      Critical  VPX-03 CPU > 90% for 5 minutes                06/19/2026 07:14:33\n1041      Major     Interface 10/2 Link Down                       06/19/2026 06:50:01\n1038      Minor     Disk utilization > 75%                         06/17/2026 11:22:10\n\n# Lists all active alarms on the SDX chassis.\n# Severity: Critical / Major / Minor / Warning\n# Critical alarms should be investigated immediately; they often indicate\n# a VPX crash, link failure, or hardware fault."
           },
           {
             "cmd": "show system alarms -detail",
             "desc": "Shows detailed alarm information",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system alarms -detail\n\n=== Alarm ID: 1042 ===\nSeverity:    Critical\nCategory:    VPX Resource\nDescription: VPX-03 CPU utilization has exceeded 90% for more than 5 minutes.\n             Current CPU: 93%  |  Threshold: 90%\nFirst Seen:  06/19/2026 07:14:33\nLast Updated:06/19/2026 07:45:01\nDuration:    30 minutes\nRecommendation: Log into VPX-03 and run 'show system' to identify the\n                consuming process.  Consider increasing vCPU allocation\n                under VPX → Edit → Resources if load is sustained.\n\n=== Alarm ID: 1041 ===\nSeverity:    Major\nCategory:    Network\nDescription: Interface 10/2 physical link is down.\n             ..."
           },
           {
             "cmd": "show system health",
@@ -28882,13 +28983,15 @@
             "cmd": "show system processes -detail",
             "desc": "Shows detailed process information",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system processes -detail\n\nPID   Name                  CPU%   MEM%   State    Since\n----- --------------------- ------ ------ -------- --------------------\n1     init                  0.0    0.1    Sleeping  06/01/2026 00:00:01\n312   sdxd                  1.4    3.2    Running   06/01/2026 00:01:45\n415   vpxd                  0.8    2.1    Running   06/01/2026 00:01:50\n521   xenconsoled           0.0    0.4    Sleeping  06/01/2026 00:01:55\n1024  sshd                  0.0    0.2    Sleeping  06/01/2026 00:02:00\n4421  ns (VPX-01)           4.2    8.7    Running   06/01/2026 00:05:12\n4890  ns (VPX-02)           2.1    7.9    Running   06/01/2026 00:05:18\n\n# sdxd is the SDX management daemon; vpxd manages VPX lifecycle.\n# High CPU on an ns (VPX) process indicates traffic load on that VPX instance.\n# Compare against 'show vpx' to map PID to VPX instance name."
           },
           {
             "cmd": "show system services",
             "desc": "Lists system services",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system services\n\nService Name          Status    PID    Restarts  Since\n--------------------- --------- ------ --------- --------------------\nsdxd                  Running   312    0         06/01/2026 00:01:45\nvpxd                  Running   415    0         06/01/2026 00:01:50\nsshd                  Running   1024   0         06/01/2026 00:02:00\nhttpd (management UI) Running   2048   0         06/01/2026 00:02:05\nntpd                  Running   2200   0         06/01/2026 00:02:10\nsyslogd               Running   2350   0         06/01/2026 00:02:15\n\n# All SDX management services and their operational status.\n# Restarts counter > 0 may indicate a crashing service; investigate logs\n# in /var/log/ for the affected service if restarts are non-zero."
           },
           {
             "cmd": "show system services -detail",
@@ -31848,6 +31951,13 @@
             "desc": "Shows detailed hypervisor debug info",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show system debug",
+            "desc": "Displays current SDX debug flags and diagnostic settings",
+            "type": "show",
+            "flagged": false,
+            "example": "> show system debug\n\nDebug Mode:           Disabled\nLog Level:            Info\nCore Dump:            Disabled\nPacket Trace:         Disabled\nDebug Log Path:       /var/log/sdxd.log\nMax Log Size:         50 MB\nLog Rotation:         10 files\n\n# Default output confirms debug mode is off (normal production state).\n# Enable debug mode only during active troubleshooting with Citrix/NetApp TAC:\n#   set system debug -debugMode ENABLED -logLevel DEBUG\n# Disable after TAC session to avoid performance impact and log flooding.\n# Core dumps, if enabled, are written to /var/nscore/ and can be large."
           }
         ],
         "Hardware Internals": [
