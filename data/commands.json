@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-21T19:18:18.483Z",
+  "updatedAt": "2026-06-23T18:39:33.493Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -4607,6 +4607,20 @@
             "type": "show",
             "flagged": false,
             "example": "> request support generate-tech-support-file\n\nGenerating tech support file...\nFile /tmp/tech_support/tech-support-2026-06-20.tgz created.\nSize: 28.4 MB\n\n# Download via SCP:\n#   scp admin@10.0.0.1:/tmp/tech_support/tech-support-2026-06-20.tgz /local/path/\n# Or via GUI: Device → Tech Support → Generate\n# Required by Palo Alto TAC for case submissions."
+          },
+          {
+            "cmd": "show system resources follow",
+            "desc": "Live-updating resource monitor (CPU, memory, swap) that auto-refreshes every 2 seconds — PAN-OS equivalent of Linux 'top'; press Ctrl+C to exit",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA-VM> show system resources follow\n\ntop - 14:22:35 up 47 days, 3:11,  1 user,  load average: 0.12, 0.10, 0.09\nTasks: 188 total,   2 running, 186 sleeping,   0 stopped,   0 zombie\n%Cpu(s):  3.2 us,  1.1 sy,  0.0 ni, 95.4 id,  0.2 wa,  0.0 hi,  0.1 si,  0.0 st\nMiB Mem :   7822.4 total,   2014.8 free,   3982.1 used,   1825.5 buff/cache\nMiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   3498.5 avail Mem\n\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 1234 root      20   0  512440  98320  12400 R   4.0   1.2  12:34.56 pan_task\n 2345 root      20   0  248448  45600   8900 S   1.3   0.6   3:21.00 routed\n 3456 root      20   0  189552  22400   5600 S   0.7   0.3   1:05.00 configd\n\n# High pan_task CPU indicates heavy policy processing or session churn.\n# Use 'show system statistics session' and 'show counter global filter severity drop delta yes'\n# to drill into data-plane pressure."
+          },
+          {
+            "cmd": "show license",
+            "desc": "Display all installed licenses with feature names, expiry dates, and entitlement counts — critical for pre-renewal audits and verifying trial/eval status",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA-VM> show license\n\nFeature            Serial #        Start        Expire          Expired?\nThreat Prevention  007C0123456     2023/01/01   2026/01/01      No\nURL Filtering      007C0123456     2023/01/01   2026/01/01      No\nWildFire           007C0123456     2023/01/01   2026/01/01      No\nGlobalProtect      007C0123456     2023/01/01   2026/01/01      No\nDNS Security       007C0123456     2023/01/01   2026/01/01      No\nSupport            007C0123456     2023/01/01   2026/01/01      No\nVM-300             007C0123456     2023/01/01   2026/01/01      No\n\n# Fetch fresh license info from Panorama/portal:\nadmin@PA-VM> request license fetch\n\n# For Panorama-managed devices, check from Panorama:\nadmin@panorama> request license fetch device-serial <serial>\n\n# If a subscription has expired, threats/URL lookups silently fail\n# without logging — always verify after any deployment date change."
           }
         ],
         "Interfaces": [
@@ -13584,7 +13598,7 @@
             "desc": "# remove carriage returns",
             "type": "show",
             "flagged": false,
-            "example": "$ tr -d '\\r' < windows-file.txt > unix-file.txt\n# converts Windows CRLF line endings to Unix LF"
+            "example": "# Remove carriage returns (\\r) from a Windows CRLF file — common when\n# scripts written on Windows are run on Linux:\n\n$ file report.txt\nreport.txt: ASCII text, with CRLF line terminators\n\n$ tr -d '\\r' < report.txt > report_unix.txt\n\n$ file report_unix.txt\nreport_unix.txt: ASCII text\n\n# In-place replacement using process substitution:\n$ tr -d '\\r' < file.txt | sponge file.txt    # requires moreutils\n\n# Alternative with sed:\n$ sed -i 's/\\r//' file.txt\n\n# Verify it worked:\n$ cat -A file.txt | head -3\n# Lines should now end with $ not ^M$"
           }
         ],
         "git init  # initialize repo": [
@@ -13701,7 +13715,8 @@
             "cmd": "git revert commit",
             "desc": "# revert commit",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Create a new commit that undoes the changes from a previous commit.\n# Safe for shared/public branches — does NOT rewrite history.\n\n$ git revert a1b2c3d4\n[main 8f9e0d1] Revert \"add broken feature\"\n 1 file changed, 2 insertions(+), 5 deletions(-)\n\n# Revert without immediately committing (stage only):\n$ git revert --no-commit a1b2c3d4\n# Make additional changes, then commit manually:\n$ git commit -m \"Revert broken feature and clean up related code\"\n\n# Revert a merge commit (must specify the parent to keep with -m):\n$ git revert -m 1 a1b2c3d4   # -m 1 = keep first parent (main branch)\n\n# Difference from git reset:\n# git revert: adds a new \"undo\" commit — safe for shared branches\n# git reset:  rewinds the branch pointer — rewrites history, unsafe if pushed"
           }
         ],
         "git stash  # stash changes": [
@@ -13718,7 +13733,8 @@
             "cmd": "git tag v1.0",
             "desc": "# create tag",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Create a lightweight tag pointing to the current HEAD commit:\n$ git tag v1.0\n\n# Create an annotated tag (includes tagger, date, message — preferred for releases):\n$ git tag -a v1.0 -m \"First stable release\"\n\n# Tag a specific (older) commit:\n$ git tag -a v0.9 abc1234 -m \"Beta release\"\n\n# Push a single tag to remote:\n$ git push origin v1.0\n\n# Push all local tags to remote:\n$ git push origin --tags\n\n# List tags matching a pattern:\n$ git tag -l \"v1.*\"\nv1.0\nv1.1\nv1.2\n\n# Show details of an annotated tag:\n$ git show v1.0"
           },
           {
             "cmd": "git rm file",
@@ -13738,7 +13754,8 @@
             "cmd": "docker run -it ubuntu bash",
             "desc": "# run interactive Ubuntu container",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Start an interactive bash shell inside a fresh Ubuntu container:\n$ docker run -it ubuntu bash\nroot@a3f2b1c9d4e5:/#\n\n# What the flags mean:\n# -i  : keep stdin open (interactive)\n# -t  : allocate a pseudo-TTY (terminal)\n# ubuntu : image name (pulls from Docker Hub if not local)\n# bash   : command to run inside the container\n\n# Common variations:\n# Mount current directory into the container:\n$ docker run -it -v $(pwd):/workspace ubuntu bash\n\n# Expose a port (map host port 8080 → container port 80):\n$ docker run -it -p 8080:80 nginx bash\n\n# Run as a specific user:\n$ docker run -it --user 1000:1000 ubuntu bash\n\n# Remove the container automatically when it exits:\n$ docker run -it --rm ubuntu bash\n\n# Name the container for easy reference:\n$ docker run -it --name test-box ubuntu bash"
           },
           {
             "cmd": "docker logs container",
@@ -13774,7 +13791,8 @@
             "cmd": "virsh console vm",
             "desc": "# open VM console",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Attach to the serial console of a running KVM virtual machine:\n$ virsh console myvm\n\nConnected to domain 'myvm'\nEscape character is ^] (Ctrl + ])\n\nUbuntu 22.04 LTS myvm ttyS0\n\nmyvm login: admin\n\n# Detach from the console without stopping the VM:\nPress Ctrl + ] (Ctrl + right bracket)\n\n# Prerequisites:\n# The guest OS must have the serial console enabled:\n# For Ubuntu/Debian:\n#   GRUB_CMDLINE_LINUX=\"console=tty0 console=ttyS0,115200n8\"\n#   sudo update-grub\n# For RHEL/CentOS:\n#   grubby --update-kernel=ALL --args=\"console=ttyS0,115200\"\n\n# List running VMs:\n$ virsh list --all\n\n Id   Name       State\n---------------------\n  1   myvm       running\n  2   devbox     shut off"
           }
         ],
         "getenforce  # show SELinux mode": [
@@ -13782,7 +13800,8 @@
             "cmd": "setenforce 1",
             "desc": "# set enforcing mode",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Switch SELinux to Enforcing mode immediately (takes effect without reboot):\n$ setenforce 1\n\n# Switch to Permissive mode (logs denials but does not block them):\n$ setenforce 0\n\n# Verify the change:\n$ getenforce\nEnforcing\n\n# NOTE: setenforce changes are NOT persistent across reboots.\n# To set the permanent mode, edit /etc/selinux/config:\n$ grep ^SELINUX= /etc/selinux/config\nSELINUX=enforcing\n\n# Valid permanent values: enforcing | permissive | disabled\n# 'disabled' requires a reboot and triggers a full relabel on the next boot.\n\n# Quick reference:\n# Enforcing  — policy violations are blocked and logged\n# Permissive — violations are logged only (useful for troubleshooting)\n# Disabled   — SELinux is completely off (not recommended for production)"
           },
           {
             "cmd": "setenforce 0",
@@ -13797,7 +13816,8 @@
             "cmd": "fail2ban-client status sshd",
             "desc": "# jail status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show detailed status for the 'sshd' jail — includes banned IPs and counters:\n$ fail2ban-client status sshd\n\nStatus for the jail: sshd\n|- Filter\n|  |- Currently failed: 3\n|  |- Total failed:     142\n|  `- File list:        /var/log/auth.log\n`- Actions\n   |- Currently banned: 2\n   |- Total banned:     18\n   `- Banned IP list:   203.0.113.45 198.51.100.22\n\n# Unban a specific IP manually:\n$ fail2ban-client set sshd unbanip 203.0.113.45\n\n# Ban an IP manually for testing:\n$ fail2ban-client set sshd banip 203.0.113.45\n\n# Reload the jail config after editing /etc/fail2ban/jail.local:\n$ fail2ban-client reload sshd\n\n# View the ban log for pattern:\n$ grep \"Ban \" /var/log/fail2ban.log | tail -20"
           }
         ],
         "sestatus  # SELinux status": [
@@ -13805,7 +13825,8 @@
             "cmd": "semanage boolean -l",
             "desc": "# list booleans",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# List all SELinux booleans with their current/default values and description:\n$ semanage boolean -l | head -20\n\nSELinux boolean                State  Default Description\nftp_home_dir                   (off  ,  off)  Allow ftp to read/write home directories\nhttpd_can_network_connect      (off  ,  off)  Allow httpd to make network connections\nhttpd_can_network_connect_db   (off  ,  off)  Allow httpd to connect to databases\nhttpd_enable_cgi               (on   ,   on)  Allow httpd to run CGI scripts\nhttpd_use_nfs                  (off  ,  off)  Allow httpd to use NFS\nallow_user_exec_content        (on   ,   on)  Allow users to execute content in their home dir\nsamba_enable_home_dirs         (off  ,  off)  Allow samba to access home dirs\n\n# Filter to just network-related booleans:\n$ semanage boolean -l | grep -i network\n\n# Check a single boolean value:\n$ getsebool httpd_can_network_connect\nhttpd_can_network_connect --> off\n\n# See only non-default booleans (ones you've customised):\n$ semanage boolean -l | awk '$2 != $3 { print }'"
           },
           {
             "cmd": "semanage boolean -m --on httpd_can_network_connect",
@@ -13848,7 +13869,8 @@
             "cmd": "ausearch -m avc",
             "desc": "# search SELinux denials",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Search the audit log for SELinux AVC (access vector cache) denial messages:\n$ ausearch -m avc\n\n----\ntime->Mon Jun 23 14:22:05 2026\ntype=AVC msg=audit(1750683725.123:456): avc:  denied  { name_connect } for  pid=1234 comm=\"httpd\" dest=3306 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:mysqld_port_t:s0 tclass=tcp_socket permissive=0\n\n# Filter by time (last 10 minutes):\n$ ausearch -m avc --start recent\n\n# Filter to denials for a specific process:\n$ ausearch -m avc -c httpd\n\n# Pipe to audit2why for a human-readable explanation:\n$ ausearch -m avc | audit2why\n\ntype=AVC ... denied { name_connect } ...\n  Was caused by:\n    Missing type enforcement (TE) allow rule.\n    If you want to allow httpd to connect to MySQL, run:\n    setsebool -P httpd_can_network_connect_db 1\n\n# Pipe to audit2allow to generate a custom policy module:\n$ ausearch -m avc | audit2allow -M mymodule\n$ semodule -i mymodule.pp"
           },
           {
             "cmd": "audit2allow -w -a",
@@ -13874,7 +13896,8 @@
             "cmd": "pip install pkg",
             "desc": "# install package",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Install a Python package into the active virtual environment:\n$ pip install requests\n\nCollecting requests\n  Downloading requests-2.31.0-py3-none-any.whl (62 kB)\n     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 1.2 MB/s\nInstalling collected packages: requests\nSuccessfully installed requests-2.31.0\n\n# Install a specific version:\n$ pip install requests==2.28.0\n\n# Install from requirements file:\n$ pip install -r requirements.txt\n\n# Install in editable / development mode (local package):\n$ pip install -e .\n\n# Upgrade an existing package:\n$ pip install --upgrade requests\n\n# List installed packages:\n$ pip list\n\n# Export current environment to requirements.txt:\n$ pip freeze > requirements.txt\n\n# Show details of an installed package:\n$ pip show requests"
           },
           {
             "cmd": "pip list",
@@ -26571,6 +26594,20 @@
             "type": "config",
             "flagged": false,
             "example": "R1(config)# ip nat inside source static 10.0.0.10 198.51.100.10\n\nR1# show ip nat translations\nPro Inside global   Inside local    Outside local   Outside global\n--- 198.51.100.10   10.0.0.10       ---             ---\n\nWhat it means:\n- 1:1 static mapping: traffic destined to 198.51.100.10 from outside\n  is forwarded to internal 10.0.0.10. Outbound from 10.0.0.10\n  reverses to 198.51.100.10.\n- Use for inbound services (web servers, mail relays) that need\n  a stable public IP.\n- Add \"extendable\" + \"no-alias\" for advanced VRF / multihoming\n  scenarios."
+          },
+          {
+            "cmd": "debug ip nat",
+            "desc": "Enable real-time NAT translation debug output — each packet that hits a NAT rule prints a log line; stop with 'undebug all' or 'no debug ip nat'",
+            "type": "debug",
+            "flagged": false,
+            "example": "R1# debug ip nat\nIP NAT debugging is on\n\nR1#\n*Mar  1 00:01:12.345: NAT*: s=10.0.0.10->203.0.113.10, d=8.8.8.8 [1234]\n*Mar  1 00:01:12.346: NAT*: s=8.8.8.8, d=203.0.113.10->10.0.0.10 [1234]\n\n# Each line shows:\n# s= : source address (-> shows translation)\n# d= : destination address (-> shows reverse translation)\n# [1234] : IP identification field (links req/reply pair)\n\n# !! Always run 'undebug all' when done — high traffic volume\n# will overwhelm the router console.\nR1# undebug all\nAll possible debugging has been turned off"
+          },
+          {
+            "cmd": "ip nat inside source static tcp 10.0.0.10 80 203.0.113.10 80",
+            "desc": "Port-forwarding DNAT: map an outside public IP:port to an inside private IP:port (commonly used to publish internal servers)",
+            "type": "config",
+            "flagged": false,
+            "example": "# Publish an internal web server (10.0.0.10:80) on the firewall's\n# public address (203.0.113.10:80)\n\nR1(config)# ip nat inside source static tcp 10.0.0.10 80 203.0.113.10 80\n\n# Full interface setup:\nR1(config)# interface GigabitEthernet0/0\nR1(config-if)# ip nat inside\nR1(config-if)# exit\nR1(config)# interface GigabitEthernet0/1\nR1(config-if)# ip nat outside\nR1(config-if)# exit\n\nR1# show ip nat translations\nPro  Inside global      Inside local       Outside local   Outside global\ntcp  203.0.113.10:80    10.0.0.10:80       ---             ---\n\n# To publish additional ports, repeat the command with different ports:\nR1(config)# ip nat inside source static tcp 10.0.0.10 443 203.0.113.10 443"
           }
         ],
         "DHCP / Services": [
@@ -26871,6 +26908,13 @@
             "type": "config",
             "flagged": false,
             "example": "R1(config)# event manager applet AUTO-SAVE\nR1(config-applet)# event timer cron name daily cron-entry \"0 4 * * *\"\nR1(config-applet)# action 1.0 cli command \"enable\"\nR1(config-applet)# action 2.0 cli command \"write memory\"\n\n# Every day at 04:00 router-local time:\n%HA_EM-6-LOG: AUTO-SAVE: action 2.0 wrote running-config to NVRAM\n\nWhat it means:\n- cron-entry \"0 4 * * *\" : minute=0 hour=4 = every day at 04:00\n  router local time.\n- Sequential CLI actions — applet enters enable mode, then runs\n  \"write memory\" to persist running config to NVRAM.\n- Common pattern: backup to network filesystem nightly, or\n  alert-on-CPU + capture diagnostics."
+          },
+          {
+            "cmd": "event manager run <applet-name>",
+            "desc": "Manually trigger an EEM applet on demand — useful to test applet logic before the event condition occurs in production",
+            "type": "config",
+            "flagged": false,
+            "example": "# First, view registered applets:\nR1# show event manager policy registered\nNo.  Type    Event Type     Trap  Time of Last Run     Name\n1    applet  syslog         Off   Never                LOG-LINK-DOWN\n2    applet  timer cron     Off   Never                AUTO-SAVE\n\n# Manually trigger the AUTO-SAVE applet:\nR1# event manager run AUTO-SAVE\n\n# Confirm it ran:\nR1# show event manager history events\nNo.  Time of Event       Type      Name\n1    Wed Mar 01 04:00:00 applet    AUTO-SAVE\n\n# Useful flags:\n# - 'event manager run' can pass optional parameters for parameterised applets\n# - Check syslog / terminal monitor output to verify the actions executed\nR1# terminal monitor"
           }
         ],
         "Diagnostics": [
@@ -28824,6 +28868,20 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-NetRoute -AddressFamily IPv4 | Sort-Object RouteMetric | Format-Table ifIndex,DestinationPrefix,NextHop,RouteMetric\nifIndex DestinationPrefix   NextHop       RouteMetric\n------- -----------------   -------       -----------\n      4 0.0.0.0/0           192.168.1.1             1\n      4 192.168.1.0/24      0.0.0.0                 1\n      1 127.0.0.0/8         0.0.0.0                 1"
+          },
+          {
+            "cmd": "netsh wlan show profiles",
+            "desc": "List all saved Wi-Fi network profiles (SSIDs) stored on this Windows machine",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> netsh wlan show profiles\n\nProfiles on interface Wi-Fi:\n\nGroup policy profiles (read only)\n---------------------------------\n    <None>\n\nUser profiles\n-------------\n    All User Profile     : CorpWiFi\n    All User Profile     : HomeNetwork\n    All User Profile     : iPhone_Hotspot\n\n# Each profile name can be queried for the saved password:\n# netsh wlan show profile name=\"CorpWiFi\" key=clear"
+          },
+          {
+            "cmd": "netsh wlan show profile name=\"<SSID>\" key=clear",
+            "desc": "Reveal the saved plaintext Wi-Fi password (Key Content) for a specific SSID — requires local admin or the profile owner account",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> netsh wlan show profile name=\"CorpWiFi\" key=clear\n\nProfile CorpWiFi on interface Wi-Fi:\n=======================================================================\nApplied: All User Profile\n\nProfile information\n-------------------\n    Version                : 1\n    Type                   : Wireless LAN\n    Name                   : CorpWiFi\n    Control options        :\n        Connection mode    : Connect automatically\n        Network broadcast  : Connect only if this network is broadcasting\n        AutoSwitch         : Do not switch to other networks\n\nConnectivity settings\n---------------------\n    Number of SSIDs        : 1\n    SSID name              : \"CorpWiFi\"\n    Network type           : Infrastructure\n    Radio type             : [ Any Radio Type ]\n    Vendor extension       : Not present\n\nSecurity settings\n-----------------\n    Authentication         : WPA2-Personal\n    Cipher                 : CCMP\n    Authentication         : WPA2-Personal\n    Cipher                 : GCMP\n    Security key           : Present\n    Key Content            : P@ssw0rd1234!\n\nCost settings\n-------------\n    Cost                   : Unrestricted"
           }
         ],
         "Processes": [
@@ -29281,6 +29339,13 @@
             "type": "show",
             "flagged": false,
             "example": "----------------------------------------------------------------------\n|                    DescribeDBInstances                             |\n+-----------+-----------+-------------+----------+--------------------+\n| prod-db   | available | db.t3.large | postgres | prod-db.abc123.eu-west-2.rds.amazonaws.com |\n| staging-db| available | db.t3.small | postgres | staging-db.def456.eu-west-2.rds.amazonaws.com |\n+-----------+-----------+-------------+----------+--------------------+"
+          },
+          {
+            "cmd": "aws ssm start-session --target <instance-id>",
+            "desc": "Open an interactive shell to an EC2 instance via SSM Session Manager — no SSH key, open port 22, or bastion host required; instance needs the SSM agent and an IAM role with AmazonSSMManagedInstanceCore",
+            "type": "config",
+            "flagged": false,
+            "example": "# Start an interactive session (opens a shell directly in your terminal):\n$ aws ssm start-session --target i-0abc123def456789a\n\nStarting session with SessionId: user-0abcdef1234567890\n$\n\n# Port-forward a remote port to localhost (e.g. RDP or a database):\n$ aws ssm start-session \\\n    --target i-0abc123def456789a \\\n    --document-name AWS-StartPortForwardingSession \\\n    --parameters '{\"portNumber\":[\"3389\"],\"localPortNumber\":[\"13389\"]}'\n\n# Then connect to localhost:13389 with your RDP client.\n\n# Prerequisites:\n# 1. EC2 instance must have SSM Agent running (pre-installed on Amazon Linux 2/2023, Windows 2016+)\n# 2. EC2 IAM role must include AmazonSSMManagedInstanceCore policy\n# 3. aws CLI Session Manager plugin must be installed locally:\n#    https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
           }
         ],
         "S3": [
@@ -29618,6 +29683,13 @@
             "type": "show",
             "flagged": false,
             "example": "{\n    \"TransitGatewayRouteTables\": [{\n        \"TransitGatewayRouteTableId\": \"tgw-rtb-0abc1234\",\n        \"TransitGatewayId\": \"tgw-0abc1234\",\n        \"State\": \"available\",\n        \"DefaultAssociationRouteTable\": true,\n        \"DefaultPropagationRouteTable\": true\n    }]\n}"
+          },
+          {
+            "cmd": "aws ec2 describe-vpc-peering-connections",
+            "desc": "List all VPC peering connections, their status (active/pending-acceptance/deleted), and requester/accepter VPC CIDRs",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-vpc-peering-connections \\\n    --query \"VpcPeeringConnections[].[VpcPeeringConnectionId,Status.Code,RequesterVpcInfo.CidrBlock,AccepterVpcInfo.CidrBlock]\" \\\n    --output table\n\n--------------------------------------------------------------------\n|            DescribeVpcPeeringConnections                         |\n+------------------+--------+----------------+--------------------+\n|  pcx-0a1b2c3d4e  |active  |  10.0.0.0/16   |  172.16.0.0/16     |\n|  pcx-0f5e6d7c8b  |active  |  10.0.0.0/16   |  192.168.0.0/24    |\n|  pcx-0d9c8b7a6f  |deleted |  10.1.0.0/16   |  10.2.0.0/16       |\n+------------------+--------+----------------+--------------------+\n\n# Filter to only active connections:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=status-code,Values=active\n\n# Find peering for a specific VPC:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=requester-vpc-info.vpc-id,Values=vpc-0abc123def456"
           }
         ]
       },
@@ -44484,6 +44556,13 @@
             "type": "show",
             "flagged": false,
             "example": "router# show logging | include severity\n%SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 10.50.50.50 port 514 started - reconnection\n#  Or to find messages of a specific severity level, use:\nrouter# show logging | include %.*-3-      ; severity 3 (errors)\nrouter# show logging | include %.*-2-      ; severity 2 (critical)"
+          },
+          {
+            "cmd": "logging host <syslog-server-ip> transport tcp port 1514",
+            "desc": "Ship syslog messages to a remote collector over TCP (reliable delivery) or UDP; set the minimum severity level with 'logging trap <level>'",
+            "type": "config",
+            "flagged": false,
+            "example": "# Send syslog to a remote server via TCP (more reliable than UDP):\nRouter(config)# logging host 10.50.50.50 transport tcp port 1514\n\n# Set the minimum severity sent to the server (0=emergencies, 7=debugging):\nRouter(config)# logging trap informational\n\n# Buffer local copy in NVRAM (useful when the syslog server is unreachable):\nRouter(config)# logging buffered 65536 informational\n\n# Add timestamps so each log line is correlated to wall-clock time:\nRouter(config)# service timestamps log datetime msec localtime show-timezone\n\n# Verify configuration:\nRouter# show logging\n\nSyslog logging: enabled (0 messages dropped, 0 flushes, 0 overruns)\n    Console logging: level debugging, 142 messages logged\n    Monitor logging: level debugging, 0 messages logged\n    Buffer logging:  level informational, 64 messages logged\n    Logging to 10.50.50.50, tcp port 1514, 64 messages logged\n\n# Common severity levels: emergencies(0) alerts(1) critical(2) errors(3)\n#                         warnings(4) notifications(5) informational(6) debugging(7)"
           }
         ],
         "Routing": [
