@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-23T18:39:33.493Z",
+  "updatedAt": "2026-06-24T18:40:02.253Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -14958,7 +14958,8 @@
             "cmd": "ip -s neigh",
             "desc": "Shows ARP/ND statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "ip -s neigh\n192.168.1.1 dev eth0 lladdr 00:1a:2b:3c:4d:5e used 12/0/14 probes 1 REACHABLE\n  SENT 47 bytes\n  RECEIVED 47 bytes\n\nColumns: IP dev IF lladdr MAC used <probes> state\n\"used\" shows seconds since last use (sent/confirmed/updated).\nState: REACHABLE (valid), STALE (may be expired), FAILED (unresolvable)"
           },
           {
             "cmd": "bridge link",
@@ -14992,31 +14993,36 @@
             "cmd": "tc class show",
             "desc": "Shows traffic control classes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show HTB or CBQ traffic shaping classes on eth0\ntc class show dev eth0\nclass htb 1:1 root rate 100Mbit ceil 100Mbit burst 1600b cburst 1600b\nclass htb 1:10 parent 1:1 leaf 10: rate 50Mbit ceil 100Mbit burst 1600b cburst 1600b\nclass htb 1:20 parent 1:1 leaf 20: rate 20Mbit ceil 50Mbit burst 1600b cburst 1600b\n\nPair with \"tc -s class show dev eth0\" to see byte/packet counters per class."
           },
           {
             "cmd": "tc filter show",
             "desc": "Shows traffic control filters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show tc filters applied to eth0\ntc filter show dev eth0\nfilter parent 1: protocol ip pref 1 u32 chain 0\nfilter parent 1: protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1\nfilter parent 1: protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 flowid 1:10 not_in_hw\n  match ip dst 10.0.0.0/24 at 16\n\nNote: u32 matches are hex-based; use \"tc filter show dev eth0 ingress\" for ingress filters."
           },
           {
             "cmd": "iptables -L -n -v",
             "desc": "Lists IPv4 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# List all IPv4 firewall rules with packet/byte counts\niptables -L -n -v\nChain INPUT (policy DROP 0 packets, 0 bytes)\n pkts bytes target     prot opt in     out     source               destination\n  45K  8.1M ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0\n 123K   12M ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED\n    0     0 ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22\n\nChain FORWARD (policy DROP 0 packets, 0 bytes)\n\nChain OUTPUT (policy ACCEPT 0 packets, 0 bytes)\n\nTip: add -t nat / -t mangle to see other tables."
           },
           {
             "cmd": "ip6tables -L -n -v",
             "desc": "Lists IPv6 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# List all IPv6 firewall rules\nip6tables -L -n -v\nChain INPUT (policy DROP 0 packets, 0 bytes)\n pkts bytes target     prot opt in     out     source               destination\n  200  16K  ACCEPT     all      lo     *       ::/0                 ::/0\n  10K  1.2M ACCEPT     all      *      *       ::/0                 ::/0            ctstate RELATED,ESTABLISHED\n    5   300 ACCEPT     tcp      *      *       ::/0                 ::/0            tcp dpt:22\n    0     0 ACCEPT     ipv6-icmp *     *       ::/0                 ::/0\n\nNote: Always allow ICMPv6 (NDP / Path MTU) or IPv6 connectivity breaks."
           },
           {
             "cmd": "nft list ruleset",
             "desc": "Displays full nftables ruleset",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Display the complete nftables ruleset\nnft list ruleset\ntable inet filter {\n  chain input {\n    type filter hook input priority filter; policy drop;\n    iif \"lo\" accept\n    ct state established,related accept\n    ip protocol icmp accept\n    tcp dport 22 accept comment \"SSH\"\n    tcp dport { 80, 443 } accept comment \"Web\"\n  }\n  chain forward {\n    type filter hook forward priority filter; policy drop;\n  }\n  chain output {\n    type filter hook output priority filter; policy accept;\n  }\n}\n\nUse \"nft -a list ruleset\" to include handle numbers needed for targeted rule deletion."
           },
           {
             "cmd": "systemctl restart network",
@@ -15048,19 +15054,22 @@
             "cmd": "nmcli connection up <name>",
             "desc": "Activates a connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Bring up a named NetworkManager connection profile\nnmcli connection up \"Corp-WiFi\"\nConnection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/5)\n\n# Bring up a specific interface\nnmcli connection up id \"eth0-static\"\n\n# List available connection profiles first:\nnmcli connection show\nNAME          UUID                                  TYPE      DEVICE\nCorp-WiFi     b8d1a21c-9a16-4fc0-99e3-2e05f9b9cc31  wifi      wlan0\neth0-static   a3f2e871-3b4a-4e56-9c0b-1d8e7f9a2c45  ethernet  eth0"
           },
           {
             "cmd": "nmcli connection down <name>",
             "desc": "Deactivates a connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Deactivate a named NetworkManager connection profile\nnmcli connection down \"Corp-WiFi\"\nConnection 'Corp-WiFi' successfully deactivated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/5)\n\n# Note: this only disconnects; the profile remains. To permanently delete:\n# nmcli connection delete \"Corp-WiFi\"\n\n# Verify the interface is now unmanaged:\nnmcli device status\nDEVICE  TYPE      STATE         CONNECTION\nwlan0   wifi      disconnected  --"
           },
           {
             "cmd": "dhclient <iface>",
             "desc": "Requests DHCP lease",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Request a new DHCP lease on eth1 (runs in background)\ndhclient eth1\n\n# Verbose mode to see DHCP negotiation:\ndhclient -v eth1\nInternet Systems Consortium DHCP Client 4.4.3\nCopyright 2004-2022 Internet Systems Consortium.\nListening on LPF/eth1/00:0c:29:3a:4b:5c\nSending on   LPF/eth1/00:0c:29:3a:4b:5c\nSending on   Socket/fallback\nDHCPDISCOVER on eth1 to 255.255.255.255 port 67 interval 8\nDHCPOFFER of 192.168.1.105 from 192.168.1.1\nDHCPREQUEST for 192.168.1.105 on eth1 to 255.255.255.255 port 67\nDHCPACK of 192.168.1.105 from 192.168.1.1\nbound to 192.168.1.105 -- renewal in 43200 seconds."
           },
           {
             "cmd": "dhclient -r <iface>",
@@ -15072,7 +15081,8 @@
             "cmd": "ss -tp",
             "desc": "Shows TCP processes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all TCP connections with associated process names/PIDs\nss -tp\nNetid State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port  Process\ntcp   ESTAB   0       0       10.0.0.5:47512     8.8.8.8:443        users:((\"curl\",pid=12345,fd=5))\ntcp   ESTAB   0       0       10.0.0.5:22        10.0.0.2:55432     users:((\"sshd\",pid=1234,fd=4))\ntcp   LISTEN  0       128     0.0.0.0:80         0.0.0.0:*          users:((\"nginx\",pid=987,fd=10))\ntcp   LISTEN  0       128     0.0.0.0:443        0.0.0.0:*          users:((\"nginx\",pid=987,fd=11))\n\nNote: requires root or sudo to see process info for other users' sockets."
           },
           {
             "cmd": "ss -uap",
@@ -15084,7 +15094,8 @@
             "cmd": "ss -o state established",
             "desc": "Shows established connections",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all TCP connections currently in ESTABLISHED state\nss -o state established\nNetid  Recv-Q  Send-Q  Local Address:Port   Peer Address:Port  Timer\ntcp    0       0       10.0.0.5:ssh         10.0.0.2:54321     timer:(keepalive,63sec,0)\ntcp    0       0       10.0.0.5:https       10.0.1.9:49152     timer:(keepalive,30sec,0)\n\n# Count established connections:\nss -o state established | wc -l\n\n# Filter to a specific port:\nss -o state established '( dport = :443 or sport = :443 )'"
           },
           {
             "cmd": "ss -o state time-wait",
@@ -15286,7 +15297,8 @@
             "cmd": "lsof +L1",
             "desc": "Shows deleted-but-open files",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Find files that have been deleted but are still held open by a process\n# (prevents disk space from being freed until the process closes them)\nlsof +L1\nCOMMAND  PID  USER  FD  TYPE DEVICE SIZE/OFF NLINK NODE NAME\njava    4521  app   35u  REG  252,1  1073741824    0  12345 /var/log/app.log (deleted)\nnginx   1234  www   5w   REG  252,1   524288000    0  23456 /tmp/nginx_buffer (deleted)\n\nNote: NLINK=0 confirms the file is unlinked. To reclaim space without restarting:\n# Find the fd: ls -la /proc/4521/fd/35\n# Truncate it: > /proc/4521/fd/35"
           },
           {
             "cmd": "netstat -tulpn",
@@ -15306,7 +15318,8 @@
             "cmd": "perf record -a",
             "desc": "Records system-wide performance profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Record a system-wide performance profile for 10 seconds\nperf record -a -g sleep 10\n[ perf record: Woken up 17 times to write data ]\n[ perf record: Captured and wrote 4.301 MB perf.data (34521 samples) ]\n\n# Then analyse with:\nperf report\n\n# Or generate a flame graph:\nperf script | stackcollapse-perf.pl | flamegraph.pl > flame.svg\n\n# CPU-frequency based sampling (default: 4000 Hz)\nperf record -F 4000 -a -g -- sleep 30\n\nNote: -a = all CPUs, -g = capture call graphs (stack traces)"
           },
           {
             "cmd": "perf report",
@@ -15318,7 +15331,8 @@
             "cmd": "strace -p <pid>",
             "desc": "Traces system calls for a process",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Attach to a running process and trace its system calls\nstrace -p 12345\nstrace: Process 12345 attached\nfutex(0x7f8b2c000b40, FUTEX_WAIT_PRIVATE, 0, NULL) = 0\nepoll_wait(7, [], 1, 4990)              = 0\nread(4, \"GET /api/health HTTP/1.1\\r\\nHost: \"..., 4096) = 156\nwrite(4, \"HTTP/1.1 200 OK\\r\\nContent-Length:\"..., 89) = 89\n\n# Trace a new process and log to file:\nstrace -o /tmp/trace.log -f -e trace=network,file nginx -t\n\n# Count syscall frequency:\nstrace -c -p 12345\n# (Ctrl+C to get the summary table)"
           },
           {
             "cmd": "ltrace -p <pid>",
@@ -15330,13 +15344,15 @@
             "cmd": "systemd-analyze blame",
             "desc": "Shows slow boot services",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show startup time for each unit, sorted slowest first\nsystemd-analyze blame\n45.201s apt-daily-upgrade.service\n32.005s snapd.service\n18.463s dev-sda1.device\n12.344s NetworkManager-wait-online.service\n 5.221s plymouth-quit-wait.service\n 3.142s docker.service\n 1.050s sshd.service\n 0.432s ufw.service\n\nFocus on masking or disabling any service you don't need; NetworkManager-wait-online is often disabled to shave 10+ seconds."
           },
           {
             "cmd": "systemd-analyze critical-chain",
             "desc": "Shows boot dependency chain",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show the critical path (longest chain) in the boot dependency graph\nsystemd-analyze critical-chain\nThe time when unit became active or started is printed after the \"@\" character.\nThe time the unit took to start is printed after the \"+\" character.\n\nmulti-user.target @21.343s\n└─network-online.target @21.342s\n  └─NetworkManager-wait-online.service @8.991s +12.351s\n    └─NetworkManager.service @8.452s +0.538s\n      └─dbus.service @8.400s +0.052s\n        └─basic.target @8.399s\n          └─sockets.target @8.399s\n\nThe longest + value is the bottleneck — here NetworkManager-wait-online.service added 12 s."
           },
           {
             "cmd": "systemd-analyze plot > boot.svg",
@@ -15348,7 +15364,8 @@
             "cmd": "smartctl -a /dev/<disk>",
             "desc": "Shows disk SMART data",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all SMART data for a disk\nsmartctl -a /dev/sda\n=== START OF INFORMATION SECTION ===\nDevice Model:     Samsung SSD 860 EVO 500GB\nSerial Number:    S4EWNX0M123456\nFirmware Version: RVT03B6Q\nCapacity:         500.1 GB\nSMART support is: Available - device has SMART capability.\n\n=== START OF ATTRIBUTES SECTION ===\nID# ATTRIBUTE_NAME          FLAG  VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE\n  5 Reallocated_Sector_Ct   0x33  100   100   010   Pre-fail  Always   -           0\n  9 Power_On_Hours          0x32  097   097   000   Old_age   Always   -           15312\n177 Wear_Leveling_Count     0x13  099   099   000   Pre-fail  Always   -           1\n187 Reported_Uncorrect      0x32  100   100   000   Old_age   Always   -           0\n194 Temperature_Celsius     0x22  061   048   000   Old_age   Always   -           39\n\nKey: Reallocated_Sector_Ct > 0 indicates failing drive. Replace immediately."
           },
           {
             "cmd": "smartctl -t short /dev/<disk>",
@@ -15366,7 +15383,8 @@
             "cmd": "mdadm --detail /dev/md0",
             "desc": "Shows RAID array details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show detailed status of a software RAID array\nmdadm --detail /dev/md0\n/dev/md0:\n           Version : 1.2\n     Creation Time : Mon Jan  1 10:00:00 2024\n        Raid Level : raid1\n        Array Size : 488383488 (465.76 GiB)\n     Used Dev Size : 488383488 (465.76 GiB)\n      Raid Devices : 2\n     Total Devices : 2\n       Persistence : Superblock is persistent\n\n             State : clean\n    Active Devices : 2\n   Working Devices : 2\n    Failed Devices : 0\n     Spare Devices : 0\n\n            Layout : near=2\n        Chunk Size : 512K\n\nConsistency Policy : resync\n\n              Name : hostname:0\n              UUID : a1b2c3d4:e5f60718:9a0b1c2d:3e4f5060\n          Events : 36\n\n   Number   Major   Minor   RaidDevice State\n      0     259       1        0      active sync   /dev/nvme0n1p2\n      1       8      17        1      active sync   /dev/sdb1"
           },
           {
             "cmd": "mdadm --examine /dev/<disk>",
@@ -15378,7 +15396,8 @@
             "cmd": "fsck -n /dev/<disk>",
             "desc": "Checks filesystem (read?only)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Run a filesystem check in read-only (non-destructive) mode — no changes made\n# Must unmount the filesystem first, or run on an unmounted partition\numount /dev/sdb1\nfsck -n /dev/sdb1\ne2fsck 1.46.5 (30-Dec-2021)\nPass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\n/dev/sdb1: 48294/30547968 files (0.2% non-contiguous), 4820173/122159360 blocks\n\n# If errors are found, run without -n to repair:\n# fsck -y /dev/sdb1    (-y auto-answers yes to all repair prompts)\n\n# For XFS:\n# xfs_repair -n /dev/sdb1   (read-only check)"
           },
           {
             "cmd": "blkid",
@@ -15411,13 +15430,15 @@
             "cmd": "systemctl is-enabled <service>",
             "desc": "Checks if service is enabled",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Check whether a service is configured to start at boot\nsystemctl is-enabled nginx\nenabled\n\n# Possible return values:\n# enabled        — starts at boot via a symlink in /etc/systemd/system/\n# disabled       — won't start at boot (but can be started manually)\n# static         — enabled as a dependency only; no [Install] section\n# masked         — permanently disabled; cannot be started at all\n# linked         — enabled via an absolute path symlink\n\n# Batch-check multiple services:\nfor svc in nginx sshd firewalld docker; do\n  echo \"$svc: $(systemctl is-enabled $svc 2>/dev/null || echo 'not-found')\"\ndone"
           },
           {
             "cmd": "systemctl is-active <service>",
             "desc": "Checks if service is active",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Check whether a service unit is currently running\nsystemctl is-active nginx\nactive\n\n# Possible return values:\n# active         — running\n# inactive       — stopped\n# activating     — starting up\n# deactivating   — shutting down\n# failed         — exited with error\n# unknown        — unit not found\n\n# Use in scripts for conditional logic:\nif systemctl is-active --quiet nginx; then\n  echo \"nginx is running\"\nelse\n  echo \"nginx is NOT running — restarting\"\n  systemctl start nginx\nfi"
           }
         ],
         "Ref 01. File & Directory Navigation": [
@@ -28882,6 +28903,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> netsh wlan show profile name=\"CorpWiFi\" key=clear\n\nProfile CorpWiFi on interface Wi-Fi:\n=======================================================================\nApplied: All User Profile\n\nProfile information\n-------------------\n    Version                : 1\n    Type                   : Wireless LAN\n    Name                   : CorpWiFi\n    Control options        :\n        Connection mode    : Connect automatically\n        Network broadcast  : Connect only if this network is broadcasting\n        AutoSwitch         : Do not switch to other networks\n\nConnectivity settings\n---------------------\n    Number of SSIDs        : 1\n    SSID name              : \"CorpWiFi\"\n    Network type           : Infrastructure\n    Radio type             : [ Any Radio Type ]\n    Vendor extension       : Not present\n\nSecurity settings\n-----------------\n    Authentication         : WPA2-Personal\n    Cipher                 : CCMP\n    Authentication         : WPA2-Personal\n    Cipher                 : GCMP\n    Security key           : Present\n    Key Content            : P@ssw0rd1234!\n\nCost settings\n-------------\n    Cost                   : Unrestricted"
+          },
+          {
+            "cmd": "winrm quickconfig",
+            "desc": "Configure Windows Remote Management (WinRM) service to accept remote PowerShell and WS-Management connections — required before using PowerShell remoting",
+            "type": "action",
+            "flagged": false,
+            "example": "PS> winrm quickconfig\nWinRM service is already running on this machine.\nWinRM is not set up to allow remote access to this machine for management.\nThe following changes must be made:\n\nCreate a WinRM listener on HTTP://* to accept WS-Man requests to any IP on this machine.\nEnable the WinRM firewall exception.\n\nMake these changes [y/n]? y\nWinRM has been updated for remote management.\n\nCreated a WinRM listener on HTTP://* to accept WS-Man requests.\nWinRM firewall exception enabled.\n\nNote: For HTTPS use: winrm quickconfig -transport:https\nTest connectivity: Test-WSMan -ComputerName <hostname>"
           }
         ],
         "Processes": [
@@ -29691,6 +29719,70 @@
             "flagged": false,
             "example": "$ aws ec2 describe-vpc-peering-connections \\\n    --query \"VpcPeeringConnections[].[VpcPeeringConnectionId,Status.Code,RequesterVpcInfo.CidrBlock,AccepterVpcInfo.CidrBlock]\" \\\n    --output table\n\n--------------------------------------------------------------------\n|            DescribeVpcPeeringConnections                         |\n+------------------+--------+----------------+--------------------+\n|  pcx-0a1b2c3d4e  |active  |  10.0.0.0/16   |  172.16.0.0/16     |\n|  pcx-0f5e6d7c8b  |active  |  10.0.0.0/16   |  192.168.0.0/24    |\n|  pcx-0d9c8b7a6f  |deleted |  10.1.0.0/16   |  10.2.0.0/16       |\n+------------------+--------+----------------+--------------------+\n\n# Filter to only active connections:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=status-code,Values=active\n\n# Find peering for a specific VPC:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=requester-vpc-info.vpc-id,Values=vpc-0abc123def456"
           }
+        ],
+        "Route53": [
+          {
+            "cmd": "aws route53 list-hosted-zones",
+            "desc": "List all Route53 hosted zones in the account, showing IDs, names, and record counts",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 list-hosted-zones\n{\n  \"HostedZones\": [\n    {\n      \"Id\": \"/hostedzone/Z1D633PJN98FT9\",\n      \"Name\": \"example.com.\",\n      \"Config\": { \"PrivateZone\": false },\n      \"CallerReference\": \"DynDNS2\",\n      \"ResourceRecordSetCount\": 17\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws route53 list-resource-record-sets --hosted-zone-id <zone-id>",
+            "desc": "List all DNS records in a hosted zone — useful for auditing A, CNAME, MX, TXT records",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 list-resource-record-sets --hosted-zone-id Z1D633PJN98FT9\n{\n  \"ResourceRecordSets\": [\n    {\n      \"Name\": \"www.example.com.\",\n      \"Type\": \"A\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"203.0.113.10\"}]\n    },\n    {\n      \"Name\": \"mail.example.com.\",\n      \"Type\": \"MX\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"10 mail.example.com\"}]\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws route53 test-dns-answer --hosted-zone-id <zone-id> --record-name <name> --record-type A",
+            "desc": "Simulate a DNS query against Route53 to verify that a record resolves correctly",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 test-dns-answer --hosted-zone-id Z1D633PJN98FT9 --record-name www.example.com --record-type A\n{\n  \"Nameserver\": \"ns-1234.awsdns-56.org\",\n  \"RecordName\": \"www.example.com.\",\n  \"RecordType\": \"A\",\n  \"RecordData\": [\"203.0.113.10\"],\n  \"ResponseCode\": \"NOERROR\",\n  \"Protocol\": \"UDP\"\n}"
+          }
+        ],
+        "SNS": [
+          {
+            "cmd": "aws sns publish --topic-arn <arn> --message \"<message>\"",
+            "desc": "Publish a message to an SNS topic, triggering delivery to all subscribed endpoints (email, SQS, Lambda, HTTP)",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws sns publish \\\n    --topic-arn arn:aws:sns:us-east-1:123456789012:MyAlerts \\\n    --message \"Disk usage on prod-web01 is above 90%\" \\\n    --subject \"High Disk Alert\"\n{\n  \"MessageId\": \"da68f62c-0c07-4bee-bf5f-7e856EXAMPLE\"\n}"
+          },
+          {
+            "cmd": "aws sns list-subscriptions-by-topic --topic-arn <arn>",
+            "desc": "List all subscriptions on an SNS topic — shows protocol, endpoint, and subscription ARN",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sns list-subscriptions-by-topic --topic-arn arn:aws:sns:us-east-1:123456789012:MyAlerts\n{\n  \"Subscriptions\": [\n    {\n      \"SubscriptionArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts:21be6e16-...\",\n      \"Owner\": \"123456789012\",\n      \"Protocol\": \"email\",\n      \"Endpoint\": \"ops@example.com\",\n      \"TopicArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts\"\n    }\n  ]\n}"
+          }
+        ],
+        "SQS": [
+          {
+            "cmd": "aws sqs receive-message --queue-url <url> --max-number-of-messages 10",
+            "desc": "Receive up to 10 messages from an SQS queue — messages are not deleted until you send a delete-message request",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws sqs receive-message \\\n    --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue \\\n    --max-number-of-messages 5\n{\n  \"Messages\": [\n    {\n      \"MessageId\": \"b6a5f2f5-...\",\n      \"ReceiptHandle\": \"AQEBvJ...\",\n      \"MD5OfBody\": \"098f6bcd4...\",\n      \"Body\": \"Hello from producer\",\n      \"Attributes\": { \"ApproximateFirstReceiveTimestamp\": \"1706284800000\" }\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws sqs get-queue-attributes --queue-url <url> --attribute-names All",
+            "desc": "Show all attributes of an SQS queue: message counts, visibility timeout, ARN, encryption settings",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sqs get-queue-attributes \\\n    --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue \\\n    --attribute-names All\n{\n  \"Attributes\": {\n    \"QueueArn\": \"arn:aws:sqs:us-east-1:123456789012:MyQueue\",\n    \"ApproximateNumberOfMessages\": \"15\",\n    \"ApproximateNumberOfMessagesNotVisible\": \"3\",\n    \"VisibilityTimeout\": \"30\",\n    \"CreatedTimestamp\": \"1706284000\",\n    \"MaximumMessageSize\": \"262144\"\n  }\n}"
+          }
+        ],
+        "CloudFormation": [
+          {
+            "cmd": "aws cloudformation describe-stacks --stack-name <name>",
+            "desc": "Show full status and parameters of a CloudFormation stack — use to check deployment health, outputs, and drift",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws cloudformation describe-stacks --stack-name prod-vpc\n{\n  \"Stacks\": [{\n    \"StackName\": \"prod-vpc\",\n    \"StackStatus\": \"UPDATE_COMPLETE\",\n    \"CreationTime\": \"2024-01-01T10:00:00Z\",\n    \"LastUpdatedTime\": \"2024-06-01T14:30:00Z\",\n    \"Parameters\": [\n      {\"ParameterKey\": \"VpcCidr\", \"ParameterValue\": \"10.0.0.0/16\"}\n    ],\n    \"Outputs\": [\n      {\"OutputKey\": \"VpcId\", \"OutputValue\": \"vpc-0a1b2c3d4e5f\"}\n    ]\n  }]\n}"
+          }
         ]
       },
       "group": "Cloud"
@@ -29831,7 +29923,8 @@
             "cmd": "show system ntp servers",
             "desc": "Lists configured NTP servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system ntp servers\n\nNTP Server    Stratum  Offset(ms)  State\n-----------   -------  ----------  ------\n192.168.1.100    2       +0.423    SYNC\n192.168.1.101    2       +1.102    REACH\nntp.example.com  1       +0.088    SYNC\n\nDone\n\nNote: SYNC = actively syncing from this peer. REACH = reachable but not selected as primary source."
           },
           {
             "cmd": "show system dns",
@@ -29844,7 +29937,8 @@
             "cmd": "show system dns servers",
             "desc": "Lists DNS servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system dns servers\n\nDNS Servers:\n  Primary:   8.8.8.8\n  Secondary: 8.8.4.4\n\nSearch Domain: corp.example.com\n\nDone"
           },
           {
             "cmd": "show system hostname",
@@ -29857,13 +29951,15 @@
             "cmd": "show system hardware",
             "desc": "Shows hardware summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware\n\nPlatform    : SDX 14030 FIPS\nSerial No   : ABC1234567890\nBIOS Version: 14.0.123\nCPU         : Intel Xeon E5-2690 v3 @ 2.60GHz (24 cores)\nMemory      : 256 GB DDR4\nDisk 1      : 600 GB SAS — ONLINE\nDisk 2      : 600 GB SAS — ONLINE\nRAID Status : RAID-1 OK\nPower Supply: PSU0 OK, PSU1 OK\nFan Status  : All fans OK\n\nDone"
           },
           {
             "cmd": "show system hardware -detail",
             "desc": "Shows detailed hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware -detail\n\nPlatform    : SDX 14030 FIPS\nSerial No   : ABC1234567890\nManufactured: 2023-04-15\nBIOS        : Version 14.0.123, Released 2023-02-01\n\nCPU Details:\n  Model     : Intel Xeon E5-2690 v3\n  Speed     : 2.60 GHz\n  Cores     : 24 (12 physical × 2 HT)\n  Cache     : 30 MB L3\n  Temp      : 42°C (Pkg), 38°C (Core avg)\n\nMemory Details:\n  Total     : 256 GB\n  DIMMs     : 16 × 16 GB DDR4 ECC\n  Speed     : 2133 MHz\n  Errors    : 0 correctable, 0 uncorrectable\n\nDone"
           },
           {
             "cmd": "show system hardware fans",
@@ -29876,7 +29972,8 @@
             "cmd": "show system hardware psu",
             "desc": "Shows power supply status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware psu\n\nPower Supply Status\n-------------------\nPSU 0:  Model: PSAC 1200W  Input: 220V  Output: 950W  Status: OK\nPSU 1:  Model: PSAC 1200W  Input: 220V  Output: 10W   Status: STANDBY\n\nTotal Power Draw : 960 W / 2400 W max\nRedundancy       : Active-Standby (PSU0 primary)\n\nDone\n\nNote: Both PSUs should show OK. STANDBY is normal for the backup PSU."
           },
           {
             "cmd": "show system hardware temperature",
@@ -29889,31 +29986,36 @@
             "cmd": "show system hardware voltage",
             "desc": "Shows voltage sensors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware voltage\n\nVoltage Sensor Readings\n------------------------\nVCC_12V        : 12.05 V  [Normal  11.40–12.60 V]\nVCC_5V         : 5.02 V   [Normal  4.75–5.25 V]\nVCC_3V3        : 3.31 V   [Normal  3.14–3.47 V]\nVCC_1V8        : 1.80 V   [Normal  1.71–1.89 V]\nVCC_CPU        : 1.02 V   [Normal  0.95–1.10 V]\nVCC_DRAM       : 1.20 V   [Normal  1.14–1.26 V]\n\nAll voltages within normal range.\n\nDone"
           },
           {
             "cmd": "show system hardware cpu",
             "desc": "Shows CPU hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware cpu\n\nCPU Hardware Information\n------------------------\nSocket 0: Intel Xeon E5-2690 v3\n  Cores   : 12 physical / 24 logical (HyperThreading ON)\n  Speed   : 2.60 GHz base / 3.50 GHz boost\n  Cache   : L1 32KB, L2 256KB, L3 30MB\n  TDP     : 135 W\n  Temp    : Package 42°C, Cores 36–40°C\n  Throttle: None\n\nSocket 1: Intel Xeon E5-2690 v3\n  Cores   : 12 physical / 24 logical\n  Temp    : Package 39°C, Cores 34–38°C\n  Throttle: None\n\nDone"
           },
           {
             "cmd": "show system hardware memory",
             "desc": "Shows memory hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware memory\n\nMemory Configuration\n--------------------\nTotal Installed : 256 GB\nSpeed           : 2133 MHz\nType            : DDR4 ECC Registered\nChannels        : Quad-channel\n\nDIMM Slots:\n  DIMM_A1: 16 GB  2133 MHz  Status: OK\n  DIMM_A2: 16 GB  2133 MHz  Status: OK\n  DIMM_B1: 16 GB  2133 MHz  Status: OK\n  DIMM_B2: 16 GB  2133 MHz  Status: OK\n  ... (16 DIMMs total)\n\nECC Errors: 0 correctable, 0 uncorrectable\n\nDone"
           },
           {
             "cmd": "show system hardware disks",
             "desc": "Shows disk hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware disks\n\nDisk Configuration\n------------------\nSlot  Device    Model             Size     RPM   Status\n----  --------  ----------------  -------  ----  ------\n  0   /dev/sda  SEAGATE ST600MP   600 GB   10k   ONLINE\n  1   /dev/sdb  SEAGATE ST600MP   600 GB   10k   ONLINE\n\nRAID Controller: LSI MegaRAID SAS 9271-8i\nRAID Level     : RAID-1 (Mirror)\nVirtual Disk 0 : 558 GB  State: Optimal  Cache: WB\n\nNote: If a disk shows FAILED, do not remove while RAID is rebuilding without replacing immediately.\n\nDone"
           },
           {
             "cmd": "show system hardware raid",
             "desc": "Shows RAID controller status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware raid\n\nRAID Controller: LSI MegaRAID SAS 9271-8i\nFirmware Version: 23.31.1-0112\nCache Size      : 1 GB (Battery-Backed)\n\nVirtual Disks:\n  VD 0: RAID-1  Size: 558 GB  State: Optimal  Access: RW  Cache: WB\n\nPhysical Disks:\n  PD 0:  Slot 0  SEAGATE ST600MP  600 GB  10K SAS  State: Online  Media: HDD\n  PD 1:  Slot 1  SEAGATE ST600MP  600 GB  10K SAS  State: Online  Media: HDD\n\nBattery Backup Unit:\n  State  : Fully Charged\n  Voltage: 4.08 V\n  Temp   : 28°C\n\nDone\n\nNote: 'Degraded' state means one disk failed — replace immediately; don't wait."
           },
           {
             "cmd": "show system hardware raid -detail",
@@ -31739,61 +31841,71 @@
             "cmd": "show events",
             "desc": "Shows system events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show events\n\nTime                  Severity  Component  Message\n--------------------  --------  ---------  -------\n2024-06-01 14:32:01   CRITICAL  VPX        VPX01: High CPU usage 98%\n2024-06-01 14:15:44   WARNING   System     Memory usage exceeded 80%\n2024-06-01 12:00:00   INFO      VPX        VPX02: Successfully provisioned\n2024-06-01 08:30:22   INFO      HA         HA heartbeat restored\n\nTotal events: 4\n\nDone"
           },
           {
             "cmd": "show events -detail",
             "desc": "Shows detailed events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show events -detail\n\nEvent ID   : 1042\nTime       : 2024-06-01 14:32:01\nSeverity   : CRITICAL\nComponent  : VPX\nInstance   : VPX01\nMessage    : High CPU usage detected — current utilisation 98%\nDetails    : Sustained for 5 minutes. Possible packet-processing overload.\nRecommended: Check VPX CPU allocation. Consider increasing vCPUs or throttling traffic.\nAcknowledged: No\n\nDone"
           },
           {
             "cmd": "show alerts",
             "desc": "Shows alerts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show alerts\n\nAlert ID  Time                  Severity  Source    Message\n--------  --------------------  --------  --------  -------\n    1021  2024-06-01 14:32:05   CRITICAL  VPX01     CPU threshold exceeded (98%)\n    1019  2024-06-01 12:45:00   WARNING   System    Fan speed below threshold\n    1015  2024-06-01 09:00:00   INFO      Network   LACP bond failover detected\n\nTotal alerts: 3\n\nDone"
           },
           {
             "cmd": "show alerts -detail",
             "desc": "Shows detailed alerts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show alerts -detail\n\nAlert ID   : 1021\nTime       : 2024-06-01 14:32:05\nSeverity   : CRITICAL\nSource     : VPX01\nType       : ResourceThreshold\nMessage    : CPU utilization exceeded threshold\nThreshold  : 90%  Current: 98%\nDuration   : 5 minutes\nAction     : Notification sent to admin@corp.com\nStatus     : Active / Unacknowledged\n\nTo acknowledge: ack alert 1021\n\nDone"
           },
           {
             "cmd": "show faults",
             "desc": "Shows system faults",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show faults\n\nFault ID  Time                  Severity  Component  Description\n--------  --------------------  --------  ---------  -----------\n    0042  2024-05-20 10:12:33   MAJOR     Hardware   PSU1 input voltage low\n    0041  2024-05-15 08:03:11   MINOR     Network    LACP bond member down\n    0038  2024-05-01 00:00:00   INFO      System     Scheduled maintenance window\n\nTotal faults: 3\n\nDone"
           },
           {
             "cmd": "show faults -detail",
             "desc": "Shows detailed faults",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show faults -detail\n\nFault ID   : 0042\nDetected   : 2024-05-20 10:12:33\nSeverity   : MAJOR\nComponent  : Hardware\nSub-system : Power Supply\nDescription: PSU1 input voltage dropped below lower threshold\nThreshold  : Min 200V  Measured: 188V\nImpact     : PSU0 carrying full load. Redundancy lost.\nStatus     : Active\nResolution : Check PSU1 input circuit. Contact datacenter power team.\n\nDone"
           },
           {
             "cmd": "show crashdump",
             "desc": "Shows crash dumps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show crashdump\n\nCrash Dump Files\n----------------\nFilename                        Size     Created\n-------------------------------  -------  --------------------\ncore_nssvm_20240515_032210.gz    45 MB    2024-05-15 03:22:10\ncore_nssvm_20240501_181533.gz    42 MB    2024-05-01 18:15:33\n\nTotal dumps: 2\nLocation: /var/crash/\n\nNote: Upload to Citrix Support with 'show techsupport' output when opening a TAC case.\n\nDone"
           },
           {
             "cmd": "show crashdump -detail",
             "desc": "Shows detailed crash dump info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show crashdump -detail\n\nFilename   : core_nssvm_20240515_032210.gz\nCreated    : 2024-05-15 03:22:10\nSize       : 45 MB\nVPX        : VPX01\nBuild      : NS13.1: Build 42.47.nc\nSignal     : SIGSEGV (Segmentation fault)\nThread     : Packet Engine PE-2\nStack Trace:\n  #0  0x00007f8b2c1234ab in ssl_renegotiate()\n  #1  0x00007f8b2c5678cd in ssl_process_record()\n  #2  0x00007f8b2c9abc01 in pe_process_pkt()\n\nRecommendation: Open a Citrix support case and attach this dump.\n\nDone"
           },
           {
             "cmd": "show techsupport",
             "desc": "Generates tech support bundle",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show techsupport\n\nGenerating tech support bundle...\nCollecting system information        [ OK ]\nCollecting VPX configurations        [ OK ]\nCollecting network state             [ OK ]\nCollecting logs (last 7 days)        [ OK ]\nCollecting performance counters      [ OK ]\nCollecting crash dumps               [ OK ]\nCompressing archive                  [ OK ]\n\nTech support bundle created:\n  /var/techsupport/sdx_techsupport_20240601_143200.tar.gz  (Size: 238 MB)\n\nDownload via SCP or the SDX web UI: System > Diagnostics > Tech Support\n\nDone"
           },
           {
             "cmd": "show debug",
             "desc": "Shows debug settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show debug\n\nDebug Settings\n--------------\nDebug Level  : 0 (Disabled)\nVerbose Mode : Off\nTrace Level  : Off\nLog Modules  : None active\n\nAvailable debug levels:\n  0 = Off\n  1 = Error (default for production)\n  2 = Warning\n  3 = Info\n  4 = Debug (verbose — do not use in production long-term)\n\nTo enable temporarily for 10 minutes:\n  set debug 3\n  (auto-resets to 0 after 10 min to protect performance)\n\nDone"
           },
           {
             "cmd": "show debug modules",
@@ -33642,6 +33754,13 @@
             "type": "show",
             "flagged": false,
             "example": "sw# show environment all detail\n[SWITCH 1]\n  Temperature: 28 C (Inlet), 38 C (Outlet), 42 C (Hotspot) — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 245W draw\n  PSU B: PWR-C1-715WAC, OK, 245W draw\n  Fans: 3/3 OK, 7128–7234 RPM\n  Alarms: none\n[SWITCH 2]\n  Temperature: 29 C / 39 C / 43 C — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 198W draw\n  Fans: 3/3 OK"
+          },
+          {
+            "cmd": "show platform resources",
+            "desc": "Display utilization of platform resources: control-plane CPU, DRAM, and NVRAM — use to identify resource exhaustion causing instability",
+            "type": "show",
+            "flagged": false,
+            "example": "> show platform resources\n\n**Control Plane**\n  RP0 / CPU0       Total:  100%   Used:   12%   Free:   88%\n  DRAM (RP0)       Total: 8192MB  Used: 3840MB  Free: 4352MB\n  NVRAM            Total:  32MB   Used:   18MB  Free:   14MB\n\n**Forwarding Engine (FED)**\n  CPU              Total: 100%    Used:  8%     Free:  92%\n  TCAM L2          Total: 131072  Used: 18432   Free: 112640\n  TCAM L3 IPv4     Total: 65536   Used: 12288   Free: 53248\n\nKey: if DRAM > 80% investigate leaks via \"show processes memory sorted\"; if TCAM > 80% review ACL/MAC tables."
           }
         ],
         "Licensing": [
@@ -41676,6 +41795,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "switch# show system internal sysmgr service all\nName                          UUID   PID    SAP   state           Start count    Tag     PluginID\n----                          ----   ---    ---   -----           -----------    ---     --------\nbgp                       0x000003E8 12345 0x0001 SRV_STATE_HANDSHAKED   1            N/A   1\nospf                      0x000003E9 12346 0x0002 SRV_STATE_HANDSHAKED   1            N/A   1\nvpc                       0x000003EA 12347 0x0003 SRV_STATE_HANDSHAKED   1            N/A   1\neltm                      0x000003EB 12348 0x0004 SRV_STATE_HANDSHAKED   3            N/A   1   ; restarted 3 times — investigate"
+          },
+          {
+            "cmd": "show hardware capacity",
+            "desc": "Show TCAM and forwarding hardware resource utilization across all modules — critical for diagnosing TCAM exhaustion causing ACL/route drops",
+            "type": "show",
+            "flagged": false,
+            "example": "> show hardware capacity\nModule: 1\n  FIB (IPv4 unicast):  Used: 12,045 / Total: 32,768  (36%)\n  FIB (IPv6 unicast):  Used: 3,211  / Total: 8,192   (39%)\n  ARP/ND:              Used: 5,100  / Total: 8,000   (63%)\n  ACL:                 Used: 18,432 / Total: 32,768  (56%)\n  VLAN:                Used: 248    / Total: 4,094   (6%)\n  Multicast:           Used: 512    / Total: 2,048   (25%)\n\nNote: ACL capacity above 80% may cause silent drops."
           }
         ],
         "Config Management": [
