@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-23T18:39:33.493Z",
+  "updatedAt": "2026-06-25T16:00:41.562Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -4921,6 +4921,20 @@
             "type": "show",
             "flagged": false,
             "example": "> show routing fib lookup ip 8.8.8.8\n\nFIB lookup results for ip 8.8.8.8\n\nDest: 8.8.8.8\nLongest matching route:\n  0.0.0.0/0 via 10.0.0.1 egress eth1/1 (default-route)\n  VR: default\n\n# Confirms the exact forwarding path for a destination IP at the dataplane level.\n# Useful for validating routing after a change or debugging traffic drops.\n# Distinguish from: show routing route (control plane RIB) — this shows the FIB."
+          },
+          {
+            "cmd": "show routing protocol ospf database",
+            "desc": "Display the OSPF link-state database listing all LSA types, ages, and advertising routers",
+            "type": "show",
+            "flagged": false,
+            "example": "> show routing protocol ospf database\n\nOSPF database, Area 0.0.0.0\n  Type      LS ID         Adv Router    Seq #      Age    Checksum\n  router    1.1.1.1       1.1.1.1       0x80000004  412    0x003c4a\n  router    2.2.2.2       2.2.2.2       0x80000003  396    0x0027a1\n  router    3.3.3.3       3.3.3.3       0x80000005  228    0x005f12\n  network   10.0.12.2     2.2.2.2       0x80000002  396    0x00a4b3\n  summary   192.168.10.0  2.2.2.2       0x80000001  396    0x00d182\n\nWhat it means:\n- Type \"router\"  = Router LSA (each router's own links)\n- Type \"network\" = Network LSA (DR-generated for broadcast segments)\n- Type \"summary\" = Summary LSA (ABR inter-area routes)\n- Age increments each second; LSAs are refreshed at 1800 s and expire at 3600 s."
+          },
+          {
+            "cmd": "show routing protocol bgp peer-detail peer <peer-ip>",
+            "desc": "Show detailed BGP peer information: negotiated capabilities, hold timer, and session state",
+            "type": "show",
+            "flagged": false,
+            "example": "> show routing protocol bgp peer-detail peer 203.0.113.1\n\nPeer:                 203.0.113.1\nRemote AS:            65002\nStatus:               Established\nUptime:               3d 14h 22m\nBGP Version:          4\nHold Timer:           90 s (negotiated)\nKeepalive Interval:   30 s\nLocal Router-ID:      198.51.100.1\nRemote Router-ID:     203.0.113.1\n\nNegotiated Capabilities:\n  Route Refresh:        yes\n  4-byte AS:            yes\n  Graceful Restart:     yes  (restart time 120 s)\n  Add-Path (Receive):   no\n  Add-Path (Send):      no\n\nPrefixes:\n  Received:  4200\n  Accepted:  4200\n  Sent:      12"
           }
         ],
         "Security Policies": [
@@ -6480,6 +6494,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "scp: copying /var/tmp/rx.pcap to admin@10.0.0.50:/tmp/rx.pcap ... done (412 KB)."
+          },
+          {
+            "cmd": "debug dataplane packet-diag show setting",
+            "desc": "Display the currently configured packet-diag filter criteria and capture stage settings so you can confirm the filter is active before starting a capture",
+            "type": "show",
+            "flagged": false,
+            "example": "  Packet filter:\n    src-ip    : 10.1.1.100\n    dst-ip    : 10.2.2.200\n    src-port  : any\n    dst-port  : any\n    proto     : any\n    non-ip    : no\n  Stages captured:\n    receive   : enabled  → file: /var/log/pan/rx.pcap\n    drop      : enabled  → file: /var/log/pan/drop.pcap\n    transmit  : disabled"
           }
         ],
         "GlobalProtect": [
@@ -6561,6 +6582,20 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Handshake successes  : 14,830,221\nHandshake failures   : 1,781\nUnsupported ciphers  : 412\nCert errors          : 248"
+          },
+          {
+            "cmd": "show running decryption-policy",
+            "desc": "Display the currently active SSL/TLS decryption rules from the running policy",
+            "type": "show",
+            "flagged": false,
+            "example": "> show running decryption-policy\n\nRule 1: \"Decrypt-Outbound-SSL\"\n  From: Trust         To: Untrust\n  Source: any         Destination: any\n  Service: ssl        Category: any\n  Action: decrypt     Type: ssl-forward-proxy\n  Certificate Profile: corp-forward-trust\n  Profile: default-decryption\n\nRule 2: \"No-Decrypt-Finance\"\n  From: Trust         To: Untrust\n  Source: any         Destination: finance-category\n  Action: no-decrypt\n  Description: Exempt banking sites from decryption\n\nWhat it means:\n- Rules are evaluated top-down; first match wins.\n- \"no-decrypt\" rules must be above broader decrypt rules for exemptions to apply."
+          },
+          {
+            "cmd": "test decryption-policy-match from <src-zone> to <dst-zone> source <src-ip> destination <dst-ip> destination-port <port>",
+            "desc": "Test which SSL/TLS decryption rule applies to a specific traffic flow",
+            "type": "show",
+            "flagged": false,
+            "example": "> test decryption-policy-match from Trust to Untrust source 10.0.1.50 destination 1.2.3.4 destination-port 443\n\nRule matched: \"Decrypt-Outbound-SSL\"\n  Action:              decrypt\n  Type:                ssl-forward-proxy\n  Certificate Profile: corp-forward-trust\n  Decryption Profile:  default-decryption\n\n# Use this before committing a new decryption policy to confirm that\n# traffic is hitting the intended rule (especially exemption rules)."
           }
         ],
         "URL & Threat Updates": [
@@ -6869,6 +6904,13 @@
             "type": "show",
             "flagged": false,
             "example": "Link        Pkts in/out         Bytes in/out         Drops\nISP1-MPLS   12,231,442/11,889K  8.4 GB/1.2 GB        0\nISP2-Cable  8,221,310/8,118K    5.1 GB/0.9 GB        12"
+          },
+          {
+            "cmd": "test sdwan link-path vpn-name <vpn> id <id>",
+            "desc": "Trigger an on-demand SD-WAN path-monitor probe on a specific VPN link and display the latest latency, jitter, and packet-loss measurements",
+            "type": "show",
+            "flagged": false,
+            "example": "SD-WAN path monitor test for VPN: HQ-Branch01  Link ID: 1\n  Local:  198.51.100.1  Remote: 203.0.113.5\n  Latency:      12 ms\n  Jitter:        2 ms\n  Packet Loss:   0 %\n  Status: UP   Threshold: latency ≤ 100ms  jitter ≤ 30ms  loss ≤ 5%"
           }
         ],
         "Quality of Service": [
@@ -7335,6 +7377,13 @@
             "type": "config",
             "flagged": false,
             "example": "Using configuration from openssl-ca.cnf\n(CRL written to ca.crl)"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes",
+            "desc": "Generate a self-signed certificate and private key in a single command (-nodes = no passphrase)",
+            "example": "# Generates key.pem and cert.pem in the current directory\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes \\\n  -subj \"/C=GB/ST=London/O=MyOrg/CN=internal.example.com\"\n\nGenerating a RSA private key\n...............................................................................................++++\n........++++\nwriting new private key to 'key.pem'\n\n# Verify the result:\nopenssl x509 -in cert.pem -noout -subject -dates\nsubject=C = GB, ST = London, O = MyOrg, CN = internal.example.com\nnotBefore=Jun 15 09:00:00 2026 GMT\nnotAfter=Jun 15 09:00:00 2027 GMT\n\n# Add SANs (required by modern browsers): append -addext \"subjectAltName=DNS:internal.example.com\""
           }
         ],
         "Certificate Inspection": [
@@ -7561,6 +7610,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -in server.pem -noout -purpose\nCertificate purposes:\nSSL client : No\nSSL client CA : No\nSSL server : Yes\nSSL server CA : No\nNetscape SSL server : Yes\nS/MIME signing : No\nS/MIME encryption : No\nCRL signing : No\nAny Purpose : Yes\nOCSP helper : No\nTime Stamp signing : No"
+          },
+          {
+            "cmd": "openssl verify -CAfile ca-chain.crt cert.crt",
+            "desc": "Verify a certificate against a local CA chain file",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl verify -CAfile ca-chain.crt server.crt\nserver.crt: OK\n\n# If the chain is incomplete or the cert is revoked / expired:\n$ openssl verify -CAfile ca-chain.crt expired.crt\nerror 10 at 0 depth lookup: certificate has expired\n\n# Depth 0 = the leaf cert; depth 1 = intermediate CA; depth 2 = root CA.\n# Use -partial_chain to allow verification against an intermediate CA\n# without requiring the root in the CAfile.\n# Combine with -crl_check -CRLfile crl.pem to verify against a local CRL."
           }
         ],
         "Verification & Matching": [
@@ -7796,6 +7852,13 @@
             "type": "config",
             "flagged": false,
             "example": "$ cat leaf.crt intermediate.crt root.crt > fullchain.pem\n$ openssl verify -CAfile root.crt fullchain.pem\nfullchain.pem: OK\n# Order matters: leaf first, then each intermediate, then root last.\n# nginx ssl_certificate expects this order.\n# Apache SSLCertificateFile (leaf) + SSLCertificateChainFile (chain) are separate.\n# Verify the chain: openssl verify -CAfile root.crt -untrusted intermediate.crt leaf.crt"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl pkcs12 -export -out bundle.pfx -inkey private.key -in cert.crt -certfile chain.crt",
+            "desc": "Bundle a private key, certificate, and CA chain into a PKCS#12 (.pfx) file for Windows/IIS import",
+            "example": "# Prompts for an export password to protect the PFX\nopenssl pkcs12 -export -out bundle.pfx -inkey private.key -in cert.crt -certfile chain.crt\nEnter Export Password:\nVerifying - Enter Export Password:\n\n# Verify the resulting PFX:\nopenssl pkcs12 -info -in bundle.pfx -noout\nMAC: sha256, Iteration 2048\nMAC length: 32, salt length: 20\nPKCS7 Encrypted data: ...\n    Certificate bag\n    Certificate bag  (intermediate)\n    PKCS8 Shrouded Keybag\n\n# Import on Windows: double-click bundle.pfx and follow the certificate import wizard."
           }
         ],
         "TLS Client Testing": [
@@ -8106,6 +8169,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl s_client -connect example.com:443 -servername example.com \\\n    -status 2>/dev/null </dev/null | grep -A5 'OCSP response'\nOCSP response:\n======================================\nOCSP Response Data:\n    OCSP Response Status: successful (0x0)\n    Response Type: Basic OCSP Response\n    This Update: Jun 20 08:00:00 2026 GMT\n    Next Update: Jun 27 08:00:00 2026 GMT\n    Cert Status: good\n# If no OCSP response is stapled: 'OCSP response: no response sent'\n# Stapling avoids the client having to query the OCSP responder directly."
+          },
+          {
+            "cmd": "openssl s_client -connect host:443 -tls1_3 -status",
+            "desc": "Connect using TLS 1.3 only and request OCSP staple from the server",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl s_client -connect example.com:443 -tls1_3 -status -servername example.com\nCONNECTED(00000003)\nOCSP response:\n======================================\nOCSP Response Status: successful (0x0)\nResponse Type: Basic OCSP Response\nCert Status: Good\nThis Update: Jun 19 00:00:00 2026 GMT\nNext Update: Jun 26 00:00:00 2026 GMT\n======================================\ndepth=2 C=US, O=ISRG, CN=ISRG Root X1\ndepth=1 C=US, O=Let's Encrypt, CN=R3\ndepth=0 CN=example.com\n...\nSSL-Session:\n    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_256_GCM_SHA384\n    Session-ID: A3B2...\n\n# -tls1_3  → forces TLS 1.3 only; server falls back to alert if not supported\n# -status  → sends a Certificate Status Request extension; server returns OCSP staple\n# A \"Cert Status: Good\" OCSP staple proves the cert is not revoked, eliminating\n# a separate OCSP round-trip for the client."
           }
         ],
         "TLS Server Testing": [
@@ -14958,7 +15028,8 @@
             "cmd": "ip -s neigh",
             "desc": "Shows ARP/ND statistics",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# ip -s neigh\n192.168.1.1 dev eth0 lladdr aa:bb:cc:dd:ee:ff ref 1 used 0/0/4 probes 0 REACHABLE\n192.168.1.10 dev eth0 lladdr 11:22:33:44:55:66 ref 1 used 12/12/20 probes 0 STALE\n192.168.1.20 dev eth0  FAILED\nfe80::1 dev eth0 lladdr aa:bb:cc:dd:ee:ff router ref 1 REACHABLE\n\n# STALE = not used recently, will be re-validated on next send.\n# FAILED = ARP requests sent but no reply received."
           },
           {
             "cmd": "bridge link",
@@ -14992,31 +15063,36 @@
             "cmd": "tc class show",
             "desc": "Shows traffic control classes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ tc class show dev eth0\nclass htb 1:1 root rate 1Gbit ceil 1Gbit burst 1375b cburst 1375b\nclass htb 1:10 parent 1:1 prio 1 rate 500Mbit ceil 1Gbit burst 1563b cburst 1563b\nclass htb 1:20 parent 1:1 prio 2 rate 200Mbit ceil 1Gbit burst 1563b cburst 1563b\n\n# Shows HTB (Hierarchical Token Bucket) classes for traffic shaping.\n# rate  = guaranteed bandwidth  |  ceil = maximum burst bandwidth\n# prio  = scheduling priority within the parent class\n# Use 'tc -s class show dev eth0' to include byte/packet counters."
           },
           {
             "cmd": "tc filter show",
             "desc": "Shows traffic control filters",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ tc filter show dev eth0\nfilter parent 1: protocol ip pref 10 u32 chain 0\nfilter parent 1: protocol ip pref 10 u32 chain 0 fh 800: ht divisor 1\nfilter parent 1: protocol ip pref 10 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 flowid 1:10\n  match c0a80a00/ffffff00 at 16    # dst 192.168.10.0/24 → class 1:10 (VoIP)\n\n# Shows tc classifiers that steer packets to specific qdisc classes.\n# u32 filters match on bit fields in the packet header (here: dst subnet).\n# flowid 1:10 directs matched packets to HTB class 1:10."
           },
           {
             "cmd": "iptables -L -n -v",
             "desc": "Lists IPv4 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "Chain INPUT (policy DROP 0 packets, 0 bytes)\n pkts bytes target     prot opt in     out     source               destination\n12345  8MB  ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0\n 5678  2MB  ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0  state RELATED,ESTABLISHED\n  100  5KB  ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0  tcp dpt:22\n    0    0  REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0  reject-with icmp-host-prohibited\n\nChain FORWARD (policy DROP 0 packets, 0 bytes)\nChain OUTPUT (policy ACCEPT 23456 packets, 15MB bytes)"
           },
           {
             "cmd": "ip6tables -L -n -v",
             "desc": "Lists IPv6 firewall rules",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ ip6tables -L -n -v\nChain INPUT (policy DROP 0 packets, 0 bytes)\n pkts bytes target  prot opt in   out  source     destination\n    5   400 ACCEPT  all      lo   *    ::/0       ::/0\n   12  1024 ACCEPT  tcp      eth0 *    ::/0       ::/0   tcp dpt:443\n    8   640 ACCEPT  ipv6-icmp eth0 *   ::/0       ::/0\n\nChain FORWARD (policy DROP)\nChain OUTPUT (policy ACCEPT 234 packets, 18432 bytes)\n\n# Same flags as iptables but for IPv6.  Note 'ipv6-icmp' is the protocol\n# name for ICMPv6 (NDP, Router Advertisements, etc.) — allow it or IPv6 breaks."
           },
           {
             "cmd": "nft list ruleset",
             "desc": "Displays full nftables ruleset",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nft list ruleset\ntable inet filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n        iif lo accept\n        ct state established,related accept\n        tcp dport 22 accept\n        tcp dport { 80, 443 } accept\n        ip protocol icmp accept\n        counter drop\n    }\n    chain forward {\n        type filter hook forward priority 0; policy drop;\n    }\n    chain output {\n        type filter hook output priority 0; policy accept;\n    }\n}\n\n# nftables replaces iptables/ip6tables/arptables/ebtables in one unified tool.\n# 'inet' tables match both IPv4 and IPv6.  Use 'nft -j list ruleset' for JSON."
           },
           {
             "cmd": "systemctl restart network",
@@ -15048,19 +15124,22 @@
             "cmd": "nmcli connection up <name>",
             "desc": "Activates a connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ nmcli connection up office-wired\nConnection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/3)\n\n$ nmcli device status\nDEVICE  TYPE      STATE      CONNECTION\neth0    ethernet  connected  office-wired\n\n# Activates a saved connection profile on its associated device.\n# Useful after a 'nmcli con down' or to switch a Wi-Fi interface between profiles.\n# For VPNs: nmcli con up VPN-HQ  (requires pre-configured credentials in the profile)."
           },
           {
             "cmd": "nmcli connection down <name>",
             "desc": "Deactivates a connection",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Deactivate a named NetworkManager connection profile\nnmcli connection down \"Corp-WiFi\"\nConnection 'Corp-WiFi' successfully deactivated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/5)\n\n# Note: this only disconnects; the profile remains. To permanently delete:\n# nmcli connection delete \"Corp-WiFi\"\n\n# Verify the interface is now unmanaged:\nnmcli device status\nDEVICE  TYPE      STATE         CONNECTION\nwlan0   wifi      disconnected  --"
           },
           {
             "cmd": "dhclient <iface>",
             "desc": "Requests DHCP lease",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "$ dhclient eth0\n$ ip a show eth0\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500\n    inet 192.168.1.105/24 brd 192.168.1.255 scope global dynamic eth0\n       valid_lft 86350sec preferred_lft 86350sec\n\n# Requests a new DHCP lease on eth0.  Use when the interface was configured\n# statically but you want to switch to DHCP, or after 'dhclient -r'.\n# -v flag shows DISCOVER/OFFER/REQUEST/ACK dialogue verbosely.\n# For systemd-based distros, prefer 'networkctl renew eth0' or nmcli."
           },
           {
             "cmd": "dhclient -r <iface>",
@@ -15072,7 +15151,8 @@
             "cmd": "ss -tp",
             "desc": "Shows TCP processes",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all TCP connections with associated process names/PIDs\nss -tp\nNetid State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port  Process\ntcp   ESTAB   0       0       10.0.0.5:47512     8.8.8.8:443        users:((\"curl\",pid=12345,fd=5))\ntcp   ESTAB   0       0       10.0.0.5:22        10.0.0.2:55432     users:((\"sshd\",pid=1234,fd=4))\ntcp   LISTEN  0       128     0.0.0.0:80         0.0.0.0:*          users:((\"nginx\",pid=987,fd=10))\ntcp   LISTEN  0       128     0.0.0.0:443        0.0.0.0:*          users:((\"nginx\",pid=987,fd=11))\n\nNote: requires root or sudo to see process info for other users' sockets."
           },
           {
             "cmd": "ss -uap",
@@ -15084,7 +15164,8 @@
             "cmd": "ss -o state established",
             "desc": "Shows established connections",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all TCP connections currently in ESTABLISHED state\nss -o state established\nNetid  Recv-Q  Send-Q  Local Address:Port   Peer Address:Port  Timer\ntcp    0       0       10.0.0.5:ssh         10.0.0.2:54321     timer:(keepalive,63sec,0)\ntcp    0       0       10.0.0.5:https       10.0.1.9:49152     timer:(keepalive,30sec,0)\n\n# Count established connections:\nss -o state established | wc -l\n\n# Filter to a specific port:\nss -o state established '( dport = :443 or sport = :443 )'"
           },
           {
             "cmd": "ss -o state time-wait",
@@ -15188,6 +15269,69 @@
             "type": "show",
             "flagged": false,
             "example": "$ nmap -sn 10.0.0.0/24\nStarting Nmap 7.94\nNmap scan report for 10.0.0.1\nHost is up (0.00050s latency).\nNmap scan report for 10.0.0.5\nHost is up (0.00020s latency).\nNmap scan report for 10.0.0.100\nHost is up (0.00080s latency).\n3 hosts up, 253 hosts down — scanned in 2.34 seconds.\n# -sn = ping-only, no port scan. Run as root for ARP-based detection on local subnet."
+          },
+          {
+            "cmd": "conntrack -L",
+            "desc": "List all active entries in the kernel connection tracking table — shows NAT translations, states, and timeouts for stateful firewall rules",
+            "type": "show",
+            "flagged": false,
+            "example": "# Requires: apt install conntrack  /  yum install conntrack-tools\n# Must run as root\n\ntcp      6  86398 ESTABLISHED src=10.0.0.100 dst=8.8.8.8 sport=54321 dport=443 src=8.8.8.8 dst=203.0.113.1 sport=443 dport=54321 [ASSURED]\ntcp      6  52    TIME_WAIT   src=10.0.0.101 dst=1.1.1.1 sport=55000 dport=53  src=1.1.1.1 dst=203.0.113.1 sport=53  dport=55000 [UNREPLIED]\nudp      17 29    src=10.0.0.100 dst=8.8.8.8 sport=62543 dport=53   src=8.8.8.8 dst=203.0.113.1 sport=53  dport=62543 [ASSURED]\nconntrack v1.4.7 (conntrack-tools): 1234 flow entries have been shown.\n\n# Count entries: conntrack -C\n# Delete: conntrack -D -s 10.0.0.100"
+          },
+          {
+            "cmd": "lsns -t net",
+            "desc": "List all active Linux network namespaces — useful for inspecting container and VM network isolation (Docker, Podman, LXC, veth pairs)",
+            "type": "show",
+            "flagged": false,
+            "example": "# List only network namespaces:\nlsns -t net\n\n        NS TYPE NPROCS   PID USER    COMMAND\n4026531992 net     234     1 root    /sbin/init\n4026532189 net       3  1234 root    /pause   (Kubernetes pod sandbox)\n4026532256 net       8  5678 1000    nginx: master process nginx\n\n# Enter a namespace (e.g. Docker container):\nnsenter -t 5678 -n ip addr\n# Shows the container's interface — not the host's"
+          },
+          {
+            "cmd": "networkctl list",
+            "desc": "List all network links managed by systemd-networkd with their type, operational state, and setup state",
+            "type": "show",
+            "flagged": false,
+            "example": "IDX LINK    TYPE     OPERATIONAL SETUP     \n  1 lo      loopback carrier     unmanaged \n  2 eth0    ether    routable    configured\n  3 wlan0   wlan     dormant     configuring\n\n3 links listed."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "nc -zv host port",
+            "desc": "Test TCP connectivity to a specific host and port without sending data (-z scan, -v verbose)",
+            "example": "# nc -zv 10.0.0.1 443\nConnection to 10.0.0.1 443 port [tcp/https] succeeded!\n\n# nc -zv 10.0.0.1 8080\nnc: connect to 10.0.0.1 port 8080 (tcp) failed: Connection refused\n\n# Useful to confirm firewall allows the path without needing curl or a full client.\n# Add -w 3 to set a 3-second timeout: nc -zvw3 host port"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "lsof -n -i TCP",
+            "desc": "List all open TCP connections with owning process (-n skips DNS resolution for speed)",
+            "example": "COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME\nnginx     1234    root    6u  IPv4  23456      0t0  TCP *:80 (LISTEN)\nnginx     1234    root    8u  IPv4  23789      0t0  TCP 10.0.0.5:80->192.168.1.10:54321 (ESTABLISHED)\nsshd      5678    root    3u  IPv4  34567      0t0  TCP *:22 (LISTEN)\npython3   9012    user    4u  IPv4  45678      0t0  TCP *:8080 (LISTEN)\n\n# Filter to a specific port: lsof -n -i TCP:443\n# Filter to established only: lsof -n -i TCP -s TCP:ESTABLISHED"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "iptables -t nat -L -n -v",
+            "desc": "List all NAT table rules (PREROUTING, POSTROUTING, OUTPUT) with packet counters",
+            "example": "Chain PREROUTING (policy ACCEPT 1234 packets, 98765 bytes)\n target   prot opt in   out   source      destination\n DNAT     tcp  --  any  any   0.0.0.0/0  0.0.0.0/0   tcp dpt:80 to:10.0.0.5:8080\n\nChain INPUT (policy ACCEPT 0 packets, 0 bytes)\n target   prot opt in   out   source      destination\n\nChain OUTPUT (policy ACCEPT 567 packets, 45678 bytes)\n target   prot opt in   out   source      destination\n\nChain POSTROUTING (policy ACCEPT 890 packets, 67890 bytes)\n target   prot opt in   out   source      destination\n MASQUERADE  all  --  any  eth0  10.0.0.0/24  0.0.0.0/0\n\n# pkts/bytes counters reset on reboot; -Z resets them without removing rules."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "python3 -m http.server 8080",
+            "desc": "Serve the current directory over HTTP on port 8080 — quick file sharing without installing a web server",
+            "example": "# Run in the directory you want to share\npython3 -m http.server 8080\nServing HTTP on 0.0.0.0 port 8080 (http://0.0.0.0:8080/) ...\n192.168.1.10 - - [15/Jun/2026 09:12:34] \"GET / HTTP/1.1\" 200 -\n192.168.1.10 - - [15/Jun/2026 09:12:35] \"GET /myfile.tar.gz HTTP/1.1\" 200 -\n\n# Bind to a specific interface: python3 -m http.server 8080 --bind 10.0.0.1\n# Change directory first: python3 -m http.server 8080 --directory /tmp/share\n# No authentication — only use on trusted networks."
+          },
+          {
+            "cmd": "tcpdump -i eth0 -nn -w /tmp/cap.pcap -c 1000",
+            "desc": "# capture 1000 packets on eth0 to a pcap file (no DNS/port name resolution)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tcpdump -i eth0 -nn -w /tmp/cap.pcap -c 1000\ntcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes\n1000 packets captured\n1000 packets received by filter\n0 packets dropped by kernel\n\n# Open the resulting file in Wireshark or replay with tcpdump:\n#   tcpdump -r /tmp/cap.pcap -nn\n# Add a BPF capture filter to narrow scope:\n#   tcpdump -i eth0 -nn -w /tmp/cap.pcap 'host 10.0.0.5 and port 443'\n# -nn  → no DNS/service name resolution (faster, avoids DNS noise in capture)\n# -c   → stop after N packets; omit to capture until Ctrl-C"
+          },
+          {
+            "cmd": "ip route show table all",
+            "desc": "# display routes from all routing tables (main, local, policy routes)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ ip route show table all\ndefault via 10.0.0.1 dev eth0 proto dhcp metric 100\n10.0.0.0/24 dev eth0 proto kernel scope link src 10.0.0.5\n\n# Policy routing tables (visible only with 'table all'):\nbroadcast 10.0.0.0 dev eth0 table local proto kernel scope link src 10.0.0.5\nlocal 10.0.0.5 dev eth0 table local proto kernel scope host src 10.0.0.5\nbroadcast 10.0.0.255 dev eth0 table local proto kernel scope link src 10.0.0.5\n\n# Tables:\n#   main  (table 254) → normal routes (default)\n#   local (table 255) → kernel-managed local/broadcast routes\n#   <N>               → custom policy-routing tables (see /etc/iproute2/rt_tables)\n# Use with 'ip rule show' to see policy-routing rules that direct traffic\n# to specific tables based on source IP, fwmark, or incoming interface."
           }
         ],
         "Diagnostics": [
@@ -15286,7 +15430,8 @@
             "cmd": "lsof +L1",
             "desc": "Shows deleted-but-open files",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Find files that have been deleted but are still held open by a process\n# (prevents disk space from being freed until the process closes them)\nlsof +L1\nCOMMAND  PID  USER  FD  TYPE DEVICE SIZE/OFF NLINK NODE NAME\njava    4521  app   35u  REG  252,1  1073741824    0  12345 /var/log/app.log (deleted)\nnginx   1234  www   5w   REG  252,1   524288000    0  23456 /tmp/nginx_buffer (deleted)\n\nNote: NLINK=0 confirms the file is unlinked. To reclaim space without restarting:\n# Find the fd: ls -la /proc/4521/fd/35\n# Truncate it: > /proc/4521/fd/35"
           },
           {
             "cmd": "netstat -tulpn",
@@ -15306,7 +15451,8 @@
             "cmd": "perf record -a",
             "desc": "Records system-wide performance profile",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Record a system-wide performance profile for 10 seconds\nperf record -a -g sleep 10\n[ perf record: Woken up 17 times to write data ]\n[ perf record: Captured and wrote 4.301 MB perf.data (34521 samples) ]\n\n# Then analyse with:\nperf report\n\n# Or generate a flame graph:\nperf script | stackcollapse-perf.pl | flamegraph.pl > flame.svg\n\n# CPU-frequency based sampling (default: 4000 Hz)\nperf record -F 4000 -a -g -- sleep 30\n\nNote: -a = all CPUs, -g = capture call graphs (stack traces)"
           },
           {
             "cmd": "perf report",
@@ -15318,7 +15464,8 @@
             "cmd": "strace -p <pid>",
             "desc": "Traces system calls for a process",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Attach to a running process and trace its system calls\nstrace -p 12345\nstrace: Process 12345 attached\nfutex(0x7f8b2c000b40, FUTEX_WAIT_PRIVATE, 0, NULL) = 0\nepoll_wait(7, [], 1, 4990)              = 0\nread(4, \"GET /api/health HTTP/1.1\\r\\nHost: \"..., 4096) = 156\nwrite(4, \"HTTP/1.1 200 OK\\r\\nContent-Length:\"..., 89) = 89\n\n# Trace a new process and log to file:\nstrace -o /tmp/trace.log -f -e trace=network,file nginx -t\n\n# Count syscall frequency:\nstrace -c -p 12345\n# (Ctrl+C to get the summary table)"
           },
           {
             "cmd": "ltrace -p <pid>",
@@ -15330,13 +15477,15 @@
             "cmd": "systemd-analyze blame",
             "desc": "Shows slow boot services",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show startup time for each unit, sorted slowest first\nsystemd-analyze blame\n45.201s apt-daily-upgrade.service\n32.005s snapd.service\n18.463s dev-sda1.device\n12.344s NetworkManager-wait-online.service\n 5.221s plymouth-quit-wait.service\n 3.142s docker.service\n 1.050s sshd.service\n 0.432s ufw.service\n\nFocus on masking or disabling any service you don't need; NetworkManager-wait-online is often disabled to shave 10+ seconds."
           },
           {
             "cmd": "systemd-analyze critical-chain",
             "desc": "Shows boot dependency chain",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show the critical path (longest chain) in the boot dependency graph\nsystemd-analyze critical-chain\nThe time when unit became active or started is printed after the \"@\" character.\nThe time the unit took to start is printed after the \"+\" character.\n\nmulti-user.target @21.343s\n└─network-online.target @21.342s\n  └─NetworkManager-wait-online.service @8.991s +12.351s\n    └─NetworkManager.service @8.452s +0.538s\n      └─dbus.service @8.400s +0.052s\n        └─basic.target @8.399s\n          └─sockets.target @8.399s\n\nThe longest + value is the bottleneck — here NetworkManager-wait-online.service added 12 s."
           },
           {
             "cmd": "systemd-analyze plot > boot.svg",
@@ -15348,7 +15497,8 @@
             "cmd": "smartctl -a /dev/<disk>",
             "desc": "Shows disk SMART data",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show all SMART data for a disk\nsmartctl -a /dev/sda\n=== START OF INFORMATION SECTION ===\nDevice Model:     Samsung SSD 860 EVO 500GB\nSerial Number:    S4EWNX0M123456\nFirmware Version: RVT03B6Q\nCapacity:         500.1 GB\nSMART support is: Available - device has SMART capability.\n\n=== START OF ATTRIBUTES SECTION ===\nID# ATTRIBUTE_NAME          FLAG  VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE\n  5 Reallocated_Sector_Ct   0x33  100   100   010   Pre-fail  Always   -           0\n  9 Power_On_Hours          0x32  097   097   000   Old_age   Always   -           15312\n177 Wear_Leveling_Count     0x13  099   099   000   Pre-fail  Always   -           1\n187 Reported_Uncorrect      0x32  100   100   000   Old_age   Always   -           0\n194 Temperature_Celsius     0x22  061   048   000   Old_age   Always   -           39\n\nKey: Reallocated_Sector_Ct > 0 indicates failing drive. Replace immediately."
           },
           {
             "cmd": "smartctl -t short /dev/<disk>",
@@ -15366,7 +15516,8 @@
             "cmd": "mdadm --detail /dev/md0",
             "desc": "Shows RAID array details",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Show detailed status of a software RAID array\nmdadm --detail /dev/md0\n/dev/md0:\n           Version : 1.2\n     Creation Time : Mon Jan  1 10:00:00 2024\n        Raid Level : raid1\n        Array Size : 488383488 (465.76 GiB)\n     Used Dev Size : 488383488 (465.76 GiB)\n      Raid Devices : 2\n     Total Devices : 2\n       Persistence : Superblock is persistent\n\n             State : clean\n    Active Devices : 2\n   Working Devices : 2\n    Failed Devices : 0\n     Spare Devices : 0\n\n            Layout : near=2\n        Chunk Size : 512K\n\nConsistency Policy : resync\n\n              Name : hostname:0\n              UUID : a1b2c3d4:e5f60718:9a0b1c2d:3e4f5060\n          Events : 36\n\n   Number   Major   Minor   RaidDevice State\n      0     259       1        0      active sync   /dev/nvme0n1p2\n      1       8      17        1      active sync   /dev/sdb1"
           },
           {
             "cmd": "mdadm --examine /dev/<disk>",
@@ -15378,7 +15529,8 @@
             "cmd": "fsck -n /dev/<disk>",
             "desc": "Checks filesystem (read?only)",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Run a filesystem check in read-only (non-destructive) mode — no changes made\n# Must unmount the filesystem first, or run on an unmounted partition\numount /dev/sdb1\nfsck -n /dev/sdb1\ne2fsck 1.46.5 (30-Dec-2021)\nPass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\n/dev/sdb1: 48294/30547968 files (0.2% non-contiguous), 4820173/122159360 blocks\n\n# If errors are found, run without -n to repair:\n# fsck -y /dev/sdb1    (-y auto-answers yes to all repair prompts)\n\n# For XFS:\n# xfs_repair -n /dev/sdb1   (read-only check)"
           },
           {
             "cmd": "blkid",
@@ -15411,13 +15563,36 @@
             "cmd": "systemctl is-enabled <service>",
             "desc": "Checks if service is enabled",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Check whether a service is configured to start at boot\nsystemctl is-enabled nginx\nenabled\n\n# Possible return values:\n# enabled        — starts at boot via a symlink in /etc/systemd/system/\n# disabled       — won't start at boot (but can be started manually)\n# static         — enabled as a dependency only; no [Install] section\n# masked         — permanently disabled; cannot be started at all\n# linked         — enabled via an absolute path symlink\n\n# Batch-check multiple services:\nfor svc in nginx sshd firewalld docker; do\n  echo \"$svc: $(systemctl is-enabled $svc 2>/dev/null || echo 'not-found')\"\ndone"
           },
           {
             "cmd": "systemctl is-active <service>",
             "desc": "Checks if service is active",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "# Check whether a service unit is currently running\nsystemctl is-active nginx\nactive\n\n# Possible return values:\n# active         — running\n# inactive       — stopped\n# activating     — starting up\n# deactivating   — shutting down\n# failed         — exited with error\n# unknown        — unit not found\n\n# Use in scripts for conditional logic:\nif systemctl is-active --quiet nginx; then\n  echo \"nginx is running\"\nelse\n  echo \"nginx is NOT running — restarting\"\n  systemctl start nginx\nfi"
+          },
+          {
+            "cmd": "journalctl -u <service> -f --since \"1 hour ago\"",
+            "desc": "# follow live log output for a service, showing only the last hour",
+            "type": "show",
+            "flagged": false,
+            "example": "$ journalctl -u nginx -f --since \"1 hour ago\"\nJun 19 09:10:01 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:01] \"GET /api/health HTTP/1.1\" 200 12\nJun 19 09:10:14 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:14] \"POST /api/login HTTP/1.1\" 401 38\nJun 19 09:10:22 web01 nginx[1245]: 2026/06/19 09:10:22 [warn] 1245#1245: *42 upstream response timeout\nJun 19 09:10:22 web01 nginx[1245]: 10.0.0.5 - - [19/Jun/2026:09:10:22] \"GET /api/data HTTP/1.1\" 502 162\n^C\n\n# -u <service>            → filter to one systemd unit\n# -f                      → follow (like tail -f)\n# --since \"1 hour ago\"    → start output 1 hour back, then follow forward\n# Ctrl-C to stop following.  Omit --since to follow from the current tail only."
+          },
+          {
+            "cmd": "nmap -sV --open -p 22,80,443 <host>",
+            "desc": "# probe specific ports on a host and identify running services + versions",
+            "type": "show",
+            "flagged": false,
+            "example": "$ nmap -sV --open -p 22,80,443 10.0.0.5\nStarting Nmap 7.94 ( https://nmap.org )\nNmap scan report for 10.0.0.5\nHost is up (0.0023s latency).\n\nPORT    STATE SERVICE VERSION\n22/tcp  open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.4 (Ubuntu Linux; protocol 2.0)\n80/tcp  open  http    nginx 1.24.0\n443/tcp open  ssl/https nginx 1.24.0\n\nService detection performed. Please report any incorrect results at https://nmap.org/submit/ .\nNmap done: 1 IP address (1 host up) scanned in 6.43 seconds\n\n# -sV      → probe open ports to determine service/version\n# --open   → show only open ports (suppress filtered/closed)\n# -p       → comma-separated port list  (use -p- for all 65535 ports)"
+          },
+          {
+            "cmd": "iperf3 -c <host> -t 10 -P 4",
+            "desc": "# run a 10-second bandwidth test to an iperf3 server using 4 parallel streams",
+            "type": "show",
+            "flagged": false,
+            "example": "# Server side (run first):\n$ iperf3 -s\n-----------------------------------------------------------\nServer listening on 5201\n\n# Client side:\n$ iperf3 -c 10.0.0.10 -t 10 -P 4\nConnecting to host 10.0.0.10, port 5201\n[ ID] Interval         Transfer     Bitrate         Retr\n[  4] 0.00-10.00 sec  1.12 GBytes   962 Mbits/sec    0  sender\n[  6] 0.00-10.00 sec  1.09 GBytes   935 Mbits/sec    0  sender\n[  8] 0.00-10.00 sec  1.10 GBytes   945 Mbits/sec    0  sender\n[ 10] 0.00-10.00 sec  1.11 GBytes   953 Mbits/sec    0  sender\n[SUM] 0.00-10.00 sec  4.42 GBytes  3795 Mbits/sec    0  sender\n\n# -c <host>  → target iperf3 server\n# -t 10      → test duration in seconds\n# -P 4       → number of parallel TCP streams (simulates multi-threaded apps)\n# Retr = TCP retransmit count; non-zero indicates congestion or packet loss"
           }
         ],
         "Ref 01. File & Directory Navigation": [
@@ -17864,6 +18039,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ ethtool -G eth0 rx 4096 tx 4096\n# sets NIC ring buffer sizes to 4096 (improves throughput under load)"
+          },
+          {
+            "type": "config",
+            "flagged": false,
+            "cmd": "ip link add vlan10 link eth0 type vlan id 10",
+            "desc": "Create an 802.1Q tagged VLAN sub-interface (VLAN 10) on top of eth0",
+            "example": "# Create the VLAN interface\nip link add vlan10 link eth0 type vlan id 10\n\n# Assign an IP address\nip addr add 192.168.10.1/24 dev vlan10\n\n# Bring it up\nip link set vlan10 up\n\n# Verify\nip -d link show vlan10\n3: vlan10@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n    link/ether aa:bb:cc:dd:ee:ff brd ff:ff:ff:ff:ff:ff\n    vlan protocol 802.1Q id 10 <REORDER_HDR>\n\n# Remove: ip link del vlan10"
           }
         ],
         "Ref 18. Disk & Partition Management": [
@@ -20677,6 +20859,13 @@
             "type": "show",
             "flagged": false,
             "example": "192.168.1.42  api.example.com\n192.168.1.42  fonts.googleapis.com\n192.168.1.99  registry.example.org\n192.168.1.42  cdn.example.com"
+          },
+          {
+            "cmd": "tcp port 443 and not host 10.0.0.1",
+            "desc": "Capture TLS traffic on port 443 but exclude a specific host — useful to remove monitoring/scanner noise",
+            "type": "show",
+            "flagged": false,
+            "example": "# Start capture in Wireshark: Capture → Options → enter filter in Capture filter box\n# Or via tshark:\n#   tshark -i eth0 -f 'tcp port 443 and not host 10.0.0.1' -w /tmp/tls.pcap\n\n# BPF syntax notes:\n#   and / or / not   → boolean operators\n#   host <ip>        → matches src OR dst\n#   src host <ip>    → source only\n#   dst host <ip>    → destination only\n#   port <n>         → src OR dst port\n#   tcp / udp        → protocol qualifier\n\n# Common extensions of this pattern:\n#   'tcp port 443 and (host 10.0.0.5 or host 10.0.0.6)' → two specific hosts\n#   'tcp port 443 and net 192.168.0.0/16'                → entire subnet\n#   'tcp port 443 and not net 10.0.0.0/8'                → exclude RFC 1918"
           }
         ],
         "Analysis & Statistics": [
@@ -20763,6 +20952,13 @@
             "type": "config",
             "flagged": false,
             "example": "# Menu: Analyze → Display Filter Macros\n# Lets you define reusable display filter shortcuts.\n# Example — define macro \"mysrv\" as \"ip.addr == 10.0.0.10\":\n#   Name: mysrv   Text: ip.addr == 10.0.0.10\n# Use in filter bar: ${mysrv} and tcp.port == 443\n# Macros persist across sessions and can be exported/imported."
+          },
+          {
+            "cmd": "frame.time_delta > 1",
+            "desc": "Frames with more than 1 second gap since the previous frame — useful to find idle periods or application pauses",
+            "type": "show",
+            "flagged": false,
+            "example": "# Apply in display-filter bar: frame.time_delta > 1\nFrame 201: time_delta=2.341s  10.0.0.5 → 10.0.0.1  TCP [ACK]  # 2.3s gap — likely a server think-time\nFrame 348: time_delta=1.005s  10.0.0.1 → 10.0.0.5  HTTP 200 OK\n\n# frame.time_delta is the elapsed time from the PREVIOUS frame in the capture.\n# Use it to find:\n#   - Long server think-times (gap between client request and server response)\n#   - Application-level pauses (GC, DB query, lock wait)\n#   - Idle keepalive gaps\n# Combine: frame.time_delta > 0.5 && tcp.stream eq 5  (pauses in a specific flow)"
           }
         ],
         "Coloring Rules & Workflow": [
@@ -21047,6 +21243,20 @@
             "type": "show",
             "flagged": false,
             "example": "# Prints a concise summary of a capture file.\n# capinfos capture.pcapng\n# Output:\n# File name:           capture.pcapng\n# File type:           Wireshark/... - pcapng\n# File encapsulation:  Ethernet\n# Packet size limit:   file hdr: 65535\n# Number of packets:   9,843\n# File size:           4,293,120 bytes\n# Data size:           4,110,048 bytes\n# Capture duration:    12.345 seconds\n# Start time:          2026-04-24 09:00:00\n# End time:            2026-04-24 09:00:12\n# Data byte rate:      332,969 bytes/s\n# Data bit rate:       2,663,752 bits/s\n# Average packet size: 417.58 bytes"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "tshark -r in.pcap -T json > out.json",
+            "desc": "Decode every packet in a pcap and export the full dissection tree as JSON — useful for scripting and log ingestion",
+            "example": "# Produces one JSON object per packet; pipe through jq for querying:\ntshark -r in.pcap -T json | jq '.[] | ._source.layers | {src: .ip.ip_src, dst: .ip.ip_dst, proto: .frame[\"frame.protocols\"]}'\n\n# Example output (truncated):\n[\n  {\n    \"_index\": \"packets-2026-06-15\",\n    \"_source\": {\n      \"layers\": {\n        \"frame\": { \"frame.number\": \"1\", \"frame.len\": \"74\", \"frame.protocols\": \"eth:ethertype:ip:tcp\" },\n        \"ip\":    { \"ip.src\": \"10.0.0.1\", \"ip.dst\": \"10.0.0.50\" },\n        \"tcp\":   { \"tcp.srcport\": \"443\", \"tcp.dstport\": \"54321\", \"tcp.flags\": \"0x0012\" }\n      }\n    }\n  }\n]\n\n# Filter before export: tshark -r in.pcap -Y \"http\" -T json > http_only.json"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "tshark -r in.pcap -Y \"http.request\" -T fields -e frame.number -e ip.src -e http.request.method -e http.request.uri",
+            "desc": "Extract HTTP request summary (frame, source IP, method, URI) as tab-separated fields — fast log extraction",
+            "example": "# Output is tab-separated; redirect to a file for further processing:\ntshark -r in.pcap -Y \"http.request\" \\\n  -T fields \\\n  -e frame.number \\\n  -e ip.src \\\n  -e http.request.method \\\n  -e http.request.uri \\\n  -E header=y -E separator=,\n\nframe.number,ip.src,http.request.method,http.request.uri\n42,192.168.1.10,GET,/index.html\n43,192.168.1.10,GET,/assets/logo.png\n67,192.168.1.11,POST,/api/login\n89,192.168.1.10,GET,/favicon.ico\n\n# Swap http.request.uri for http.response.code to extract response codes instead."
           }
         ]
       },
@@ -21675,6 +21885,27 @@
             "type": "show",
             "flagged": false,
             "example": "Interface      Route map\nGigabitEthernet0/0   MARK-VOIP\nGigabitEthernet0/1   ISP-FAILOVER"
+          },
+          {
+            "cmd": "show mpls forwarding-table",
+            "desc": "Display the MPLS Label Forwarding Information Base (LFIB): local labels, operations, and next-hops",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls forwarding-table\nLocal  Outgoing    Prefix              Bytes Label  Outgoing   Next Hop\nLabel  Label or    or Tunnel Id        Switched      interface\n       Tab/Tunnel\n16     Pop Label   10.0.1.0/24         1024          Gi0/1      10.0.0.2\n17     18          10.0.2.0/24         512           Gi0/1      10.0.0.2\n18     No Label    192.168.10.0/24[V]  0             aggregate/vrf1\n19     Aggregate   10.0.3.0/24         256           -          -\n\nWhat it means:\n- \"Pop Label\" = PHP (Penultimate Hop Popping); label removed before forwarding.\n- \"No Label\"  = destination is directly connected in a VRF.\n- \"Aggregate\" = locally originated label, no outgoing interface."
+          },
+          {
+            "cmd": "show mpls interfaces",
+            "desc": "Show all interfaces enabled for MPLS label switching with their protocol and LDP status",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls interfaces\nInterface              IP            Tunnel   BGP Static Operational\nGigabitEthernet0/0     Yes (ldp)     No       No  No     Yes\nGigabitEthernet0/1     Yes (ldp)     No       No  No     Yes\nLoopback0              No            No       No  No     No\n\nWhat it means:\n- \"Yes (ldp)\"   = LDP is enabled and distributing labels on this interface.\n- \"Operational\" = MPLS is actively processing labelled packets.\n- Loopback is typically excluded from MPLS forwarding but used as router-ID."
+          },
+          {
+            "cmd": "show mpls ldp bindings",
+            "desc": "Display all LDP label bindings: the local label assigned to each prefix and remote labels received from LDP peers",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show mpls ldp bindings\n  lib entry: 10.0.1.0/24, rev 6\n        local binding:  label: 16\n        remote binding: lsr: 10.0.0.2:0, label: 18\n        remote binding: lsr: 10.0.0.3:0, label: 21\n  lib entry: 10.0.2.0/24, rev 8\n        local binding:  label: 17\n        remote binding: lsr: 10.0.0.2:0, label: 19\n\nWhat it means:\n- \"local binding\"  = label this router advertises to its LDP peers.\n- \"remote binding\" = labels received from each peer for the same prefix.\n- The LFIB selects the best remote label for the chosen next-hop."
           }
         ],
         "Routing › OSPF": [
@@ -24998,6 +25229,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "R1# traceroute mpls ipv4 10.99.0.0/24\n\nTracing MPLS Label Switched Path to 10.99.0.0/24, timeout is 2 seconds\n  0  10.10.10.1 MRU 1500 [Labels: 22000 Exp: 0]\n  1  10.10.10.50 MRU 1500 [Labels: 22001 Exp: 0]  4 ms\n  2  10.10.20.50 MRU 1500 [Labels: 22002 Exp: 0]  8 ms\n  3  10.20.0.50  MRU 1500 [Labels: implicit-null Exp: 0]  12 ms\n\nWhat it means:\n- LSP traceroute — shows the MPLS label stack at each hop. Useful\n  for verifying MPLS-VPN underlay paths.\n- \"implicit-null\" at the last hop = penultimate-hop popping (PHP);\n  the previous router popped the label.\n- \"MRU\" = Maximum Receive Unit — the LSP's effective MTU."
+          },
+          {
+            "cmd": "show ip sla statistics",
+            "desc": "Display IP SLA probe results including RTT, jitter, packet loss, and success/failure counts for availability monitoring",
+            "type": "show",
+            "flagged": false,
+            "example": "IPSLAs Latest Operation Statistics\nIPSLA operation id: 1\n        Latest RTT: 4 milliseconds\nLatest operation start time: 10:01:22 UTC Jun 11 2026\nLatest operation return code: OK\nNumber of successes: 1440\nNumber of failures: 2\nOperation time to live: Forever\n\nIPSLA operation id: 2  (jitter probe to VoIP gateway)\n        Latest RTT: 8 milliseconds\n        SD Jitter: 2ms  DS Jitter: 3ms\n        Packet Loss (SD/DS): 0/0\nLatest operation return code: OK"
           }
         ],
         "Management": [
@@ -25049,6 +25287,13 @@
             "type": "show",
             "flagged": false,
             "example": "R1# show ssh\n\nConnection Version Mode Encryption       Hmac          State                 Username\n0          2.0     IN   aes256-ctr        hmac-sha2-256 Session started       admin\n0          2.0     OUT  aes256-ctr        hmac-sha2-256 Session started       admin\n\n%No SSHv1 server connections running.\n\nWhat it means:\n- Active SSH sessions with cipher / HMAC negotiation results.\n- Per-direction (IN / OUT) entries — both must show the same\n  session.\n- \"No SSHv1\" = legacy protocol disabled (good — SSHv1 is broken).\n- Confirm strong ciphers (aes256-ctr, chacha20-poly1305) and\n  modern HMACs (sha2-256, sha2-512)."
+          },
+          {
+            "cmd": "show track",
+            "desc": "Display object tracking status — used with IP SLA, HSRP, and static route conditional installation",
+            "type": "show",
+            "flagged": false,
+            "example": "Track 1\n  IP SLA 1 reachability\n  Reachability is Up\n    1 change, last change 3d12h\n  Latest operation return code: OK\n  Latest RTT (millisecs) 4\n\nTrack 2\n  IP SLA 2 reachability\n  Reachability is Down\n    3 changes, last change 00:02:34\n  Latest operation return code: Timeout"
           }
         ],
         "Show & Status": [
@@ -26608,6 +26853,13 @@
             "type": "config",
             "flagged": false,
             "example": "# Publish an internal web server (10.0.0.10:80) on the firewall's\n# public address (203.0.113.10:80)\n\nR1(config)# ip nat inside source static tcp 10.0.0.10 80 203.0.113.10 80\n\n# Full interface setup:\nR1(config)# interface GigabitEthernet0/0\nR1(config-if)# ip nat inside\nR1(config-if)# exit\nR1(config)# interface GigabitEthernet0/1\nR1(config-if)# ip nat outside\nR1(config-if)# exit\n\nR1# show ip nat translations\nPro  Inside global      Inside local       Outside local   Outside global\ntcp  203.0.113.10:80    10.0.0.10:80       ---             ---\n\n# To publish additional ports, repeat the command with different ports:\nR1(config)# ip nat inside source static tcp 10.0.0.10 443 203.0.113.10 443"
+          },
+          {
+            "cmd": "show ip nat translations verbose",
+            "desc": "Detailed NAT translation table showing hit counts, timeout values, and mapping type for each active translation",
+            "type": "show",
+            "flagged": false,
+            "example": "Pro  Inside global         Inside local          Outside local         Outside global\ntcp  203.0.113.1:1024      10.0.0.101:1024       8.8.8.8:53            8.8.8.8:53\n     create 00:00:52, use 00:00:01, timeout 00:01:00\n     Map-Id(In): 1, entry-id: 0x97, use_count: 1\nudp  203.0.113.1:2048      10.0.0.102:2048       8.8.4.4:53            8.8.4.4:53\n     create 00:00:05, use 00:00:05, timeout 00:05:00\n\nTip: compare output of \"show ip nat translations\" (summary) vs verbose — verbose shows\nage and hit-count which helps identify stale or unused translations."
           }
         ],
         "DHCP / Services": [
@@ -27798,6 +28050,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Running command: vm-support\nGenerating ESXi support bundle...\nBundle file: /vmfs/volumes/DS-FAST/esx-esxi01-2026-06-12--09.42.tgz"
+          },
+          {
+            "cmd": "esxcli hardware platform get",
+            "desc": "Display hardware platform details including vendor, product name, serial number, BIOS version, and UUID — useful for asset tracking and support cases",
+            "type": "show",
+            "flagged": false,
+            "example": "Platform Information\n  UUID: 00000000-1111-2222-3333-444444444444\n  Product Name: ProLiant DL380 Gen10\n  Vendor Name: HPE\n  Serial Number: CZ12345678\n  IPMI Supported: true\n  BIOS Version: U30\n  BIOS Release Date: 11/05/2023\n  BIOS Build Date: 11/05/2023"
           }
         ]
       },
@@ -28534,6 +28793,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "asa# packet-tracer input outside tcp 203.0.113.42 54321 198.51.100.10 443 detailed\n\nPhase: 1  Type: ROUTE-LOOKUP    Result: ALLOW\n  found next-hop 10.10.10.10 using egress ifc inside\nPhase: 2  Type: ACCESS-LIST      Result: ALLOW\n  rule-id: 268435457 (access-list OUTSIDE-IN line 10)\n  config: access-list OUTSIDE-IN extended permit tcp any host 198.51.100.10 eq 443\nPhase: 3  Type: NAT              Result: ALLOW\n  rule-id: 268435460 (object WEB-PRIVATE nat static)\n  Static translate 198.51.100.10/443 → 10.10.10.10/443\nPhase: 4  Type: NAT              Result: ALLOW  (reverse path)\nPhase: 5  Type: INSPECT          Result: ALLOW  (inspect-tcp)\nPhase: 6  Type: FLOW-CREATION    Result: ALLOW\n  New flow created with id 67890, packet dispatched to next module\n\nResult:\n  input-interface: outside\n  output-interface: inside\n  Action: allow"
+          },
+          {
+            "cmd": "clear nat counters",
+            "desc": "Reset NAT translation hit counters to zero — useful before testing a new NAT rule to confirm it is being matched",
+            "type": "config",
+            "flagged": false,
+            "example": "! Run immediately before testing, then verify with:\nshow nat detail\n! Look for non-zero \"translate_hits\" to confirm rule is matching"
           }
         ]
       },
@@ -28882,6 +29148,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> netsh wlan show profile name=\"CorpWiFi\" key=clear\n\nProfile CorpWiFi on interface Wi-Fi:\n=======================================================================\nApplied: All User Profile\n\nProfile information\n-------------------\n    Version                : 1\n    Type                   : Wireless LAN\n    Name                   : CorpWiFi\n    Control options        :\n        Connection mode    : Connect automatically\n        Network broadcast  : Connect only if this network is broadcasting\n        AutoSwitch         : Do not switch to other networks\n\nConnectivity settings\n---------------------\n    Number of SSIDs        : 1\n    SSID name              : \"CorpWiFi\"\n    Network type           : Infrastructure\n    Radio type             : [ Any Radio Type ]\n    Vendor extension       : Not present\n\nSecurity settings\n-----------------\n    Authentication         : WPA2-Personal\n    Cipher                 : CCMP\n    Authentication         : WPA2-Personal\n    Cipher                 : GCMP\n    Security key           : Present\n    Key Content            : P@ssw0rd1234!\n\nCost settings\n-------------\n    Cost                   : Unrestricted"
+          },
+          {
+            "cmd": "winrm quickconfig",
+            "desc": "Configure Windows Remote Management (WinRM) service to accept remote PowerShell and WS-Management connections — required before using PowerShell remoting",
+            "type": "action",
+            "flagged": false,
+            "example": "PS> winrm quickconfig\nWinRM service is already running on this machine.\nWinRM is not set up to allow remote access to this machine for management.\nThe following changes must be made:\n\nCreate a WinRM listener on HTTP://* to accept WS-Man requests to any IP on this machine.\nEnable the WinRM firewall exception.\n\nMake these changes [y/n]? y\nWinRM has been updated for remote management.\n\nCreated a WinRM listener on HTTP://* to accept WS-Man requests.\nWinRM firewall exception enabled.\n\nNote: For HTTPS use: winrm quickconfig -transport:https\nTest connectivity: Test-WSMan -ComputerName <hostname>"
           }
         ],
         "Processes": [
@@ -29346,6 +29619,27 @@
             "type": "config",
             "flagged": false,
             "example": "# Start an interactive session (opens a shell directly in your terminal):\n$ aws ssm start-session --target i-0abc123def456789a\n\nStarting session with SessionId: user-0abcdef1234567890\n$\n\n# Port-forward a remote port to localhost (e.g. RDP or a database):\n$ aws ssm start-session \\\n    --target i-0abc123def456789a \\\n    --document-name AWS-StartPortForwardingSession \\\n    --parameters '{\"portNumber\":[\"3389\"],\"localPortNumber\":[\"13389\"]}'\n\n# Then connect to localhost:13389 with your RDP client.\n\n# Prerequisites:\n# 1. EC2 instance must have SSM Agent running (pre-installed on Amazon Linux 2/2023, Windows 2016+)\n# 2. EC2 IAM role must include AmazonSSMManagedInstanceCore policy\n# 3. aws CLI Session Manager plugin must be installed locally:\n#    https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
+          },
+          {
+            "cmd": "aws rds describe-db-instances",
+            "desc": "List RDS database instances with endpoint, engine version, instance class, allocated storage, and availability status",
+            "type": "show",
+            "flagged": false,
+            "example": "{\n  \"DBInstances\": [{\n    \"DBInstanceIdentifier\": \"prod-mysql\",\n    \"DBInstanceClass\": \"db.r6g.large\",\n    \"Engine\": \"mysql\",\n    \"EngineVersion\": \"8.0.36\",\n    \"DBInstanceStatus\": \"available\",\n    \"Endpoint\": {\n      \"Address\": \"prod-mysql.abc123xyz.eu-west-1.rds.amazonaws.com\",\n      \"Port\": 3306\n    },\n    \"AllocatedStorage\": 500,\n    \"StorageType\": \"gp3\",\n    \"MultiAZ\": true,\n    \"BackupRetentionPeriod\": 7,\n    \"StorageEncrypted\": true\n  }]\n}"
+          },
+          {
+            "cmd": "aws ec2 create-snapshot --volume-id <vol-id> --description \"<description>\"",
+            "desc": "Create a point-in-time EBS snapshot of a volume for backup or AMI creation",
+            "type": "show",
+            "flagged": false,
+            "example": "> aws ec2 create-snapshot --volume-id vol-0a1b2c3d4e5f67890 --description \"Pre-upgrade backup 2026-06-16\"\n{\n    \"SnapshotId\": \"snap-0a1b2c3d4e5f67890\",\n    \"VolumeId\":   \"vol-0a1b2c3d4e5f67890\",\n    \"State\":      \"pending\",\n    \"StartTime\":  \"2026-06-16T10:00:00.000Z\",\n    \"Progress\":   \"0%\",\n    \"Description\":\"Pre-upgrade backup 2026-06-16\"\n}\n# Poll until complete:\naws ec2 describe-snapshots --snapshot-ids snap-0a1b2c3d4e5f67890 --query \"Snapshots[0].State\""
+          },
+          {
+            "cmd": "aws ec2 describe-snapshots --owner-ids self --query \"Snapshots[].[SnapshotId,VolumeId,State,Progress,StartTime]\" --output table",
+            "desc": "List all EBS snapshots owned by the current account with their status and creation time",
+            "type": "show",
+            "flagged": false,
+            "example": "> aws ec2 describe-snapshots --owner-ids self --query \"Snapshots[].[SnapshotId,VolumeId,State,Progress,StartTime]\" --output table\n---------------------------------------------------------------------------\n| DescribeSnapshots                                                       |\n+-----------------------+----------------------+----------+------+--------+\n| snap-0a1b2c3d4e5f678  | vol-0a1b2c3d4e5f678 | completed| 100% | 2026-06-16T10:05:12Z |\n| snap-0b2c3d4e5f67891  | vol-0b2c3d4e5f67891 | completed| 100% | 2026-06-15T02:00:05Z |\n| snap-0c3d4e5f6789012  | vol-0c3d4e5f6789012 | pending  | 23%  | 2026-06-16T10:00:00Z |\n+-----------------------+----------------------+----------+------+--------+"
           }
         ],
         "S3": [
@@ -29690,6 +29984,84 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws ec2 describe-vpc-peering-connections \\\n    --query \"VpcPeeringConnections[].[VpcPeeringConnectionId,Status.Code,RequesterVpcInfo.CidrBlock,AccepterVpcInfo.CidrBlock]\" \\\n    --output table\n\n--------------------------------------------------------------------\n|            DescribeVpcPeeringConnections                         |\n+------------------+--------+----------------+--------------------+\n|  pcx-0a1b2c3d4e  |active  |  10.0.0.0/16   |  172.16.0.0/16     |\n|  pcx-0f5e6d7c8b  |active  |  10.0.0.0/16   |  192.168.0.0/24    |\n|  pcx-0d9c8b7a6f  |deleted |  10.1.0.0/16   |  10.2.0.0/16       |\n+------------------+--------+----------------+--------------------+\n\n# Filter to only active connections:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=status-code,Values=active\n\n# Find peering for a specific VPC:\n$ aws ec2 describe-vpc-peering-connections \\\n    --filters Name=requester-vpc-info.vpc-id,Values=vpc-0abc123def456"
+          },
+          {
+            "cmd": "aws elbv2 describe-load-balancers",
+            "desc": "List all Application Load Balancers and Network Load Balancers showing DNS name, state, VPC, and availability zones",
+            "type": "show",
+            "flagged": false,
+            "example": "{\n  \"LoadBalancers\": [{\n    \"LoadBalancerArn\": \"arn:aws:elasticloadbalancing:eu-west-1:123456789012:loadbalancer/app/prod-alb/abc123\",\n    \"DNSName\": \"prod-alb-1234567890.eu-west-1.elb.amazonaws.com\",\n    \"LoadBalancerName\": \"prod-alb\",\n    \"Type\": \"application\",\n    \"Scheme\": \"internet-facing\",\n    \"State\": {\"Code\": \"active\"},\n    \"VpcId\": \"vpc-0a1b2c3d4e5f67890\",\n    \"AvailabilityZones\": [\n      {\"ZoneName\": \"eu-west-1a\", \"SubnetId\": \"subnet-0a1b2c3d4e5f67890\"},\n      {\"ZoneName\": \"eu-west-1b\", \"SubnetId\": \"subnet-1a2b3c4d5e6f78901\"}\n    ]\n  }]\n}"
+          },
+          {
+            "cmd": "aws ec2 describe-vpc-peering-connections --filters Name=status-code,Values=active --query \"VpcPeeringConnections[].[VpcPeeringConnectionId,RequesterVpcInfo.VpcId,AccepterVpcInfo.VpcId,Status.Code]\" --output table",
+            "desc": "List all active VPC peering connections showing the peering ID, requester VPC, accepter VPC, and current status",
+            "type": "show",
+            "flagged": false,
+            "example": "-------------------------------------------------------------------\n|           DescribeVpcPeeringConnections                          |\n+-------------------+---------------+---------------+-----------+\n| pcx-0a1b2c3d4e5f | vpc-11111111  | vpc-22222222  | active    |\n| pcx-0b2c3d4e5f6a | vpc-33333333  | vpc-44444444  | active    |\n+-------------------+---------------+---------------+-----------+"
+          }
+        ],
+        "Route53": [
+          {
+            "cmd": "aws route53 list-hosted-zones",
+            "desc": "List all Route53 hosted zones in the account, showing IDs, names, and record counts",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 list-hosted-zones\n{\n  \"HostedZones\": [\n    {\n      \"Id\": \"/hostedzone/Z1D633PJN98FT9\",\n      \"Name\": \"example.com.\",\n      \"Config\": { \"PrivateZone\": false },\n      \"CallerReference\": \"DynDNS2\",\n      \"ResourceRecordSetCount\": 17\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws route53 list-resource-record-sets --hosted-zone-id <zone-id>",
+            "desc": "List all DNS records in a hosted zone — useful for auditing A, CNAME, MX, TXT records",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 list-resource-record-sets --hosted-zone-id Z1D633PJN98FT9\n{\n  \"ResourceRecordSets\": [\n    {\n      \"Name\": \"www.example.com.\",\n      \"Type\": \"A\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"203.0.113.10\"}]\n    },\n    {\n      \"Name\": \"mail.example.com.\",\n      \"Type\": \"MX\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"10 mail.example.com\"}]\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws route53 test-dns-answer --hosted-zone-id <zone-id> --record-name <name> --record-type A",
+            "desc": "Simulate a DNS query against Route53 to verify that a record resolves correctly",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 test-dns-answer --hosted-zone-id Z1D633PJN98FT9 --record-name www.example.com --record-type A\n{\n  \"Nameserver\": \"ns-1234.awsdns-56.org\",\n  \"RecordName\": \"www.example.com.\",\n  \"RecordType\": \"A\",\n  \"RecordData\": [\"203.0.113.10\"],\n  \"ResponseCode\": \"NOERROR\",\n  \"Protocol\": \"UDP\"\n}"
+          }
+        ],
+        "SNS": [
+          {
+            "cmd": "aws sns publish --topic-arn <arn> --message \"<message>\"",
+            "desc": "Publish a message to an SNS topic, triggering delivery to all subscribed endpoints (email, SQS, Lambda, HTTP)",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws sns publish \\\n    --topic-arn arn:aws:sns:us-east-1:123456789012:MyAlerts \\\n    --message \"Disk usage on prod-web01 is above 90%\" \\\n    --subject \"High Disk Alert\"\n{\n  \"MessageId\": \"da68f62c-0c07-4bee-bf5f-7e856EXAMPLE\"\n}"
+          },
+          {
+            "cmd": "aws sns list-subscriptions-by-topic --topic-arn <arn>",
+            "desc": "List all subscriptions on an SNS topic — shows protocol, endpoint, and subscription ARN",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sns list-subscriptions-by-topic --topic-arn arn:aws:sns:us-east-1:123456789012:MyAlerts\n{\n  \"Subscriptions\": [\n    {\n      \"SubscriptionArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts:21be6e16-...\",\n      \"Owner\": \"123456789012\",\n      \"Protocol\": \"email\",\n      \"Endpoint\": \"ops@example.com\",\n      \"TopicArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts\"\n    }\n  ]\n}"
+          }
+        ],
+        "SQS": [
+          {
+            "cmd": "aws sqs receive-message --queue-url <url> --max-number-of-messages 10",
+            "desc": "Receive up to 10 messages from an SQS queue — messages are not deleted until you send a delete-message request",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws sqs receive-message \\\n    --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue \\\n    --max-number-of-messages 5\n{\n  \"Messages\": [\n    {\n      \"MessageId\": \"b6a5f2f5-...\",\n      \"ReceiptHandle\": \"AQEBvJ...\",\n      \"MD5OfBody\": \"098f6bcd4...\",\n      \"Body\": \"Hello from producer\",\n      \"Attributes\": { \"ApproximateFirstReceiveTimestamp\": \"1706284800000\" }\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws sqs get-queue-attributes --queue-url <url> --attribute-names All",
+            "desc": "Show all attributes of an SQS queue: message counts, visibility timeout, ARN, encryption settings",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sqs get-queue-attributes \\\n    --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue \\\n    --attribute-names All\n{\n  \"Attributes\": {\n    \"QueueArn\": \"arn:aws:sqs:us-east-1:123456789012:MyQueue\",\n    \"ApproximateNumberOfMessages\": \"15\",\n    \"ApproximateNumberOfMessagesNotVisible\": \"3\",\n    \"VisibilityTimeout\": \"30\",\n    \"CreatedTimestamp\": \"1706284000\",\n    \"MaximumMessageSize\": \"262144\"\n  }\n}"
+          }
+        ],
+        "CloudFormation": [
+          {
+            "cmd": "aws cloudformation describe-stacks --stack-name <name>",
+            "desc": "Show full status and parameters of a CloudFormation stack — use to check deployment health, outputs, and drift",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws cloudformation describe-stacks --stack-name prod-vpc\n{\n  \"Stacks\": [{\n    \"StackName\": \"prod-vpc\",\n    \"StackStatus\": \"UPDATE_COMPLETE\",\n    \"CreationTime\": \"2024-01-01T10:00:00Z\",\n    \"LastUpdatedTime\": \"2024-06-01T14:30:00Z\",\n    \"Parameters\": [\n      {\"ParameterKey\": \"VpcCidr\", \"ParameterValue\": \"10.0.0.0/16\"}\n    ],\n    \"Outputs\": [\n      {\"OutputKey\": \"VpcId\", \"OutputValue\": \"vpc-0a1b2c3d4e5f\"}\n    ]\n  }]\n}"
           }
         ]
       },
@@ -29831,7 +30203,8 @@
             "cmd": "show system ntp servers",
             "desc": "Lists configured NTP servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system ntp servers\n\nNTP Server    Stratum  Offset(ms)  State\n-----------   -------  ----------  ------\n192.168.1.100    2       +0.423    SYNC\n192.168.1.101    2       +1.102    REACH\nntp.example.com  1       +0.088    SYNC\n\nDone\n\nNote: SYNC = actively syncing from this peer. REACH = reachable but not selected as primary source."
           },
           {
             "cmd": "show system dns",
@@ -29844,7 +30217,8 @@
             "cmd": "show system dns servers",
             "desc": "Lists DNS servers",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system dns servers\n\nDNS Servers:\n  Primary:   8.8.8.8\n  Secondary: 8.8.4.4\n\nSearch Domain: corp.example.com\n\nDone"
           },
           {
             "cmd": "show system hostname",
@@ -29857,13 +30231,15 @@
             "cmd": "show system hardware",
             "desc": "Shows hardware summary",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware\n\nModel:          SDX 22000-40G\nSerial Number:  SDX1234ABCD5678\nPlatform:       SDX 22000\nChassis:        2-slot\nCPU:            Intel Xeon E5-2697 @ 2.60 GHz  (24 cores / 48 threads)\nMemory:         65536 MB (64 GB)\nDisk:           2 × 1.2 TB SAS (RAID-1)\nNIC Ports:      40 × 10GE SFP+\nSSL Chips:      2 × Nitrox III\nSDX Version:    14.1 Build 21.57\nBIOS Version:   2.5.1"
           },
           {
             "cmd": "show system hardware -detail",
             "desc": "Shows detailed hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware -detail\n\nPlatform    : SDX 14030 FIPS\nSerial No   : ABC1234567890\nManufactured: 2023-04-15\nBIOS        : Version 14.0.123, Released 2023-02-01\n\nCPU Details:\n  Model     : Intel Xeon E5-2690 v3\n  Speed     : 2.60 GHz\n  Cores     : 24 (12 physical × 2 HT)\n  Cache     : 30 MB L3\n  Temp      : 42°C (Pkg), 38°C (Core avg)\n\nMemory Details:\n  Total     : 256 GB\n  DIMMs     : 16 × 16 GB DDR4 ECC\n  Speed     : 2133 MHz\n  Errors    : 0 correctable, 0 uncorrectable\n\nDone"
           },
           {
             "cmd": "show system hardware fans",
@@ -29876,7 +30252,8 @@
             "cmd": "show system hardware psu",
             "desc": "Shows power supply status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware psu\n\nPower Supply Status\n-------------------\nPSU 0:  Model: PSAC 1200W  Input: 220V  Output: 950W  Status: OK\nPSU 1:  Model: PSAC 1200W  Input: 220V  Output: 10W   Status: STANDBY\n\nTotal Power Draw : 960 W / 2400 W max\nRedundancy       : Active-Standby (PSU0 primary)\n\nDone\n\nNote: Both PSUs should show OK. STANDBY is normal for the backup PSU."
           },
           {
             "cmd": "show system hardware temperature",
@@ -29889,31 +30266,36 @@
             "cmd": "show system hardware voltage",
             "desc": "Shows voltage sensors",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware voltage\n\nVoltage Sensor Readings\n------------------------\nVCC_12V        : 12.05 V  [Normal  11.40–12.60 V]\nVCC_5V         : 5.02 V   [Normal  4.75–5.25 V]\nVCC_3V3        : 3.31 V   [Normal  3.14–3.47 V]\nVCC_1V8        : 1.80 V   [Normal  1.71–1.89 V]\nVCC_CPU        : 1.02 V   [Normal  0.95–1.10 V]\nVCC_DRAM       : 1.20 V   [Normal  1.14–1.26 V]\n\nAll voltages within normal range.\n\nDone"
           },
           {
             "cmd": "show system hardware cpu",
             "desc": "Shows CPU hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware cpu\n\nCPU Hardware Information\n------------------------\nSocket 0: Intel Xeon E5-2690 v3\n  Cores   : 12 physical / 24 logical (HyperThreading ON)\n  Speed   : 2.60 GHz base / 3.50 GHz boost\n  Cache   : L1 32KB, L2 256KB, L3 30MB\n  TDP     : 135 W\n  Temp    : Package 42°C, Cores 36–40°C\n  Throttle: None\n\nSocket 1: Intel Xeon E5-2690 v3\n  Cores   : 12 physical / 24 logical\n  Temp    : Package 39°C, Cores 34–38°C\n  Throttle: None\n\nDone"
           },
           {
             "cmd": "show system hardware memory",
             "desc": "Shows memory hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware memory\n\nMemory Configuration\n--------------------\nTotal Installed : 256 GB\nSpeed           : 2133 MHz\nType            : DDR4 ECC Registered\nChannels        : Quad-channel\n\nDIMM Slots:\n  DIMM_A1: 16 GB  2133 MHz  Status: OK\n  DIMM_A2: 16 GB  2133 MHz  Status: OK\n  DIMM_B1: 16 GB  2133 MHz  Status: OK\n  DIMM_B2: 16 GB  2133 MHz  Status: OK\n  ... (16 DIMMs total)\n\nECC Errors: 0 correctable, 0 uncorrectable\n\nDone"
           },
           {
             "cmd": "show system hardware disks",
             "desc": "Shows disk hardware info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware disks\n\nDisk Configuration\n------------------\nSlot  Device    Model             Size     RPM   Status\n----  --------  ----------------  -------  ----  ------\n  0   /dev/sda  SEAGATE ST600MP   600 GB   10k   ONLINE\n  1   /dev/sdb  SEAGATE ST600MP   600 GB   10k   ONLINE\n\nRAID Controller: LSI MegaRAID SAS 9271-8i\nRAID Level     : RAID-1 (Mirror)\nVirtual Disk 0 : 558 GB  State: Optimal  Cache: WB\n\nNote: If a disk shows FAILED, do not remove while RAID is rebuilding without replacing immediately.\n\nDone"
           },
           {
             "cmd": "show system hardware raid",
             "desc": "Shows RAID controller status",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show system hardware raid\n\nRAID Controller: LSI MegaRAID SAS 9271-8i\nFirmware Version: 23.31.1-0112\nCache Size      : 1 GB (Battery-Backed)\n\nVirtual Disks:\n  VD 0: RAID-1  Size: 558 GB  State: Optimal  Access: RW  Cache: WB\n\nPhysical Disks:\n  PD 0:  Slot 0  SEAGATE ST600MP  600 GB  10K SAS  State: Online  Media: HDD\n  PD 1:  Slot 1  SEAGATE ST600MP  600 GB  10K SAS  State: Online  Media: HDD\n\nBattery Backup Unit:\n  State  : Fully Charged\n  Voltage: 4.08 V\n  Temp   : 28°C\n\nDone\n\nNote: 'Degraded' state means one disk failed — replace immediately; don't wait."
           },
           {
             "cmd": "show system hardware raid -detail",
@@ -30916,7 +31298,8 @@
             "cmd": "show vm cpu",
             "desc": "Shows VM CPU allocation",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show vm cpu\n\nVM Name    vCPU  Host CPU  Usage %  State\n---------  ----  --------  -------  -------\nvpx-01     0     2         8.2      Running\nvpx-01     1     3         12.5     Running\nvpx-01     2     4         6.1      Running\nvpx-01     3     5         9.8      Running\nvpx-02     0     6         3.4      Running\nvpx-02     1     7         5.7      Running\n\nWhat it means:\n- \"Host CPU\" shows physical core pinning — helps identify NUMA affinity issues.\n- Imbalanced per-vCPU usage may indicate VPX queue depth or interrupt skew."
           },
           {
             "cmd": "show vm memory",
@@ -31739,61 +32122,71 @@
             "cmd": "show events",
             "desc": "Shows system events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show events\n\nTime                  Severity  Source      Message\n--------------------  --------  ----------  -----------------------------------------------\n2026-06-15 10:05:00   CRITICAL  SSL         SSL chip 2 reset — auto-recovered\n2026-06-15 09:14:22   MAJOR     Network     Interface 1/4 link down\n2026-06-15 09:14:35   CLEAR     Network     Interface 1/4 link restored\n2026-06-15 08:00:15   MINOR     VPX         VPX vpx-02 CPU usage exceeded 75%\n2026-06-14 22:00:00   INFO      System      Scheduled backup completed successfully\n\nWhat it means:\n- CRITICAL / MAJOR events need immediate attention.\n- CLEAR events confirm a previous alarm resolved — confirm with monitoring."
           },
           {
             "cmd": "show events -detail",
             "desc": "Shows detailed events",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show events -detail\n\nEvent ID   : 1042\nTime       : 2024-06-01 14:32:01\nSeverity   : CRITICAL\nComponent  : VPX\nInstance   : VPX01\nMessage    : High CPU usage detected — current utilisation 98%\nDetails    : Sustained for 5 minutes. Possible packet-processing overload.\nRecommended: Check VPX CPU allocation. Consider increasing vCPUs or throttling traffic.\nAcknowledged: No\n\nDone"
           },
           {
             "cmd": "show alerts",
             "desc": "Shows alerts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show alerts\n\nAlert ID  Time                  Severity  Source    Message\n--------  --------------------  --------  --------  -------\n    1021  2024-06-01 14:32:05   CRITICAL  VPX01     CPU threshold exceeded (98%)\n    1019  2024-06-01 12:45:00   WARNING   System    Fan speed below threshold\n    1015  2024-06-01 09:00:00   INFO      Network   LACP bond failover detected\n\nTotal alerts: 3\n\nDone"
           },
           {
             "cmd": "show alerts -detail",
             "desc": "Shows detailed alerts",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show alerts -detail\n\nAlert ID   : 1021\nTime       : 2024-06-01 14:32:05\nSeverity   : CRITICAL\nSource     : VPX01\nType       : ResourceThreshold\nMessage    : CPU utilization exceeded threshold\nThreshold  : 90%  Current: 98%\nDuration   : 5 minutes\nAction     : Notification sent to admin@corp.com\nStatus     : Active / Unacknowledged\n\nTo acknowledge: ack alert 1021\n\nDone"
           },
           {
             "cmd": "show faults",
             "desc": "Shows system faults",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show faults\n\nFault ID  Time                  Severity  Component  Description\n--------  --------------------  --------  ---------  -----------\n    0042  2024-05-20 10:12:33   MAJOR     Hardware   PSU1 input voltage low\n    0041  2024-05-15 08:03:11   MINOR     Network    LACP bond member down\n    0038  2024-05-01 00:00:00   INFO      System     Scheduled maintenance window\n\nTotal faults: 3\n\nDone"
           },
           {
             "cmd": "show faults -detail",
             "desc": "Shows detailed faults",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show faults -detail\n\nFault ID   : 0042\nDetected   : 2024-05-20 10:12:33\nSeverity   : MAJOR\nComponent  : Hardware\nSub-system : Power Supply\nDescription: PSU1 input voltage dropped below lower threshold\nThreshold  : Min 200V  Measured: 188V\nImpact     : PSU0 carrying full load. Redundancy lost.\nStatus     : Active\nResolution : Check PSU1 input circuit. Contact datacenter power team.\n\nDone"
           },
           {
             "cmd": "show crashdump",
             "desc": "Shows crash dumps",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show crashdump\n\nCrash Dump Files\n----------------\nFilename                        Size     Created\n-------------------------------  -------  --------------------\ncore_nssvm_20240515_032210.gz    45 MB    2024-05-15 03:22:10\ncore_nssvm_20240501_181533.gz    42 MB    2024-05-01 18:15:33\n\nTotal dumps: 2\nLocation: /var/crash/\n\nNote: Upload to Citrix Support with 'show techsupport' output when opening a TAC case.\n\nDone"
           },
           {
             "cmd": "show crashdump -detail",
             "desc": "Shows detailed crash dump info",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show crashdump -detail\n\nFilename   : core_nssvm_20240515_032210.gz\nCreated    : 2024-05-15 03:22:10\nSize       : 45 MB\nVPX        : VPX01\nBuild      : NS13.1: Build 42.47.nc\nSignal     : SIGSEGV (Segmentation fault)\nThread     : Packet Engine PE-2\nStack Trace:\n  #0  0x00007f8b2c1234ab in ssl_renegotiate()\n  #1  0x00007f8b2c5678cd in ssl_process_record()\n  #2  0x00007f8b2c9abc01 in pe_process_pkt()\n\nRecommendation: Open a Citrix support case and attach this dump.\n\nDone"
           },
           {
             "cmd": "show techsupport",
             "desc": "Generates tech support bundle",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show techsupport\n\nGenerating tech support bundle...\nCollecting system information        [ OK ]\nCollecting VPX configurations        [ OK ]\nCollecting network state             [ OK ]\nCollecting logs (last 7 days)        [ OK ]\nCollecting performance counters      [ OK ]\nCollecting crash dumps               [ OK ]\nCompressing archive                  [ OK ]\n\nTech support bundle created:\n  /var/techsupport/sdx_techsupport_20240601_143200.tar.gz  (Size: 238 MB)\n\nDownload via SCP or the SDX web UI: System > Diagnostics > Tech Support\n\nDone"
           },
           {
             "cmd": "show debug",
             "desc": "Shows debug settings",
             "type": "show",
-            "flagged": false
+            "flagged": false,
+            "example": "> show debug\n\nDebug Settings\n--------------\nDebug Level  : 0 (Disabled)\nVerbose Mode : Off\nTrace Level  : Off\nLog Modules  : None active\n\nAvailable debug levels:\n  0 = Off\n  1 = Error (default for production)\n  2 = Warning\n  3 = Info\n  4 = Debug (verbose — do not use in production long-term)\n\nTo enable temporarily for 10 minutes:\n  set debug 3\n  (auto-resets to 0 after 10 min to protect performance)\n\nDone"
           },
           {
             "cmd": "show debug modules",
@@ -32436,6 +32829,13 @@
             "desc": "Shows network health summary",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show interface",
+            "desc": "Display all physical network interfaces on the SDX appliance with link state, speed, and traffic statistics",
+            "type": "show",
+            "flagged": false,
+            "example": "Interface    Status  Speed    Duplex  MTU    RX Pkts      TX Pkts      Errors\n---------    ------  -----    ------  ---    --------     --------     ------\neth0         UP      10Gbps   Full    9000   1,234,567    987,654      0\neth1         UP      10Gbps   Full    9000   876,543      654,321      0\neth2         DOWN    --       --      1500   0            0            0\neth3         UP      1Gbps    Full    1500   12,345       9,876        0\nbond0        UP      20Gbps   Full    9000   2,111,110    1,641,975    0  (LACP: eth0+eth1)"
           }
         ],
         "Services": [
@@ -33030,6 +33430,13 @@
             "desc": "Shows detailed hypervisor debug info",
             "type": "show",
             "flagged": false
+          },
+          {
+            "cmd": "show system debug",
+            "desc": "Displays current SDX debug flags and diagnostic settings",
+            "type": "show",
+            "flagged": false,
+            "example": "> show system debug\n\nDebug Mode:           Disabled\nLog Level:            Info\nCore Dump:            Disabled\nPacket Trace:         Disabled\nDebug Log Path:       /var/log/sdxd.log\nMax Log Size:         50 MB\nLog Rotation:         10 files\n\n# Default output confirms debug mode is off (normal production state).\n# Enable debug mode only during active troubleshooting with Citrix/NetApp TAC:\n#   set system debug -debugMode ENABLED -logLevel DEBUG\n# Disable after TAC session to avoid performance impact and log flooding.\n# Core dumps, if enabled, are written to /var/nscore/ and can be large."
           }
         ],
         "Hardware Internals": [
@@ -33642,6 +34049,13 @@
             "type": "show",
             "flagged": false,
             "example": "sw# show environment all detail\n[SWITCH 1]\n  Temperature: 28 C (Inlet), 38 C (Outlet), 42 C (Hotspot) — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 245W draw\n  PSU B: PWR-C1-715WAC, OK, 245W draw\n  Fans: 3/3 OK, 7128–7234 RPM\n  Alarms: none\n[SWITCH 2]\n  Temperature: 29 C / 39 C / 43 C — all GREEN\n  PSU A: PWR-C1-715WAC, OK, 198W draw\n  Fans: 3/3 OK"
+          },
+          {
+            "cmd": "show platform resources",
+            "desc": "Display utilization of platform resources: control-plane CPU, DRAM, and NVRAM — use to identify resource exhaustion causing instability",
+            "type": "show",
+            "flagged": false,
+            "example": "> show platform resources\n\n**Control Plane**\n  RP0 / CPU0       Total:  100%   Used:   12%   Free:   88%\n  DRAM (RP0)       Total: 8192MB  Used: 3840MB  Free: 4352MB\n  NVRAM            Total:  32MB   Used:   18MB  Free:   14MB\n\n**Forwarding Engine (FED)**\n  CPU              Total: 100%    Used:  8%     Free:  92%\n  TCAM L2          Total: 131072  Used: 18432   Free: 112640\n  TCAM L3 IPv4     Total: 65536   Used: 12288   Free: 53248\n\nKey: if DRAM > 80% investigate leaks via \"show processes memory sorted\"; if TCAM > 80% review ACL/MAC tables."
           }
         ],
         "Licensing": [
@@ -40072,6 +40486,13 @@
             "type": "config",
             "flagged": false,
             "example": "(HA offline-relocate VM 100 to pve02 initiated; VM will be stopped then started on target)"
+          },
+          {
+            "cmd": "ha-manager status detail",
+            "desc": "Show detailed HA manager state for every managed resource — includes current node placement, goal state, error count, and last state-change reason",
+            "type": "show",
+            "flagged": false,
+            "example": "quorum OK\nmaster node1 (active, max_worker: 4)\n\nService vm:100:\n  state: started\n  node: node1\n  group: (none)\n  error_count: 0\n  crm_state: started\n\nService vm:101:\n  state: started\n  node: node2\n  group: production\n  error_count: 0\n  crm_state: started"
           }
         ],
         "ZFS": [
@@ -40557,6 +40978,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show module internal exception-log\nException log for module 1:\n  [1] Time: Jun 21 08:12:34 2026  PID: 12345  Signal: SIGSEGV\n      Process: netstack  Thread: main\n      Reason: Segmentation fault in rib_update()\n  No further exceptions in the last 24h."
+          },
+          {
+            "cmd": "show system resources",
+            "desc": "Real-time CPU load, memory utilization, and top process list for the Nexus switch supervisor",
+            "type": "show",
+            "flagged": false,
+            "example": "Load average:   1 minute: 0.24   5 minutes: 0.31   15 minutes: 0.28\n\nProcesses   : 489 total, 1 running\nCPU states  : 4.82% user,  1.44% kernel,  93.73% idle\nMemory usage: 14366044K total, 8903408K used, 5462636K free\nKernel vmalloc: 0K\n\nPID    %CPU    %MEM    COMMAND\n4321   1.23    2.10    bgp\n1234   0.82    1.55    ospf\n5678   0.21    0.98    mrib"
           }
         ],
         "Interfaces": [
@@ -41525,6 +41953,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# aaa authentication login default group TAC local\nswitch(config)# aaa authentication login console local  ; protect console from AAA failures\nswitch# show aaa authentication\n         default: group TAC local\n         console: local"
+          },
+          {
+            "cmd": "show tacacs-server statistics",
+            "desc": "Display per-server TACACS+ authentication/authorisation/accounting request counts, success/fail totals, and round-trip time statistics",
+            "type": "show",
+            "flagged": false,
+            "example": "Server: 10.10.10.50\n  Authentication requests: 1248   successes: 1240   failures: 8\n  Authorization  requests:  623   successes:  623   failures: 0\n  Accounting     requests:  623   successes:  623   failures: 0\n  Average RTT: 4 ms   Max RTT: 18 ms"
           }
         ],
         "Logging / Monitoring": [
@@ -41676,6 +42111,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "switch# show system internal sysmgr service all\nName                          UUID   PID    SAP   state           Start count    Tag     PluginID\n----                          ----   ---    ---   -----           -----------    ---     --------\nbgp                       0x000003E8 12345 0x0001 SRV_STATE_HANDSHAKED   1            N/A   1\nospf                      0x000003E9 12346 0x0002 SRV_STATE_HANDSHAKED   1            N/A   1\nvpc                       0x000003EA 12347 0x0003 SRV_STATE_HANDSHAKED   1            N/A   1\neltm                      0x000003EB 12348 0x0004 SRV_STATE_HANDSHAKED   3            N/A   1   ; restarted 3 times — investigate"
+          },
+          {
+            "cmd": "show hardware capacity",
+            "desc": "Show TCAM and forwarding hardware resource utilization across all modules — critical for diagnosing TCAM exhaustion causing ACL/route drops",
+            "type": "show",
+            "flagged": false,
+            "example": "> show hardware capacity\nModule: 1\n  FIB (IPv4 unicast):  Used: 12,045 / Total: 32,768  (36%)\n  FIB (IPv6 unicast):  Used: 3,211  / Total: 8,192   (39%)\n  ARP/ND:              Used: 5,100  / Total: 8,000   (63%)\n  ACL:                 Used: 18,432 / Total: 32,768  (56%)\n  VLAN:                Used: 248    / Total: 4,094   (6%)\n  Multicast:           Used: 512    / Total: 2,048   (25%)\n\nNote: ACL capacity above 80% may cause silent drops."
           }
         ],
         "Config Management": [
@@ -42200,6 +42642,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show ip bgp summary\nVRF : default\nBGP Summary\n-----------\n  Local AS               : 65000      BGP router-id        : 10.0.0.1\n  Peers Total            : 2          Established Count    : 2\n\nNeighbor         AS       MsgRcvd  MsgSent  Up/Down       State  PfxRcd\n10.1.1.1         65001    1250     875      5d00h12m      Estab  125\n10.1.1.2         65002    875      654      2d14h05m      Estab  89"
+          },
+          {
+            "cmd": "show ip ospf neighbor detail",
+            "desc": "Display detailed OSPF neighbor information including state, dead timer, and DR/BDR roles",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show ip ospf neighbor detail\n\nNeighbor 2.2.2.2 on interface 1/1/49\n  In the area 0.0.0.0 via interface 1/1/49\n  Neighbor priority is 1, state is Full, 6 state changes\n  DR is 10.0.12.2 (2.2.2.2), BDR is 10.0.12.1 (1.1.1.1)\n  Options is E (external routing)\n  Dead timer due in 00:00:35\n  Neighbor is up for 3d 14h 22m\n  Database summary list: 0\n  Link state request list: 0\n  Link state retransmission list: 0\n\nWhat it means:\n- \"Full\" = adjacency is complete; LSDBs are synchronised.\n- Dead timer < 10 s while state is Full indicates a flapping link.\n- DR/BDR roles show which router controls the broadcast segment."
           }
         ],
         "VRF": [
@@ -42599,6 +43048,13 @@
             "type": "show",
             "flagged": false,
             "example": "MAC address table for VLAN 10:\nMAC Address         Type     Port         Age\n00:50:56:ab:cd:01   dynamic  1/1/1        240\n00:50:56:ab:cd:02   dynamic  1/1/2        120\n00:50:56:ab:cd:03   dynamic  1/1/3        80\naa:bb:cc:dd:ee:f0   static   1/1/49       -"
+          },
+          {
+            "cmd": "show cdp neighbors detail",
+            "desc": "Show detailed Cisco Discovery Protocol neighbour information including platform, IOS version, capabilities, and interface",
+            "type": "show",
+            "flagged": false,
+            "example": "-------------------------\nDevice ID: CORE-SW-01.corp.local\nEntry address(es):\n  IP address: 10.100.0.1\nPlatform: Cisco IOS Software, Catalyst 9300\nInterface: 1/1/24, Port ID (outgoing port): GigabitEthernet1/0/24\nHoldtime: 148 sec\nVersion: Cisco IOS XE Software, Version 17.09.04a\nCapabilities: Switch IGMP\nDuplex: full  |  MTU: 1500\n\nDevice ID: AP-Floor1-01\nEntry address(es):\n  IP address: 10.100.10.11\nPlatform: Aruba AP-515\nInterface: 1/1/5, Port ID (outgoing port): eth0\nCapabilities: Host"
           }
         ],
         "Config Management": [
@@ -43132,6 +43588,13 @@
             "type": "show",
             "flagged": false,
             "example": "AirMatch radar events:\nTime                 AP         Radio  Old Ch  New Ch\n2026-06-12 07:14:32  ap-floor1  0      44      36      (DFS triggered)"
+          },
+          {
+            "cmd": "show ap radio-database ap-name <name>",
+            "desc": "Display the ARM radio database entry for a specific AP — includes current channel, transmit power, neighbour AP list, and interference scores used by ARM",
+            "type": "show",
+            "flagged": false,
+            "example": "AP: office-ap-01  Radio: 0 (2.4 GHz)\n  Channel: 6   Tx Power: 15 dBm   Coverage Index: 3\n  Neighbour count: 8   Co-channel APs: 2\n  Interference score: 14  Noise floor: -92 dBm\nAP: office-ap-01  Radio: 1 (5 GHz)\n  Channel: 36  Tx Power: 18 dBm   Coverage Index: 2\n  Neighbour count: 4   Co-channel APs: 0\n  Interference score: 2   Noise floor: -95 dBm"
           }
         ],
         "Authentication / RADIUS": [
@@ -44229,6 +44692,13 @@
             "type": "config",
             "flagged": false,
             "example": "router(config)# interface GigabitEthernet0/0/1\nrouter(config-if)# vrf forwarding TENANT-A\n% Interface GigabitEthernet0/0/1 IP address removed due to enabling VRF TENANT-A\nrouter(config-if)# ip address 10.50.0.1 255.255.255.0\nrouter(config-if)# no shutdown"
+          },
+          {
+            "cmd": "show ip cef vrf <vrf> <prefix>",
+            "desc": "Display the CEF (Cisco Express Forwarding) entry for a specific prefix inside a VRF — shows next-hop, outgoing interface, and MPLS label stack",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ip cef vrf TENANT-A 10.10.10.0/24\n10.10.10.0/24, epoch 0\n  local label info: global/2003\n  nexthop 10.1.1.2 GigabitEthernet0/0/1 label [101 24007]\n  nexthop 10.1.1.6 GigabitEthernet0/0/2 label [201 24007]"
           }
         ],
         "QoS": [
