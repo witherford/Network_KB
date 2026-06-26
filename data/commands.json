@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-25T20:40:07.255Z",
+  "updatedAt": "2026-06-26T19:12:29.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -570,10 +570,10 @@
           },
           {
             "cmd": "set ns feature LB CS SSL",
-            "desc": "Enable the LB, CS and SSL feature licenses on the ADC.",
+            "desc": "Enable the LB (Load Balancing), CS (Content Switching), and SSL features in one command; features persist across reboots once saved",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ns feature LB CS SSL\nDone\n\n# Verify enabled features:\n> show ns feature\nFeature                   Status\nLoad Balancing            ENABLED\nContent Switching         ENABLED\nSSL Offloading            ENABLED\nCompression               DISABLED\n...\n\n# Individual enable:\n#   enable ns feature SSL\n# Individual disable:\n#   disable ns feature CS"
           },
           {
             "cmd": "set ns mode L3 EDGE MBF",
@@ -605,10 +605,10 @@
           },
           {
             "cmd": "set cache parameter -memLimit 500",
-            "desc": "Set the global Integrated-Cache memory ceiling to 500 MB.",
+            "desc": "Set the Integrated Cache global memory ceiling to 500 MB; excess cached objects are evicted when this limit is reached",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set cache parameter -memLimit 500\nDone\n\n# Verify:\n> show cache parameter\n        Memory limit: 500 MB\n        Current memory usage: 214 MB\n        Hit ratio: 73.2%\n\n# Check current cache stats:\n> show cache stats\n\n# NOTE: Setting too low evicts frequently-accessed objects.\n# Monitor hit ratio — if it drops after reducing limit, increase memLimit."
           },
           {
             "cmd": "set compression parameter -cmpLevel HIGH",
@@ -1225,10 +1225,10 @@
           },
           {
             "cmd": "unbind lb vserver LB_VS_1 SVC_1",
-            "desc": "Remove service SVC_1 from LB vserver LB_VS_1.",
+            "desc": "Detach service SVC_1 from LB vserver LB_VS_1; traffic to the vserver will no longer be directed to SVC_1",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> unbind lb vserver LB_VS_1 SVC_1\nDone\n\n# Confirm service is no longer bound:\n> show lb vserver LB_VS_1\n...\n        1) Name: SVC_2    State: UP   Wt: 1\n        2) Name: SVC_3    State: UP   Wt: 1\n# SVC_1 no longer listed.\n\n> save ns config"
           },
           {
             "cmd": "bind lb vserver LB_VS_1 SVC_2",
@@ -1253,17 +1253,17 @@
           },
           {
             "cmd": "rm lb vserver LB_VS_Old",
-            "desc": "Delete the LB vserver LB_VS_Old from the configuration.",
+            "desc": "Permanently delete an LB vserver; all service bindings must be removed first",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "# Unbind services before deleting:\n> unbind lb vserver LB_VS_Old -serviceName SVC_1\n> unbind lb vserver LB_VS_Old -serviceName SVC_2\n\n# Delete the vserver:\n> rm lb vserver LB_VS_Old\nDone\n\n# Verify:\n> show lb vserver LB_VS_Old\nERROR: No such resource [name, LB_VS_Old]\n\n> save ns config"
           },
           {
             "cmd": "rm service SVC_Old",
-            "desc": "Delete the service SVC_Old.",
+            "desc": "Permanently remove a named service object from the NetScaler configuration; service must be unbound from all vservers first",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> rm service SVC_Old\nDone\n\n# Verify deletion:\n> show service SVC_Old\nERROR: No such resource [name, SVC_Old]\n\n# If bound to a vserver, unbind first:\n#   unbind lb vserver LB_VS_1 SVC_Old\n# Save config after destructive changes:\n#   save ns config"
           },
           {
             "cmd": "show server",
@@ -1670,10 +1670,10 @@
           },
           {
             "cmd": "set ssl vserver LB_SSL -tls12 ENABLED",
-            "desc": "Enable TLS 1.2 on the SSL vserver LB_SSL.",
+            "desc": "Enable TLS 1.2 on an SSL vserver; combine with disabling TLS 1.0/1.1 for PCI-DSS compliance",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ssl vserver LB_SSL -tls12 ENABLED -tls1  DISABLED -tls11 DISABLED\nDone\n\n# Verify the SSL profile:\n> show ssl vserver LB_SSL\n        Name: LB_SSL\n        TLSv1: DISABLED\n        TLSv11: DISABLED\n        TLSv12: ENABLED\n        TLSv13: ENABLED\n        ...\n\n# Save config:\n> save ns config"
           },
           {
             "cmd": "rm ssl certKey Cert_Old",
@@ -2367,10 +2367,10 @@
           },
           {
             "cmd": "set interface 1/1 -throughput 1000",
-            "desc": "Cap interface 1/1 throughput at 1000 Mbps.",
+            "desc": "Cap interface 1/1 throughput at 1000 Mbps (1 Gbps); useful for bandwidth policing on licensed ADC appliances",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set interface 1/1 -throughput 1000\nDone\n\n# Verify:\n> show interface 1/1\n   Interface 1/1 (10G Ethernet)\n        Actual: speed 10000, duplex FULL\n        Throughput limit: 1000 Mbps\n        TX Bytes: 22.4 GB    Rx Bytes: 18.7 GB\n\n# Remove the cap (restore full throughput):\n> set interface 1/1 -throughput 0\n\n# Note: throughput limits are enforced in software; hardware speed is unchanged."
           },
           {
             "cmd": "rm ns ip 10.10.10.55",
@@ -2381,10 +2381,10 @@
           },
           {
             "cmd": "rm route 192.168.100.0 255.255.255.0 10.1.1.1",
-            "desc": "Remove the static route to 192.168.100.0/24 via 10.1.1.1.",
+            "desc": "Remove the static route to 192.168.100.0/24 via next-hop 10.1.1.1 from the routing table",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> rm route 192.168.100.0 255.255.255.0 10.1.1.1\nDone\n\n# Verify removal:\n> show route\n        Network              Gateway           Cost  Type    State\n1)      0.0.0.0              10.1.1.254        0     STATIC  UP\n2)      192.168.100.0/24     — no longer present —\n\n# Re-add if needed:\n#   add route 192.168.100.0 255.255.255.0 10.1.1.1\n> save ns config"
           },
           {
             "cmd": "show channel",
@@ -2409,10 +2409,10 @@
           },
           {
             "cmd": "show route6",
-            "desc": "IPv6 routing table.",
+            "desc": "Display the IPv6 routing table: static routes, connected networks, and next-hop gateways",
             "type": "show",
             "flagged": false,
-            "example": "::/0 2001:db8::1 UG 0 0"
+            "example": "> show route6\n        Network              Gateway/Interface     Cost    Type    State\n1)      ::/0                 2001:db8::1           1       STATIC  UP\n2)      2001:db8:10::/64     0/1 (GE 0/1)          0       DIRECT  UP\n3)      2001:db8:20::/64     0/2 (GE 0/2)          0       DIRECT  UP\n4)      2001:db8:99::/64     2001:db8:10::fe       1       STATIC  UP\n\n# STATIC = manually configured; DIRECT = connected interface subnet.\n# Add a route: add route6 ::/0 2001:db8::1\n# Remove:      rm  route6 ::/0 2001:db8::1"
           },
           {
             "cmd": "show ip6",
@@ -3406,10 +3406,10 @@
           },
           {
             "cmd": "set system user admin -password NewPass123",
-            "desc": "Reset the password for the local user \"admin\".",
+            "desc": "Change the password for a local NetScaler system user; takes effect immediately without a restart",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set system user admin -password NewPass123\nDone\n\n# Password changed immediately — current SSH/HTTPS sessions remain active.\n# Save config so the new password persists across reboot:\n> save ns config\n\n# NOTE: This changes the local CLI password only.\n# LDAP/RADIUS-authenticated admin accounts are managed on the external server.\n# Log out and back in to verify the new credentials work before closing the session."
           },
           {
             "cmd": "set vpn parameter -splitTunnel ON",
@@ -4512,10 +4512,10 @@
           },
           {
             "cmd": "show clock",
-            "desc": "System date/time",
+            "desc": "Display the current system date and time with timezone; verify NTP sync is correct before troubleshooting time-sensitive log events",
             "type": "show",
             "flagged": false,
-            "example": "Sat May 24 09:32:18 UTC 2026"
+            "example": "admin@PA-FW-01> show clock\nCurrent time: Sat Jun 26 09:32:18 UTC 2026\n\n# Verify NTP sync (drift should be < 1s for accurate log correlation):\nadmin@PA-FW-01> show ntp\nNTP state:  synced\n  server 216.239.35.0: reachable, stratum 1, offset 0.003s\n  server 216.239.35.4: reachable, stratum 1, offset 0.004s\n\n# Set timezone if wrong:\n#   set deviceconfig system timezone US/Eastern"
           },
           {
             "cmd": "show ntp",
@@ -5387,17 +5387,17 @@
           },
           {
             "cmd": "clear vpn ike-sa gateway <gw>",
-            "desc": "Force IKE re-negotiation to a gateway",
+            "desc": "Clear IKE phase-1 SAs for a named gateway, forcing full IKE re-negotiation including phase-2; causes a brief VPN outage",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "Cleared IKE SA for gateway AWS-GW."
+            "example": "admin@PA-FW-01> show vpn ike-sa gateway AWS-GW\nGateway   Peer-Address     State   Lifetime  Algorithm\nAWS-GW    198.51.100.1     active  26432s    AES-256/SHA-256/DH14\n\nadmin@PA-FW-01> clear vpn ike-sa gateway AWS-GW\nCleared IKE SA for gateway AWS-GW.\n\n# Phase-1 re-negotiates automatically (~5–15s).\n# Traffic drops during re-negotiation — warn users if tunnelling critical services.\n# Monitor recovery:\n#   show vpn ike-sa gateway AWS-GW  (wait for State: active)"
           },
           {
             "cmd": "clear vpn ipsec-sa tunnel <t>",
-            "desc": "Force phase-2 re-key on a tunnel",
+            "desc": "Clear (delete) all IPsec phase-2 SAs for a named tunnel, forcing an immediate IKE phase-2 re-negotiation",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "Cleared IPSec SA for tunnel tunnel.1."
+            "example": "# Check current SA before clearing:\nadmin@PA-FW-01> show vpn ipsec-sa tunnel tunnel.1\nGateway  Tunnel        LocalNet         PeerNet          Enc  Hash  SPI-Inbound\nAWS-GW   tunnel.1      10.0.0.0/24      172.16.0.0/16    AES  SHA2  0x1a2b3c4d\n\n# Force re-key:\nadmin@PA-FW-01> clear vpn ipsec-sa tunnel tunnel.1\nCleared IPSec SA for tunnel tunnel.1.\n\n# Phase-2 re-negotiates automatically within a few seconds.\n# Use when: encryption counters mismatch, decryption errors, or after changing phase-2 crypto profile.\n# To also re-negotiate phase-1: clear vpn ike-sa gateway <gw>"
           },
           {
             "cmd": "show vpn gateway",
@@ -5717,10 +5717,10 @@
           },
           {
             "cmd": "debug dataplane packet-diag clear",
-            "desc": "Clears all packet diagnostic filters and settings",
+            "desc": "Clear all packet diagnostic filters, counters, and capture settings; run before setting up a new capture session",
             "type": "show",
             "flagged": false,
-            "example": "Packet filters and counters cleared."
+            "example": "admin@PA-FW-01> debug dataplane packet-diag clear\nPacket filters and counters cleared.\n\n# This resets:\n#   - All match filters (source/destination/port)\n#   - Packet counters\n#   - Stage filters (firewall, flow, drop)\n# It does NOT delete existing PCAP files in /var/tmp/.\n\n# Typical workflow:\n#   1. debug dataplane packet-diag clear          (clean slate)\n#   2. debug dataplane packet-diag set filter ...  (define scope)\n#   3. debug dataplane packet-diag set capture on  (start)\n#   4. <reproduce issue>\n#   5. debug dataplane packet-diag set capture off (stop)"
           },
           {
             "cmd": "show arp all",
@@ -5978,10 +5978,10 @@
           },
           {
             "cmd": "request commit-lock remove admin <user>",
-            "desc": "Remove a stale commit lock",
+            "desc": "Force-remove a commit lock held by a named admin; use only when the admin is confirmed logged out or disconnected",
             "type": "config",
             "flagged": false,
-            "example": "Commit lock for admin removed."
+            "example": "admin@PA-FW-01> show commit-lock\nConfig lock\n        Name        : admin\n        Comment     :\n        Expiry Time : None\n        Lock time   : 2026-06-26 08:15:33\n\n# Admin \"admin\" is locked but disconnected — safe to remove:\nadmin@PA-FW-01> request commit-lock remove admin admin\nCommit lock for admin removed.\n\n# Now you can commit:\nadmin@PA-FW-01> commit\nConfiguration committed successfully."
           },
           {
             "cmd": "request system private-data-reset",
@@ -6311,10 +6311,10 @@
           },
           {
             "cmd": "commit-all template-stack <ts>",
-            "desc": "Push a template stack",
+            "desc": "Push a Panorama template stack configuration to all devices in the stack; generates a background job that can be monitored",
             "type": "config",
             "flagged": false,
-            "example": "Commit-all (template-stack HQ-Stack) job enqueued. Job ID 433."
+            "example": "admin@panorama> commit-all template-stack HQ-Stack\nCommit-all (template-stack HQ-Stack) job enqueued. Job ID 433.\n\n# Monitor job status:\nadmin@panorama> show jobs id 433\nJobid  Type   Status    Result  StartTime            EndTime\n433    Commit Success   Success 2026-06-26 09:40:00  2026-06-26 09:40:48\n\n# Check which devices are in the stack:\nadmin@panorama> show template-stack name HQ-Stack\n\n# If job fails, view details:\n#   show jobs id 433 | match error"
           },
           {
             "cmd": "request commit-status",
@@ -6425,10 +6425,10 @@
           },
           {
             "cmd": "clear session id <n>",
-            "desc": "Clear a single session by ID",
+            "desc": "Terminate a single active session by its session ID; traffic for that flow is dropped immediately",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "Session 1024 cleared."
+            "example": "# Find the session ID first:\nadmin@PA-FW-01> show session id 1024\nSession          1024\n        c2s flow: source 10.1.1.100 [vsys1], sport 55234\n                  dst 8.8.8.8, dport 443, proto 6\n                  state ACTIVE, type FLOW, flags 0x88000\n\n# Clear it:\nadmin@PA-FW-01> clear session id 1024\nSession 1024 cleared.\n\n# The client will experience a TCP RST/timeout and must re-establish.\n# To clear all sessions from a specific source IP:\n#   clear session all filter source 10.1.1.100"
           },
           {
             "cmd": "show session flow tunnel-id <n>",
@@ -6476,17 +6476,17 @@
           },
           {
             "cmd": "debug dataplane packet-diag set capture on",
-            "desc": "Turn capture on",
+            "desc": "Start a packet capture on the PAN-OS dataplane; PCAPs are written to /var/tmp/ and retrieved with tftp/scp or the GUI",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "Packet capture is on. PCAPs are being written to /var/tmp/."
+            "example": "# First set a filter (scope the capture to avoid capturing everything):\nadmin@PA-FW-01> debug dataplane packet-diag set filter match source 10.1.1.100 destination 8.8.8.8\n\n# Start capture:\nadmin@PA-FW-01> debug dataplane packet-diag set capture on\nPacket capture is on. PCAPs are being written to /var/tmp/.\n\n# Reproduce the issue, then stop capture:\nadmin@PA-FW-01> debug dataplane packet-diag set capture off\n\n# Retrieve the file:\n#   scp admin@<fw-ip>:/var/tmp/pdpcap* ./\n# Or via GUI: Monitor > Packet Capture > Export"
           },
           {
             "cmd": "debug dataplane packet-diag set capture off",
-            "desc": "Turn capture off",
+            "desc": "Stop the active dataplane packet capture; files remain in /var/tmp/ and can be retrieved via SCP or the GUI",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "Packet capture is off. Use 'view-pcap filter-pcap <file>' or scp out."
+            "example": "admin@PA-FW-01> debug dataplane packet-diag set capture off\nPacket capture is off. Use 'view-pcap filter-pcap <file>' or scp out.\n\n# View files on the firewall:\nadmin@PA-FW-01> show capture-files\n/var/tmp/pdpcap_0_0_0.pcap  (1.4 MB)\n/var/tmp/pdpcap_0_0_1.pcap  (2.1 MB)\n\n# SCP to your workstation:\n#   scp admin@10.0.0.1:/var/tmp/pdpcap_0_0_0.pcap ./capture.pcap\n\n# View inline (human-readable summary):\n#   view-pcap filter-pcap /var/tmp/pdpcap_0_0_0.pcap"
           },
           {
             "cmd": "view-pcap filter-pcap rx.pcap",
@@ -6622,10 +6622,10 @@
           },
           {
             "cmd": "request content upgrade install version latest",
-            "desc": "Install latest content",
+            "desc": "Download and install the latest App-ID, Threat, and URL category content update package; a background job is created",
             "type": "config",
             "flagged": false,
-            "example": "Content install job enqueued. Job ID 461. Version: 8755-8555."
+            "example": "admin@PA-FW-01> request content upgrade install version latest\nContent install job enqueued. Job ID 461. Version: 8755-8555.\n\n# Monitor the job:\nadmin@PA-FW-01> show jobs id 461\nJobid  Type    Status    Result  Version\n461    Content Success   OK      8755-8555\n\n# Verify installed version:\nadmin@PA-FW-01> show system info | match content\ncontent-db-version: 8755-8555\ncontent-db-release-date: 2026/06/25 12:00:00\n\n# Schedule automatic updates:\n#   set deviceconfig system update-schedule threats recurring hourly action download-and-install"
           },
           {
             "cmd": "request anti-virus upgrade install version latest",
@@ -7345,10 +7345,10 @@
           },
           {
             "cmd": "openssl req -verify -in req.csr -noout",
-            "desc": "Verify CSR self-signature is valid",
+            "desc": "Verify the self-signature on a CSR to confirm the private key matches and the CSR is not corrupted",
             "type": "show",
             "flagged": false,
-            "example": "verify OK"
+            "example": "$ openssl req -verify -in server.csr -noout\nverify OK\n\n# \"verify OK\" means the CSR signature is valid — the embedded public key\n# matches the private key used to sign the request.\n\n# Failure output:\n$ openssl req -verify -in bad.csr -noout\nverification failure\n34359836488:error:0906D06C:PEM routines:...\n# Indicates the CSR was corrupted or the wrong private key was used.\n\n# To also inspect the CSR contents:\n#   openssl req -text -noout -in server.csr"
           },
           {
             "cmd": "openssl req -in req.csr -text -noout -verify",
@@ -7431,10 +7431,10 @@
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -serial",
-            "desc": "Display the certificate serial number",
+            "desc": "Print the serial number of an X.509 certificate in hexadecimal; used for CRL lookups and certificate tracking",
             "type": "show",
             "flagged": false,
-            "example": "serial=1A2B3C4D5E6F7A8B"
+            "example": "$ openssl x509 -in server.crt -noout -serial\nserial=1A2B3C4D5E6F7A8B\n\n# The serial is assigned by the CA and is unique within that CA.\n# Used to check revocation status:\n#   openssl ocsp -issuer ca.crt -cert server.crt -url http://ocsp.ca.example.com\n\n# Convert hex serial to decimal (for GUI CAs that display decimal):\n#   printf \"%d\\n\" 0x1A2B3C4D5E6F7A8B\n\n# Extract serial along with validity dates:\n#   openssl x509 -in server.crt -noout -serial -dates"
           },
           {
             "cmd": "openssl x509 -in cert.crt -noout -ext subjectAltName",
@@ -7452,10 +7452,10 @@
           },
           {
             "cmd": "openssl rsa -in private.key -check",
-            "desc": "Verify the integrity of an RSA private key",
+            "desc": "Check the mathematical consistency of an RSA private key; confirms the key is not corrupted",
             "type": "show",
             "flagged": false,
-            "example": "RSA key ok"
+            "example": "$ openssl rsa -in server.key -check\nRSA key ok\n\n# A healthy key returns \"RSA key ok\" and exits 0.\n\n# Failed check output:\n$ openssl rsa -in corrupt.key -check\nunable to load Private Key\n4294955904:error:0906D06C:PEM routines:PEM_read_bio:no start line\n\n# To also display key details (modulus, exponent):\n#   openssl rsa -in server.key -text -noout\n# To verify the key matches a certificate (moduli must match):\n#   openssl rsa  -noout -modulus -in server.key | md5sum\n#   openssl x509 -noout -modulus -in server.crt | md5sum"
           },
           {
             "cmd": "openssl pkcs12 -info -in bundle.pfx",
@@ -12754,17 +12754,17 @@
           },
           {
             "cmd": "wc -w file",
-            "desc": "# count words",
+            "desc": "Count the number of whitespace-delimited words in a file",
             "type": "show",
             "flagged": false,
-            "example": "$ wc -w /etc/hosts\n24 /etc/hosts"
+            "example": "$ wc -w /etc/hosts\n24 /etc/hosts\n\n# Count words in multiple files:\n$ wc -w /etc/hosts /etc/resolv.conf\n 24 /etc/hosts\n  9 /etc/resolv.conf\n 33 total\n\n# Count words in command output:\n$ ps aux | wc -w\n548\n\n# Compare with -l (lines) and -c (bytes):\n$ wc /etc/hosts\n  9  24 221 /etc/hosts\n# = 9 lines, 24 words, 221 bytes"
           },
           {
             "cmd": "wc -c file",
-            "desc": "# count bytes",
+            "desc": "Count the total number of bytes (characters) in a file; for UTF-8 files, use -m for character count instead",
             "type": "show",
             "flagged": false,
-            "example": "$ wc -c /etc/hosts\n221 /etc/hosts"
+            "example": "$ wc -c /etc/hosts\n221 /etc/hosts\n\n# For UTF-8 files, byte count ≠ character count:\n$ echo \"café\" | wc -c\n6\n$ echo \"café\" | wc -m\n5\n\n# Check file size without stat:\n$ wc -c /var/log/syslog\n1258432 /var/log/syslog\n# = 1,258,432 bytes = ~1.2 MiB\n\n# In scripts to check if a file is non-empty:\n# [[ $(wc -c < logfile) -gt 0 ]] && echo \"has content\""
           }
         ],
         "nl file  # number lines": [
@@ -14625,10 +14625,10 @@
         "host example.com  # DNS lookup": [
           {
             "cmd": "dig +short example.com",
-            "desc": "# short output",
+            "desc": "Run a DNS query for a hostname and print only the answer (IP address), suppressing all headers",
             "type": "show",
             "flagged": false,
-            "example": "93.184.216.34"
+            "example": "$ dig +short example.com\n93.184.216.34\n\n# Query a specific record type:\n$ dig +short MX gmail.com\n5 gmail-smtp-in.l.google.com.\n10 alt1.gmail-smtp-in.l.google.com.\n\n# Query against a specific DNS server:\n$ dig +short @8.8.8.8 example.com\n93.184.216.34\n\n# Use in scripts to resolve a name and act on the IP:\n# IP=$(dig +short myhost.corp.example.com | head -1)"
           },
           {
             "cmd": "dig ANY example.com",
@@ -14793,31 +14793,31 @@
           },
           {
             "cmd": "tmux kill-session -t session",
-            "desc": "# kill session",
+            "desc": "Terminate a named tmux session and all its windows and panes; the session name is shown in tmux ls",
             "type": "show",
             "flagged": false,
-            "example": "$ tmux kill-session -t session\n$"
+            "example": "# List sessions:\n$ tmux ls\nmain: 3 windows (created Thu Jun 26 08:00:00 2026)\nlogs: 1 window  (created Thu Jun 26 09:15:00 2026)\n\n# Kill a specific session:\n$ tmux kill-session -t logs\n\n# Verify it is gone:\n$ tmux ls\nmain: 3 windows (created Thu Jun 26 08:00:00 2026)\n\n# Kill all sessions:\n#   tmux kill-server\n# Kill current session from inside tmux:\n#   Ctrl+b, then type: kill-session"
           },
           {
             "cmd": "tmux split-window -h",
-            "desc": "# split horizontally",
+            "desc": "Split the current pane vertically, creating a new pane to the right in the same window",
             "type": "show",
             "flagged": false,
-            "example": "$ tmux split-window -h\n$"
+            "example": "$ tmux split-window -h\n\n# Before: one full-width pane\n# After:  left pane (original) + right pane (new shell)\n#\n# ┌────────────────┬─────────────────┐\n# │ original pane  │  new pane       │\n# │                │  (cursor here)  │\n# └────────────────┴─────────────────┘\n\n# Split at a specific size:\n#   tmux split-window -h -p 40   (new pane = 40% of width)\n# Default key binding: Ctrl+b \"  (note: default may vary by config)"
           },
           {
             "cmd": "tmux split-window -v",
-            "desc": "# split vertically",
+            "desc": "Split the current pane horizontally, creating a new pane below in the same window",
             "type": "show",
             "flagged": false,
-            "example": "$ tmux split-window -v\n$"
+            "example": "$ tmux split-window -v\n\n# Before: one full-height pane\n# After:  top pane (original) + bottom pane (new shell)\n#\n# ┌──────────────────────────────────┐\n# │  original pane                   │\n# ├──────────────────────────────────┤\n# │  new pane (cursor here)          │\n# └──────────────────────────────────┘\n\n# Split with a specific percentage:\n#   tmux split-window -v -p 30    (new pane = 30% of height)\n# Default key binding: Ctrl+b %  (note: default is horizontal; check your config)"
           },
           {
             "cmd": "tmux select-pane -L",
-            "desc": "# move to left pane",
+            "desc": "Move the active cursor to the pane immediately to the left of the current pane",
             "type": "show",
             "flagged": false,
-            "example": "$ tmux select-pane -L\n$"
+            "example": "$ tmux select-pane -L\n\n# Moves focus one pane to the left — useful in multi-pane layouts.\n# Directions: -L (left), -R (right), -U (up), -D (down)\n\n# Default key bindings (without Ctrl+b prefix in newer tmux):\n#   Ctrl+b ←  (move left)\n#   Ctrl+b →  (move right)\n#   Ctrl+b ↑  (move up)\n#   Ctrl+b ↓  (move down)\n\n# Or use the mouse if mouse mode is on:\n#   set -g mouse on  (in ~/.tmux.conf)"
           }
         ],
         "fswatch dir  # watch directory": [
@@ -15847,17 +15847,17 @@
           },
           {
             "cmd": "cd ~",
-            "desc": "# Home directory",
+            "desc": "Change the current working directory to the current user's home directory; equivalent to cd $HOME",
             "type": "show",
             "flagged": false,
-            "example": "$ cd ~\n$ pwd\n/home/user"
+            "example": "$ cd ~\n$ pwd\n/home/alice\n\n# Same result using $HOME:\n$ cd $HOME && pwd\n/home/alice\n\n# As root, ~ resolves to /root:\n# root@host# cd ~\n# root@host# pwd\n# /root\n\n# cd ~ after long navigation is the fastest way back to your home directory."
           },
           {
             "cmd": "cd /",
-            "desc": "# Root directory",
+            "desc": "Change the current working directory to the filesystem root; parent of all directories on the system",
             "type": "show",
             "flagged": false,
-            "example": "$ cd /\n$ pwd\n/"
+            "example": "$ cd /\n$ pwd\n/\n$ ls\nbin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  srv  sys  tmp  usr  var\n\n# The root directory is the top of the filesystem tree.\n# All absolute paths start with /.\n# Only root-owned directories (like /root) restrict access to non-root users."
           },
           {
             "cmd": "tree",
@@ -18668,10 +18668,10 @@
           },
           {
             "cmd": "uname -m",
-            "desc": "# Show architecture",
+            "desc": "Print the hardware (CPU) architecture the running kernel was compiled for",
             "type": "show",
             "flagged": false,
-            "example": "$ uname -m\nx86_64"
+            "example": "$ uname -m\nx86_64\n\n# x86_64  = 64-bit Intel/AMD (most servers and desktop PCs)\n# aarch64 = 64-bit ARM (Raspberry Pi 4, AWS Graviton, Apple Silicon via Linux VM)\n# armv7l  = 32-bit ARM\n# i686    = 32-bit x86\n\n# Use in scripts to select the right binary:\n# ARCH=$(uname -m)\n# wget https://example.com/tool-${ARCH}.tar.gz"
           },
           {
             "cmd": "cat /proc/cpuinfo",
@@ -23588,10 +23588,10 @@
           },
           {
             "cmd": "bgp router-id 1.1.1.1",
-            "desc": "Manually pin BGP router-id.",
+            "desc": "Manually pin the BGP router-ID to a stable loopback address; prevents router-ID changes when interfaces flap",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# bgp router-id 1.1.1.1"
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# bgp router-id 1.1.1.1\n\n# Verify:\nR1# show ip bgp summary\nBGP router identifier 1.1.1.1, local AS number 65001\n\n# Without this, IOS picks the highest-IP loopback automatically.\n# A router-ID change resets ALL BGP sessions — pin it to avoid disruption.\n# Best practice: use the same address as the OSPF/IS-IS router-id and iBGP update-source."
           },
           {
             "cmd": "bgp log-neighbor-changes",
@@ -23609,10 +23609,10 @@
           },
           {
             "cmd": "neighbor 1.2.3.4 remote-as 65002",
-            "desc": "Define an eBGP peer.",
+            "desc": "Define an eBGP neighbour with its AS number; IOS attempts a TCP session to that IP on port 179",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# neighbor 10.0.0.2 remote-as 65002"
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# neighbor 10.0.0.2 remote-as 65002\n\n# Verify session state:\nR1# show ip bgp summary\nNeighbor    V  AS    MsgRcvd MsgSent TblVer InQ OutQ Up/Down  State/PfxRcd\n10.0.0.2    4  65002    1234    1230   5678   0    0  3w2d         512\n\n# iBGP (same AS):\n#   neighbor 10.0.0.3 remote-as 65001\n# Prevent session if AS differs (security):\n#   neighbor 10.0.0.2 fall-over   (drop immediately on route loss)"
           },
           {
             "cmd": "neighbor 1.2.3.4 description ISP-A primary",
@@ -23651,10 +23651,10 @@
           },
           {
             "cmd": "show ip bgp neighbors 1.2.3.4 routes",
-            "desc": "Routes accepted from this peer (post-policy).",
+            "desc": "Show routes received from a specific BGP peer and accepted into the BGP table after inbound policy is applied",
             "type": "show",
             "flagged": false,
-            "example": "Total number of prefixes 2"
+            "example": "R1# show ip bgp neighbors 10.0.0.2 routes\nBGP table version is 5678, local router ID is 1.1.1.1\nStatus codes: s suppressed, * valid, > best, i internal\n\n     Network          Next Hop      Metric LocPrf Weight Path\n*>   10.2.0.0/16      10.0.0.2           0           0 65002 i\n*>   10.3.0.0/16      10.0.0.2           0           0 65002 65100 i\n*>   0.0.0.0/0        10.0.0.2           0           0 65002 i\n\nTotal number of prefixes 3\n\n# To see ALL received routes (before policy filtering):\n#   show ip bgp neighbors 10.0.0.2 received-routes\n# Requires: neighbor 10.0.0.2 soft-reconfiguration inbound"
           },
           {
             "cmd": "show ip bgp",
@@ -23693,10 +23693,10 @@
           },
           {
             "cmd": "clear ip bgp * soft",
-            "desc": "Soft refresh on every peer (apply policy without flap).",
+            "desc": "Trigger a BGP soft refresh on all peers, re-advertising local prefixes and requesting fresh routes without resetting sessions",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "# clear ip bgp * soft"
+            "example": "R1# clear ip bgp * soft\n\n# No output; sessions remain up, policies are re-applied.\n\n# Inbound-only soft refresh (re-request routes from all peers):\n#   clear ip bgp * soft in\n# Outbound-only (re-advertise our routes to all peers):\n#   clear ip bgp * soft out\n# Target a single peer:\n#   clear ip bgp 10.0.0.2 soft\n\n# Use after modifying route-maps, prefix-lists, or community policies.\n# Unlike \"clear ip bgp *\", this does NOT reset TCP sessions or reset the hold timer."
           },
           {
             "cmd": "clear ip bgp 1.2.3.4 soft in",
@@ -23770,10 +23770,10 @@
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map FROM-ISP in",
-            "desc": "Apply inbound route-map.",
+            "desc": "Apply an inbound route-map to filter or modify BGP attributes on routes received from a specific peer",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# neighbor 10.0.0.2 route-map SET-PREF in"
+            "example": "# Create the route-map first:\nR1(config)# route-map FROM-ISP permit 10\nR1(config-route-map)# match ip address prefix-list ALLOWED\nR1(config-route-map)# set local-preference 150\nR1(config-route-map)# exit\n\n# Apply to BGP neighbour:\nR1(config)# router bgp 65001\nR1(config-router)# neighbor 10.0.0.2 route-map FROM-ISP in\n\n# Activate the new policy without session reset:\nR1# clear ip bgp 10.0.0.2 soft in\n\n# Verify:\nR1# show ip bgp neighbors 10.0.0.2 | include route.map\n  Route map for incoming advertisements is FROM-ISP"
           },
           {
             "cmd": "neighbor 1.2.3.4 route-map TO-ISP out",
@@ -23861,10 +23861,10 @@
           },
           {
             "cmd": "bgp cluster-id 1.1.1.1",
-            "desc": "Cluster-id for redundant RRs (must match across RRs of one cluster).",
+            "desc": "Set the BGP Route-Reflector cluster-ID; all RRs in the same cluster must share the same cluster-ID to prevent routing loops",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# bgp cluster-id 1.1.1.1"
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# bgp cluster-id 1.1.1.1\n\n# Required only on Route Reflectors in a redundant RR design:\n# - RR-1 and RR-2 in the same cluster BOTH need identical cluster-id\n# - Without it, each RR has a unique cluster-id = loop-prevention breaks\n\n# Verify:\nR1# show ip bgp summary\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP cluster id: 1.1.1.1\n\n# Also required on RR:\nR1(config-router)# neighbor <client-ip> route-reflector-client"
           },
           {
             "cmd": "neighbor RR-CLIENTS peer-group\nneighbor RR-CLIENTS remote-as 65001\nneighbor RR-CLIENTS update-source Loopback0\nneighbor RR-CLIENTS route-reflector-client\nneighbor 2.2.2.2 peer-group RR-CLIENTS",
@@ -23896,10 +23896,10 @@
           },
           {
             "cmd": "bgp graceful-restart",
-            "desc": "Enable Graceful Restart capability negotiation.",
+            "desc": "Enable BGP Graceful Restart (RFC 4724) so that a process restart does not cause peer session resets or route withdrawals",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# bgp graceful-restart"
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# bgp graceful-restart\n\n# With custom restart and stale-path timers:\nR1(config-router)# bgp graceful-restart restart-time 120\nR1(config-router)# bgp graceful-restart stalepath-time 360\n\n# Verify capability negotiated with peer:\nR1# show ip bgp neighbors 10.0.0.2 | include Graceful\n  Graceful restart capability: advertised and received\n  Graceful restart enabled\n  Restart time advertised to peer: 120 sec\n\n# Both peers must support GR for the feature to be active."
           },
           {
             "cmd": "bgp dampening",
@@ -23917,10 +23917,10 @@
           },
           {
             "cmd": "address-family ipv6 unicast",
-            "desc": "Enter IPv6 unicast address-family.",
+            "desc": "Enter the IPv6 unicast address-family context under router bgp to activate IPv6 prefixes for a neighbour",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# address-family ipv6"
+            "example": "R1(config)# router bgp 65001\nR1(config-router)# neighbor 2001:db8::2 remote-as 65002\nR1(config-router)# address-family ipv6 unicast\nR1(config-router-af)# neighbor 2001:db8::2 activate\nR1(config-router-af)# network 2001:db8:1::/48\nR1(config-router-af)# exit-address-family\n\n# Verify:\nR1# show bgp ipv6 unicast summary\nNeighbor       V  AS    Up/Down  State/PfxRcd\n2001:DB8::2    4  65002  1d08h        32"
           },
           {
             "cmd": "neighbor 2001:db8::1 remote-as 65002\naddress-family ipv6 unicast\n neighbor 2001:db8::1 activate",
@@ -23931,10 +23931,10 @@
           },
           {
             "cmd": "show bgp ipv6 unicast summary",
-            "desc": "IPv6 BGP summary.",
+            "desc": "Show the IPv6 BGP peer summary table: neighbour addresses, AS numbers, session uptime, and received prefix counts",
             "type": "show",
             "flagged": false,
-            "example": "BGP router identifier 1.1.1.1, local AS number 65001\n... (output similar to IPv4)"
+            "example": "R1# show bgp ipv6 unicast summary\nBGP router identifier 1.1.1.1, local AS number 65001\nBGP table version is 89, main routing table version 89\n\nNeighbor       V    AS  MsgRcvd MsgSent  TblVer InQ OutQ Up/Down  State/PfxRcd\n2001:DB8::2    4 65002      892     888      89   0    0  3d04h          42\n2001:DB8::3    4 65001     4521    4518      89   0    0  3w2d          108\n\n# State/PfxRcd column:\n#   number = session ESTABLISHED, N prefixes received\n#   Idle   = session not attempted\n#   Active = TCP SYN sent, no reply\n#   OpenSent/OpenConfirm = handshake in progress"
           },
           {
             "cmd": "show bgp ipv6 unicast",
@@ -25395,6 +25395,27 @@
             "type": "show",
             "flagged": false,
             "example": "R1(config)# login block-for 120 attempts 4 within 60\n\n# After 4 failed logins in 60 seconds, all logins blocked for 120 sec.\n\nR1# show login | include Watch\nRouter presently in Watch-Mode, will remain in Watch-Mode for 0 seconds.\n\nWhat it means:\n- Brute-force defence : block all login attempts for 120 sec\n  after 4 failures within 60 sec.\n- \"block-for\" applies network-wide (not per-source-IP) —\n  legitimate users can't log in during quiet-mode either.\n- Configure \"quiet-mode access-class\" to exempt admin IPs from\n  the lockout."
+          },
+          {
+            "cmd": "show ip verify source",
+            "desc": "Display the IP Source Guard (IPSG) per-port binding table; shows permitted source IP/MAC pairs derived from the DHCP snooping binding table",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip verify source\n\nInterface  Filter-type  Filter-mode  IP-address    Mac-address        Vlan\n---------  -----------  -----------  ----------    -----------------  ----\nGi0/1      ip-mac       active       10.1.1.101    00:50:56:8a:11:22  10\nGi0/2      ip-mac       active       10.1.1.102    00:50:56:8a:33:44  10\nGi0/3      ip           active       10.1.1.103    deny-all           20\nGi0/4      ip-mac       inactive     any           any                30\n\n# ip-mac: traffic must match BOTH source IP AND MAC from DHCP snooping table.\n# ip-only (deny-all MAC): any MAC accepted, only the bound IP forwarded.\n# inactive: DHCP snooping binding not yet established for this port.\n# Enable IPSG on a port:\n#   interface Gi0/1\n#   ip verify source port-security"
+          },
+          {
+            "cmd": "show ip arp inspection statistics",
+            "desc": "Display Dynamic ARP Inspection (DAI) per-VLAN counters: forwarded, dropped, and error breakdowns; non-zero drops indicate potential ARP spoofing",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip arp inspection statistics\n\nVlan      Forwarded        Dropped     DHCP Drops   ACL Drops\n----      ---------        -------     ----------   ---------\n  10          23,456             0              0           0\n  20           8,901            23             18           5\n  30           5,432             1              1           0\n\nVlan      DHCP Permits    ACL Permits  Source MAC Failures\n----      ------------    -----------  -------------------\n  10          21,200          2,256               0\n  20           7,800          1,101              23\n  30           4,900            532               1\n\n# VLAN 20: 23 dropped ARPs (18 DHCP-table misses + 5 ACL denies).\n# Source MAC Failures > 0: ARP sender MAC differs from Ethernet source MAC — possible spoofing.\n# Investigate ports on VLAN 20 with: show ip arp inspection vlan 20"
+          },
+          {
+            "cmd": "show crypto ipsec sa detail",
+            "desc": "Show detailed IPsec security associations: encap/decap counters, replay errors, SPI values, and remaining lifetime; superset of show crypto ipsec sa",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show crypto ipsec sa detail\n\ninterface: GigabitEthernet0/0\n    Crypto map tag: VPN-MAP, local addr 203.0.113.1\n\n  local  ident: (10.0.0.0/255.255.255.0/0/0)\n  remote ident: (10.1.0.0/255.255.255.0/0/0)\n  current_peer 198.51.100.1 port 500\n  #pkts encaps: 45,231   #pkts encrypt: 45,231   #pkts digest: 45,231\n  #pkts decaps: 43,891   #pkts decrypt: 43,891   #pkts verify: 43,891\n  #send errors: 0        #recv errors: 0         #replay errors: 0\n\n  inbound esp sas:\n   spi: 0xABCD1234  transform: esp-aes-256 esp-sha256-hmac\n   remaining lifetime: 2145s / 4096000KB\n  outbound esp sas:\n   spi: 0xEF012345  transform: esp-aes-256 esp-sha256-hmac\n   remaining lifetime: 2145s / 4096000KB\n\n# replay errors > 0: out-of-order packets (WAN jitter or QoS reordering).\n# recv errors > 0:   decryption failures — mismatched transforms or keys."
           }
         ],
         "Troubleshooting": [
@@ -26961,6 +26982,13 @@
             "type": "show",
             "flagged": false,
             "example": "R1# show policy-map interface gi0/0\n\nGigabitEthernet0/0\n  Service-policy output: QOS_EGRESS\n\n    Class-map: VOICE (match-any)\n      45,012 packets\n      Match: dscp ef (46)\n      Queueing\n        queue limit 64 packets\n        (queue depth/total drops/no-buffer drops) 0/0/0\n        (pkts output/bytes output) 45,012/4,200,000\n      Priority: percent 30, kbps 300000\n\n    Class-map: class-default (match-any)\n      102,341 packets\n      Match: any\n\nWhat it means:\n- Per-interface policy execution. Hit counters per class,\n  queue-depth stats, drops.\n- \"no-buffer drops\" > 0 = queue exhaustion. Increase queue limit\n  or re-tune percentages.\n- \"queue depth\" : current depth — momentary spike is fine; sustained\n  high values mean the class can't drain fast enough."
+          },
+          {
+            "cmd": "show ip nbar protocol-discovery",
+            "desc": "Display per-protocol traffic statistics on NBAR2-enabled interfaces: packet and byte counts plus 30-second bit-rates; requires ip nbar protocol-discovery on each interface",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip nbar protocol-discovery\n\nGigabitEthernet0/0 (NBAR Active)\n  Input                                    Output\n  Protocol           Pkt Count  Bit-Rate   Pkt Count  Bit-Rate\n  ------------------ ---------- ---------- ---------- ----------\n  http               1,245,678  2.4Mbps    891,234    1.6Mbps\n  youtube            458,901    8.2Mbps    236,789    4.1Mbps\n  ms-office-365      234,567    3.1Mbps    198,456    2.8Mbps\n  ssh                12,345     96kbps     14,567     104kbps\n  unknown            78,901     72kbps     45,678     48kbps\n\n# Enable NBAR on an interface:\n#   interface GigabitEthernet0/0\n#   ip nbar protocol-discovery\n\n# Use for QoS policy design, capacity planning, and shadow-IT detection.\n# Reset counters: clear ip nbar protocol-discovery"
           }
         ],
         "Multicast": [
@@ -27617,15 +27645,22 @@
             "type": "show",
             "flagged": false,
             "example": "Switch# test cable-diagnostics tdr interface gi1/0/1\n\nTDR test started on interface Gi1/0/1\nA TDR test can take a few seconds to run. Wait...\nTDR test complete.\nPair Status   Length(meters)\nA    Pair OK  10\nB    Pair OK  10\nC    Pair OK  10\nD    Pair OK  10\n\nWhat it means:\n- Time-Domain Reflectometry — sends a pulse down each twisted pair\n  and measures reflections.\n- \"Pair OK\" + length = healthy cable. Other statuses:\n  - Open : break in the cable at the reported length.\n  - Short : two pairs shorted together.\n  - Impedance Mismatch : connector or transceiver issue.\n- Useful for diagnosing physical-layer problems before swapping\n  out hardware."
+          },
+          {
+            "cmd": "debug ip packet detail",
+            "desc": "Enable real-time IP packet process-switching debug output; ALWAYS scope with an ACL to avoid console floods that can crash a busy router",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "# Step 1: create a tight ACL to scope the debug\nR1(config)# ip access-list extended DEBUG_SCOPE\nR1(config-ext-nacl)# permit ip host 10.1.1.100 any\nR1(config-ext-nacl)# permit ip any host 10.1.1.100\n\n# Step 2: enable scoped debug\nR1# debug ip packet detail 100\n\nIP: s=10.1.1.100 (Gi0/1), d=8.8.8.8 (Gi0/0), len 60, forward\n   ICMP type=8, code=0\nIP: s=10.1.1.100 (Gi0/1), d=10.1.1.254, len 60, encapsulation failed\n\n# \"encapsulation failed\" = no ARP entry for next-hop; check show ip arp\n# \"no route\"            = missing route; check show ip route <dest>\n\nR1# undebug all    ← ALWAYS run when finished\n\n⚠ WARNING: Without an ACL, ALL process-switched packets are logged.\n  This can overwhelm the console and crash routers under load."
           }
         ],
         "Config Management": [
           {
             "cmd": "write memory",
-            "desc": "Alias for copy run start",
+            "desc": "Save running-config to NVRAM (startup-config); identical to copy running-config startup-config but shorter to type",
             "type": "config",
             "flagged": false,
-            "example": "Building configuration...\n[OK]"
+            "example": "R1# write memory\nBuilding configuration...\n[OK]\n\n# Verify the save succeeded:\nR1# show startup-config | include hostname\nhostname R1\n\n# \"write memory\" and \"copy run start\" are functionally identical.\n# Always run after any configuration change you want to survive a reload.\n# To compare running vs startup before saving:\n#   show archive config differences"
           },
           {
             "cmd": "copy running-config tftp://10.50.50.50/<host>.cfg",
@@ -27744,10 +27779,10 @@
           },
           {
             "cmd": "esxcli system maintenanceMode get",
-            "desc": "Shows maintenance mode status",
+            "desc": "Show whether the host is currently in maintenance mode; no new VM workloads are accepted in this state",
             "type": "show",
             "flagged": false,
-            "example": "Enabled: false"
+            "example": "$ esxcli system maintenanceMode get\nEnabled: false\n\n# Enter maintenance mode (DRS migrates VMs if in a cluster):\n#   esxcli system maintenanceMode set --enable true\n# Required before patching, hardware swaps, or graceful shutdown."
           },
           {
             "cmd": "esxcli system maintenanceMode set --enable true",
@@ -27758,10 +27793,10 @@
           },
           {
             "cmd": "esxcli system maintenanceMode set --enable false",
-            "desc": "Disables maintenance mode",
+            "desc": "Exit maintenance mode, allowing the host to accept new VM workloads and DRS placements again",
             "type": "show",
             "flagged": false,
-            "example": "(No output; maintenance mode cleared)"
+            "example": "$ esxcli system maintenanceMode set --enable false\n\n# No output on success.\n\n# Verify:\n$ esxcli system maintenanceMode get\nEnabled: false\n\n# VMs evacuated during maintenance do not auto-return — restart them manually\n# or configure VM startup/shutdown policies in vCenter."
           },
           {
             "cmd": "esxcli system shutdown reboot -r \"<reason>\"",
@@ -27772,10 +27807,10 @@
           },
           {
             "cmd": "esxcli system shutdown poweroff -r \"<reason>\"",
-            "desc": "Powers off host",
+            "desc": "Initiate a graceful host power-off with an audit reason; host must be in maintenance mode to avoid disrupting running VMs",
             "type": "show",
             "flagged": false,
-            "example": "(Host initiates power-off sequence)"
+            "example": "# Step 1: enter maintenance mode\n$ esxcli system maintenanceMode set --enable true\n\n# Step 2: power off with a reason string\n$ esxcli system shutdown poweroff -r \"Scheduled PSU replacement 2026-06-26\"\n\nStopping all services...\nFlushing pending I/O...\nHost powered off.\n\n# WARNING: Without maintenance mode, powered-on VMs are abruptly terminated."
           },
           {
             "cmd": "esxcli system syslog config get",
@@ -27793,10 +27828,10 @@
           },
           {
             "cmd": "esxcli system time get",
-            "desc": "Shows system time",
+            "desc": "Return current system clock in ISO 8601 UTC; compare with NTP source to detect clock drift",
             "type": "show",
             "flagged": false,
-            "example": "2026-06-12T09:42:17Z"
+            "example": "$ esxcli system time get\n2026-06-12T09:42:17Z\n\n# A drift > 5 minutes breaks Kerberos authentication for vCenter.\n# Check NTP peers:\n#   esxcli system ntp get\n#   esxcli network ip dns server list"
           },
           {
             "cmd": "esxcli hardware platform get",
@@ -27835,10 +27870,10 @@
           },
           {
             "cmd": "esxcli system stats uptime get",
-            "desc": "Host uptime in seconds",
+            "desc": "Return host uptime as a raw integer in seconds; divide by 86400 for days",
             "type": "show",
             "flagged": false,
-            "example": "3627842"
+            "example": "$ esxcli system stats uptime get\n3627842\n\n# 3,627,842 s ÷ 86400 = ~41.9 days of uptime.\n# Use in scripts to flag hosts that exceed a patching window:\n#   [[ $(esxcli system stats uptime get) -gt 2592000 ]] && echo \"Over 30 days\""
           },
           {
             "cmd": "vmware -vl",
@@ -27995,6 +28030,13 @@
             "type": "show",
             "flagged": false,
             "example": "# esxcli network filter stats list\nFilter              Packets Passed  Packets Dropped\n------------------  --------------  ---------------\nvm-pg-filter-0      14829302        0\nvm-pg-filter-1      9473821         12\nvmkernel-filter     2103440         0"
+          },
+          {
+            "cmd": "esxcli network nic stats get -n vmnic0",
+            "desc": "Display hardware-level NIC statistics for a specific vmnic: RX/TX packet and byte counters, error counts, and dropped frames",
+            "type": "show",
+            "flagged": false,
+            "example": "$ esxcli network nic stats get -n vmnic0\nNIC statistics for vmnic0\n   Packets received:         12,345,678\n   Packets sent:             10,987,654\n   Bytes received:       14,234,567,890\n   Bytes sent:           12,345,678,901\n   Broadcast frames received:    45,678\n   Multicast frames received:    12,345\n   Receive errors:                    0\n   Transmit errors:                   0\n   Dropped RX packets:                0\n   Dropped TX packets:                0\n   CRC errors:                        0\n   FIFO overrun errors:               0\n\n# CRC errors > 0: physical-layer problem (cable, SFP, or far-end switch port).\n# Dropped RX > 0: NIC ring buffer exhaustion — tune with:\n#   esxcli network nic ring current get -n vmnic0\n#   esxcli network nic ring current set -n vmnic0 --rx 4096"
           }
         ],
         "Storage": [
@@ -28170,17 +28212,17 @@
           },
           {
             "cmd": "vim-cmd vmsvc/power.getstate <vmid>",
-            "desc": "Current power state of a VM",
+            "desc": "Query the current power state of a VM by VMID: returns Powered on, Powered off, or Suspended",
             "type": "show",
             "flagged": false,
-            "example": "Retrieved runtime info\nPowered on"
+            "example": "$ vim-cmd vmsvc/getallvms\nVmid  Name          File\n4     WebServer01   [datastore1] WebServer01/WebServer01.vmx\n5     DBServer01    [datastore1] DBServer01/DBServer01.vmx\n\n$ vim-cmd vmsvc/power.getstate 4\nRetrieved runtime info\nPowered on\n\n$ vim-cmd vmsvc/power.getstate 5\nRetrieved runtime info\nPowered off\n\n# Poll all VMs:\n# vim-cmd vmsvc/getallvms | awk 'NR>1{print $1}' | while read id; do\n#   echo -n \"VM $id: \"; vim-cmd vmsvc/power.getstate $id 2>/dev/null | tail -1\n# done"
           },
           {
             "cmd": "vim-cmd vmsvc/power.on <vmid>",
-            "desc": "Power on by vmid",
+            "desc": "Power on a VM by its numeric VMID, performing a cold boot from the last saved power state",
             "type": "config",
             "flagged": false,
-            "example": "Powering on VM:\n"
+            "example": "# Find the VMID first:\n$ vim-cmd vmsvc/getallvms\nVmid  Name          File\n4     WebServer01   [datastore1] WebServer01/WebServer01.vmx\n\n# Power on:\n$ vim-cmd vmsvc/power.on 4\nPowering on VM:\n\n# Confirm state after a few seconds:\n$ vim-cmd vmsvc/power.getstate 4\nRetrieved runtime info\nPowered on"
           },
           {
             "cmd": "vim-cmd vmsvc/power.shutdown <vmid>",
@@ -28191,10 +28233,10 @@
           },
           {
             "cmd": "vim-cmd vmsvc/power.off <vmid>",
-            "desc": "Hard power off",
+            "desc": "Immediately cut power to a VM by VMID — hard off, no OS shutdown; equivalent to pulling the power cord",
             "type": "config",
             "flagged": false,
-            "example": "Powering off VM:\n"
+            "example": "# Find the VMID first:\n$ vim-cmd vmsvc/getallvms\nVmid  Name          File\n4     WebServer01   [datastore1] WebServer01/WebServer01.vmx\n\n# Hard power-off:\n$ vim-cmd vmsvc/power.off 4\nPowering off VM:\n\n# Verify:\n$ vim-cmd vmsvc/power.getstate 4\nPowered off\n\n# WARNING: May corrupt guest filesystem. Use only when graceful shutdown has failed."
           },
           {
             "cmd": "vim-cmd vmsvc/snapshot.get <vmid>",
@@ -28228,17 +28270,17 @@
           },
           {
             "cmd": "esxcli system stats installtime get",
-            "desc": "Shows install time",
+            "desc": "Return the ESXi installation timestamp in ISO 8601 UTC; useful for license auditing and support cases",
             "type": "show",
             "flagged": false,
-            "example": "2025-09-14T10:32:00Z"
+            "example": "$ esxcli system stats installtime get\n2025-09-14T10:32:00Z\n\n# This is the initial install date — NOT the last upgrade date.\n# To see build/version upgrade history:\n#   esxcli software vib list | grep esx-base"
           },
           {
             "cmd": "esxcli system stats uptime get",
-            "desc": "Shows uptime",
+            "desc": "Return host uptime as a raw integer in seconds; divide by 86400 for days",
             "type": "show",
             "flagged": false,
-            "example": "3627842"
+            "example": "$ esxcli system stats uptime get\n3627842\n\n# 3,627,842 ÷ 86400 = ~41.9 days since last boot.\n# Compare with installtime to see last-reboot vs. install date."
           },
           {
             "cmd": "esxcli system stats load get",
@@ -29107,31 +29149,31 @@
           },
           {
             "cmd": "wmic os get caption",
-            "desc": "Shows Windows edition",
+            "desc": "Display the full Windows edition name and version string from WMI",
             "type": "show",
             "flagged": false,
-            "example": "Caption\nMicrosoft Windows 11 Pro"
+            "example": "C:\\> wmic os get caption\nCaption\nMicrosoft Windows 11 Pro\n\n# For build number and version:\n#   wmic os get Caption,Version,BuildNumber\n# Or modern PowerShell:\n#   (Get-CimInstance Win32_OperatingSystem).Caption\n#   winver    ← GUI dialog with full version details"
           },
           {
             "cmd": "wmic cpu get name",
-            "desc": "Shows CPU model",
+            "desc": "Display the CPU model name string from WMI",
             "type": "show",
             "flagged": false,
-            "example": "Name\nIntel(R) Core(TM) i7-11700 @ 2.50GHz"
+            "example": "C:\\> wmic cpu get name\nName\nIntel(R) Core(TM) i7-11700 @ 2.50GHz\n\n# For multiple sockets:\n#   wmic cpu get Name,NumberOfCores,NumberOfLogicalProcessors\n# Modern PowerShell alternative:\n#   (Get-CimInstance Win32_Processor).Name\n# Shows: Name, MaxClockSpeed, NumberOfCores, NumberOfLogicalProcessors"
           },
           {
             "cmd": "wmic memorychip get capacity",
-            "desc": "Shows RAM modules",
+            "desc": "List the capacity of each installed RAM module in bytes; divide by 1073741824 for GiB",
             "type": "show",
             "flagged": false,
-            "example": "Capacity\n17179869184\n17179869184"
+            "example": "C:\\> wmic memorychip get capacity\nCapacity\n17179869184\n17179869184\n\n# 17,179,869,184 bytes ÷ 1,073,741,824 = 16 GiB per DIMM → 32 GiB total\n\n# More detail (slot, speed, manufacturer):\n#   Get-CimInstance Win32_PhysicalMemory | Select DeviceLocator,Capacity,Speed,Manufacturer"
           },
           {
             "cmd": "wmic logicaldisk get size",
-            "desc": "freespace",
+            "desc": "List each logical disk's total size and free space in bytes; convert by dividing by 1073741824 for GiB",
             "type": "Shows disk sizes",
             "flagged": false,
-            "example": "FreeSpace             Size\n47244640256           511068889088"
+            "example": "C:\\> wmic logicaldisk get DeviceID,FreeSpace,Size\nDeviceID  FreeSpace          Size\nC:        47,244,640,256     511,068,889,088\nD:        214,748,364,800    1,099,511,627,776\n\n# 47,244,640,256 ÷ 1,073,741,824 = 44 GiB free on C:\n# 511,068,889,088 ÷ 1,073,741,824 = 476 GiB total on C:\n\n# PowerShell with human-readable output:\n#   Get-PSDrive -PSProvider FileSystem | Select Name,@{N=\"Used(GB)\";E={[math]::Round($_.Used/1GB,1)}},@{N=\"Free(GB)\";E={[math]::Round($_.Free/1GB,1)}}"
           },
           {
             "cmd": "Get-WindowsFeature",
@@ -29184,10 +29226,10 @@
           },
           {
             "cmd": "(Get-CimInstance Win32_OperatingSystem).LastBootUpTime",
-            "desc": "Just the last-boot time",
+            "desc": "Return the exact timestamp of the last system boot; useful for calculating uptime without third-party tools",
             "type": "show",
             "flagged": false,
-            "example": "Wednesday, 10 June 2026 14:30:12"
+            "example": "PS C:\\> (Get-CimInstance Win32_OperatingSystem).LastBootUpTime\nWednesday, 10 June 2026 14:30:12\n\n# Calculate uptime:\nPS C:\\> (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime\nDays              : 15\nHours             : 21\nMinutes           : 42\nSeconds           : 08\n\n# Quick one-liner for scripts:\n#   (New-TimeSpan -Start (gcim Win32_OperatingSystem).LastBootUpTime).Days"
           },
           {
             "cmd": "winget upgrade --all --include-unknown --accept-source-agreements --accept-package-agreements",
@@ -29496,24 +29538,24 @@
           },
           {
             "cmd": "Restart-Service <name>",
-            "desc": "Restarts a service",
+            "desc": "Stop then start a named Windows service in one command; safer than Stop+Start for config reload",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success — service restarted)"
+            "example": "PS C:\\> Restart-Service Spooler\n\n# No output on success. The service is stopped then started atomically.\n# Verify:\nPS C:\\> Get-Service Spooler\nStatus   Name               DisplayName\n------   ----               -----------\nRunning  Spooler            Print Spooler\n\n# If dependent services need to restart too:\n#   Restart-Service Spooler -Force\n# For web servers that need a graceful reload instead:\n#   Use the application-specific reload mechanism (e.g., iisreset /noforce for IIS)"
           },
           {
             "cmd": "Stop-Service <name>",
-            "desc": "Stops a service",
+            "desc": "Stop a named Windows service by service name (not display name); produces no output on success",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success — service stopped)"
+            "example": "PS C:\\> Stop-Service Spooler\n\n# No output on success. To verify:\nPS C:\\> Get-Service Spooler\nStatus   Name               DisplayName\n------   ----               -----------\nStopped  Spooler            Print Spooler\n\n# To stop by display name:\n#   Stop-Service -DisplayName \"Print Spooler\"\n# Force-stop (kills dependent services too):\n#   Stop-Service Spooler -Force\n# To stop and disable:\n#   Stop-Service Spooler; Set-Service Spooler -StartupType Disabled"
           },
           {
             "cmd": "Start-Service <name>",
-            "desc": "Starts a service",
+            "desc": "Start a named Windows service by service name; produces no output on success",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success — service started)"
+            "example": "PS C:\\> Start-Service Spooler\n\n# No output on success. Verify:\nPS C:\\> Get-Service Spooler\nStatus   Name               DisplayName\n------   ----               -----------\nRunning  Spooler            Print Spooler\n\n# Start multiple services at once:\n#   \"Spooler\",\"wuauserv\" | Start-Service\n# Start and set to auto-start on boot:\n#   Set-Service Spooler -StartupType Automatic; Start-Service Spooler"
           },
           {
             "cmd": "Get-Process | Sort-Object -Descending CPU | Select -First 15",
@@ -29610,10 +29652,10 @@
           },
           {
             "cmd": "fsutil fsinfo drives",
-            "desc": "Lists drives",
+            "desc": "List all mounted drive letters on the local system, including network and removable drives",
             "type": "show",
             "flagged": false,
-            "example": "Drives: C:\\ D:\\ Z:\\"
+            "example": "C:\\> fsutil fsinfo drives\nDrives: C:\\ D:\\ E:\\ Z:\\\n\n# C: = system drive, D: = data, E: = optical/USB, Z: = network mapped drive\n# To see drive type and capacity:\n#   Get-PSDrive -PSProvider FileSystem\n# Or for detailed disk info:\n#   Get-Disk | Select Number,FriendlyName,Size,HealthStatus"
           },
           {
             "cmd": "fsutil volume diskfree <drive>:",
@@ -29659,10 +29701,10 @@
           },
           {
             "cmd": "Repair-Volume -DriveLetter <D> -Scan",
-            "desc": "PowerShell chkdsk equivalent, online",
+            "desc": "Run an online CHKDSK scan on a drive letter without taking it offline; reports errors but does not fix them",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "NoErrorsFound"
+            "example": "PS C:\\> Repair-Volume -DriveLetter C -Scan\nNoErrorsFound\n\n# To repair (requires offline for system drive — needs a reboot):\n#   Repair-Volume -DriveLetter D -SpotFix     # online spotfix (non-system)\n#   chkdsk C: /f /r /x                         # traditional offline repair\n\n# Possible return values:\n#   NoErrorsFound      — healthy\n#   NoErrorsFixed      — errors found but not fixed (run -OfflineScanAndFix)\n#   ErrorsFixed        — repairs were applied\n#   Failed             — scan could not complete"
           },
           {
             "cmd": "diskpart /s <script>",
@@ -29853,17 +29895,17 @@
           },
           {
             "cmd": "aws ec2 start-instances --instance-ids <id>",
-            "desc": "Start a stopped instance",
+            "desc": "Start a stopped EC2 instance; the instance transitions through pending before reaching running state",
             "type": "config",
             "flagged": false,
-            "example": "{\n    \"StartingInstances\": [{\"InstanceId\":\"i-0a1b2c3d4e5f67890\",\"CurrentState\":{\"Name\":\"pending\"},\"PreviousState\":{\"Name\":\"stopped\"}}]\n}"
+            "example": "$ aws ec2 start-instances --instance-ids i-0a1b2c3d4e5f67890\n{\n    \"StartingInstances\": [\n        {\n            \"InstanceId\": \"i-0a1b2c3d4e5f67890\",\n            \"CurrentState\":  {\"Code\": 0, \"Name\": \"pending\"},\n            \"PreviousState\": {\"Code\": 80, \"Name\": \"stopped\"}\n        }\n    ]\n}\n\n# Wait for running state:\n$ aws ec2 wait instance-running --instance-ids i-0a1b2c3d4e5f67890\n\n# Get the public IP after start (it may change unless Elastic IP is assigned):\n$ aws ec2 describe-instances --instance-ids i-0a1b2c3d4e5f67890 \\\n    --query \"Reservations[].Instances[].PublicIpAddress\" --output text"
           },
           {
             "cmd": "aws ec2 stop-instances --instance-ids <id>",
-            "desc": "Stop (soft) an instance",
+            "desc": "Gracefully stop a running EC2 instance (EBS-backed only); instance-store instances are terminated, not stopped",
             "type": "config",
             "flagged": false,
-            "example": "{\n    \"StoppingInstances\": [{\"InstanceId\":\"i-0a1b2c3d4e5f67890\",\"CurrentState\":{\"Name\":\"stopping\"},\"PreviousState\":{\"Name\":\"running\"}}]\n}"
+            "example": "$ aws ec2 stop-instances --instance-ids i-0a1b2c3d4e5f67890\n{\n    \"StoppingInstances\": [\n        {\n            \"InstanceId\": \"i-0a1b2c3d4e5f67890\",\n            \"CurrentState\":  {\"Code\": 64, \"Name\": \"stopping\"},\n            \"PreviousState\": {\"Code\": 16, \"Name\": \"running\"}\n        }\n    ]\n}\n\n# Wait for stopped:\n$ aws ec2 wait instance-stopped --instance-ids i-0a1b2c3d4e5f67890\n\n# Stop multiple instances at once:\n#   aws ec2 stop-instances --instance-ids i-111 i-222 i-333\n# Force-stop (SIGKILL equivalent):\n#   aws ec2 stop-instances --instance-ids i-xxx --force"
           },
           {
             "cmd": "aws ec2 get-console-output --instance-id <id>",
@@ -29946,10 +29988,10 @@
           },
           {
             "cmd": "aws s3 cp <src> <dst>",
-            "desc": "Copies files",
+            "desc": "Copy files to/from S3 or between buckets; supports local paths and s3:// URIs, with --recursive for directories",
             "type": "show",
             "flagged": false,
-            "example": "upload: ./report.pdf to s3://acme-data-lake/reports/report.pdf"
+            "example": "# Upload local file to S3:\n$ aws s3 cp ./report.pdf s3://acme-data-lake/reports/2026/report.pdf\nupload: ./report.pdf to s3://acme-data-lake/reports/2026/report.pdf\n\n# Download from S3 to local:\n$ aws s3 cp s3://acme-data-lake/reports/2026/report.pdf ./\ndownload: s3://acme-data-lake/reports/2026/report.pdf to ./report.pdf\n\n# Copy between buckets:\n$ aws s3 cp s3://acme-src/data/ s3://acme-dst/data/ --recursive\n\n# Upload with SSE-KMS encryption:\n#   aws s3 cp file.txt s3://bucket/file.txt --sse aws:kms --sse-kms-key-id alias/my-key"
           },
           {
             "cmd": "aws s3 sync <src> <dst>",
@@ -29960,24 +30002,24 @@
           },
           {
             "cmd": "aws s3 rm s3://<bucket>/<file>",
-            "desc": "Deletes file",
+            "desc": "Delete a single object from an S3 bucket; add --recursive to delete a prefix/folder and all objects beneath it",
             "type": "show",
             "flagged": false,
-            "example": "delete: s3://acme-data-lake/reports/old-report.pdf"
+            "example": "# Delete a single file:\n$ aws s3 rm s3://acme-data-lake/reports/old-report-2025.pdf\ndelete: s3://acme-data-lake/reports/old-report-2025.pdf\n\n# Delete all objects under a prefix (recursive):\n$ aws s3 rm s3://acme-data-lake/logs/2025/ --recursive\ndelete: s3://acme-data-lake/logs/2025/01.log\ndelete: s3://acme-data-lake/logs/2025/02.log\n...\n\n# Dry-run to preview (use ls instead):\n#   aws s3 ls s3://acme-data-lake/logs/2025/ --recursive"
           },
           {
             "cmd": "aws s3 mb s3://<bucket>",
-            "desc": "Creates bucket",
+            "desc": "Create a new S3 bucket in the default region; use --region to specify a different region",
             "type": "show",
             "flagged": false,
-            "example": "make_bucket: s3://my-new-bucket-2026"
+            "example": "$ aws s3 mb s3://acme-app-assets-2026\nmake_bucket: s3://acme-app-assets-2026\n\n# Create in a specific region:\n$ aws s3 mb s3://acme-backups-eu --region eu-west-2\nmake_bucket: s3://acme-backups-eu\n\n# Bucket names must be globally unique, 3-63 chars, lowercase, no underscores.\n# Enable versioning after creation:\n#   aws s3api put-bucket-versioning --bucket acme-app-assets-2026 --versioning-configuration Status=Enabled"
           },
           {
             "cmd": "aws s3 rb s3://<bucket>",
-            "desc": "Removes bucket",
+            "desc": "Remove an empty S3 bucket; use --force to delete a non-empty bucket and all its contents",
             "type": "show",
             "flagged": false,
-            "example": "remove_bucket: s3://my-new-bucket-2026"
+            "example": "# Remove an empty bucket:\n$ aws s3 rb s3://acme-test-bucket\nremove_bucket: s3://acme-test-bucket\n\n# Remove a non-empty bucket (DESTRUCTIVE — deletes all objects):\n$ aws s3 rb s3://acme-test-bucket --force\ndelete: s3://acme-test-bucket/logs/2026-01-01.log\ndelete: s3://acme-test-bucket/reports/q1.pdf\nremove_bucket: s3://acme-test-bucket\n\n# WARNING: --force permanently deletes all objects and the bucket.\n# Consider aws s3 ls s3://acme-test-bucket first to review contents."
           },
           {
             "cmd": "aws s3api get-bucket-acl --bucket <bucket>",
@@ -30002,17 +30044,17 @@
           },
           {
             "cmd": "aws s3api list-buckets --query \"Buckets[].Name\"",
-            "desc": "List bucket names only",
+            "desc": "List all S3 bucket names in the account as a JSON array, filtered from the full list-buckets output",
             "type": "show",
             "flagged": false,
-            "example": "[\n    \"cf-templates-corp-eu-west-2\",\n    \"acme-data-lake\",\n    \"acme-logs-archive\",\n    \"acme-static-assets\"\n]"
+            "example": "$ aws s3api list-buckets --query \"Buckets[].Name\"\n[\n    \"cf-templates-corp-eu-west-2\",\n    \"acme-data-lake\",\n    \"acme-logs-archive\",\n    \"acme-static-assets\"\n]\n\n# Include creation dates:\n#   aws s3api list-buckets --query \"Buckets[].{Name:Name,Created:CreationDate}\"\n\n# Filter by prefix:\n#   aws s3api list-buckets --query \"Buckets[?starts_with(Name,'acme')].Name\"\n\n# Count total buckets:\n#   aws s3api list-buckets --query \"length(Buckets)\""
           },
           {
             "cmd": "aws s3api get-bucket-location --bucket <b>",
-            "desc": "Region a bucket lives in",
+            "desc": "Return the AWS region where a bucket resides; returns null for us-east-1 (S3 global default region)",
             "type": "show",
             "flagged": false,
-            "example": "{\n    \"LocationConstraint\": \"eu-west-2\"\n}"
+            "example": "$ aws s3api get-bucket-location --bucket acme-backups-eu\n{\n    \"LocationConstraint\": \"eu-west-2\"\n}\n\n# us-east-1 returns null (quirk of the S3 API):\n$ aws s3api get-bucket-location --bucket acme-us-bucket\n{\n    \"LocationConstraint\": null\n}\n\n# Useful for ensuring cross-region replication sources match:\n#   aws s3api get-bucket-location --bucket <source-bucket>\n# Verify from within an EC2 instance to detect cross-region access costs."
           },
           {
             "cmd": "aws s3api get-bucket-versioning --bucket <b>",
@@ -30109,17 +30151,17 @@
           },
           {
             "cmd": "aws logs put-retention-policy --log-group-name <group> --retention-in-days <days>",
-            "desc": "Sets retention",
+            "desc": "Set the CloudWatch Logs retention period for a log group; older log events are automatically deleted after the retention window",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success — retention policy updated)"
+            "example": "$ aws logs put-retention-policy \\\n    --log-group-name /app/prod/api \\\n    --retention-in-days 90\n\n# No output on success.\n\n# Verify:\n$ aws logs describe-log-groups --log-group-name-prefix /app/prod/api \\\n    --query \"logGroups[].{Name:logGroupName,Retention:retentionInDays}\"\n[\n    {\n        \"Name\": \"/app/prod/api\",\n        \"Retention\": 90\n    }\n]\n\n# Common retention values: 1,3,5,7,14,30,60,90,120,150,180,365,400,545,731,1827,3653"
           },
           {
             "cmd": "aws logs delete-log-group --log-group-name <group>",
-            "desc": "Deletes log group",
+            "desc": "Permanently delete a CloudWatch log group and all its log streams and events; irreversible",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success — log group and all streams deleted)"
+            "example": "# Preview what will be deleted:\n$ aws logs describe-log-groups --log-group-name-prefix /app/test \\\n    --query \"logGroups[].logGroupName\"\n[\n    \"/app/test/api\",\n    \"/app/test/worker\"\n]\n\n# Delete:\n$ aws logs delete-log-group --log-group-name /app/test/api\n\n# No output on success. Verify:\n$ aws logs describe-log-groups --log-group-name-prefix /app/test/api\n{\n    \"logGroups\": []\n}\n\n# WARNING: This is permanent — no recovery without a CloudTrail + S3 export backup."
           },
           {
             "cmd": "aws logs tail /aws/lambda/<fn> --follow --format short",
@@ -30227,6 +30269,13 @@
             "type": "show",
             "flagged": false,
             "example": "{\n    \"Version\": \"2012-10-17\",\n    \"Statement\": [{\"Effect\":\"Allow\",\"Action\":[\"s3:Get*\",\"s3:List*\",\"s3:Describe*\"],\"Resource\":\"*\"}]\n}"
+          },
+          {
+            "cmd": "aws ssm get-parameter --name <param> --with-decryption",
+            "desc": "Retrieve a single SSM Parameter Store value by name; --with-decryption is required for SecureString parameters encrypted with KMS",
+            "type": "show",
+            "flagged": false,
+            "example": "# Retrieve a plaintext String parameter:\n$ aws ssm get-parameter --name \"/app/db/host\"\n{\n    \"Parameter\": {\n        \"Name\": \"/app/db/host\",\n        \"Type\": \"String\",\n        \"Value\": \"db.prod.internal\",\n        \"Version\": 3,\n        \"ARN\": \"arn:aws:ssm:eu-west-2:123456789012:parameter/app/db/host\"\n    }\n}\n\n# Retrieve a KMS-encrypted SecureString:\n$ aws ssm get-parameter --name \"/app/db/password\" --with-decryption\n{\n    \"Parameter\": {\n        \"Name\": \"/app/db/password\",\n        \"Type\": \"SecureString\",\n        \"Value\": \"correct-horse-battery-staple\"\n    }\n}\n\n# Value only (for scripting):\n$ aws ssm get-parameter --name \"/app/db/host\" \\\n    --query \"Parameter.Value\" --output text\ndb.prod.internal"
           }
         ],
         "VPC": [
@@ -40380,17 +40429,17 @@
           },
           {
             "cmd": "qm reboot <VMID>",
-            "desc": "Graceful reboot (ACPI)",
+            "desc": "Send an ACPI reboot signal to the VM, triggering a clean OS shutdown and restart",
             "type": "config",
             "flagged": false,
-            "example": "(ACPI reboot requested)"
+            "example": "root@pve# qm reboot 100\n\n# No output; the VM OS receives an ACPI power-button event and reboots gracefully.\n\n# Monitor state:\n$ qm status 100\nstatus: running\n\n# If the VM does not reboot within ~60s (OS hung), use hard reset:\n#   qm reset 100"
           },
           {
             "cmd": "qm reset <VMID>",
-            "desc": "Hard reset",
+            "desc": "Hard-reset a VM (equivalent to pressing the physical reset button); no OS shutdown performed — use only when the guest is unresponsive",
             "type": "config",
             "flagged": true,
-            "example": "(Hard reset — equivalent to power-cycle button)"
+            "example": "root@pve# qm reset 100\n\n# Immediately power-cycles the VM — no ACPI signal, no graceful shutdown.\n# The guest OS will run fsck or journal recovery on next boot.\n\n# Safer alternatives in order of preference:\n# 1. qm shutdown 100       (ACPI graceful shutdown)\n# 2. qm reboot 100         (ACPI graceful reboot)\n# 3. qm reset 100          (hard reset — last resort)\n\nroot@pve# qm status 100\nstatus: running"
           },
           {
             "cmd": "qm suspend <VMID>",
@@ -40401,10 +40450,10 @@
           },
           {
             "cmd": "qm resume <VMID>",
-            "desc": "Resume a suspended VM",
+            "desc": "Resume a VM that was suspended to RAM (qm suspend), restoring execution from the saved memory state",
             "type": "config",
             "flagged": false,
-            "example": "(VM resumed from suspended state)"
+            "example": "root@pve# qm status 101\nstatus: suspended\n\nroot@pve# qm resume 101\n\n# No output; VM resumes from the exact point of suspension.\n\nroot@pve# qm status 101\nstatus: running\n\n# Note: suspend-to-disk (hibernate) is a different mechanism and requires\n# guest OS support — see qm template and cloudinit for that workflow."
           },
           {
             "cmd": "qm sendkey <VMID> <KEY>",
@@ -40555,10 +40604,10 @@
           },
           {
             "cmd": "qm guest cmd <VMID> ping",
-            "desc": "Verify guest agent is responding",
+            "desc": "Ping the QEMU guest agent to verify it is running and responsive inside the VM",
             "type": "show",
             "flagged": false,
-            "example": "{}"
+            "example": "root@pve# qm guest cmd 100 ping\n{}\n\n# An empty JSON object {} means the guest agent responded successfully.\n# If it times out or errors, the agent is not running inside the guest:\n#   - Check: systemctl status qemu-guest-agent (inside the VM)\n#   - Install: apt install qemu-guest-agent && systemctl enable --now qemu-guest-agent"
           },
           {
             "cmd": "qm guest cmd <VMID> network-get-interfaces",
@@ -40608,6 +40657,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "/usr/bin/kvm \\\n  -id 100 \\\n  -name web01 \\\n  -smp 4,sockets=1,cores=4,maxcpus=4 \\\n  -m 8192 \\\n  -drive file=/dev/DS-FAST/vm-100-disk-0,format=raw,aio=io_uring \\\n  -netdev bridge,id=net0,br=vmbr0 \\\n  -device virtio-net-pci,netdev=net0,mac=AA:BB:CC:DD:EE:01"
+          },
+          {
+            "cmd": "qm snapshot list <VMID>",
+            "desc": "List all snapshots for a VM including name, parent, running-state flag, and description",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve# qm snapshot list 100\n\n┌──────────────────┬──────────────────┬─────────┬──────────────────────────────────┐\n│ Name             │ Parent           │ Running │ Description                      │\n╞══════════════════╪══════════════════╪═════════╪══════════════════════════════════╡\n│ current          │ snap-2026-06-01  │ *       │                                  │\n├──────────────────┼──────────────────┼─────────┼──────────────────────────────────┤\n│ snap-2026-06-01  │ pre-upgrade      │         │ Before kernel 6.8 upgrade        │\n├──────────────────┼──────────────────┼─────────┼──────────────────────────────────┤\n│ pre-upgrade      │ no-parent        │         │ Clean Debian 12 baseline         │\n└──────────────────┴──────────────────┴─────────┴──────────────────────────────────┘\n\n# Running * = snapshot includes saved VM RAM state (live/memory snapshot).\n# Roll back: qm rollback 100 snap-2026-06-01\n# Delete:    qm delsnapshot 100 pre-upgrade\n# Take new:  qm snapshot 100 snap-$(date +%Y%m%d) --description \"Pre-patch\""
           }
         ],
         "LXC Containers (pct)": [
@@ -40634,10 +40690,10 @@
           },
           {
             "cmd": "pct start <CTID>",
-            "desc": "Start container",
+            "desc": "Start a stopped LXC container; returns immediately once the init process is spawned inside the container",
             "type": "config",
             "flagged": false,
-            "example": "(No output; container started)"
+            "example": "root@pve# pct status 200\nstatus: stopped\n\nroot@pve# pct start 200\n\n# No output on success.\n\nroot@pve# pct status 200\nstatus: running\n\n# Attach a shell to the running container:\n#   pct enter 200\n# Or execute a single command:\n#   pct exec 200 -- systemctl status nginx"
           },
           {
             "cmd": "pct shutdown <CTID>",
@@ -40655,10 +40711,10 @@
           },
           {
             "cmd": "pct reboot <CTID>",
-            "desc": "Reboot container",
+            "desc": "Gracefully reboot an LXC container by stopping and restarting its init process",
             "type": "config",
             "flagged": false,
-            "example": "(Container rebooting)"
+            "example": "root@pve# pct reboot 200\n\n# No output; the container stops cleanly and restarts.\n\n# Monitor:\nroot@pve# pct status 200\nstatus: running\n\n# If the container is frozen and pct reboot hangs, force-stop first:\n#   pct stop 200 --skiplock\n#   pct start 200"
           },
           {
             "cmd": "pct enter <CTID>",
@@ -40697,10 +40753,10 @@
           },
           {
             "cmd": "pct unmount <CTID>",
-            "desc": "Unmount after pct mount",
+            "desc": "Unmount a stopped container's filesystem after manual inspection with pct mount; leaves the container stopped",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "unmounted /var/lib/lxc/200/rootfs"
+            "example": "# Mount for inspection:\nroot@pve# pct mount 200\nmounted CT 200 in '/var/lib/lxc/200/rootfs'\n\n# Inspect files:\nroot@pve# ls /var/lib/lxc/200/rootfs/etc/\n\n# Unmount when done:\nroot@pve# pct unmount 200\nunmounted /var/lib/lxc/200/rootfs\n\n# Always unmount before starting the container:\n#   pct start 200"
           },
           {
             "cmd": "pct migrate <CTID> <TARGET-NODE> --restart 1",
@@ -40739,10 +40795,17 @@
           },
           {
             "cmd": "pct unlock <CTID>",
-            "desc": "Clear stuck container lock",
+            "desc": "Remove a stuck lock file from a container; use only when the container is not in an active task (migration, backup, snapshot)",
             "type": "troubleshooting",
             "flagged": true,
-            "example": "(Lock cleared from CT 200)"
+            "example": "root@pve# pct start 200\nERROR: CT is locked (backup)\n\nroot@pve# pct unlock 200\n\n# No output on success — the lock file is removed.\n\nroot@pve# pct start 200\n\n# Only run this if you are certain no vzdump/migration task is actually running.\n# Check active tasks first: pveperf or journalctl -u pvestatd"
+          },
+          {
+            "cmd": "pct snapshot list <CTID>",
+            "desc": "List all snapshots for an LXC container with name, parent, and description; LXC snapshots never include RAM state",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve# pct snapshot list 200\n\n┌─────────────────┬──────────────┬──────────────────────────────────┐\n│ Name            │ Parent       │ Description                      │\n╞═════════════════╪══════════════╪══════════════════════════════════╡\n│ current         │ baseline     │                                  │\n├─────────────────┼──────────────┼──────────────────────────────────┤\n│ baseline        │ no-parent    │ Fresh Debian 12 install          │\n└─────────────────┴──────────────┴──────────────────────────────────┘\n\n# Roll back: pct rollback 200 baseline\n# Delete:    pct delsnapshot 200 baseline\n# Take new:  pct snapshot 200 snap-$(date +%Y%m%d) -description \"Pre-update\"\n# Note: snapshots require ZFS, LVM-thin, or Btrfs storage backend."
           }
         ],
         "Storage (pvesm)": [
@@ -40776,10 +40839,10 @@
           },
           {
             "cmd": "pvesm scan zfs",
-            "desc": "Discover importable ZFS pools",
+            "desc": "Scan the local system for importable ZFS pools not yet configured as Proxmox storage",
             "type": "show",
             "flagged": false,
-            "example": "rpool\ndata"
+            "example": "root@pve# pvesm scan zfs\nrpool\ndata\nbackup-pool\n\n# Each line is a ZFS pool name that can be added as storage:\n#   pvesm add zfspool backup-pool --pool backup-pool --content backup,images\n\n# After adding, verify:\n#   pvesm status\n\n# Note: pools already imported by Proxmox are still listed here."
           },
           {
             "cmd": "pvesm add nfs <NAME> --server <IP> --export /exports/proxmox --content backup,iso,vztmpl",
@@ -41101,10 +41164,10 @@
           },
           {
             "cmd": "pveum group add admins -comment \"Admin group\"",
-            "desc": "Create a group",
+            "desc": "Create a new Proxmox user group; groups allow batch permission assignment via pveum acl modify",
             "type": "config",
             "flagged": false,
-            "example": "(Group admins created)"
+            "example": "root@pve# pveum group add admins -comment \"Infrastructure administrators\"\n\n# No output on success.\n\n# Add a user to the group:\n#   pveum user modify jsmith@pam -group admins\n\n# Grant the group Proxmox admin rights on the root path:\n#   pveum acl modify / -group admins -role Administrator\n\n# Verify:\n#   pveum group list"
           },
           {
             "cmd": "pveum role list",
@@ -41133,6 +41196,13 @@
             "type": "show",
             "flagged": false,
             "example": "┌────────┬──────────┬─────────────────────────┐\n│ type   │ id       │ description             │\n├────────┼──────────┼─────────────────────────┤\n│ totp   │ totp-001 │ Google Authenticator     │\n└────────┴──────────┴─────────────────────────┘"
+          },
+          {
+            "cmd": "pveum user token list <userid>",
+            "desc": "List all API tokens for a Proxmox user account: token ID, comment, expiry, and privilege-separation flag",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve# pveum user token list admin@pam\n\n┌─────────────────────────┬──────────────────┬────────────────────┬─────────┐\n│ full tokenid            │ comment          │ expire             │ privsep │\n╞═════════════════════════╪══════════════════╪════════════════════╪═════════╡\n│ admin@pam!terraform     │ Terraform runner │ 2027-01-01 00:00   │ 0       │\n├─────────────────────────┼──────────────────┼────────────────────┼─────────┤\n│ admin@pam!monitoring    │ Zabbix read-only │ never              │ 1       │\n└─────────────────────────┴──────────────────┴────────────────────┴─────────┘\n\n# privsep=0: token inherits ALL user permissions.\n# privsep=1: token limited to roles explicitly assigned to the token (safer).\n# Create: pveum user token add admin@pam monitoring --comment \"Zabbix\" --privsep 1\n# Delete: pveum user token remove admin@pam terraform"
           }
         ],
         "API & Automation (pvesh)": [
@@ -42932,17 +43002,17 @@
           },
           {
             "cmd": "shutdown",
-            "desc": "Disable an interface",
+            "desc": "Administratively disable an interface; traffic is blocked, the link goes down, and STP removes the port from the topology",
             "type": "config",
             "flagged": false,
-            "example": "(Interface administratively shut down)"
+            "example": "switch(config)# interface 1/1/5\nswitch(config-if)# shutdown\n\n# Verify:\nswitch# show interface 1/1/5\n Interface 1/1/5 is down\n  Admin state is down\n  Physical link is down\n\n# The interface will show \"Admin state is down\" even if a cable is plugged in.\n# To re-enable:\n#   interface 1/1/5\n#   no shutdown"
           },
           {
             "cmd": "no shutdown",
-            "desc": "Enable an interface",
+            "desc": "Administratively enable an interface that was previously shut down; issued from interface config context",
             "type": "config",
             "flagged": false,
-            "example": "(Interface brought up)"
+            "example": "switch(config)# interface 1/1/5\nswitch(config-if)# no shutdown\n\n# Verify state after a few seconds:\nswitch# show interface 1/1/5\n Interface 1/1/5 is up\n  Admin state is up\n  Link state is up, Link speed is 1 Gbps, Link duplex is Full\n  ...\n\n# If link stays down after \"no shutdown\":\n#   Check cable: show interface 1/1/5 transceiver\n#   Check the far end is also not shut: show cdp neighbors"
           }
         ],
         "VLANs": [
@@ -42969,24 +43039,24 @@
           },
           {
             "cmd": "vlan 10\n name DATA",
-            "desc": "Create a VLAN",
+            "desc": "Create VLAN 10 and assign it a name in one config sequence; enter VLAN context then name it",
             "type": "config",
             "flagged": false,
-            "example": "(VLAN 10 created with name DATA)"
+            "example": "switch(config)# vlan 10\nswitch(config-vlan)# name DATA\nswitch(config-vlan)# exit\n\n# Verify:\nswitch# show vlan 10\n VLAN  Name        Status    Reason         Interfaces\n ----  ----------  --------  -------------  ----------\n   10  DATA        up        ok             1/1/1-1/1/4\n\n# Assign an access port to this VLAN:\n#   interface 1/1/5\n#   vlan access 10"
           },
           {
             "cmd": "vlan 10-20",
-            "desc": "Create a VLAN range",
+            "desc": "Create a contiguous VLAN range (10 through 20) in a single command; names are not set and default to the VLAN number",
             "type": "config",
             "flagged": false,
-            "example": "(VLANs 10 through 20 created)"
+            "example": "switch(config)# vlan 10-20\n\n# No output on success.\n\n# Verify:\nswitch# show vlan\n VLAN  Name        Status\n ----  ----------  ------\n   10  VLAN10      up\n   11  VLAN11      up\n   ...\n   20  VLAN20      up\n\n# Name each VLAN individually after creation:\n#   vlan 10\n#   name DATA\n# Or delete the whole range:\n#   no vlan 10-20"
           },
           {
             "cmd": "no vlan 10",
-            "desc": "Delete a VLAN",
+            "desc": "Delete VLAN 10 from the switch; all ports still assigned to this VLAN revert to default VLAN behavior",
             "type": "config",
             "flagged": true,
-            "example": "(VLAN 10 deleted)"
+            "example": "switch(config)# no vlan 10\n\n# Verify deletion:\nswitch(config)# show vlan 10\nVLAN 10 is not found.\n\n# Ports that were access ports on VLAN 10 will retain their PVID configuration\n# but the VLAN itself no longer exists — reassign ports to a valid VLAN:\n#   interface 1/1/5\n#   no shutdown\n#   vlan access 20"
           },
           {
             "cmd": "show evpn evi detail",
@@ -43034,10 +43104,10 @@
           },
           {
             "cmd": "spanning-tree mode mstp",
-            "desc": "Switch to MSTP",
+            "desc": "Switch the global spanning-tree mode to MSTP; existing RSTP topology is preserved and CIST maps to MST instance 0",
             "type": "config",
             "flagged": false,
-            "example": "(MSTP mode enabled globally)"
+            "example": "switch(config)# spanning-tree mode mstp\n\n# Configure MST region (required for MSTP to work across switches):\nswitch(config)# spanning-tree config-name CORP_MST\nswitch(config)# spanning-tree config-revision 1\nswitch(config)# spanning-tree instance 1 vlan 10,20,30\nswitch(config)# spanning-tree instance 2 vlan 40,50\n\n# Verify:\nswitch# show spanning-tree\nMST Instance    : 0 (CIST)\nBridge ID       : 8000.00:0c:29:ab:cd:ef\nRoot Port       : 1/1/48   Root Cost: 0\nTopology Change : 0        Active: 0s"
           },
           {
             "cmd": "spanning-tree config-name CORP\nspanning-tree config-revision 1\nspanning-tree instance 1 vlan 10,20",
@@ -43199,10 +43269,10 @@
           },
           {
             "cmd": "vrf <name>",
-            "desc": "Create / enter a VRF",
+            "desc": "Create a named VRF (or enter its config context if it already exists); used for routing table separation",
             "type": "config",
             "flagged": false,
-            "example": "(VRF MGMT created)"
+            "example": "switch(config)# vrf MGMT\nswitch(config-vrf)# description \"Out-of-band management VRF\"\nswitch(config-vrf)# exit\n\n# Assign an interface to the VRF:\nswitch(config)# interface 1/1/48\nswitch(config-if)# vrf attach MGMT\nswitch(config-if)# ip address 10.99.99.1/24\n\n# Verify:\nswitch# show vrf\nName         Description                     Interfaces\n-----------  ------------------------------  ----------\ndefault      Default VRF                     1/1/1-47\nMGMT         Out-of-band management VRF      1/1/48"
           },
           {
             "cmd": "interface 1/1/1\n vrf attach <name>",
@@ -43359,10 +43429,10 @@
           },
           {
             "cmd": "tacacs-server host 10.10.10.50 key plaintext <key>",
-            "desc": "TACACS+ server",
+            "desc": "Configure a TACACS+ server for CLI authentication; specify the shared secret as plaintext (stored encrypted in running-config)",
             "type": "config",
             "flagged": false,
-            "example": "(TACACS+ server 10.10.10.50 configured)"
+            "example": "switch(config)# tacacs-server host 10.10.10.50 key plaintext MySecret123\n\n# Enable TACACS+ for login auth:\nswitch(config)# aaa authentication login default group tacacs local\n\n# Test reachability:\nswitch# test aaa authentication tacacs-server 10.10.10.50 admin mypassword\nAuthentication Successful\n\n# Verify server config:\nswitch# show tacacs-server detail\n  Host:     10.10.10.50\n  Port:     49\n  Key:      ****\n  Timeout:  5\n  Retries:  1"
           },
           {
             "cmd": "aaa group server tacacs+ TAC\n server 10.10.10.50",
@@ -43380,10 +43450,10 @@
           },
           {
             "cmd": "user admin password plaintext <pwd> role administrators",
-            "desc": "Local admin user",
+            "desc": "Set the local admin user password and assign the built-in administrators role for full CLI access",
             "type": "config",
             "flagged": false,
-            "example": "(Admin user password and role updated)"
+            "example": "switch(config)# user admin password plaintext Str0ng!Pass role administrators\n\n# Verify the user exists and role is correct:\nswitch# show users\nUsername     Role             Status\n-----------  ---------------  ------\nadmin        administrators   active\nmonitor      operators        active\n\n# NOTE: Use a strong password — this account has full configuration access.\n# For production, enforce TACACS+/RADIUS and keep the local user as a fallback only."
           }
         ],
         "QoS": [
@@ -43403,10 +43473,10 @@
           },
           {
             "cmd": "show class",
-            "desc": "Defined classes",
+            "desc": "List all defined QoS class maps including match criteria such as DSCP values or ACLs",
             "type": "show",
             "flagged": false,
-            "example": "Class map VOICE (IPv4)\n  Match: dscp 46"
+            "example": "switch# show class\nClass map VOICE (IPv4)\n  Match: dscp ef  (46)\nClass map VIDEO (IPv4)\n  Match: dscp af41  (34)\nClass map SCAVENGER (IPv4)\n  Match: dscp cs1  (8)\nClass map DATA (IPv4)\n  Match: dscp default  (0)\n\n# Class maps are used in policy maps applied to interfaces:\n#   policy-map QOS_POLICY\n#   class VOICE\n#     priority\n#   class VIDEO\n#     bandwidth percent 20"
           },
           {
             "cmd": "show policy",
@@ -43906,10 +43976,10 @@
           },
           {
             "cmd": "show ap group",
-            "desc": "AP groups",
+            "desc": "List all configured AP groups, which define radio profiles, SSID assignments, and other AP-level policies",
             "type": "show",
             "flagged": false,
-            "example": "AP Group List\n-------------\ndefault-ap\nroof-grp\nfloor-grp"
+            "example": "(ArubaOS-controller) # show ap group\n\nAP Group List\n-------------\nName             Entries\n---------------  -------\ndefault-ap       142\nroof-grp          28\nfloor-grp         64\n\n# View the full configuration of a specific group:\n#   show ap group roof-grp\n\n# AP groups are assigned to APs:\n#   provision-ap wired-mac <mac> ap-group roof-grp\n\n# Total AP count across all groups:\n#   show ap database | count"
           },
           {
             "cmd": "show ap-group <name>",
@@ -44386,10 +44456,10 @@
         "Config Management": [
           {
             "cmd": "write memory",
-            "desc": "Save running-config to flash",
+            "desc": "Save the running configuration to flash memory; must be run after any configuration change to survive a controller reload",
             "type": "config",
             "flagged": false,
-            "example": "Saving Configuration...\nSaved."
+            "example": "(ArubaOS-controller) # write memory\nSaving Configuration...\nSaved.\n\n# Always run write memory before:\n#   - Scheduling a reload\n#   - Planned maintenance\n#   - After major policy changes\n\n# Create a named backup before overwriting:\n#   copy running-config flash:pre-change-backup.cfg\n# Verify config was saved:\n#   dir flash: | include cfg"
           },
           {
             "cmd": "copy running-config flash:bkp.cfg",
@@ -44473,10 +44543,10 @@
           },
           {
             "cmd": "show clock",
-            "desc": "Current date/time",
+            "desc": "Display the current system date and time on the AP; verify against controller and NTP for log correlation accuracy",
             "type": "show",
             "flagged": false,
-            "example": "Current Time: Thu Jun 12 09:42:17 GMT 2026"
+            "example": "AP-OFFICE-01# show clock\nCurrent Time: Thu Jun 26 09:42:17 GMT 2026\n\n# If the time is wrong, check NTP config on the Mobility Controller:\n#   From controller: show ntp servers\n# AP time is synced from the controller during association.\n# Time skew > 5 minutes can cause certificate authentication failures (802.1X)."
           },
           {
             "cmd": "show country",
@@ -44494,10 +44564,10 @@
           },
           {
             "cmd": "show memory",
-            "desc": "Memory usage",
+            "desc": "Display total, used, and free memory on the AP; high memory usage may indicate a memory leak requiring a reboot",
             "type": "show",
             "flagged": false,
-            "example": "Total Memory: 512 MB\nUsed Memory : 268 MB\nFree Memory : 244 MB"
+            "example": "AP-OFFICE-01# show memory\nTotal Memory: 512 MB\nUsed Memory : 268 MB (52%)\nFree Memory : 244 MB (48%)\n\n# Memory usage above 85% may degrade AP performance.\n# Processes consuming memory:\n#   show process memory sorted | head -20\n\n# If memory has been steadily climbing for days without correlation to client count,\n# schedule a maintenance reboot or upgrade the firmware."
           },
           {
             "cmd": "show stats",
@@ -44795,17 +44865,17 @@
           },
           {
             "cmd": "apboot",
-            "desc": "Reboot the AP",
+            "desc": "Reboot the AP immediately; the AP will disconnect all clients, shut down radio interfaces, and restart",
             "type": "config",
             "flagged": true,
-            "example": "(AP initiating reboot sequence...)"
+            "example": "AP-OFFICE-01# apboot\n\nSystem is going down for reboot NOW!\nStopping radios...\nFlushing filesystem...\nRebooting...\n\n# All associated clients are deauthenticated and must reassociate after reboot.\n# Use \"reload\" in ArubaOS for a softer variant that waits for clients to disconnect.\n# Check firmware version after reboot:\n#   show ap image version"
           },
           {
             "cmd": "reload",
-            "desc": "Reload the AP",
+            "desc": "Initiate a graceful AP reload; sends deauthentication frames to associated clients before restarting",
             "type": "config",
             "flagged": true,
-            "example": "(AP initiating reload sequence...)"
+            "example": "AP-OFFICE-01# reload\nDo you really want to reset the system? (yes/no): yes\n\nSending deauth to associated clients...\nRebooting...\n\n# More graceful than \"apboot\" — clients receive deauth frames and can roam\n# to another AP before the reload completes.\n# Monitor the AP coming back online:\n#   From controller: show ap database  (wait for Up state to return)"
           }
         ]
       }
