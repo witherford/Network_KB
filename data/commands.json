@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-26T19:12:29.000Z",
+  "updatedAt": "2026-06-27T18:45:11.238Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -237,7 +237,7 @@
             "desc": "Display a condensed summary view of 'show ns mode' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Enabled: L3, EDGE, FR, USNIP"
+            "example": "> show ns mode -summary\nEnabled modes: L3, EDGE, FR, USNIP\nDisabled modes: DRADV, RISE_APBR, RISE_RHI\n\n# Verify with full output to see all modes and descriptions:\n> show ns mode\nEnabled modes:\n  L3             L3 routing enabled\n  EDGE           Edge/perimeter deployment\n  USNIP          Use SNIP for server-side connections\n  FR             Fast Ramp enabled\n  MBF            (disabled)"
           },
           {
             "cmd": "show hardware -full",
@@ -349,56 +349,56 @@
             "desc": "Display a condensed summary view of 'show cache policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 15  Hits: 14622"
+            "example": "> show cache policy -summary\nPolicy Name          Hits    Misses\n--------------------  ------  ------\ncache_images          14308     314\ncache_static           8892     102\nbypass_api                0       0\n\nTotal Policies: 3  Total Hits: 23200  Total Misses: 416"
           },
           {
             "cmd": "show compression vserver -summary",
             "desc": "Display a condensed summary view of 'show compression vserver' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Active: 5  Hits: 12903"
+            "example": "> show compression vserver -summary\nVS Name              State   Hits    Bytes Saved\n--------------------  -------  ------  -----------\nvs_web_443           UP       12903   1.42 GB\nvs_app_80            UP        3210   245 MB\nvs_api_8443          DOWN         0   0 B\n\nActive VSes: 2  Inactive: 1  Total Hits: 16113"
           },
           {
             "cmd": "show compression stats -hits",
             "desc": "Display hit counters for 'show compression stats' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
-            "example": "Savings: 75%  TotalIn: 10GB"
+            "example": "> show compression stats -hits\nType          Compressed    Savings   Ratio    Hits\n-----------   ----------    -------   -----    ----\nHTTP          7.5 GB        2.5 GB    75%      12903\nHTTPS         2.5 GB        900 MB    75%       3210\n\nTotal input: 10 GB  Total Savings: 3.4 GB (75% compression ratio)\nHigh savings ratio indicates static content (JS/CSS/HTML) is being compressed.\nLow ratio may mean already-compressed content (images/video) is being targeted."
           },
           {
             "cmd": "show dns nameServer -summary",
             "desc": "Display a condensed summary view of 'show dns nameServer' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Servers: 2  State: UP"
+            "example": "> show dns nameServer -summary\nServer IP       Type      State   RTT    Queries\n-----------     -------   -----   ----   -------\n8.8.8.8         External  UP      12ms   45230\n8.8.4.4         External  UP      11ms   44812\n\nTotal Servers: 2  Active: 2  Failed: 0"
           },
           {
             "cmd": "show dns record -summary",
             "desc": "Display a condensed summary view of 'show dns record' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total Records: 45"
+            "example": "> show dns record -summary\nType  Name                       Data              TTL\n----  -------------------------  ----------------  ----\nA     www.example.com            10.10.10.100      300\nA     api.example.com            10.10.10.101      300\nCNAME cdn.example.com           d1abc.example.com  60\nMX    example.com               mail.example.com   3600\n\nTotal Records: 4  (A: 2  CNAME: 1  MX: 1)"
           },
           {
             "cmd": "show dns policy -summary",
             "desc": "Display a condensed summary view of 'show dns policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 5  Hits: 120"
+            "example": "> show dns policy -summary\nPolicy Name         Expression              Action     Hits\n-----------------   ---------------------   --------   -----\ndns_internal        CLIENT.IP.SRC.IN_SUBNET(10.0.0.0/8)  dns_view_internal  118\ndns_external        TRUE                    dns_view_ext    2\n\nTotal Policies: 2  Total Hits: 120"
           },
           {
             "cmd": "show snmp trap -summary",
             "desc": "Display a condensed summary view of 'show snmp trap' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total Dest: 2  Version: V2"
+            "example": "> show snmp trap -summary\nDestination        Community   Version  Port  State\n-----------------  ----------  -------  ----  -----\n10.50.50.50        public      V2c      162   ENABLED\n10.50.50.51        public      V2c      162   ENABLED\n\nTotal Trap Destinations: 2  Version: V2c"
           },
           {
             "cmd": "show ntp server -summary",
             "desc": "Display a condensed summary view of 'show ntp server' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total NTP: 1  Synced: YES"
+            "example": "> show ntp server -summary\nNTP Server       Status    Stratum  Offset     Jitter\n--------------   --------  -------  ---------  ------\n129.6.15.28      Synced    1        +0.423ms   0.512ms\n\nTotal NTP Servers: 1  Synced: YES\n\n# Full status:\n> show ntp status"
           },
           {
             "cmd": "show audit nslogAction -full",
@@ -412,14 +412,14 @@
             "desc": "Display a condensed summary view of 'show audit syslogPolicy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 5  Hits: 120340"
+            "example": "> show audit syslogPolicy -summary\nPolicy Name         Bound To     LogLevel   Hits\n-----------------   ----------   --------   ------\nsyslog_global       SYSTEM       WARNING    120340\nsyslog_lb           LB_VS_1      ERROR        8212\n\nTotal Syslog Policies: 2  Total Hits: 128552"
           },
           {
             "cmd": "show system entity -summary",
             "desc": "Display a condensed summary view of 'show system entity' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Power: OK  Fans: OK  Temp: OK"
+            "example": "> show system entity -summary\nEntity        Status   Value\n-----------   ------   -----\nPower Supply  OK       Redundant, both PSUs active\nFans          OK       All fans operating at normal speed\nTemperature   OK       CPU: 42°C  Chassis: 35°C\n\nAlert thresholds: CPU > 75°C, Chassis > 45°C. OK status = all within normal range."
           },
           {
             "cmd": "show ns info -full",
@@ -482,7 +482,7 @@
             "desc": "Display a condensed summary view of 'show ns version' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "13.1.42.47.nc"
+            "example": "> show ns version -summary\n13.1.42.47.nc\n\n# Full detail:\n> show ns version\n  NetScaler NS13.1: Build 42.47.nc, Date: Jan 12 2024, 10:22:15\n  Kernel: Linux 4.19.247 #14 SMP"
           },
           {
             "cmd": "show ns hardware -inventory",
@@ -545,14 +545,14 @@
             "desc": "Display only the entries currently enabled for 'show ns mode'.",
             "type": "show",
             "flagged": false,
-            "example": "L3, EDGE, USNIP, FR"
+            "example": "> show ns mode -enabled\nCurrently enabled modes:\n  L3     Layer-3 routing\n  EDGE   Edge/perimeter deployment\n  USNIP  Use SNIP for server connections\n  FR     Fast Ramp\n\nUse 'show ns mode' (without -enabled) to also see disabled modes.\nChange with: set ns mode +MBF to enable, unset ns mode MBF to disable."
           },
           {
             "cmd": "show ns hostname -summary",
             "desc": "Display a condensed summary view of 'show ns hostname' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "NS-ADC-PROD-01"
+            "example": "> show ns hostname -summary\nNS-ADC-PROD-01\n\n# Full context:\n> show ns hostname\nHostname: NS-ADC-PROD-01\n\nChange with: set ns hostname <new-hostname>\nSave and apply: save config  (hostname persists after reboot once saved)"
           },
           {
             "cmd": "show ns version",
@@ -566,7 +566,7 @@
             "desc": "Grant the SNMP community \"public\" read access to the entire MIB tree.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set snmp community public -read ALL\nDone.\n\n# Verify the new community:\n> show snmp community\nCommunity:  public  , Permissions: READ\nBound to SNMP manager: ALL (any IP allowed)\n\nNote: Using \"public\" in production is a security risk — use a strong\ncommunity string and restrict source IPs with:\n  add snmp manager 10.10.10.0 -netmask 255.255.255.0"
           },
           {
             "cmd": "set ns feature LB CS SSL",
@@ -580,28 +580,28 @@
             "desc": "Enable L3-forwarding, edge-mode and MAC-Based Forwarding global modes.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ns mode L3 EDGE MBF\nDone.\n\n# Confirm the change:\n> show ns mode\nEnabled modes:\n  L3     Layer-3 routing (non-transparent mode)\n  EDGE   Edge deployment (public-facing ADC)\n  MBF    MAC-Based Forwarding (asymmetric routing support)\n\nCaution: Changing modes on a live appliance may disrupt active sessions.\n         Save the config and coordinate a maintenance window."
           },
           {
             "cmd": "set ntp server 129.6.15.28 -minpoll 6",
             "desc": "Tighten the minimum NTP poll interval (2^6 = 64s) for the named NTP server.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ntp server 129.6.15.28 -minpoll 6\nDone.\n\n# Confirm:\n> show ntp server -summary\nTotal NTP: 1  Synced: YES\n\n> show ntp server\nNTP Server: 129.6.15.28  Min Poll: 64s (2^6)  Max Poll: 1024s (2^10)\nState: synchronized  Stratum: 1  Offset: +0.423ms  Jitter: 0.512ms"
           },
           {
             "cmd": "set audit syslogAction Srv_1 -logLevel CRITICAL",
             "desc": "Restrict the syslog action Srv_1 to forward only CRITICAL-or-higher events.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set audit syslogAction Srv_1 -logLevel CRITICAL\nDone.\n\n# Verify:\n> show audit syslogAction Srv_1\nName:       Srv_1\nServerIP:   10.50.50.50\nPort:       514\nLogLevel:   CRITICAL\nTransport:  UDP\nFormat:     Default\n\nOnly CRITICAL events (and above) will now be forwarded. Available levels:\n  EMERGENCY > ALERT > CRITICAL > ERROR > WARNING > NOTICE > INFO > DEBUG"
           },
           {
             "cmd": "set dns parameter -cache NO",
             "desc": "Disable the DNS resolver cache (forces each query to recurse).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set dns parameter -cache NO\nDone.\n\n# Confirm:\n> show dns parameter | grep -i cache\nDNS Cache: NO\n\nWith caching disabled, every DNS query forwarded through the ADC triggers a\nfresh recursive lookup. Use during DNS troubleshooting or when the ADC should\nnot influence DNS TTLs. Re-enable: set dns parameter -cache YES"
           },
           {
             "cmd": "set cache parameter -memLimit 500",
@@ -615,7 +615,7 @@
             "desc": "Set HTTP compression aggressiveness to HIGH (best ratio, more CPU).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set compression parameter -cmpLevel HIGH\nDone.\n\n# Verify:\n> show compression parameter | grep -i level\nCompression Level: HIGH\n\nLevels: LOW (fast, less CPU) | MEDIUM (balanced) | HIGH (best ratio, most CPU)\nHIGH is recommended for environments with static assets and ample CPU headroom.\nMonitor CPU with 'show system cpu' after enabling."
           },
           {
             "cmd": "show hardware",
@@ -636,7 +636,7 @@
             "desc": "Display the configured ADC system hostname.",
             "type": "show",
             "flagged": false,
-            "example": "Hostname: example.com"
+            "example": "> show ns hostname\nHostname: NS-ADC-PROD-01\n\nUsed in SNMP sysName, logging, CLI prompt (after next login), and HA node\nidentification. Change with: set ns hostname <name>\nVerify sysName is updated after save+reboot: snmpwalk -v2c -c public <NSIP> sysName"
           },
           {
             "cmd": "show ns ntpServer",
@@ -685,7 +685,7 @@
             "desc": "SNMP community-string definitions and their access rights.",
             "type": "show",
             "flagged": false,
-            "example": "Community: public, Read-Only"
+            "example": "> show snmp community\n1)  Community: public     Permissions: READ\n    Bound to manager(s): ALL\n\n2)  Community: monitor01  Permissions: READ\n    Bound to manager(s): 10.50.0.0/16\n\nCommunity public allows reads from any source IP — restrict in production.\nAdd a scoped community: add snmp community ops_monitor -read 10.50.0.0 -netmask 255.255.0.0"
           },
           {
             "cmd": "show snmp trap",
@@ -734,14 +734,14 @@
             "desc": "DNS search-suffix list used to qualify short hostnames.",
             "type": "show",
             "flagged": false,
-            "example": "example.com, internal.local"
+            "example": "> show dns suffix\n1) Suffix: example.com\n2) Suffix: internal.local\n\nDNS suffixes are appended to short hostnames when resolving. For example, a\nrequest for 'webserver' resolves as 'webserver.example.com'.\nAdd suffix: add dns suffix corp.example.com\nRemove: rm dns suffix example.com"
           },
           {
             "cmd": "show dns record",
             "desc": "Authoritative DNS records the ADC serves (A / AAAA / CNAME / MX).",
             "type": "show",
             "flagged": false,
-            "example": "test.com A 1.1.1.1 TTL: 3600"
+            "example": "> show dns record\n1) Domain: www.example.com  Type: A  Data: 10.10.10.100  TTL: 300\n2) Domain: api.example.com  Type: A  Data: 10.10.10.101  TTL: 300\n3) Domain: cdn.example.com  Type: CNAME  Data: d1abc.example.com  TTL: 60\n4) Domain: example.com      Type: MX    Data: mail.example.com  Pref: 10  TTL: 3600\n\nTotal Records: 4\n\nThese are authoritative records served by the ADC's DNS server feature,\nnot the ADC's own DNS resolver cache. Requires 'add dns record' or dynamic learning."
           },
           {
             "cmd": "show dns policy",
@@ -799,7 +799,7 @@
             "desc": "Writes running config to /nsconfig/ns.conf — must run after any change",
             "type": "show",
             "flagged": false,
-            "example": "Done."
+            "example": "> save config\nDone.\n\nConfiguration saved to /nsconfig/ns.conf.\n\n# Verify by comparing running and saved config:\n> show ns config\n# (output shows saved timestamp)\n\nTip: Always run 'save config' after any set/add/bind/unbind/rm command —\nNetScaler does NOT auto-save. Unsaved changes are lost on reboot."
           },
           {
             "cmd": "show config diff",
@@ -897,21 +897,21 @@
             "desc": "Set the system hostname (typically followed by the desired name).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ns hostname NS-ADC-PROD-01\nDone.\n\n# Confirm the change:\n> show ns hostname\nHostname: NS-ADC-PROD-01\n\nNote: The new hostname appears in the CLI prompt after the next login.\nA save config + reboot may be required for SNMP sysName to update."
           },
           {
             "cmd": "save ns config",
             "desc": "Persist the running configuration to /nsconfig/ns.conf so it survives reboots.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> save ns config\nDone.\n\nThis is an alias for 'save config'. The running configuration is written to\n/nsconfig/ns.conf and will be loaded on the next reboot.\n\n# Check when the file was last saved:\n  shell ls -la /nsconfig/ns.conf\n  -rw-r--r-- 1 root root 18432 Jun 27 14:35 /nsconfig/ns.conf"
           },
           {
             "cmd": "reboot -warm",
             "desc": "Warm-reboot the ADC — reload software without full hardware re-init.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> reboot -warm\nThis operation will reboot the device, do you want to continue? (Y/N)? Y\nDone.\n\nA warm reboot reloads the NetScaler software without a full hardware\nre-initialisation:\n  - Faster than a cold reboot (~60s vs ~120s typical)\n  - Does NOT interrupt the hardware packet engines during the early boot phase\n  - Use after kernel-level config changes, SSL cert replacements, or upgrades\n    that specify a warm reboot\n\nMonitor recovery with 'show system' or ping the NSIP from another host."
           },
           {
             "cmd": "show ns runningConfig",
@@ -1123,7 +1123,7 @@
             "desc": "Display hit counters for 'show lb service' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
-            "example": "SVC_1: 22031  SVC_2: 23001"
+            "example": "> show lb service -hits\nService          IP              Port  Hits      Active Conn\n---------------  -----------     ----  --------  -----------\nSVC_1            10.10.10.10     80    22031     45\nSVC_2            10.10.10.11     80    23001     48\nSVC_3            10.10.10.12     80    21890     42\n\nTotal Hits: 66922  Distribution appears balanced (33%/34%/33%).\nImbalanced hits indicate a persistence policy, connection limits, or health issues."
           },
           {
             "cmd": "show lb group -full",
@@ -1165,7 +1165,7 @@
             "desc": "Display a condensed summary view of 'show lb group' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 5  Active: 5"
+            "example": "> show lb group -summary\nGroup Name        State   Members  Active\n----------------  -------  -------  ------\nLB_GRP_Web        ENABLED      4       4\nLB_GRP_API        ENABLED      2       1\nLB_GRP_DB         DISABLED     3       0\n\nTotal Groups: 3  Active: 2  Disabled: 1"
           },
           {
             "cmd": "show lb monitor -hits",
@@ -1179,7 +1179,7 @@
             "desc": "Display a condensed summary view of 'show lb persistentSessions' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Active: 1450  Expired: 12903"
+            "example": "> show lb persistentSessions -summary\nActive Sessions:    1450\nExpired Sessions:  12903\nMax Sessions:       5000\n\nSession Type: COOKIEINSERT\nPersistence Timeout: 20 min\n\nActive sessions represent clients with a valid persistence cookie mapped to a\nspecific service. High expired count is normal for long-running deployments.\nIf Active approaches Max, increase with: set lb vserver LB_VS_1 -persistenceBackup NONE"
           },
           {
             "cmd": "show db user",
@@ -1207,21 +1207,21 @@
             "desc": "Administratively disable LB_VS_1 (existing connections drain, new ones rejected).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set lb vserver LB_VS_1 -state DISABLED\nDone.\n\n# Confirm:\n> show lb vserver LB_VS_1\nName:  LB_VS_1  State: OUT OF SERVICE  IP: 10.10.10.200  Port: 443\nEffective State: DOWN  (administratively disabled)\n\nExisting connections continue to be served until they close (graceful drain).\nNew connections are refused with a RST or an HTTP 503, depending on your\nresponder policy. Re-enable with:\n  set lb vserver LB_VS_1 -state ENABLED"
           },
           {
             "cmd": "set service SVC_1 -maxClient 500",
             "desc": "Cap the concurrent-connection limit for service SVC_1 at 500.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set service SVC_1 -maxClient 500\nDone.\n\n# Confirm:\n> show service SVC_1\nName: SVC_1  IP: 10.10.10.10  Port: 80\nState: UP  Current Connections: 312  Max Connections: 500\nWhen the limit is reached new connections are queued (or dropped if\n-maxClientRsnCode is set). Monitor connection headroom with:\n  show service SVC_1 | grep -i \"current|max\""
           },
           {
             "cmd": "set lb monitor MON_1 -interval 10 -resptimeout 5",
             "desc": "Tune monitor MON_1 to probe every 10 s with a 5 s response timeout.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set lb monitor MON_1 -interval 10 -resptimeout 5\nDone.\n\n# Confirm new timing:\n> show lb monitor MON_1\nName: MON_1  Type: HTTP\nInterval: 10s  Response Timeout: 5s  Down Time: 30s\nFailed Probes: 0  Successful Probes: 1204\nState: UP\n\nA tighter interval catches failures faster but increases probe traffic.\nRatio rule: resptimeout < interval (5 < 10 here — correct)."
           },
           {
             "cmd": "unbind lb vserver LB_VS_1 SVC_1",
@@ -1235,21 +1235,21 @@
             "desc": "Bind service SVC_2 to LB vserver LB_VS_1 so it participates in load-balancing.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> bind lb vserver LB_VS_1 SVC_2\nDone.\n\n# Verify the binding:\n> show lb vserver LB_VS_1\n1)  SVC_1  (10.10.10.10:80)  State: UP  Weight: 1\n2)  SVC_2  (10.10.10.11:80)  State: UP  Weight: 1\n\nSVC_2 is now included in the load-balancing pool. New connections will be\ndistributed across both services according to the configured LB method\n(e.g., ROUNDROBIN, LEASTCONNECTION)."
           },
           {
             "cmd": "disable lb vserver LB_VS_1",
             "desc": "Administratively disable a load-balancing vserver (stops accepting new connections; existing connections continue per the vserver's drain settings).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> disable lb vserver LB_VS_1\nDone.\n\n# Confirm:\n> show lb vserver LB_VS_1 | grep -i state\nState: OUT OF SERVICE\n\nEquivalent to 'set lb vserver LB_VS_1 -state DISABLED'.\nExisting sessions drain gracefully; new connections receive a TCP RST or HTTP\n503 depending on responder policy. Use during planned maintenance."
           },
           {
             "cmd": "enable lb vserver LB_VS_1",
             "desc": "Administratively enable a load-balancing vserver so it begins accepting new connections again.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> enable lb vserver LB_VS_1\nDone.\n\n# Confirm:\n> show lb vserver LB_VS_1 | grep -i state\nState: UP  Effective State: UP\n\nThe vserver is accepting new connections again. Monitor for an initial traffic\nspike as queued or reconnecting clients hit the service."
           },
           {
             "cmd": "rm lb vserver LB_VS_Old",
@@ -1398,7 +1398,7 @@
             "desc": "Display a condensed summary view of 'show cs policy' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 12  Hits: 1.5M"
+            "example": "> show cs policy -summary\nPolicy Name         Expression                      Action       Hits\n-----------------   --------------------------------  ----------  -------\ncs_api              HTTP.REQ.URL.STARTSWITH(\"/api\")   cs_api_vs   452100\ncs_static           HTTP.REQ.URL.CONTAINS(\".css\")     cs_static   234500\ncs_default          TRUE                              cs_web_vs   815200\n\nTotal CS Policies: 3  Total Hits: 1.5M"
           },
           {
             "cmd": "show cr policy",
@@ -1617,7 +1617,7 @@
             "desc": "Display a condensed summary view of 'show ssl vserver' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 15  Active: 15"
+            "example": "> show ssl vserver -summary\nVS Name              Protocol  Cert CN           Expiry (days)\n-------------------  --------  ----------------  -------------\nvs_web_443           TLSv1.3   *.example.com     120\nvs_api_8443          TLSv1.2   api.example.com    14\nvs_legacy_443        SSLv3     legacy.example.com EXPIRED\n\nTotal: 3  Active: 2  Cert Expiry < 30 days: 1  Expired: 1\n\nAction required: vs_api_8443 cert expires in 14 days; vs_legacy_443 is EXPIRED."
           },
           {
             "cmd": "show ssl certKey -summary",
@@ -1631,21 +1631,21 @@
             "desc": "Display a condensed summary view of 'show ssl cipher' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total Cipher Suites: 34"
+            "example": "> show ssl cipher -summary\nCipher Group        Ciphers  Protocol  Strength\n------------------  -------  --------  --------\nSECURE_CIPHER_GROUP     18   TLS1.2+   HIGH\nFIPS_CIPHER_GROUP        8   TLS1.2+   HIGH\nLEGACY_CIPHER_GROUP     34   SSL3+     MEDIUM/LOW\n\nTotal Cipher Suites available: 34\nRecommended: bind only SECURE or FIPS groups to production vservers."
           },
           {
             "cmd": "show ssl profile -summary",
             "desc": "Display a condensed summary view of 'show ssl profile' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Frontend: 5  Backend: 2"
+            "example": "> show ssl profile -summary\nProfile Name         Type      Protocol  DH   SNI\n-------------------  --------  --------  ---  ---\nns_default_ssl_profile Frontend TLS1.2+  OFF  ON\nstrict_frontend       Frontend  TLS1.3   ON   ON\nbackend_server        Backend   TLS1.2+  OFF  OFF\n\nFrontend Profiles: 2  Backend Profiles: 1\n\nNote: Always use a Frontend profile on client-facing vservers and a\nseparate Backend profile for server-side SSL to enforce different\ncipher and protocol requirements."
           },
           {
             "cmd": "show ssl action -summary",
             "desc": "Display a condensed summary view of 'show ssl action' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total Actions: 3"
+            "example": "> show ssl action -summary\nAction Name         Type          Header/Field\n-----------------   -----------   ----------------\nssl_hsts_action     CLIENTHELLO   Insert-HSTS-Header\nssl_certlog_action  CERTINSERT    X-SSL-Client-Cert\nssl_redirect        RESPONDWITH   302 to HTTPS\n\nTotal SSL Actions: 3\n\nSSL actions define what happens when a client connects — e.g., inject security\nheaders, forward client certificates, or redirect HTTP to HTTPS."
           },
           {
             "cmd": "show ssl ocspResponder -full",
@@ -1680,7 +1680,7 @@
             "desc": "Delete the SSL cert/key pair Cert_Old (must already be unbound from any vserver).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> rm ssl certKey Cert_Old\nDone.\n\nThe certificate-key pair 'Cert_Old' has been removed from the ADC store.\n\nCommon error: \"Certificate is bound to SSL vserver\" — unbind first:\n  unbind ssl vserver <vsname> -certkeyName Cert_Old\n\nThen retry the rm command. Save config after removal:\n  save config"
           },
           {
             "cmd": "show ssl vserver LB_SSL",
@@ -1766,7 +1766,7 @@
             "desc": "Manually triggers HA failover, promoting Secondary to Primary",
             "type": "show",
             "flagged": false,
-            "example": "Done"
+            "example": "> force ha failover\nThis operation will result in the peer node taking over as primary, do you want to continue? (Y/N)? Y\nDone.\n\n# On the now-Primary node:\n> show ha node\nNode  IP           State    Sync State   Master State\n----  -----------  -------  -----------  ------------\n  0   10.10.10.10  PRIMARY  ENABLED      Primary\n  1   10.10.10.11  SECONDARY ENABLED     Secondary\n\n# On the former Primary (now Secondary):\n> show ha node\n  0   10.10.10.10  SECONDARY ENABLED     Secondary\n\nAllow 5-10 seconds for the new Primary to fully take over before\nresuming configuration changes."
           },
           {
             "cmd": "set ha node -haStatus ENABLED",
@@ -1920,21 +1920,21 @@
             "desc": "Trigger a manual sync of all configurable files (cert/keys, ssl, scripts) across the HA pair.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> sync ha files\nDone.\n\nFiles synchronised from Primary to Secondary include:\n  /nsconfig/ssl/      (certificates and keys)\n  /nsconfig/          (custom scripts, monitors)\n  /var/netscaler/ssl/ (dynamic certificates)\n\nRun after updating SSL certificates or custom files on the Primary.\nConfig sync (running-config) happens automatically — this command only\ncovers filesystem-level files.\n\n# Verify sync status:\n> show ha node\nSync State: ENABLED  In Sync: YES"
           },
           {
             "cmd": "set ns rpcNode 10.10.10.20 -password NewPass123",
             "desc": "Update the shared RPC password the local ADC uses to authenticate to peer 10.10.10.20.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ns rpcNode 10.10.10.20 -password NewPass123\nDone.\n\nThe RPC password secures inter-node communication for HA configuration sync.\nBoth nodes must use the same password. After changing:\n  1. Run the same command on the peer node pointing back to this node's IP.\n  2. Verify sync resumes: show ha node\n\nSecurity note: choose a strong, unique password — RPC traffic is internal\nbut the password is stored in the running config."
           },
           {
             "cmd": "set ha node -hasync DISABLED",
             "desc": "Disable automatic HA configuration sync (changes must be applied manually on each node).",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ha node -hasync DISABLED\nDone.\n\n# Confirm:\n> show ha node 0\nSync State:  DISABLED  (manual sync only)\n\nWith HA sync disabled, configuration changes on the Primary are NOT\nautomatically replicated to the Secondary. Use for troubleshooting only.\nRe-enable immediately after: set ha node -hasync ENABLED"
           },
           {
             "cmd": "show ha failover",
@@ -2139,7 +2139,7 @@
             "desc": "Router-ID currently used by the OSPF/BGP routing stack.",
             "type": "show",
             "flagged": false,
-            "example": "10.10.10.10"
+            "example": "> show router id\nRouter ID: 10.10.10.10\n\nThe Router ID is the NSIP by default. It is used as the BGP/OSPF router\nidentifier. Change with:\n  set ns routerId <ip>\nA save + restart of dynamic routing is required for the change to take effect."
           },
           {
             "cmd": "show ipsec vpn",
@@ -2230,7 +2230,7 @@
             "desc": "Display hit counters for 'show ns simpleacl' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
-            "example": "10.0.0.5: 45  10.0.0.10: 0"
+            "example": "> show ns simpleacl -hits\nRule  Src IP       Src Mask        Action  Hits\n----  -----------  --------------  ------  --------\n1     10.0.0.5     255.255.255.255 DENY    45\n2     10.0.0.10    255.255.255.255 DENY     0\n3     192.168.0.0  255.255.0.0     ALLOW   89234\n\nRules with 0 hits may be stale — review before removing.\nHigh DENY hits signal active scanning or an incorrectly blocked source."
           },
           {
             "cmd": "show ipsec vpn -summary",
@@ -2328,7 +2328,7 @@
             "desc": "Display a condensed summary view of 'show ns ip6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total IPv6: 2  Active: 2"
+            "example": "> show ns ip6 -summary\nIPv6 Address                   Type     State\n-----------------------------  -------  ------\n2001:db8::1/64                 NSIP     ENABLED\n2001:db8::100/64               VIP      ENABLED\n\nTotal IPv6 IPs: 2  Active: 2\n\n# Full detail including ND state:\n> show ns ip6 2001:db8::1"
           },
           {
             "cmd": "show ns route6 -summary",
@@ -2342,28 +2342,28 @@
             "desc": "Display a condensed summary view of 'show ns pbr6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total PBR6: 1  Hits: 0"
+            "example": "> show ns pbr6 -summary\nRule  State    Src Prefix          Action    Next Hop       Hits\n----  -------  ------------------  -------   -----------    ----\n1     ENABLED  2001:db8::/32       ALLOW     2001:db8::1    0\n\nTotal PBR6 Rules: 1  Active Hits: 0\n\nPBR6 rules are IPv6 Policy-Based Routes. Zero hits indicates the matching\ntraffic hasn't been seen yet (or the rule isn't being triggered)."
           },
           {
             "cmd": "show ns acl6 -summary",
             "desc": "Display a condensed summary view of 'show ns acl6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total ACL6: 2  Hits: 12"
+            "example": "> show ns acl6 -summary\nRule  State    Priority  Action  Src Prefix       Dst Prefix        Hits\n----  -------  --------  ------  ---------------  ----------------  ----\n1     ENABLED  100       ALLOW   2001:db8::/32    ::/0              10\n2     ENABLED  999       DENY    ::/0             ::/0               2\n\nTotal ACL6 Rules: 2  Total Hits: 12\n\nACL6 rules filter IPv6 traffic. Lower priority number = higher precedence.\nApply changes with: apply ns acl6"
           },
           {
             "cmd": "show ns simpleacl6 -summary",
             "desc": "Display a condensed summary view of 'show ns simpleacl6' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total SimpleACL6: 0"
+            "example": "> show ns simpleacl6 -summary\nNo Simple ACL6 rules configured.\n\nTotal SimpleACL6: 0\n\nSimple ACL6 rules provide quick IPv6 source-IP blocking without the full\nACL6 engine overhead. Add a rule with:\n  add ns simpleacl6 ALLOW 2001:db8::/32\nApply: apply ns simpleacl6"
           },
           {
             "cmd": "set ns ip 10.10.10.11 -state DISABLED",
             "desc": "Administratively disable the SNIP/VIP at 10.10.10.11 without removing it.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set ns ip 10.10.10.11 -state DISABLED\nDone.\n\n# Confirm:\n> show ns ip 10.10.10.11\nIP: 10.10.10.11  Type: SNIP  State: DISABLED\n\nDisabling a SNIP stops it from being used for server-side connections.\nActive connections using this SNIP are dropped immediately.\nRe-enable: set ns ip 10.10.10.11 -state ENABLED"
           },
           {
             "cmd": "set interface 1/1 -throughput 1000",
@@ -2377,7 +2377,7 @@
             "desc": "Delete the IP address 10.10.10.55 from the ADC configuration.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> rm ns ip 10.10.10.55\nDone.\n\nThe IP 10.10.10.55 has been removed from the ADC's IP table.\n\nCommon error if the IP is in use:\n  ERROR: IP address is in use — unbind from any vserver, service, or monitor\n  that references it before removing.\n\nVerify it's gone: show ns ip\nSave the config after removal: save config"
           },
           {
             "cmd": "rm route 192.168.100.0 255.255.255.0 10.1.1.1",
@@ -2426,7 +2426,7 @@
             "desc": "IPv6 LB-routes — used by the ADC for IPv6 forwarding decisions.",
             "type": "show",
             "flagged": false,
-            "example": "::/0 ::1 UG 0 0"
+            "example": "> show lb route6\n1)  Network: ::/0  Gateway: 2001:db8::1  Type: Static  UG 0 0\n2)  Network: 2001:db8:10::/48  Gateway: DIRECT  Type: Connected  U 0 0\n\nRoutes used by the LB/CS layer for IPv6 server-side routing.\n::/0 is the default IPv6 route; more-specific routes take precedence."
           },
           {
             "cmd": "disable ns ip <ip address>",
@@ -2659,7 +2659,7 @@
             "desc": "Display hit counters for 'show appflow policy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
-            "example": "AF_POL_Global: 105932"
+            "example": "> show appflow policy -hits\nPolicy Name         Expression              Hits\n-----------------   ---------------------   ----------\nAF_POL_Global       TRUE                    105932\nAF_POL_VPN          REQ.HTTP.HEADER Host CONTAINS \"vpn\"   8234\n\nTotal AppFlow Policy Hits: 114166\n\nAppFlow policies control which traffic is exported to analytics collectors\n(Citrix Analytics, Splunk, etc.). High hit counts are expected for\ncatch-all (TRUE) policies bound globally."
           },
           {
             "cmd": "show responder action -full",
@@ -2934,7 +2934,7 @@
             "desc": "Set the SQL-injection check on profile Pro_1 to block (and log/stat) violating requests.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set appfw profile Pro_1 -sqlInjectionAction block\nDone.\n\n# Confirm:\n> show appfw profile Pro_1 | grep sql\nSQL Injection Action: BLOCK\n\nThe AppFW will now block (drop with optional log) any request matching SQL\ninjection patterns. Available actions:\n  none    — allow silently\n  log     — allow but log the violation\n  block   — drop the request (default recommendation)\n  learn   — learn the pattern and add to allow-list (training mode)\n  stats   — increment the violation counter only\n\nRun 'show appfw profile Pro_1' to review all configured protections."
           },
           {
             "cmd": "show appfw signatures",
@@ -3155,28 +3155,28 @@
             "desc": "Compact one-line per GSLB vserver — total / UP / DOWN counts.",
             "type": "show",
             "flagged": false,
-            "example": "Total GSLB: 2  UP: 2"
+            "example": "> show gslb vserver -summary\nGSLB VS Name          State   Services  Active  LB Method\n--------------------  -------  --------  ------  ----------\ngslb_vs_web           UP          4         4    ROUNDROBIN\ngslb_vs_api           UP          2         2    STATICPROXIMITY\ngslb_vs_legacy        DOWN        1         0    ROUNDROBIN\n\nTotal GSLB Vservers: 3  UP: 2  DOWN: 1"
           },
           {
             "cmd": "show gslb site -summary",
             "desc": "Roll-up of all GSLB sites: total configured and currently active.",
             "type": "show",
             "flagged": false,
-            "example": "Total Sites: 2  Active: 2"
+            "example": "> show gslb site -summary\nSite Name      IP            State   RTT     Metric\n-----------    -----------   -----   -----   ------\nsite_us_east   10.1.1.1      UP       2ms    100\nsite_eu_west   10.2.2.1      UP      45ms     98\n\nTotal Sites: 2  Active: 2  RTT collected via MEP or IP-Address-Based."
           },
           {
             "cmd": "show gslb service -summary",
             "desc": "Roll-up of GSLB services: total and how many are currently UP.",
             "type": "show",
             "flagged": false,
-            "example": "Total Services: 4  UP: 4"
+            "example": "> show gslb service -summary\nService Name          Site           IP           State   Hits\n--------------------  -----------    -----------  ------  ------\ngslb_svc_us1          site_us_east   10.1.1.10    UP      28432\ngslb_svc_us2          site_us_east   10.1.1.11    UP      27918\ngslb_svc_eu1          site_eu_west   10.2.2.10    UP      14210\ngslb_svc_eu2          site_eu_west   10.2.2.11    DOWN        0\n\nTotal GSLB Services: 4  UP: 3  DOWN: 1"
           },
           {
             "cmd": "show gslb domain -summary",
             "desc": "Total count of GSLB domains/FQDNs configured on the ADC.",
             "type": "show",
             "flagged": false,
-            "example": "Total Domains: 5"
+            "example": "> show gslb domain -summary\nDomain               GSLB VS       Active IPs   Method\n-------------------  -----------   ----------   -----------\nwww.example.com      gslb_vs_web   4            ROUNDROBIN\napi.example.com      gslb_vs_api   2            STATICPROXIMITY\nlegacy.example.com   gslb_vs_leg   0            ROUNDROBIN\n\nTotal GSLB Domains: 3  Domains with active IPs: 2"
           }
         ],
         "AAA & Authentication": [
@@ -3318,7 +3318,7 @@
             "desc": "Display a condensed summary view of 'show aaa session' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Active: 45  Max: 500  Wait: 0"
+            "example": "> show aaa session -summary\nActive Sessions:  45\nMax Sessions:    500\nSessions Waiting: 0\nTimed Out (last hour): 3\n\nAvg Session Duration: 4m 22s\nAuth Method: LDAP (38), LOCAL (7)\n\nCapacity headroom: 91%.  If active sessions approach max, increase with:\n  set aaa parameter -maxAAAUsers 1000"
           },
           {
             "cmd": "show aaa user -hits",
@@ -3367,7 +3367,7 @@
             "desc": "Display hit counters for 'show authentication radiusPolicy' to see how often each policy/entry has been used.",
             "type": "show",
             "flagged": false,
-            "example": "RAD_POL_1: 129"
+            "example": "> show authentication radiusPolicy -hits\nPolicy Name         Expression              Hits\n-----------------   ---------------------   ------\nRAD_POL_1           TRUE                    129\nRAD_POL_VPN         REQ.HTTP.HEADER Origin CONTAINS vpn  44\nRAD_POL_ADMIN       CLIENT.IP.SRC.IN_SUBNET(10.99.0.0/24)  12\n\nTotal Policy Hits: 185"
           },
           {
             "cmd": "show authentication samlAction",
@@ -3388,14 +3388,14 @@
             "desc": "Display a condensed summary view of 'show system group' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Total: 5  Privilege: mixed"
+            "example": "> show system group -summary\nGroup Name          Privilege      Members  CommandPolicies\n-----------------   ------------   -------  ---------------\nsupergroup          superuser           2   (all commands)\nread_only           read-only           5   show-only\nnoc_operators       operator            8   limited-write\n\nTotal Groups: 3  Total Members: 15"
           },
           {
             "cmd": "show system user -summary",
             "desc": "Display a condensed summary view of 'show system user' (one line per entry, key fields only).",
             "type": "show",
             "flagged": false,
-            "example": "Local: 3  External: 0"
+            "example": "> show system user -summary\nUser Name       Auth Type   Last Login           Groups\n-----------     ---------   -------------------  ----------\nnsroot          LOCAL       2026-06-27 14:30:00  supergroup\nadmin_ops       LOCAL       2026-06-27 09:15:33  noc_operators\nsvc_monitor     LOCAL       Never                read_only\n\nLocal Users: 3  External (LDAP/RADIUS): 0"
           },
           {
             "cmd": "show ns tmsession",
@@ -3416,7 +3416,7 @@
             "desc": "Enable split-tunnel globally for SSL-VPN — only intranet routes traverse the tunnel.",
             "type": "config",
             "flagged": false,
-            "example": "Done"
+            "example": "> set vpn parameter -splitTunnel ON\nDone.\n\n# Confirm:\n> show vpn parameter | grep -i split\nSplit Tunnel: ON\n\nSplit tunneling ON means only traffic destined for corporate subnets (defined\nin the split tunnel network policy) is routed through the VPN. Internet traffic\ngoes directly from the client.\n\nSplit tunneling OFF: all client traffic flows through the VPN (full tunnel).\nRecommended: ON for performance; OFF for compliance/DLP enforcement."
           },
           {
             "cmd": "show aaa vserver VPN_VS",
@@ -7213,7 +7213,7 @@
             "desc": "Public modulus of an RSA key — use to cross-check against cert/CSR",
             "type": "show",
             "flagged": false,
-            "example": "Modulus=D48AF2B1...E3F24A8C"
+            "example": "$ openssl rsa -in private.key -noout -modulus\nModulus=D48AF2B1C3E4F5A6789B0C1D2E3F4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F24A8C\n\n# Common use: verify that the private key matches a certificate\n$ openssl x509 -noout -modulus -in server.crt | md5sum\n$ openssl rsa  -noout -modulus -in private.key | md5sum\n# If both MD5 hashes are identical, the key and certificate are a matching pair.\n\n# Also verify a CSR matches:\n$ openssl req  -noout -modulus -in server.csr | md5sum"
           },
           {
             "cmd": "openssl ec -in ec.key -text -noout",
@@ -12492,7 +12492,7 @@
             "desc": "VLANs the AP has learned on its uplink trunk, plus PoE class negotiated. Useful for confirming the access-switch trunk is allowing the right VLANs through.",
             "type": "show",
             "flagged": false,
-            "example": "AP-OFFICE-01# show wired"
+            "example": "AP-OFFICE-01# show wired\n\nInterface: GigabitEthernet0\n  IP Address: 10.10.10.45  Mask: 255.255.255.0\n  Link: UP  Speed: 1000 Mbps  Duplex: Full\n  TX Bytes: 5,432,100  RX Bytes: 8,234,500\n  TX Errors: 0  RX Errors: 0\n  VLAN Mode: Trunk  Native VLAN: 10\n\nWhat it means:\n- Link UP at 1G full-duplex — healthy uplink\n- TX/RX errors = 0 — no physical layer issues\n- Trunk mode — AP is in FlexConnect local switching or local authentication"
           }
         ],
         "AP CLI — Diagnostics": [
@@ -12501,14 +12501,14 @@
             "desc": "AP-local log buffer. Useful for tracking CAPWAP join issues, image download, and radio events.",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "AP-OFFICE-01# show logging"
+            "example": "AP-OFFICE-01# show logging\n\n*Jun 27 14:22:01.456: %CAPWAP-5-DTLSREQSEND: DTLS connection request sent peer_ip: 10.10.0.10 peer_port: 5246\n*Jun 27 14:22:01.789: %CAPWAP-5-DTLSREQSUCC: DTLS connection created successfully peer_ip: 10.10.0.10\n*Jun 27 14:22:03.120: %CAPWAP-5-JOINEDCONTROLLER: AP has joined controller 10.10.0.10\n*Jun 27 14:25:10.333: %DOT11-6-ASSOC: Station a4:c3:f0:11:22:33 Associated to SSID CORP-WIFI on radio 0\n\nWhat it means:\n- DTLS connection created — secure CAPWAP tunnel to WLC is established\n- JOINEDCONTROLLER — AP successfully registered to the controller\n- ASSOC event — a client device connected to the SSID"
           },
           {
             "cmd": "ping <controller-ip>",
             "desc": "Basic reachability to the WLC management IP.",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "AP-OFFICE-01# ping 10.10.0.10"
+            "example": "AP-OFFICE-01# ping 10.10.0.10\nPING 10.10.0.10 (10.10.0.10): 56 data bytes\n64 bytes from 10.10.0.10: seq=0 ttl=255 time=0.512 ms\n64 bytes from 10.10.0.10: seq=1 ttl=255 time=0.488 ms\n64 bytes from 10.10.0.10: seq=2 ttl=255 time=0.501 ms\n\n--- 10.10.0.10 ping statistics ---\n3 packets transmitted, 3 packets received, 0% packet loss\nround-trip min/avg/max = 0.488/0.500/0.512 ms\n\nWhat it means:\n- 0% loss with <1ms RTT — normal for a same-site CAPWAP controller\n- Loss or high RTT from the AP CLI (not client) indicates a wired uplink or\n  routing issue affecting the CAPWAP control channel"
           }
         ]
       },
@@ -12830,7 +12830,7 @@
             "desc": "# find process by name",
             "type": "show",
             "flagged": false,
-            "example": "$ pgrep nginx\n1234\n1235\n1236"
+            "example": "$ pgrep nginx\n1234\n1235\n1236\n\n# Get PID + process name:\n$ pgrep -a nginx\n1234 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;\n1235 nginx: worker process\n1236 nginx: worker process\n\n# Kill by name (send SIGTERM):\n$ pkill nginx"
           },
           {
             "cmd": "pkill name",
@@ -15230,7 +15230,7 @@
             "desc": "Restarts network services",
             "type": "show",
             "flagged": false,
-            "example": "$ systemctl restart network\n$"
+            "example": "$ sudo systemctl restart network\n$\n# (No output means success — check status if there's a delay)\n\n$ sudo systemctl status network\n● network.service - LSB: Bring up/down networking\n   Loaded: loaded (/etc/rc.d/init.d/network; generated)\n   Active: active (running) since Fri 2026-06-27 14:30:01 UTC; 3s ago\n\nNote: On modern Debian/Ubuntu systems, use:\n  sudo systemctl restart networking    (Debian)\n  sudo systemctl restart NetworkManager  (desktop systems)\n\nOn RHEL/CentOS 8+, 'network' is replaced by NetworkManager."
           },
           {
             "cmd": "systemctl restart NetworkManager",
@@ -15476,6 +15476,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ ip route show table all\ndefault via 10.0.0.1 dev eth0 proto dhcp metric 100\n10.0.0.0/24 dev eth0 proto kernel scope link src 10.0.0.5\n\n# Policy routing tables (visible only with 'table all'):\nbroadcast 10.0.0.0 dev eth0 table local proto kernel scope link src 10.0.0.5\nlocal 10.0.0.5 dev eth0 table local proto kernel scope host src 10.0.0.5\nbroadcast 10.0.0.255 dev eth0 table local proto kernel scope link src 10.0.0.5\n\n# Tables:\n#   main  (table 254) → normal routes (default)\n#   local (table 255) → kernel-managed local/broadcast routes\n#   <N>               → custom policy-routing tables (see /etc/iproute2/rt_tables)\n# Use with 'ip rule show' to see policy-routing rules that direct traffic\n# to specific tables based on source IP, fwmark, or incoming interface."
+          },
+          {
+            "cmd": "tcpdump -i any -nn -s0 'port 80 or port 443' -w /tmp/cap.pcap",
+            "desc": "# capture HTTP/HTTPS traffic on ALL interfaces to a file for offline analysis. -nn disables name resolution (faster). -s0 captures full packets. Press Ctrl+C to stop, then open the .pcap in Wireshark.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ sudo tcpdump -i any -nn -s0 'port 80 or port 443' -w /tmp/cap.pcap\ntcpdump: listening on any, link-type LINUX_SLL (Linux cooked v1), snapshot length 262144 bytes\n^C\n3412 packets captured\n3412 packets received by filter\n0 packets dropped by kernel\n\n# Analyse the capture in Wireshark:\n  wireshark /tmp/cap.pcap &\n\n# Quick text summary instead of writing a file:\n  sudo tcpdump -i eth0 -nn 'port 443' -c 20\n\n# Filter by host and port:\n  sudo tcpdump -i eth0 -nn 'host 10.0.0.5 and port 443'"
           }
         ],
         "Diagnostics": [
@@ -15829,7 +15836,7 @@
             "desc": "# Move to directory",
             "type": "show",
             "flagged": false,
-            "example": "$ cd /var/log\n$ pwd\n/var/log"
+            "example": "$ cd /var/log\n$ pwd\n/var/log\n\n$ ls\nauth.log  syslog  kern.log  dpkg.log\n\n# Common shortcut destinations:\n$ cd ~        # go to home directory\n$ cd -        # go to previous directory\n$ cd ..       # go up one level"
           },
           {
             "cmd": "cd ..",
@@ -16348,7 +16355,7 @@
             "desc": "Print the running kernel version",
             "type": "show",
             "flagged": false,
-            "example": "$ uname -r\n6.8.0-45-generic"
+            "example": "$ uname -r\n6.8.0-45-generic\n\n# More detail:\n$ uname -a\nLinux hostname 6.8.0-45-generic #45-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 13 12:28:36 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux\n\nFields: kernel-name  nodename  kernel-release  kernel-version  machine  processor  hardware-platform  OS"
           },
           {
             "cmd": "whoami",
@@ -28037,6 +28044,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ esxcli network nic stats get -n vmnic0\nNIC statistics for vmnic0\n   Packets received:         12,345,678\n   Packets sent:             10,987,654\n   Bytes received:       14,234,567,890\n   Bytes sent:           12,345,678,901\n   Broadcast frames received:    45,678\n   Multicast frames received:    12,345\n   Receive errors:                    0\n   Transmit errors:                   0\n   Dropped RX packets:                0\n   Dropped TX packets:                0\n   CRC errors:                        0\n   FIFO overrun errors:               0\n\n# CRC errors > 0: physical-layer problem (cable, SFP, or far-end switch port).\n# Dropped RX > 0: NIC ring buffer exhaustion — tune with:\n#   esxcli network nic ring current get -n vmnic0\n#   esxcli network nic ring current set -n vmnic0 --rx 4096"
+          },
+          {
+            "cmd": "net-stats -A",
+            "desc": "Display real-time network packet statistics for all virtual NICs and uplinks on the ESXi host. Shows packets/s, bytes/s, drops, and errors per port — useful for identifying saturated or erroring NICs without needing vCenter.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esxi:~] net-stats -A\n\n     Port    Pkts/s  MBps   Drops  Errors  Name\n     ----    ------  ----   -----  ------  ----\n     67108866  45120  350.2      0       0  vmnic0\n     67108867  44988  349.7      0       0  vmnic1\n     83886080     12    0.1      0       0  Management Network\n     83886081  22400  174.3      0       0  vMotion\n     83886082  88640  345.2     14       0  VM Network\n\nWhat it means:\n- Port 67108866/67: physical uplinks (vmnic0/1) — balanced traffic, no drops\n- vMotion at 174 MBps — active migration in progress\n- VM Network has 14 drops — possible uplink saturation or misconfigured MTU\n- Run 'net-stats -l' to list ports with friendly names"
           }
         ],
         "Storage": [
@@ -28229,7 +28243,7 @@
             "desc": "Graceful guest shutdown (needs VMware Tools)",
             "type": "config",
             "flagged": false,
-            "example": "Initiating guest OS shutdown\n"
+            "example": "[root@esxi:~] vim-cmd vmsvc/power.shutdown 8\nInitiating guest OS shutdown for vmid 8.\n\n# Get the VM ID first:\n[root@esxi:~] vim-cmd vmsvc/getallvms\nVmid  Name                  File                    Guest OS       Version\n8     ubuntu-web-01         [DS1] ubuntu-web-01.vmx  ubuntu64Guest  vmx-19\n12    windows-dc-01         [DS1] windows-dc-01.vmx  windows9_64    vmx-19\n\n# This command requires VMware Tools to be running inside the VM.\n# If Tools are unresponsive, use a hard power-off:\n  vim-cmd vmsvc/power.off 8\n\n# Check power state:\n  vim-cmd vmsvc/power.getstate 8"
           },
           {
             "cmd": "vim-cmd vmsvc/power.off <vmid>",
@@ -28801,6 +28815,20 @@
             "type": "show",
             "flagged": false,
             "example": "asa# show running-config all ssl\nssl server-version tlsv1.2\nssl client-version tlsv1.2\nssl encryption AES256-SHA256 AES128-SHA256\nssl cipher tlsv1.2 high\nssl trust-point ASDM_TrustPoint0 outside\nssl dh-group group14\nssl ecdh-group group19\nssl certificate-authentication interface outside port 443\nno ssl renegotiate-allowed\n\n# \"tlsv1.2 high\" maps to the platform `high` profile — see `show ssl cipher`."
+          },
+          {
+            "cmd": "show threat-detection statistics",
+            "desc": "Display per-protocol attack rate counters collected by the Basic Threat Detection engine, including burst and average rates for SYN, ACK, UDP, ICMP, scanning, and incomplete-session events.",
+            "type": "show",
+            "flagged": false,
+            "example": "firewall# show threat-detection statistics\n\nAverage(eps)  Current(eps)  Trigger  Total events\n  Scanning Threat:\n        100          230        5     1580340\n  Incomplete sessions:\n          5           12        0      234100\n  SYN Attack:\n        220          455       12     3201450\n  ACK Attack:\n         45           89        2      654300\n  UDP Burst Attack:\n         12           22        0      102400\n  ICMP Attack:\n          3            7        0       34210\n\nWhat it means:\n- Average(eps): attacks per second averaged over the rate interval\n- Current(eps): real-time rate for the last burst window\n- Trigger: number of times the rate exceeded the configured threshold\n- SYN Attack count above 200 eps warrants investigation of the upstream flow"
+          },
+          {
+            "cmd": "show shun",
+            "desc": "List all IP addresses currently shunned (dynamically blocked) by the ASA, typically triggered by IPS/IDS events or manual shun commands. Shows source IP, destination IP, port, and protocol of the blocked flow.",
+            "type": "show",
+            "flagged": false,
+            "example": "firewall# show shun\n\nShun 192.168.1.100 0.0.0.0 0 0\nShun 10.0.0.55 172.16.0.1 80 6\n\nShun 192.168.1.100 0.0.0.0 0 0\n  - src=192.168.1.100 blocked for all destinations and ports (blanket shun)\n\nShun 10.0.0.55 172.16.0.1 80 6\n  - src=10.0.0.55 blocked to dst=172.16.0.1 on TCP port 80 (proto 6)\n\nTo remove a shun: no shun <src-ip>\nTo shun an IP:    shun <src-ip> [<dst-ip> <src-port> <dst-port> [<proto>]]"
           }
         ],
         "VPN": [
@@ -29413,7 +29441,7 @@
             "desc": "Flush resolver cache (modern alias of ipconfig /flushdns)",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "(No output on success)"
+            "example": "PS C:\\> Clear-DnsClientCache\n(No output — success is silent)\n\nPS C:\\> Get-DnsClientCache\n(Empty — cache has been cleared)\n\n# Verify a fresh lookup resolves correctly after the flush:\nPS C:\\> Resolve-DnsName example.com\n\nName                Type   TTL  Section    IPAddress\n----                ----   ---  -------    ---------\nexample.com         A      120  Answer     93.184.216.34"
           },
           {
             "cmd": "netsh int ip reset",
@@ -29484,6 +29512,20 @@
             "type": "action",
             "flagged": false,
             "example": "PS> winrm quickconfig\nWinRM service is already running on this machine.\nWinRM is not set up to allow remote access to this machine for management.\nThe following changes must be made:\n\nCreate a WinRM listener on HTTP://* to accept WS-Man requests to any IP on this machine.\nEnable the WinRM firewall exception.\n\nMake these changes [y/n]? y\nWinRM has been updated for remote management.\n\nCreated a WinRM listener on HTTP://* to accept WS-Man requests.\nWinRM firewall exception enabled.\n\nNote: For HTTPS use: winrm quickconfig -transport:https\nTest connectivity: Test-WSMan -ComputerName <hostname>"
+          },
+          {
+            "cmd": "Test-Connection <host> -Count 4",
+            "desc": "PowerShell equivalent of ping — sends ICMP echo requests to a host and reports RTT, TTL, and packet loss. Use -Quiet for a boolean pass/fail result. Supports -ComputerName for remote invocation.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Test-Connection 8.8.8.8 -Count 4\n\n   Source        Destination     IPV4Address      IPV6Address  Bytes    Time(ms)\n   ------        -----------     -----------      -----------  -----    --------\n   WORKSTATION1  8.8.8.8         8.8.8.8                       32       14\n   WORKSTATION1  8.8.8.8         8.8.8.8                       32       13\n   WORKSTATION1  8.8.8.8         8.8.8.8                       32       14\n   WORKSTATION1  8.8.8.8         8.8.8.8                       32       14\n\n# Boolean check (returns True/False):\nPS C:\\> Test-Connection 8.8.8.8 -Count 1 -Quiet\nTrue\n\n# Test a specific port (TCP):\nPS C:\\> Test-NetConnection -ComputerName 8.8.8.8 -Port 443"
+          },
+          {
+            "cmd": "arp -a",
+            "desc": "Display the ARP (Address Resolution Protocol) cache table for all interfaces, showing IP-to-MAC address mappings and their type (dynamic = learned, static = manually configured). Add an IP address to filter to one host.",
+            "type": "show",
+            "flagged": false,
+            "example": "C:\\> arp -a\n\nInterface: 192.168.1.100 --- 0x5\n  Internet Address      Physical Address      Type\n  192.168.1.1           00-11-22-33-44-55     dynamic\n  192.168.1.200         aa-bb-cc-dd-ee-ff     dynamic\n  192.168.1.255         ff-ff-ff-ff-ff-ff     static\n  224.0.0.22            01-00-5e-00-00-16     static\n  255.255.255.255       ff-ff-ff-ff-ff-ff     static\n\n# Clear the ARP cache:\n  arp -d *\n# Add a static entry:\n  arp -s 192.168.1.50 00-AA-BB-CC-DD-EE"
           }
         ],
         "Processes": [
@@ -29776,7 +29818,7 @@
             "desc": "Reboot from the OOBE Command Prompt after applying registry tweaks.",
             "type": "config",
             "flagged": false,
-            "example": "(Immediate reboot — no delay)"
+            "example": "C:\\> shutdown /r /t 0\n(Immediate reboot — no delay, no warning to logged-in users)\n\n# Common variations:\n  shutdown /s /t 0       — shutdown (power off) immediately\n  shutdown /r /t 60      — reboot in 60 seconds with a warning\n  shutdown /a            — abort a pending shutdown\n  shutdown /r /t 0 /f    — force close apps and reboot immediately\n  Restart-Computer       — PowerShell equivalent"
           }
         ]
       },
@@ -30398,6 +30440,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudformation describe-stacks --stack-name prod-vpc\n{\n  \"Stacks\": [{\n    \"StackName\": \"prod-vpc\",\n    \"StackStatus\": \"UPDATE_COMPLETE\",\n    \"CreationTime\": \"2024-01-01T10:00:00Z\",\n    \"LastUpdatedTime\": \"2024-06-01T14:30:00Z\",\n    \"Parameters\": [\n      {\"ParameterKey\": \"VpcCidr\", \"ParameterValue\": \"10.0.0.0/16\"}\n    ],\n    \"Outputs\": [\n      {\"OutputKey\": \"VpcId\", \"OutputValue\": \"vpc-0a1b2c3d4e5f\"}\n    ]\n  }]\n}"
+          },
+          {
+            "cmd": "aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE",
+            "desc": "List all CloudFormation stacks matching the specified status filters. Useful for inventorying live stacks. Supports filters: CREATE_COMPLETE, UPDATE_COMPLETE, DELETE_FAILED, ROLLBACK_COMPLETE, and others.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws cloudformation list-stacks     --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE     --query 'StackSummaries[*].[StackName,StackStatus,CreationTime]'     --output table\n\n---------------------------------------------------\n|                   ListStacks                    |\n+---------------------+------------------+--------+\n| prod-vpc-stack      | CREATE_COMPLETE  | 2025-01-10T09:22:14Z |\n| prod-rds-stack      | UPDATE_COMPLETE  | 2025-03-14T15:33:01Z |\n| staging-eks-cluster | CREATE_COMPLETE  | 2025-05-02T11:05:44Z |\n+---------------------+------------------+--------+\n\nNote: Deleted stacks are retained in the list for 90 days.\nFilter by DELETE_FAILED to find stacks that failed to clean up."
           }
         ]
       },
@@ -40460,7 +40509,7 @@
             "desc": "Send a key/key-combo to the VM console — e.g. qm sendkey 100 ctrl-alt-delete to send CAD without VNC",
             "type": "config",
             "flagged": false,
-            "example": "(Key sent to VM console)"
+            "example": "# Send Ctrl+Alt+Del to VM 100 (triggers Windows restart dialog or Linux logout):\n$ qm sendkey 100 ctrl-alt-delete\n(Key sent to VM console — check Proxmox VNC console to confirm)\n\n# Send Enter key:\n$ qm sendkey 100 ret\n\n# Common keys: esc, tab, space, ctrl-c, ctrl-d, alt-f2\n# Use the Proxmox web console or 'qm terminal 100' to see the result."
           },
           {
             "cmd": "qm sendkey 100 ctrl-alt-f1",
@@ -40593,7 +40642,7 @@
             "desc": "Clear a stuck lock (e.g. backup, migrate) — only after confirming the operation has actually died",
             "type": "troubleshooting",
             "flagged": true,
-            "example": "(Lock removed from VM 100)"
+            "example": "$ qm unlock 100\n(Lock removed from VM 100 — no output on success)\n\n# A VM lock is set during backup, snapshot, or migration to prevent\n# concurrent conflicting operations. If the operation crashed, the lock\n# may remain and prevent starting/modifying the VM.\n\n# Check if a VM is locked:\n$ qm config 100 | grep lock\nlock: backup\n\n# Unlock and then start:\n$ qm unlock 100 && qm start 100"
           },
           {
             "cmd": "qm guest exec <VMID> -- <CMD> [ARGS]",
@@ -40721,7 +40770,7 @@
             "desc": "Open a shell inside the container (no SSH needed)",
             "type": "config",
             "flagged": false,
-            "example": "root@nginx-proxy:~#"
+            "example": "$ pct enter 200\nroot@nginx-proxy:~#\n\n# You are now in a shell inside container 200.\n# Type 'exit' or press Ctrl+D to return to the Proxmox host shell.\n\n# Equivalent using lxc-attach (lower level):\n$ lxc-attach -n 200\n\n# Run a single command without entering the container:\n$ pct exec 200 -- systemctl status nginx"
           },
           {
             "cmd": "pct exec <CTID> -- <CMD> [ARGS]",
@@ -40863,7 +40912,7 @@
             "desc": "Disable a storage without removing it",
             "type": "config",
             "flagged": false,
-            "example": "(Storage DS-SLOW disabled)"
+            "example": "$ pvesm set DS-SLOW --disable 1\n(Storage DS-SLOW disabled — no output on success)\n\n# Confirm:\n$ pvesm status\nName       Type   Status     Total         Used    Available   %\nlocal      dir    active     100G          20G     80G          20%\nDS-SLOW    nfs    disabled      -            -          -        -\nDS-FAST    zfspool active    1000G        200G    800G          20%\n\n# Re-enable:\n$ pvesm set DS-SLOW --disable 0"
           },
           {
             "cmd": "pvesm remove <NAME>",
@@ -40877,7 +40926,7 @@
             "desc": "Manually allocate a 32 GB disk for VMID on storage",
             "type": "config",
             "flagged": false,
-            "example": "DS-FAST:vm-999-disk-0"
+            "example": "$ pvesm alloc DS-FAST 999 vm-999-disk-0 32G\nDS-FAST:vm-999-disk-0\n\n# A new 32 GB volume named 'vm-999-disk-0' has been allocated on DS-FAST.\n# The output is the full Proxmox volume ID (storage:volume-name).\n\n# Attach the volume to a VM:\n$ qm set 999 --scsi1 DS-FAST:vm-999-disk-0\n\n# List allocated volumes for a storage:\n$ pvesm list DS-FAST"
           },
           {
             "cmd": "pvesm free <STORAGE>:<VOLUME>",
@@ -41751,6 +41800,20 @@
             "type": "show",
             "flagged": false,
             "example": "vPC domain id                     : 1\nvPC Peer Status               : peer adjacency formed ok\nvPC Keep-Alive Status         : peer is alive\nvPC role                      : primary\n\nId    Port   Status Consistency Reason    Active vlans\n----  ------ ------ ----------- ------    ------------\n10    Po10   up     success     success   1,10,20,100-102\n20    Po20   up     success     success   1,10,20"
+          },
+          {
+            "cmd": "show spanning-tree",
+            "desc": "Display the Spanning Tree topology for all VLANs, including the bridge role (Root/Designated), port states, port costs, and the root bridge MAC address for each VLAN instance.",
+            "type": "show",
+            "flagged": false,
+            "example": "N9K# show spanning-tree\n\nVLAN0001\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    4097\n             Address     0023.eb9e.4680\n             Cost        4\n             Port        Po1 (Port-channel1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)\n             Address     001e.1432.5f00\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n             Aging Time  300 sec\n\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------------------------\nPo1                 Root FWD 4         128.4097 P2p\nEth1/3              Desg FWD 4         128.3    P2p\nEth1/4              Desg FWD 4         128.4    P2p\n\nWhat it means:\n- Role Root  : this port is the root port (path to root bridge)\n- Role Desg  : designated port (forwarding for the segment)\n- Sts FWD    : forwarding — carrying traffic\n- Sts BLK    : blocking — preventing loop"
+          },
+          {
+            "cmd": "show spanning-tree detail",
+            "desc": "Detailed per-VLAN STP output including topology change counters, port cost, hello/forward-delay timers, and BPDUs sent/received — useful for diagnosing TCN storms or slow convergence.",
+            "type": "show",
+            "flagged": false,
+            "example": "N9K# show spanning-tree detail\n\nVLAN0010 is executing the rstp compatible Spanning Tree protocol\n  Bridge Identifier has priority 32768, sysid 10, address 001e.1432.5f00\n  Configured hello time 2, max age 20, forward delay 15\n  Current root has priority 4106, address 0023.eb9e.4680\n  Root port is Po1 (Port-channel1), cost of root path is 4\n  Topology change flag not set, detected flag not set\n  Number of topology changes 12, last change occurred 4d02h ago\n    from Ethernet1/5\n  Times:  hold 1, topology change 35, notification 2\n          hello 2, max age 20, forward delay 15\n  Timers: hello 0, topology change 0, notification 0\n\nPort 4097 (Port-channel1) of VLAN0010 is Root Forwarding\n   Port path cost 4, Port priority 128, Port Identifier 128.4097\n   Designated root has priority 4106, address 0023.eb9e.4680\n   BPDUs: sent 43210, received 287654\n\nWhat it means:\n- topology changes 12 in 4d02h — low churn, healthy\n- last change from Eth1/5 — investigate that port if changes spike"
           }
         ],
         "Routing": [
@@ -43656,6 +43719,13 @@
             "type": "show",
             "flagged": false,
             "example": "-------------------------\nDevice ID: CORE-SW-01.corp.local\nEntry address(es):\n  IP address: 10.100.0.1\nPlatform: Cisco IOS Software, Catalyst 9300\nInterface: 1/1/24, Port ID (outgoing port): GigabitEthernet1/0/24\nHoldtime: 148 sec\nVersion: Cisco IOS XE Software, Version 17.09.04a\nCapabilities: Switch IGMP\nDuplex: full  |  MTU: 1500\n\nDevice ID: AP-Floor1-01\nEntry address(es):\n  IP address: 10.100.10.11\nPlatform: Aruba AP-515\nInterface: 1/1/5, Port ID (outgoing port): eth0\nCapabilities: Host"
+          },
+          {
+            "cmd": "show copp statistics",
+            "desc": "Display Control Plane Policing (CoPP) statistics: packets passed and dropped per traffic class (ARP, BGP, OSPF, ICMP, SSH, etc.). High drop counters on a class indicate control-plane rate limiting is active and may affect adjacency stability.",
+            "type": "show",
+            "flagged": false,
+            "example": "aruba-cx# show copp statistics\n\nTraffic Class               Passed Pkts   Dropped Pkts   Passed Bytes  Dropped Bytes\n-----------                 -----------   ------------   ------------  -------------\nARP                           123456789              0    9,876,543,210             0\nBGP                             3456789              0      345,678,900             0\nOSPF                              45678              0        4,567,800             0\nICMP                           1234567             45      123,456,700         4,500\nSSH/Telnet                       23456              0        2,345,600             0\nLACP                             12345              0        1,234,500             0\nSTP                               4567              0          456,700             0\nUNCLASSIFIED                    234567           1234       23,456,700       123,400\n\nWhat it means:\n- ICMP has 45 dropped packets — switch is rate-limiting ICMP toward CPU (normal)\n- UNCLASSIFIED drops indicate unrecognised traffic hitting the CPU — investigate\n- BGP/OSPF drops=0 is healthy; non-zero may cause neighbour flaps\n- Run 'clear copp statistics' to reset counters after baselining"
           }
         ],
         "Config Management": [
