@@ -2455,6 +2455,20 @@
             "type": "config",
             "flagged": false,
             "example": "> set ns ip 10.0.0.10 -arp DISABLED\nDone\n\n> show ns ip 10.0.0.10\nIP            Type   Mode    State    VLAN  Options\n10.0.0.10     VIP    Active  Enabled  100   ARP=DISABLED\n\nWhat it means:\n- Stops the ADC answering ARP for this IP — used when another device (HA peer, upstream router, anycast neighbour) must own L2 reachability for the address.\n- Common scenarios: Direct Server Return (loopback VIP on backend that mustn't ARP), striped cluster IPs owned by a single node, or quiescing a VIP without changing routing.\n- Disabling ARP on the only path to a SNIP/NSIP will black-hole traffic — verify the alternate ARP responder is live before applying."
+          },
+          {
+            "cmd": "show ns http2params",
+            "desc": "Displays global HTTP/2 tunable parameters: max concurrent streams per connection, initial window size, header table size, max frame size, and idle timeout. These settings apply to all HTTP/2-enabled virtual servers.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ns http2params\n\nHTTP2 Parameters\n================\nMax Request Header Field Section Size:  8192\nMax Header List Size:                   24576\nMax Concurrent Streams:                 100\nInitial Window Size:                    65535\nHeader Table Size:                      4096\nFrame Size:                             16384\nMax Header Table Size:                  65536\nAltsvc:                                 Disabled\nAltsvc Value:                           \n\nDone\n\n# Increase 'Max Concurrent Streams' (up to 1000) for high-throughput APIs;\n# raise 'Initial Window Size' (up to 67108863) for high-latency paths."
+          },
+          {
+            "cmd": "show ns tcpbufparam",
+            "desc": "Displays the TCP send and receive buffer sizes (in KB) used by the NetScaler packet engine. These buffers directly affect throughput on high-bandwidth, high-latency links (high BDP paths such as satellite or WAN circuits).",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ns tcpbufparam\n\n        recv buffer size (KB): 64\n        send buffer size (KB): 64\n\nDone\n\n# Increase buffer sizes for high-latency, high-bandwidth links:\n> set ns tcpbufparam -size 256\nDone\n# Verify change:\n> show ns tcpbufparam\n        recv buffer size (KB): 256\n        send buffer size (KB): 256"
           }
         ],
         "Rewrite & Responder": [
@@ -7522,7 +7536,7 @@
           },
           {
             "cmd": "openssl pkcs12 -export -out <pfx> -inkey <key> -in <cert>",
-            "desc": "Creates PFX file",
+            "desc": "Exports a certificate and private key into a PKCS#12 (.pfx/.p12) bundle; widely used to import certificates into Windows, F5, NetScaler, and Java keystores. Add -certfile chain.crt to include the full intermediate chain.",
             "type": "show",
             "flagged": false,
             "example": "$ openssl pkcs12 -export -out bundle.pfx -inkey server.key -in server.crt -certfile chain.crt\nEnter Export Password:\nVerifying - Enter Export Password:\n$ ls -lh bundle.pfx\n-rw------- 1 user user 4.1K Jan  1 12:00 bundle.pfx\n# Packages a certificate, private key, and optional chain into a PKCS#12 file.\n# Import into Windows: double-click bundle.pfx → Certificate Import Wizard."
@@ -7536,7 +7550,7 @@
           },
           {
             "cmd": "openssl req -newkey rsa:2048 -nodes -keyout <key> -out <csr>",
-            "desc": "Generates key + CSR",
+            "desc": "Generates a new RSA 2048-bit private key and a Certificate Signing Request in a single step; -nodes omits passphrase encryption so the key can be loaded by web servers and load balancers without manual passphrase entry",
             "type": "show",
             "flagged": false,
             "example": "$ openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.csr -subj \"/CN=example.com\"\nGenerating a RSA private key\n......+++++\ne is 65537 (0x010001)\n# Generates a new 2048-bit RSA key AND a CSR in one step.\n# -nodes = no passphrase on the generated private key."
@@ -8130,7 +8144,7 @@
           },
           {
             "cmd": "openssl s_client -connect host:443 -starttls ftp",
-            "desc": "STARTTLS on FTP",
+            "desc": "Tests explicit FTPS by issuing STARTTLS over the FTP control channel (port 21) and inspecting the negotiated certificate, cipher suite, and TLS version; useful for auditing FTPS server configuration",
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ openssl s_client -connect ftp.example.com:21 -starttls ftp\n220 ProFTPD Server ready.\nAUTH TLS\n234 AUTH TLS successful\n[TLS handshake proceeds]\nCipher    : ECDHE-RSA-AES128-GCM-SHA256\n# Connects to FTP control port 21 and sends AUTH TLS (FTPS explicit mode).\n# Validates that the FTP server supports FTPS/TLS encryption."
@@ -8448,28 +8462,28 @@
         "Hashing & HMAC": [
           {
             "cmd": "openssl dgst -sha256 <file>",
-            "desc": "Computes SHA?256 hash",
+            "desc": "Computes the SHA-256 cryptographic digest of a file using openssl dgst; outputs a hex-encoded 256-bit hash for integrity verification",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha256 /etc/hosts\nSHA256(/etc/hosts)= 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\n# Computes the SHA-256 digest of a file and prints in \"name(file)= hash\" format.\n# Compare: sha256sum /etc/hosts — produces the same hash value."
           },
           {
             "cmd": "openssl dgst -sha1 <file>",
-            "desc": "Computes SHA?1 hash",
+            "desc": "Computes the SHA-1 digest of a file; SHA-1 is deprecated for digital signatures but still used in legacy systems and non-security checksums",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha1 firmware.bin\nSHA1(firmware.bin)= da39a3ee5e6b4b0d3255bfef95601890afd80709\n# SHA-1 is cryptographically broken — use only for non-security checksums.\n# Many firmware vendors still publish SHA-1 hashes for file integrity checks."
           },
           {
             "cmd": "openssl dgst -md5 <file>",
-            "desc": "Computes MD5 hash",
+            "desc": "Computes the MD5 digest of a file; MD5 is cryptographically broken for collision resistance but remains common for non-security checksums and legacy compatibility",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -md5 archive.tar.gz\nMD5(archive.tar.gz)= d41d8cd98f00b204e9800998ecf8427e\n# MD5 is cryptographically broken — do NOT use for security purposes.\n# Acceptable only for non-security integrity checks (download verification)."
           },
           {
             "cmd": "openssl dgst -sha512 <file>",
-            "desc": "Computes SHA?512 hash",
+            "desc": "Computes the SHA-512 digest of a file; faster than SHA-256 on 64-bit CPUs and recommended for high-security integrity checks requiring 512-bit output",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha512 backup.tar.gz\nSHA512(backup.tar.gz)= cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n# SHA-512 provides 256-bit collision resistance — suitable for high-security contexts."
@@ -8690,7 +8704,7 @@
           },
           {
             "cmd": "openssl pkeyutl -verify -pubin -inkey public.key -in hash.bin -sigfile sig.bin",
-            "desc": "Low-level verify",
+            "desc": "Low-level signature verification using a raw public key; reads a pre-hashed binary input and its corresponding signature file produced by 'openssl pkeyutl -sign', and prints 'Signature Verified Successfully' or an error",
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ openssl pkeyutl -verify -pubin -inkey public.key -in hash.bin -sigfile sig.bin\nSignature Verified Successfully\n# Verifies a signature created with openssl pkeyutl -sign.\n# -pubin = input is a public key file (SubjectPublicKeyInfo format)."
@@ -11176,7 +11190,7 @@
           },
           {
             "cmd": "show wireless rrm stats",
-            "desc": "RRM run statistics.",
+            "desc": "Displays Radio Resource Management (RRM) run statistics: total DCA (Dynamic Channel Assignment) and TPC (Transmit Power Control) executions, last run timestamps, and algorithm trigger reasons",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless rrm stats\nTotal DCA runs: 1234 (last 24h: 12)\nTotal TPC runs: 1234 (last 24h: 12)\nLast Coverage Hole Detection: 14:00:00 Apr 21 2026\nLast Profile Threshold Hit: 12:15:33 Apr 20 2026"
@@ -11786,7 +11800,7 @@
           },
           {
             "cmd": "show wireless security stats dot1x",
-            "desc": "Shows 802.1X stats",
+            "desc": "Shows per-SSID 802.1X authentication statistics: total sessions, successful authentications, failures, timeouts, and EAP exchange counters; useful for diagnosing RADIUS or supplicant issues",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless security stats dot1x\nDot1x Sessions: 145\nEAPOL Frames TX: 12345\nEAPOL Frames RX: 12340\nLast Auth Time: 14:30:01 Apr 21 2026"
@@ -22874,6 +22888,13 @@
             "type": "config",
             "flagged": true,
             "example": "router# debug ip ospf events\nOSPF events debugging is on\n\n*Jan  1 12:00:01.123: OSPF-1 EVENT: Rcv hello from 2.2.2.2 on GigabitEthernet0/0\n*Jan  1 12:00:01.125: OSPF-1 NEIGHBOR 2.2.2.2 on Gi0/0: State FULL -> DOWN (Dead timer expired)\n*Jan  1 12:00:01.130: OSPF-1 EVENT: DR election on Gi0/0: 1.1.1.1 is DR, 2.2.2.2 is BDR\n*Jan  1 12:00:03.500: OSPF-1 EVENT: Schedule SPF in area 0.0.0.0 due to topology change\n\n! WARNING: Can generate high CPU/console output on busy OSPF networks.\n! Disable immediately after capture: no debug ip ospf events\n! Safer alternative: show ip ospf neighbor — for passive monitoring only."
+          },
+          {
+            "cmd": "show ip ospf flood-list interface <interface>",
+            "desc": "Shows the per-interface OSPF LSA retransmit queue — LSAs awaiting acknowledgement from a neighbor before they are removed from the flooding queue. A persistently non-empty queue indicates a neighbor reachability or timer problem.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show ip ospf flood-list interface GigabitEthernet0/1\n\nOSPF Router with ID (10.0.0.1) (Process ID 1)\n\nInterface GigabitEthernet0/1\n\nNeighbor 10.0.0.2, retransmission queue length 0, number of retransmission 0\n First 0x0(0)/0x0(0) Last 0x0(0)/0x0(0) Retrans 0x0(0)/0x0(0)\n No retransmission in progress\n\nNeighbor 10.0.0.3, retransmission queue length 2, number of retransmission 3\n First 0x80000004(1)/0x8000000A(1) Last 0x80000004(1)/0x8000000A(1)\n  Type  LS ID         ADV RTR          Seq #       Age  Checksum  Len\n     1  10.0.0.1      10.0.0.1         0x8000000A    3  0x3C4A     48\n     3  192.168.1.0   10.0.0.1         0x80000004    3  0x5BB2     28\n\n# Non-zero queue length means LSAs are not being acknowledged — check\n# neighbor adjacency, MTU mismatch, and OSPF retransmit-interval."
           }
         ],
         "Routing › EIGRP": [
@@ -27673,6 +27694,13 @@
             "type": "troubleshooting",
             "flagged": true,
             "example": "# Step 1: create a tight ACL to scope the debug\nR1(config)# ip access-list extended DEBUG_SCOPE\nR1(config-ext-nacl)# permit ip host 10.1.1.100 any\nR1(config-ext-nacl)# permit ip any host 10.1.1.100\n\n# Step 2: enable scoped debug\nR1# debug ip packet detail 100\n\nIP: s=10.1.1.100 (Gi0/1), d=8.8.8.8 (Gi0/0), len 60, forward\n   ICMP type=8, code=0\nIP: s=10.1.1.100 (Gi0/1), d=10.1.1.254, len 60, encapsulation failed\n\n# \"encapsulation failed\" = no ARP entry for next-hop; check show ip arp\n# \"no route\"            = missing route; check show ip route <dest>\n\nR1# undebug all    ← ALWAYS run when finished\n\n⚠ WARNING: Without an ACL, ALL process-switched packets are logged.\n  This can overwhelm the console and crash routers under load."
+          },
+          {
+            "cmd": "show ip cache flow",
+            "desc": "Displays the traditional IP NetFlow (v5/v9) flow cache: active flows with source/destination IP, protocol, port numbers, interface, and per-flow packet/byte counters. Requires 'ip flow ingress' on interfaces.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show ip cache flow\n\nIP Flow Switching Cache, 278544 bytes\n  142 active, 3882 inactive, 8410 added\n  8280 ager polls, 0 flow alloc failures\nActive flows timeout in 30 minutes\nInactive flows timeout in 15 seconds\n\nProtocol         Total    Flows   Packets Bytes  Packets Active(Sec) Idle(Sec)\n--------         Flows     /Sec     /Flow  /Pkt     /Sec     /Flow     /Flow\nTCP-WWW           1492      0.0         7   520      0.0       2.3      11.5\nTCP-other         3199      0.0         9   384      0.0       2.9       9.9\nUDP-DNS            302      0.0         1    66      0.0       0.0      15.3\nICMP                51      0.0         4   100      0.0       0.2      15.2\nTotal:            5053      0.0         8   398      0.0       2.5       9.6\n\nSrcIf          SrcIPaddress    DstIf          DstIPaddress    Pr SrcP DstP  Pkts\nGi0/0          10.1.1.1        Gi0/1          192.168.1.100   06 04CF 0050   142\nGi0/0          10.1.1.2        Gi0/1          192.168.1.200   06 05D7 01BB    87"
           }
         ],
         "Config Management": [
@@ -28165,6 +28193,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "(No output; all HBAs rescanned for new LUNs/paths)"
+          },
+          {
+            "cmd": "vmkfstools -i <source.vmdk> <dest.vmdk>",
+            "desc": "Clones or converts a virtual disk (VMDK) between datastores or provisioning types without powering off the VM. Use -d thin for thin provisioning, -d zeroedthick for eager-zeroed thick, or omit -d to match the source format.",
+            "type": "show",
+            "flagged": false,
+            "example": "# Clone preserving format (thick → thick)\n[root@esxi:~] vmkfstools -i /vmfs/volumes/datastore1/VM1/VM1.vmdk \\\n                            /vmfs/volumes/datastore2/VM1-clone/VM1.vmdk\nDestination disk format: VMFS zeroedthick\nCloning disk '/vmfs/volumes/datastore1/VM1/VM1.vmdk'...\nClone: 100% done.\n\n# Clone and convert to thin provisioned\n[root@esxi:~] vmkfstools -i /vmfs/volumes/datastore1/VM1/VM1.vmdk \\\n                         -d thin \\\n                         /vmfs/volumes/datastore2/VM1-thin/VM1.vmdk\nDestination disk format: VMFS thin\nCloning disk '/vmfs/volumes/datastore1/VM1/VM1.vmdk'...\nClone: 100% done.\n\n# Tip: Register the cloned disk with: vim-cmd solo/registervm <path-to-vmx>"
           }
         ],
         "VM Management": [
@@ -39427,6 +39462,20 @@
             "type": "show",
             "flagged": false,
             "example": "sw# show device-tracking policies\nTarget               Type  Policy             Feature        Target range\nGi1/0/1              PORT  ACCESS-PORT        Device-tracking vlan all\nGi1/0/2              PORT  TRUST-PORT          Device-tracking vlan all\nVlan 10              VLAN  IPDT-MAX-10        Device-tracking vlan all"
+          },
+          {
+            "cmd": "show ip arp inspection",
+            "desc": "Displays Dynamic ARP Inspection (DAI) status per VLAN: which VLANs have DAI enabled, current operational state, whether ACL or DHCP snooping binding is used for validation, and a summary forwarded/dropped counter.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show ip arp inspection\n\nSource Mac Validation      : Disabled\nDestination Mac Validation : Disabled\nIP Address Validation      : Disabled\n\n Vlan        Configuration  Operation   ACL Match          Static ACL\n ----        -------------  ---------   ---------          ----------\n   10        Enabled        Active      yes                no\n   20        Enabled        Active      no                 no\n  100        Disabled       Inactive\n\n Vlan        ACL Logging    DHCP Logging    Probe Logging\n ----        -----------    ------------    -------------\n   10        Deny           Deny            Off\n   20        Deny           Deny            Off\n\n Vlan      Forwarded        Dropped     DHCP Drops      ACL Drops\n ----      ---------        -------     ----------      ---------\n   10         102347              48             12             36\n   20          89621               3              0              3\n\n# Elevated DHCP Drops often mean a host used a static IP; check the\n# DHCP snooping binding table with: show ip dhcp snooping binding"
+          },
+          {
+            "cmd": "show ip arp inspection statistics",
+            "desc": "Detailed per-VLAN Dynamic ARP Inspection (DAI) counters: packets forwarded, dropped, DHCP-binding drops, ACL drops, source/destination MAC failures, IP validation failures, and invalid ARP probe/response drops.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show ip arp inspection statistics\n\n Vlan      Forwarded        Dropped     DHCP Drops      ACL Drops\n ----      ---------        -------     ----------      ---------\n   10         102347              48             12             36\n   20          89621               3              0              3\n\n Vlan   Source Mac Failures  Dest Mac Failures  IP Validation Failures\n ----   -------------------  -----------------  ----------------------\n   10                     0                  0                       0\n   20                     0                  0                       0\n\n Vlan   Invalid Protocol Data\n ----   --------------------\n   10                      0\n   20                      0\n\n# Reset per-VLAN counters with: clear ip arp inspection statistics vlan <id>"
           }
         ],
         "DHCP": [
@@ -41690,6 +41739,20 @@
             "type": "show",
             "flagged": false,
             "example": "Load average:   1 minute: 0.24   5 minutes: 0.31   15 minutes: 0.28\n\nProcesses   : 489 total, 1 running\nCPU states  : 4.82% user,  1.44% kernel,  93.73% idle\nMemory usage: 14366044K total, 8903408K used, 5462636K free\nKernel vmalloc: 0K\n\nPID    %CPU    %MEM    COMMAND\n4321   1.23    2.10    bgp\n1234   0.82    1.55    ospf\n5678   0.21    0.98    mrib"
+          },
+          {
+            "cmd": "show ntp peers",
+            "desc": "Lists all NTP peer and server associations configured on the Nexus switch, showing each IP address and whether it is a configured server or peer. Pair with 'show ntp status' to verify synchronisation state.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show ntp peers\n\n--------------------------------------------------\nPeer IP Address               Serv/Peer\n--------------------------------------------------\n10.0.0.100                    Server (configured)\n10.0.0.101                    Server (configured)\n192.168.1.254                 Peer (configured)\n\n--------------------------------------------------\nTotal peers : 3"
+          },
+          {
+            "cmd": "show ntp status",
+            "desc": "Shows the current NTP synchronization state on NX-OS: whether the clock is synchronized, the reference IP, stratum, root delay, root dispersion, current clock offset, and poll interval.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show ntp status\n\nClock is synchronized, stratum 3, reference is 10.0.0.100\nnominal freq is 250.0000 Hz, actual freq is 249.9998 Hz, precision is 2**10\nreference time is E3F7A9C2.3B644C3A (12:34:26.232 UTC Mon Jun 29 2026)\nclock offset is -0.2871 msec, root delay is 1.0254 msec\nroot dispersion is 14.4238 msec, peer dispersion is 3.9856 msec\nloopfilter state is 'CTRL' (Normal Controlled Loop), drift is 0.000000062 s/s\nsystem poll interval is 64, last update was 34 sec ago\n\n# 'Clock is unsynchronized' indicates the configured NTP server is\n# unreachable or the offset exceeds the step threshold (typically 128ms)."
           }
         ],
         "Interfaces": [
@@ -45690,6 +45753,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
+          },
+          {
+            "cmd": "show bfd neighbors detail",
+            "desc": "Lists all active Bidirectional Forwarding Detection (BFD) sessions with local/remote discriminators, negotiated transmit/receive intervals, session state, registered protocols (OSPF, BGP, etc.), and failure counts. Essential for verifying fast-failover liveness detection is operational.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show bfd neighbors detail\n\nIPv4 Sessions\nNeighAddr                              LD/RD         RH/RS     State     Int\n10.0.0.2                             1/1           Up        Up        Gi0/0/0\nSession state is Up and not using echo function\nLocal Diag: 0, Demand mode: 0, Poll bit: 0\nMinTxInt: 300000, MinRxInt: 300000, Multiplier: 3\nReceived MinRxInt: 300000, Received Multiplier: 3\nHolddown (hits): 900ms (0), Hello (hits): 300ms (12456)\nRx Count: 89234, Rx Interval (ms) min/max/avg: 280/340/299\nTx Count: 89219, Tx Interval (ms) min/max/avg: 285/315/300\nRegistered protocols: OSPF BGP\nUptime: 07:24:33\nLast packet: Version: 1       - Diagnostic: 0\n             State bit: Up       - Demand bit: 0\n             Poll bit: 0         - Final bit: 0\n             Multiplier: 3       - Length: 24\n             My Discr.: 1        - Your Discr.: 1\n             Min tx interval: 300000 - Min rx interval: 300000\n             Min Echo interval: 0\n\n# 'State: Down' with Local Diag > 0 indicates the BFD timer expired;\n# check MTU, QoS policing, and routing table convergence on the path."
           }
         ],
         "Config Management": [
