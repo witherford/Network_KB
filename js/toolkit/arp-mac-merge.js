@@ -1,6 +1,6 @@
 // Cisco merger — the ultimate interface-to-device mapping tool.
-//   Box 1 — ARP table          (show ip arp / show arp)        → IP ↔ MAC
-//   Box 2 — MAC address table  (show mac address-table)        → MAC ↔ VLAN ↔ port
+//   Box 1 — ARP table          (show ip arp / show arp)            → IP ↔ MAC
+//   Box 2 — MAC address dynamic (show mac address-table dynamic)   → MAC ↔ VLAN ↔ port
 //   Box 3 — CDP neighbours     (show cdp neighbors [detail])   → port ↔ neighbour
 //   Box 4 — LLDP neighbours    (show lldp neighbors [detail])  → port ↔ neighbour
 //   Box 5 — DNS lookups         (nslookup / dig / host / ping -a) → IP ↔ hostname
@@ -14,6 +14,13 @@ import {
   parseCdp, parseLldp, parseDns, parsePing, normIface, findVendor, normaliseMac, fmtMac, esc, downloadCsv
 } from './oui-shared.js';
 
+// Persist the box contents across tab switches (the toolkit re-mounts modules,
+// destroying the DOM). Mirrors the localStorage pattern in js/prefs.js.
+const LS_KEY = 'nkb.toolkit.arpmac';
+const BOX_IDS = ['arpIn', 'macIn', 'cdpIn', 'lldpIn', 'dnsIn', 'pingIn'];
+function loadState() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch {} }
+
 const ARP_EG = `Internet  10.0.0.1     -    001a.b3c4.5678  ARPA  Vlan10\nInternet  10.0.0.2    12    0050.5612.3456  ARPA  Vlan10`;
 const MAC_EG = `Vlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    001a.b3c4.5678    DYNAMIC     Gi1/0/5\n  10    0050.5612.3456    DYNAMIC     Gi1/0/12`;
 const CDP_EG = `Device ID: Switch2.example.com\nEntry address(es):\n  IP address: 10.0.0.250\nPlatform: cisco WS-C2960X,  Capabilities: Switch IGMP\nInterface: GigabitEthernet1/0/1,  Port ID (outgoing port): GigabitEthernet0/24`;
@@ -25,33 +32,54 @@ export async function mount(root) {
   let db = FALLBACK_OUI;
 
   root.innerHTML = `
-    <h2 style="font-size:15px;margin-bottom:4px">Cisco merger — interface ↔ device mapping</h2>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+      <h2 style="font-size:15px;margin:0">Cisco merger — interface ↔ device mapping</h2>
+      <button class="btn sm ghost" id="mgClear" type="button">Clear all</button>
+    </div>
     <p class="hint" style="margin-bottom:12px">Paste any combination of the outputs below. The merger joins them into one map: <code>DNS name → IP → MAC → Vendor → VLAN → switchport → connected device</code>. ARP and MAC-table rows join on MAC; CDP and LLDP neighbours attach by switchport; DNS lookups marry a hostname to its IP; ping results flag reachability — so every endpoint and every neighbouring switch/AP/phone lands on the right interface.</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div class="form-row" style="margin:0">
-        <label>Box 1 — ARP table (<code>show ip arp</code>)</label>
-        <textarea id="arpIn" rows="7" placeholder="${esc(ARP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(ARP_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 1 — ARP table (<code>show ip arp</code>)</span>
+          <button class="btn sm ghost" type="button" data-cmd="show ip arp" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="arpIn" rows="7" placeholder="${esc(ARP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
       <div class="form-row" style="margin:0">
-        <label>Box 2 — MAC address table (<code>show mac address-table</code>)</label>
-        <textarea id="macIn" rows="7" placeholder="${esc(MAC_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(MAC_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 2 — MAC address dynamic (<code>show mac address-table dynamic</code>)</span>
+          <button class="btn sm ghost" type="button" data-cmd="show mac address-table dynamic" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="macIn" rows="7" placeholder="${esc(MAC_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
       <div class="form-row" style="margin:0">
-        <label>Box 3 — CDP neighbours (<code>show cdp neighbors detail</code>)</label>
-        <textarea id="cdpIn" rows="7" placeholder="${esc(CDP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(CDP_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 3 — CDP neighbours (<code>show cdp neighbors detail</code>)</span>
+          <button class="btn sm ghost" type="button" data-cmd="show cdp neighbors detail" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="cdpIn" rows="7" placeholder="${esc(CDP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
       <div class="form-row" style="margin:0">
-        <label>Box 4 — LLDP neighbours (<code>show lldp neighbors detail</code>)</label>
-        <textarea id="lldpIn" rows="7" placeholder="${esc(LLDP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(LLDP_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 4 — LLDP neighbours (<code>show lldp neighbors detail</code>)</span>
+          <button class="btn sm ghost" type="button" data-cmd="show lldp neighbors detail" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="lldpIn" rows="7" placeholder="${esc(LLDP_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
       <div class="form-row" style="margin:0;grid-column:1 / -1">
-        <label>Box 5 — DNS lookups (<code>nslookup</code> / <code>dig</code> / <code>host</code> / <code>ping -a</code>, Windows or Linux)</label>
-        <textarea id="dnsIn" rows="6" placeholder="${esc(DNS_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(DNS_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 5 — DNS lookups (<code>nslookup</code> / <code>dig</code> / <code>host</code> / <code>ping -a</code>, Windows or Linux)</span>
+          <button class="btn sm ghost" type="button" data-cmd="nslookup" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="dnsIn" rows="6" placeholder="${esc(DNS_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
       <div class="form-row" style="margin:0;grid-column:1 / -1">
-        <label>Box 6 — Ping results (<code>ping</code>, Windows or Linux)</label>
-        <textarea id="pingIn" rows="6" placeholder="${esc(PING_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px">${esc(PING_EG)}</textarea>
+        <label style="display:flex;align-items:center;gap:8px">
+          <span>Box 6 — Ping results (<code>ping</code>, Windows or Linux)</span>
+          <button class="btn sm ghost" type="button" data-cmd="ping" title="Copy command">⧉ cmd</button>
+        </label>
+        <textarea id="pingIn" rows="6" placeholder="${esc(PING_EG)}" style="font-family:'SF Mono',Consolas,monospace;font-size:12px"></textarea>
       </div>
     </div>
 
@@ -86,6 +114,10 @@ export async function mount(root) {
     </div>`;
 
   const $ = sel => root.querySelector(sel);
+
+  // Restore any previously-entered box contents before the first merge.
+  const saved = loadState();
+  for (const id of BOX_IDS) if (saved[id] != null) $('#' + id).value = saved[id];
 
   function updateInfoLine() {
     const el = $('#mInfo');
@@ -275,7 +307,20 @@ export async function mount(root) {
   }
 
   $('#mgGo').addEventListener('click', runMerge);
-  ['#arpIn', '#macIn', '#cdpIn', '#lldpIn', '#dnsIn', '#pingIn'].forEach(s => $(s).addEventListener('input', runMerge));
+  BOX_IDS.forEach(id => $('#' + id).addEventListener('input', () => {
+    saveState(Object.fromEntries(BOX_IDS.map(k => [k, $('#' + k).value])));
+    runMerge();
+  }));
+  $('#mgClear').addEventListener('click', () => {
+    BOX_IDS.forEach(id => { $('#' + id).value = ''; });
+    try { localStorage.removeItem(LS_KEY); } catch {}
+    runMerge();
+  });
+  root.querySelectorAll('button[data-cmd]').forEach(btn => btn.addEventListener('click', async e => {
+    e.preventDefault();
+    const ok = await copyToClipboard(btn.dataset.cmd);
+    toast(ok ? `Copied: ${btn.dataset.cmd}` : 'Copy failed', ok ? 'success' : 'error');
+  }));
   ['#fHideVlan', '#fHidePo', '#fKnown', '#fUnknown', '#fResolved', '#fUnresolved'].forEach(s => $(s).addEventListener('change', paintMerge));
   root.querySelectorAll('input[name="mgFmt"]').forEach(r => r.addEventListener('change', () => {
     const fmt = root.querySelector('input[name="mgFmt"]:checked').value;
