@@ -118,7 +118,7 @@ export async function parseXLSX(arrayBuffer) {
  * `columns` is an optional list of expected headers for guidance only —
  * the export honours whatever is actually in the textarea.
  */
-export function pasteAndExport({ root, title = 'Paste output', filename = 'output.csv', columns = null, hint = '', header = null, sourceHeaders = [] }) {
+export function pasteAndExport({ root, title = 'Paste output', filename = 'output.csv', columns = null, hint = '', header = null, sourceHeaders = [], parse = null }) {
   const id = 'pe-' + Math.random().toString(36).slice(2, 8);
   const taId = id + '-ta';
   const wrap = document.createElement('section');
@@ -179,7 +179,13 @@ export function pasteAndExport({ root, title = 'Paste output', filename = 'outpu
     if (act === 'clear') { ta.value = ''; status.textContent = ''; return; }
     const raw = ta.value;
     if (!raw.trim()) { toast('Paste some output first', 'error'); return; }
-    const csv = header ? applyHeader(detectAndConvert(raw)) : detectAndConvert(raw);
+    // A caller-supplied `parse` gets first crack at the raw text (e.g. to
+    // recognise a tool-specific format like nslookup). It returns a complete
+    // CSV string — header included — or null to fall back to auto-detection.
+    const custom = parse ? parse(raw) : null;
+    const csv = custom != null
+      ? custom
+      : (header ? applyHeader(detectAndConvert(raw)) : detectAndConvert(raw));
     if (act === 'export') {
       download(filename, csv, 'text/csv');
       status.textContent = 'Exported ' + filename;

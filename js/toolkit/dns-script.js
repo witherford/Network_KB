@@ -70,7 +70,12 @@ export async function mount(root) {
     columns: ['DNS name', 'record type', 'IP address', 'TTL'],
     header: ['DNS name', 'record type', 'IP address', 'TTL'],
     sourceHeaders: ['FQDN,Type,Value,Extra'],
-    hint: `After running the script externally, copy its console output and paste it below. The exporter auto-detects CSV / tab / multi-space output and writes a header row: DNS name, record type, IP address, TTL.`
+    // Raw Windows nslookup output (Server:/Name:/Address:/"can't find" blocks)
+    // is parsed into a clean DNS name,IP address,Status CSV. The PowerShell/bash
+    // scripts already emit CSV, so for those parse() returns null and the pane
+    // falls back to its CSV auto-detection.
+    parse: parseNslookup,
+    hint: `After running the script externally, copy its console output and paste it below. Raw Windows <code>nslookup</code> output is recognised automatically — resolved name/IP pairs are kept, failed lookups are marked “not resolved”, and the DNS server preamble is stripped. PowerShell / bash CSV output is also accepted.`
   });
 
   const $ = sel => root.querySelector(sel);
@@ -247,6 +252,60 @@ function renderNslookup(type, server, items, mode) {
     ? ':: DNS reverse lookups (PTR) — paste into a Windows command prompt'
     : ':: DNS forward lookups (A) — paste into a Windows command prompt';
   return [head, ...items.map(t => `nslookup ${t}${srv}`)].join('\r\n');
+}
+
+// Parse raw Windows-style nslookup console output into a clean CSV:
+//   DNS name, IP address, Status
+// Forward (A) and reverse (PTR) lookups both produce a "Name:" + "Address(es):"
+// block, which becomes a resolved row; a failed lookup ("*** … can't find X")
+// becomes a "not resolved" row; the "Server:/Address:" resolver preamble and
+// all other noise are discarded. Returns null when the text isn't nslookup
+// output (e.g. the PowerShell/bash CSV) so the paste pane falls back to its
+// generic CSV/TSV auto-detection.
+function parseNslookup(raw) {
+  const text = String(raw).replace(/\r\n/g, '\n');
+  const firstLine = (text.split('\n').find(l => l.trim()) || '').trim();
+  // PowerShell/bash scripts already emit CSV — defer to the generic detector.
+  if (firstLine.includes(',')) return null;
+  if (!/(^|\n)\s*(Name:|Address(?:es)?:|Server:)/i.test(text) && !/can.?t find/i.test(text)) return null;
+
+  const isIp = s => /^(\d{1,3}\.){3}\d{1,3}$/.test(s) || (s.includes(':') && /^[0-9a-f:]+$/i.test(s));
+  const rows = [];
+  let curName = null;      // hostname of the current resolution block
+  let collecting = false;  // true while reading addresses under a "Name:"
+  let skipNextAddress = false;
+
+  for (const line of text.split('\n')) {
+    const t = line.trim();
+    if (!t) { collecting = false; continue; }
+    // Resolver preamble noise — not an actual failed query.
+    if (/can.?t find server name/i.test(t)) continue;
+    if (/^Server:/i.test(t)) { curName = null; collecting = false; skipNextAddress = true; continue; }
+
+    const failed = t.match(/can.?t find\s+(.+?)\s*:/i);
+    if (failed) { rows.push([failed[1].trim(), '', 'not resolved']); curName = null; collecting = false; skipNextAddress = false; continue; }
+
+    const nameM = t.match(/^Name:\s*(.+)$/i);
+    if (nameM) { curName = nameM[1].trim().replace(/\.$/, ''); collecting = false; skipNextAddress = false; continue; }
+
+    const addrM = t.match(/^Address(?:es)?:\s*(.+)$/i);
+    if (addrM) {
+      if (skipNextAddress) { skipNextAddress = false; continue; } // the DNS server's own address
+      if (curName) {
+        addrM[1].split(/\s+/).filter(Boolean).forEach(ip => rows.push([curName, ip, 'resolved']));
+        collecting = true;
+      }
+      continue;
+    }
+
+    if (/^Aliases:/i.test(t)) { collecting = false; continue; }
+    // Continuation line: an extra address under a multi-address "Addresses:" block.
+    if (collecting && curName && isIp(t)) rows.push([curName, t, 'resolved']);
+    // Everything else (banners, "Non-authoritative answer:", timeouts) is dropped.
+  }
+
+  const esc = v => /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+  return 'DNS name,IP address,Status\r\n' + rows.map(r => r.map(esc).join(',')).join('\r\n') + '\r\n';
 }
 
 function csvEscape(v) {
