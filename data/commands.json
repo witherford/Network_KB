@@ -4621,6 +4621,13 @@
             "type": "show",
             "flagged": false,
             "example": "admin@PA-VM> show license\n\nFeature            Serial #        Start        Expire          Expired?\nThreat Prevention  007C0123456     2023/01/01   2026/01/01      No\nURL Filtering      007C0123456     2023/01/01   2026/01/01      No\nWildFire           007C0123456     2023/01/01   2026/01/01      No\nGlobalProtect      007C0123456     2023/01/01   2026/01/01      No\nDNS Security       007C0123456     2023/01/01   2026/01/01      No\nSupport            007C0123456     2023/01/01   2026/01/01      No\nVM-300             007C0123456     2023/01/01   2026/01/01      No\n\n# Fetch fresh license info from Panorama/portal:\nadmin@PA-VM> request license fetch\n\n# For Panorama-managed devices, check from Panorama:\nadmin@panorama> request license fetch device-serial <serial>\n\n# If a subscription has expired, threats/URL lookups silently fail\n# without logging — always verify after any deployment date change."
+          },
+          {
+            "cmd": "show interface management",
+            "desc": "State, IP configuration, and counters for the dedicated MGT (out-of-band management) interface",
+            "type": "show",
+            "flagged": false,
+            "example": "> show interface management\n\nname: management\nstatus: up\nspeed/duplex: 1000/full\nIP address: 10.10.10.5/24\nMAC address: 00:1b:17:00:01:02\nMTU: 1500\ncounters:\n   ibytes: 184293021  obytes: 92834012\n   ipackets: 1238492   opackets: 982341\n   ierrors: 0           oerrors: 0"
           }
         ],
         "Interfaces": [
@@ -21558,6 +21565,13 @@
             "cmd": "tshark -r in.pcap -Y \"http.request\" -T fields -e frame.number -e ip.src -e http.request.method -e http.request.uri",
             "desc": "Extract HTTP request summary (frame, source IP, method, URI) as tab-separated fields — fast log extraction",
             "example": "# Output is tab-separated; redirect to a file for further processing:\ntshark -r in.pcap -Y \"http.request\" \\\n  -T fields \\\n  -e frame.number \\\n  -e ip.src \\\n  -e http.request.method \\\n  -e http.request.uri \\\n  -E header=y -E separator=,\n\nframe.number,ip.src,http.request.method,http.request.uri\n42,192.168.1.10,GET,/index.html\n43,192.168.1.10,GET,/assets/logo.png\n67,192.168.1.11,POST,/api/login\n89,192.168.1.10,GET,/favicon.ico\n\n# Swap http.request.uri for http.response.code to extract response codes instead."
+          },
+          {
+            "cmd": "tshark -z follow,tcp,ascii,0 -r in.pcap",
+            "desc": "Reassemble and print TCP stream 0 as ASCII, in the order bytes were sent — equivalent to GUI Follow > TCP Stream",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tshark -z follow,tcp,ascii,0 -r in.pcap\n===================================================================\nFollow: tcp,ascii\nFilter: tcp.stream eq 0\nNode 0: 10.10.10.20:54321\nNode 1: 198.51.100.55:443\n\tGET /index.html HTTP/1.1\\r\\n\n\tHost: example.com\\r\\n\n\tConnection: keep-alive\\r\\n\n\\r\\n\n\tHTTP/1.1 200 OK\\r\\n\n\tContent-Type: text/html\\r\\n\n\tContent-Length: 1024\\r\\n\n==================================================================="
           }
         ]
       },
@@ -28165,6 +28179,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "(No output; all HBAs rescanned for new LUNs/paths)"
+          },
+          {
+            "cmd": "esxcli storage core device smart get -d <device>",
+            "desc": "Read SMART health attributes (temperature, reallocated sectors, media wear-out, power-on hours) for a local storage device",
+            "type": "show",
+            "flagged": false,
+            "example": "$ esxcli storage core device smart get -d naa.6001405abc123456789abcdef012345\nParameter                     Value  Threshold  Worst\n-----------------------------  -----  ---------  -----\nHealth Status                  OK     N/A        N/A\nMedia Wearout Indicator        97     0          97\nWrite Error Count               0     0          0\nRead Error Count                0     0          0\nPower-on Hours               18432    0          N/A\nPower Cycle Count               42     0          N/A\nReallocated Sector Count         0     36         100\nDrive Temperature               34     0          N/A\nDrive Life Protection Status     OK     N/A        N/A"
           }
         ],
         "VM Management": [
@@ -28843,6 +28864,13 @@
             "type": "show",
             "flagged": false,
             "example": "firewall# show shun\n\nShun 192.168.1.100 0.0.0.0 0 0\nShun 10.0.0.55 172.16.0.1 80 6\n\nShun 192.168.1.100 0.0.0.0 0 0\n  - src=192.168.1.100 blocked for all destinations and ports (blanket shun)\n\nShun 10.0.0.55 172.16.0.1 80 6\n  - src=10.0.0.55 blocked to dst=172.16.0.1 on TCP port 80 (proto 6)\n\nTo remove a shun: no shun <src-ip>\nTo shun an IP:    shun <src-ip> [<dst-ip> <src-port> <dst-port> [<proto>]]"
+          },
+          {
+            "cmd": "show local-host <ip>",
+            "desc": "Per-host connection and xlate state for a single IP: active conns, embryonic conns, NAT translations, and any applied policies",
+            "type": "show",
+            "flagged": false,
+            "example": "asa# show local-host 10.10.10.20\nLocal Host: <10.10.10.20>,\n    TCP flow count/limit = 4/unlimited\n    TCP embryonic count to host = 0\n    TCP intercept watermark = unlimited\n    UDP flow count/limit = 1/unlimited\n  Xlate(s):\n    PAT Global 198.51.100.10(0) Local 10.10.10.20(0)\n  Conn(s):\n    TCP outside 198.51.100.55:443 inside 10.10.10.20:54321, idle 0:00:02, bytes 12345, flags UIO"
           }
         ],
         "VPN": [
@@ -29561,6 +29589,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Invoke-WebRequest -Uri https://example.com -UseBasicParsing | Select-Object StatusCode,Headers\n\nStatusCode Headers\n---------- -------\n       200 {[Content-Type, text/html; charset=UTF-8], [Server, ECS], [X-Cache, HIT]...}\n\n# Test with custom headers:\nPS C:\\> $headers = @{Authorization = \"Bearer mytoken\"}\nPS C:\\> Invoke-WebRequest -Uri https://api.example.com/status -Headers $headers -UseBasicParsing\n\n# Check status code only:\nPS C:\\> (Invoke-WebRequest -Uri https://example.com -UseBasicParsing).StatusCode"
+          },
+          {
+            "cmd": "Get-NetFirewallRule -Enabled True -Direction Inbound | Select DisplayName,Action,Profile",
+            "desc": "List all enabled inbound firewall rules with their action and profile scope",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-NetFirewallRule -Enabled True -Direction Inbound | Select DisplayName,Action,Profile\n\nDisplayName                          Action Profile\n-----------                          ------ -------\nFile and Printer Sharing (Echo Req)  Allow      Domain, Private\nRemote Desktop - User Mode (TCP-In)  Allow      Domain, Private\nCore Networking - DNS (UDP-In)       Allow  Domain, Private, Public"
           }
         ],
         "Processes": [
@@ -30523,6 +30558,22 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws kms list-keys --query \"Keys[].[KeyId,KeyArn]\" --output table\n-------------------------------------------------------------------------------------------\n| 12345678-1234-1234-1234-123456789012 | arn:aws:kms:us-east-1:123456789012:key/12345678... |\n| abcdef12-abcd-abcd-abcd-abcdef123456 | arn:aws:kms:us-east-1:123456789012:key/abcdef12... |\n\n# Get aliases (friendly names) for all keys:\n$ aws kms list-aliases --query \"Aliases[].[AliasName,TargetKeyId]\" --output table\n| alias/prod-secrets   | 12345678-1234-1234-1234-123456789012 |\n| alias/dev-rds-backup | abcdef12-abcd-abcd-abcd-abcdef123456 |"
+          }
+        ],
+        "Secrets Manager": [
+          {
+            "cmd": "aws secretsmanager get-secret-value --secret-id <name> --query SecretString --output text",
+            "desc": "Retrieve and decrypt the current value of a stored secret",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws secretsmanager get-secret-value --secret-id prod/db/password --query SecretString --output text\n{\"username\":\"app_user\",\"password\":\"REDACTED\"}"
+          },
+          {
+            "cmd": "aws secretsmanager list-secrets --query \"SecretList[].Name\"",
+            "desc": "List the names of all secrets visible to the current IAM principal",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws secretsmanager list-secrets --query \"SecretList[].Name\"\n[\n    \"prod/db/password\",\n    \"prod/api/stripe-key\",\n    \"staging/db/password\"\n]"
           }
         ]
       },
@@ -41386,6 +41437,13 @@
             "type": "show",
             "flagged": false,
             "example": "{\"id\":\"qemu/100\",\"name\":\"web01\",\"status\":\"running\",\"node\":\"pve01\",\"type\":\"vm\",\"maxcpu\":4,\"maxmem\":4294967296}\n{\"id\":\"qemu/101\",\"name\":\"db01\",\"status\":\"running\",\"node\":\"pve01\",\"type\":\"vm\",\"maxcpu\":8,\"maxmem\":8589934592}"
+          },
+          {
+            "cmd": "pvesh get /nodes/<NODE>/status",
+            "desc": "Node-level health via API: uptime, load average, CPU/memory utilisation, and pending reboot status",
+            "type": "show",
+            "flagged": false,
+            "example": "$ pvesh get /nodes/pve01/status\n{\n  \"uptime\": 4123800,\n  \"loadavg\": [\"0.42\", \"0.38\", \"0.31\"],\n  \"cpu\": 0.06,\n  \"cpuinfo\": {\"cpus\": 32, \"model\": \"AMD EPYC 7763 64-Core Processor\"},\n  \"memory\": {\"total\": 270582939648, \"used\": 98765432109, \"free\": 171817507539},\n  \"rootfs\": {\"total\": 107374182400, \"used\": 21474836480},\n  \"ksm\": {\"shared\": 0},\n  \"pveversion\": \"pve-manager/8.2.4/123456ab\",\n  \"current-kernel\": {\"release\": \"6.8.4-2-pve\"}\n}"
           }
         ],
         "Firewall (pve-firewall)": [
@@ -42693,6 +42751,13 @@
             "type": "show",
             "flagged": false,
             "example": "Server: 10.10.10.50\n  Authentication requests: 1248   successes: 1240   failures: 8\n  Authorization  requests:  623   successes:  623   failures: 0\n  Accounting     requests:  623   successes:  623   failures: 0\n  Average RTT: 4 ms   Max RTT: 18 ms"
+          },
+          {
+            "cmd": "show accounting log",
+            "desc": "AAA accounting log of executed commands and sessions: who ran what, from where, and when",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show accounting log\nTue Jun 30 09:14:02 2026:type=update:id=10.10.10.50:user=admin:cmd=show running-config (SUCCESS)\nTue Jun 30 09:15:47 2026:type=start:id=10.10.10.50:user=admin:cmd=configure terminal (SUCCESS)\nTue Jun 30 09:16:12 2026:type=update:id=10.10.10.50:user=admin:cmd=interface Ethernet1/1 ; no shutdown (SUCCESS)\nTue Jun 30 09:16:40 2026:type=stop:id=10.10.10.50:user=admin (SUCCESS)"
           }
         ],
         "Logging / Monitoring": [
@@ -43802,6 +43867,13 @@
             "type": "show",
             "flagged": false,
             "example": "aruba-cx# show copp statistics\n\nTraffic Class               Passed Pkts   Dropped Pkts   Passed Bytes  Dropped Bytes\n-----------                 -----------   ------------   ------------  -------------\nARP                           123456789              0    9,876,543,210             0\nBGP                             3456789              0      345,678,900             0\nOSPF                              45678              0        4,567,800             0\nICMP                           1234567             45      123,456,700         4,500\nSSH/Telnet                       23456              0        2,345,600             0\nLACP                             12345              0        1,234,500             0\nSTP                               4567              0          456,700             0\nUNCLASSIFIED                    234567           1234       23,456,700       123,400\n\nWhat it means:\n- ICMP has 45 dropped packets — switch is rate-limiting ICMP toward CPU (normal)\n- UNCLASSIFIED drops indicate unrecognised traffic hitting the CPU — investigate\n- BGP/OSPF drops=0 is healthy; non-zero may cause neighbour flaps\n- Run 'clear copp statistics' to reset counters after baselining"
+          },
+          {
+            "cmd": "show core-dump",
+            "desc": "List crash core-dump files saved on the switch after a process or kernel crash, with timestamp and process name",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show core-dump\nCore dump files\n---------------\nDate                 Process     Size      Filename\n2026-06-22 03:14:51   ospfd      12.4 MB   core-ospfd-20260622-031451.gz\n2026-05-30 17:02:09   bgpd        9.1 MB   core-bgpd-20260530-170209.gz\n\nTotal: 2 core dump file(s), 21.5 MB used of 500 MB allocated"
           }
         ],
         "Config Management": [
@@ -44277,6 +44349,13 @@
             "type": "config",
             "flagged": false,
             "example": "(Client disconnected; will need to re-associate and re-authenticate)"
+          },
+          {
+            "cmd": "show airgroup status",
+            "desc": "AirGroup (mDNS/Bonjour proxy) service status: enabled state, multicast-to-unicast conversion, and number of registered/cached services",
+            "type": "show",
+            "flagged": false,
+            "example": "(Aruba-MC) #show airgroup status\nAirGroup Status\n---------------\nFeature           Status\n-------           ------\nAirGroup           Enabled\nGuest Service       Disabled\nMDNS                Enabled\nDLNA                Enabled\n\nCached Services: 184\nRegistered Devices: 92"
           }
         ],
         "RF / ARM / AirMatch": [
