@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-06-27T18:45:11.238Z",
+  "updatedAt": "2026-07-01T00:00:00.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -13287,7 +13287,7 @@
           },
           {
             "cmd": "journalctl -u service",
-            "desc": "# logs for specific service",
+            "desc": "Filters the systemd journal down to messages emitted by one unit (e.g. a .service) — equivalent to filtering by _SYSTEMD_UNIT — and combines with --since/--until or -f to follow the unit live.",
             "type": "show",
             "flagged": false,
             "example": "$ journalctl -u nginx --since \"2 hours ago\"\nJun 21 07:30:01 host nginx[2222]: Starting nginx\nJun 21 07:30:01 host nginx[2222]: nginx: configuration file /etc/nginx/nginx.conf test ok"
@@ -13502,7 +13502,7 @@
           },
           {
             "cmd": "ss -tulpn",
-            "desc": "# show listening ports",
+            "desc": "Lists listening TCP (-t) and UDP (-u) sockets (-l) with the owning process name/PID (-p) and numeric addresses/ports (-n) — the modern, faster replacement for \"netstat -tulpn\" when auditing what a host has bound.",
             "type": "show",
             "flagged": false,
             "example": "$ ss -tulpn\nNetid  State   Local Address:Port  Process\ntcp    LISTEN  0.0.0.0:22          sshd\ntcp    LISTEN  0.0.0.0:80          nginx\ntcp    LISTEN  0.0.0.0:443         nginx"
@@ -13814,7 +13814,7 @@
         "git stash  # stash changes": [
           {
             "cmd": "git checkout branch",
-            "desc": "# switch branch",
+            "desc": "Switches the working tree and HEAD to an existing local branch, updating tracked files to match that branch's tip commit; git refuses to switch if doing so would overwrite uncommitted changes — stash or commit first.",
             "type": "show",
             "flagged": false,
             "example": "$ git checkout feature/new-commands\nSwitched to branch 'feature/new-commands'"
@@ -13853,7 +13853,7 @@
           },
           {
             "cmd": "docker logs container",
-            "desc": "# show container logs",
+            "desc": "Fetches stdout/stderr captured by the container's logging driver since it started; the output is a static snapshot unless run with -f to stream live, or --since/--tail to limit how much history is returned.",
             "type": "show",
             "flagged": false,
             "example": "$ docker logs web-nginx --tail 20\n2026/06/21 08:00:01 [notice] 1#1: nginx/1.25.3 started\n10.0.0.1 - - [21/Jun/2026:08:05:12 +0000] \"GET / HTTP/1.1\" 200 615"
@@ -14428,7 +14428,7 @@
           },
           {
             "cmd": "zpool destroy pool",
-            "desc": "# destroy pool",
+            "desc": "Permanently destroys a ZFS pool and every dataset/snapshot in it, unmounting active filesystems first — recoverable only via \"zpool import -D\" before the underlying disks are reused, so treat it as irreversible in production.",
             "type": "show",
             "flagged": false,
             "example": "$ zpool destroy testpool\n$ zpool list\nNAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT\npool    100G  14.2G  85.8G        -         -     3%    14%  1.00x  ONLINE  -\nbackup  100G  9.80G  90.2G        -         -     1%     9%  1.00x  ONLINE  -"
@@ -14908,7 +14908,7 @@
         "strace cmd  # trace syscalls": [
           {
             "cmd": "strace -p pid",
-            "desc": "# trace process",
+            "desc": "Attaches to an already-running process by PID and traces its system calls live without restarting it — the go-to for diagnosing a hung or misbehaving process; Ctrl+C detaches and resumes normal execution.",
             "type": "show",
             "flagged": false,
             "example": "$ strace -p 1234\nstrace: Process 1234 attached\nepoll_wait(5, [], 1, 4976)              = 0\nread(7, \"\", 4096)                       = 0\nclose(7)                                = 0"
@@ -21385,9 +21385,9 @@
             "example": "$ tshark -r /tmp/capture.pcap\n    1  0.000000  10.0.0.5 → 10.0.0.10  TCP 60 54321 → 80 [SYN]\n    2  0.001234  10.0.0.10 → 10.0.0.5  TCP 60 80 → 54321 [SYN,ACK]\n# Reads and displays packets from an existing pcap/pcapng file.\n# Apply a display filter: tshark -r file.pcap -Y \"dns.flags.rcode != 0\""
           },
           {
-            "cmd": "tshark -z io",
-            "desc": "stat",
-            "type": "Shows IO statistics",
+            "cmd": "tshark -z io,stat,0",
+            "desc": "Prints an I/O statistics summary (packet/byte counts per interval) for the whole capture — interval 0 collapses the entire file into one bucket, giving total frames, bytes, and duration in a single report.",
+            "type": "show",
             "flagged": false,
             "example": "# tshark -z io,stat,0 -r capture.pcap\n# Interval 0 = whole-capture summary of bytes/packets per I/O stream.\n# Output:\n# ===================================================\n# | IO Statistics                                   |\n# |                                                 |\n# | Interval size: 0 secs                           |\n# | Col 1: Frames and bytes                         |\n# |-----------------------+--------------------------|\n# |                |       1       |                 |\n# | Duration       | 12.345 secs   |                 |\n# | Frames         |     9843      |                 |\n# | Bytes          |  4,293,120    |                 |\n# ==================================================="
           },
@@ -21413,23 +21413,23 @@
             "example": "$ tshark -z expert -r capture.pcap\n=== Expert Information ===\nErrors:   0\nWarnings: 5\nNotes:    12  (TCP retransmissions, duplicate ACKs)\nChats:    120\n\nSeverity  Group     Protocol  Count  Summary\nWarning   Sequence  TCP       5      Retransmission\nNote      Sequence  TCP       12     Duplicate ACK\n# Prints the expert information summary — a quick health check of a capture."
           },
           {
-            "cmd": "tshark -z http",
-            "desc": "stat",
-            "type": "Shows HTTP statistics",
+            "cmd": "tshark -z http,tree",
+            "desc": "Builds a breakdown tree of HTTP request methods and response status codes seen in the capture — a fast way to spot error rates (4xx/5xx) or unexpected methods without opening the GUI.",
+            "type": "show",
             "flagged": false,
             "example": "# tshark -z http,tree -r capture.pcap\n# Produces a tree of HTTP request methods and response codes with counts.\n# Output (excerpt):\n# HTTP/Request/Method  GET    412  (73.2%)\n# HTTP/Request/Method  POST   112  (19.9%)\n# HTTP/Response/Status 200    398  (70.7%)\n# HTTP/Response/Status 404     63  (11.2%)\n# HTTP/Response/Status 500     22   (3.9%)\n# Useful for a quick API health check without opening the GUI."
           },
           {
-            "cmd": "tshark -z dns",
-            "desc": "stat",
-            "type": "Shows DNS statistics",
+            "cmd": "tshark -z dns,tree",
+            "desc": "Builds a breakdown tree of DNS query types and response codes seen in the capture — quickly surfaces NXDOMAIN/SERVFAIL rates and which record types dominate the traffic.",
+            "type": "show",
             "flagged": false,
             "example": "# tshark -z dns,tree -r capture.pcap\n# Produces a DNS query-type and response-code breakdown.\n# Output (excerpt):\n# DNS   Queries\n#   A         321  (58.2%)\n#   AAAA       89  (16.1%)\n#   PTR        67  (12.1%)\n#   MX         29   (5.3%)\n# DNS   Response Codes\n#   NOERROR   420  (76.2%)\n#   NXDOMAIN   95  (17.2%)\n#   SERVFAIL   36   (6.5%)"
           },
           {
-            "cmd": "tshark -z tls",
-            "desc": "stat",
-            "type": "Shows TLS statistics",
+            "cmd": "tshark -z tls,tree",
+            "desc": "Builds a breakdown tree of TLS handshake message types and negotiated protocol versions seen in the capture — useful for confirming that legacy TLS 1.0/1.1 sessions are no longer present.",
+            "type": "show",
             "flagged": false,
             "example": "# tshark -z tls,tree -r capture.pcap\n# Lists TLS handshake message types and versions observed.\n# Output (excerpt):\n# TLS    Handshake Type\n#   ClientHello       52\n#   ServerHello       52\n#   Certificate       52\n#   CertificateVerify 48\n#   Finished          100\n# TLS    Version\n#   TLS 1.3            48\n#   TLS 1.2             4\n# Confirm that old TLS 1.0/1.1 sessions are absent."
           },
@@ -21939,6 +21939,13 @@
             "type": "show",
             "flagged": false,
             "example": "router# show interface GigabitEthernet0/0 counters\n\nPort         InOctets  InUcastPkts  InMcastPkts  InBcastPkts\nGi0/0      1234567890     14780123       123456         4321\n\nPort        OutOctets OutUcastPkts OutMcastPkts OutBcastPkts\nGi0/0       987654321     12453012        98765         1234\n\nPort        InErrors  OutErrors   InDiscards OutDiscards\nGi0/0              0          0            5           0\n\n# Non-zero InDiscards typically indicates input queue drops (interface overloaded).\n# Non-zero Errors indicates physical-layer problems (cable, duplex mismatch, etc.).\n# Reset counters: clear counters GigabitEthernet0/0"
+          },
+          {
+            "cmd": "show controllers ethernet-controller <interface>",
+            "desc": "Displays hardware-level Rx/Tx statistics read directly from the port ASIC — CRC, runts, giants, and collision counters not shown by \"show interfaces\" — used by TAC-level troubleshooting to isolate a bad transceiver/cable from a logical config issue.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show controllers ethernet-controller gi1/0/1\n\nTransmit GigabitEthernet1/0/1                Receive\n     0 Bytes                                      0 Bytes\n     0 Frames                                      0 Frames\n     0 Total Multicast/Broadcast                   0 FCS Errors\n     0 Deferred Frames                              0 Runt Frames\n     0 Single Collision Frames                      0 Giant Frames\n     0 Multiple Collision Frames                    0 Alignment Errors\n\nWhat it means:\n- Counters come from the ASIC, not the IOS interface driver — non-zero\n  FCS/CRC or alignment errors point at a bad cable, SFP, or duplex\n  mismatch even when \"show interfaces\" looks clean.\n- Use \"phy\" or \"port-asic\" keywords for register-level detail (TAC use)."
           }
         ],
         "Routing": [
@@ -29199,6 +29206,13 @@
             "type": "config",
             "flagged": false,
             "example": "! Run immediately before testing, then verify with:\nshow nat detail\n! Look for non-zero \"translate_hits\" to confirm rule is matching"
+          },
+          {
+            "cmd": "show xlate count",
+            "desc": "Returns a single number — the current count of active NAT/PAT translation entries — a lightweight way to check translation-table load against the platform's licensed limit without dumping the full table with \"show xlate\".",
+            "type": "show",
+            "flagged": false,
+            "example": "asa# show xlate count\n1247 in use, 8192 most used\n\nWhat it means:\n- \"in use\" : active translations right now.\n- \"most used\" : high-water mark since last clear/reload — compare\n  against the platform max-xlate limit to check for PAT pool exhaustion."
           }
         ]
       },
@@ -29596,6 +29610,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-NetFirewallRule -Enabled True -Direction Inbound | Select DisplayName,Action,Profile\n\nDisplayName                          Action Profile\n-----------                          ------ -------\nFile and Printer Sharing (Echo Req)  Allow      Domain, Private\nRemote Desktop - User Mode (TCP-In)  Allow      Domain, Private\nCore Networking - DNS (UDP-In)       Allow  Domain, Private, Public"
+          },
+          {
+            "cmd": "netsh advfirewall show allprofiles",
+            "desc": "Shows the state (On/Off), default inbound/outbound action, and logging settings for the Domain, Private, and Public Windows Firewall profiles in one pass — the fastest CLI check for whether the firewall is actually enforcing.",
+            "type": "show",
+            "flagged": false,
+            "example": "C:\\> netsh advfirewall show allprofiles\n\nDomain Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound\nLogAllowedConnections                Disable\nLogDroppedConnections                Enable\n\nPrivate Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound\n\nPublic Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound"
           }
         ],
         "Processes": [
@@ -30492,6 +30513,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws sns list-subscriptions-by-topic --topic-arn arn:aws:sns:us-east-1:123456789012:MyAlerts\n{\n  \"Subscriptions\": [\n    {\n      \"SubscriptionArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts:21be6e16-...\",\n      \"Owner\": \"123456789012\",\n      \"Protocol\": \"email\",\n      \"Endpoint\": \"ops@example.com\",\n      \"TopicArn\": \"arn:aws:sns:us-east-1:123456789012:MyAlerts\"\n    }\n  ]\n}"
+          },
+          {
+            "cmd": "aws sns list-topics",
+            "desc": "Lists the ARNs of every SNS topic in the current region — the starting point for auditing notification topics before drilling into subscriptions or publishing test messages.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sns list-topics --output table\n----------------------------------------------------------------------\n|                             ListTopics                             |\n+----------------------------------------------------------------------+\n|  arn:aws:sns:us-east-1:123456789012:MyAlerts                        |\n|  arn:aws:sns:us-east-1:123456789012:BillingAlarms                   |\n+----------------------------------------------------------------------+"
           }
         ],
         "SQS": [
@@ -30508,6 +30536,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws sqs get-queue-attributes \\\n    --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue \\\n    --attribute-names All\n{\n  \"Attributes\": {\n    \"QueueArn\": \"arn:aws:sqs:us-east-1:123456789012:MyQueue\",\n    \"ApproximateNumberOfMessages\": \"15\",\n    \"ApproximateNumberOfMessagesNotVisible\": \"3\",\n    \"VisibilityTimeout\": \"30\",\n    \"CreatedTimestamp\": \"1706284000\",\n    \"MaximumMessageSize\": \"262144\"\n  }\n}"
+          },
+          {
+            "cmd": "aws sqs list-queues",
+            "desc": "Lists the URLs of every SQS queue in the current region — supports --queue-name-prefix to filter — the usual first step before calling get-queue-attributes or receive-message on a specific queue.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws sqs list-queues --queue-name-prefix My\n{\n    \"QueueUrls\": [\n        \"https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue\",\n        \"https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue-dlq\"\n    ]\n}"
           }
         ],
         "CloudFormation": [
@@ -30549,6 +30584,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws acm list-certificates --certificate-statuses ISSUED --query \"CertificateSummaryList[].[DomainName,CertificateArn]\" --output table\n-----------------------------------------------------------------------------------------\n| *.example.com     | arn:aws:acm:us-east-1:123456789012:certificate/abc1-def2-ghi3 |\n| api.example.com   | arn:aws:acm:us-east-1:123456789012:certificate/jkl4-mno5-pqr6 |\n\n# Check expiry for a specific cert:\n$ aws acm describe-certificate --certificate-arn arn:aws:acm:... --query \"Certificate.[DomainName,NotAfter,Status]\""
+          },
+          {
+            "cmd": "aws acm describe-certificate --certificate-arn <arn>",
+            "desc": "Returns full metadata for a single ACM certificate — domain validation status, issuance/expiry dates, key algorithm, and in-use-by resources (ALB, CloudFront) — the standard follow-up to list-certificates when auditing a specific cert's health.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws acm describe-certificate --certificate-arn arn:aws:acm:us-east-1:123456789012:certificate/abc1-def2-ghi3 \\\n    --query \"Certificate.[DomainName,Status,NotAfter,InUseBy]\"\n[\n    \"*.example.com\",\n    \"ISSUED\",\n    \"2027-03-01T00:00:00+00:00\",\n    [\"arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/prod-alb/abc123\"]\n]"
           }
         ],
         "KMS": [
@@ -30558,6 +30600,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws kms list-keys --query \"Keys[].[KeyId,KeyArn]\" --output table\n-------------------------------------------------------------------------------------------\n| 12345678-1234-1234-1234-123456789012 | arn:aws:kms:us-east-1:123456789012:key/12345678... |\n| abcdef12-abcd-abcd-abcd-abcdef123456 | arn:aws:kms:us-east-1:123456789012:key/abcdef12... |\n\n# Get aliases (friendly names) for all keys:\n$ aws kms list-aliases --query \"Aliases[].[AliasName,TargetKeyId]\" --output table\n| alias/prod-secrets   | 12345678-1234-1234-1234-123456789012 |\n| alias/dev-rds-backup | abcdef12-abcd-abcd-abcd-abcdef123456 |"
+          },
+          {
+            "cmd": "aws kms describe-key --key-id <key-id>",
+            "desc": "Returns metadata for a single KMS key — key state (Enabled/Disabled/PendingDeletion), origin, rotation-eligible key spec, and creation date — used to confirm a key is usable before referencing it in an encryption policy or IAM condition.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws kms describe-key --key-id 12345678-1234-1234-1234-123456789012 \\\n    --query \"KeyMetadata.[KeyId,KeyState,Enabled,KeySpec,CreationDate]\"\n[\n    \"12345678-1234-1234-1234-123456789012\",\n    \"Enabled\",\n    true,\n    \"SYMMETRIC_DEFAULT\",\n    \"2024-01-15T09:00:00+00:00\"\n]"
           }
         ],
         "Secrets Manager": [
@@ -41553,6 +41602,13 @@
             "type": "show",
             "flagged": false,
             "example": "{\n  \"status\" : \"Active\",\n  \"level\" : \"c\",\n  \"message\" : \"Your subscription status is valid.\",\n  \"key\" : \"pve4e-XXXXXXXXXXXXXXXX\",\n  \"nextduedate\" : \"2027-06-01\"\n}"
+          },
+          {
+            "cmd": "apt autoremove --purge -y",
+            "desc": "Removes packages that were pulled in as dependencies but are no longer required by anything installed (typically old kernel/pve-kernel versions after an upgrade), and --purge also deletes their configuration files — run after \"apt dist-upgrade\" to reclaim /boot and /var space.",
+            "type": "config",
+            "flagged": false,
+            "example": "# apt autoremove --purge -y\nReading package lists... Done\nBuilding dependency tree... Done\nThe following packages will be REMOVED:\n  pve-kernel-6.8.4-2-pve* pve-kernel-6.8.4-3-pve*\n0 upgraded, 0 newly installed, 2 to remove\nAfter this operation, 612 MB disk space will be freed.\n(Reading database ...)\nRemoving pve-kernel-6.8.4-2-pve (6.8.4-2) ..."
           }
         ],
         "Logs & Diagnostics": [
@@ -42816,6 +42872,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# feature telemetry\nswitch(config)# telemetry\nswitch(config-telemetry)#   destination-group DG1\nswitch(config-tm-dest)#     ip address 10.50.50.50 port 57500 protocol gRPC encoding GPB\nswitch(config-telemetry)#   sensor-group SG1\nswitch(config-tm-sensor)#     data-source DME\n    path \"Cisco-NX-OS-device-yang:sys/intf\" depth unbounded\n  subscription 1\nswitch(config-tm-subscription)#     dst-grp DG1\n    snsr-grp SG1 sample-interval 30000\nswitch# show telemetry transport\nSession Id: 1, Type: gRPC, Status: Connected, Destination: 10.50.50.50:57500"
+          },
+          {
+            "cmd": "show logging onboard",
+            "desc": "Displays On-Board Failure Logging (OBFL) data stored on the supervisor/line card itself — boot history, environmental temperature history, interface statistics history, and hardware error events — survives reloads and is invaluable for diagnosing intermittent hardware faults after the fact.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show logging onboard boot-uptime\n\n----------------  -------------------------  ------------------\nSwitch, Rev. 0     Reset Reason               Uptime\n----------------  -------------------------  ------------------\n1                  Reload Command             45 days, 3 hrs\n1                  Power Loss                 210 days, 11 hrs\n\nWhat it means:\n- Use \"show logging onboard ?\" for sub-options (error-stats, temperature,\n  boot-uptime, etc.) — OBFL is stored in NVRAM/flash independent of the\n  running log buffer.\n- Cross-reference an unexpected \"Reset Reason\" against the timeline of\n  a reported outage."
           }
         ],
         "Diagnostics": [
@@ -43874,6 +43937,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show core-dump\nCore dump files\n---------------\nDate                 Process     Size      Filename\n2026-06-22 03:14:51   ospfd      12.4 MB   core-ospfd-20260622-031451.gz\n2026-05-30 17:02:09   bgpd        9.1 MB   core-bgpd-20260530-170209.gz\n\nTotal: 2 core dump file(s), 21.5 MB used of 500 MB allocated"
+          },
+          {
+            "cmd": "show lldp neighbor-info",
+            "desc": "Lists LLDP neighbors discovered on every enabled interface — local port, remote chassis ID, remote port ID/description, and system name — the primary tool for verifying physical cabling and identifying what is plugged into each switch port.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show lldp neighbor-info\n\nLocal Port  Chassis ID           Port ID          Port Description      TTL  System Name\n----------  --------------------  ---------------  ---------------------  ---  -----------\n1/1/1       9c:1c:37:aa:bb:cc     1/1/48           GigabitEthernet1/1/48  120  core-switch01\n1/1/2       9c:1c:37:dd:ee:ff     Gi0/1            uplink to closet-A     120  ap-idf2-01"
           }
         ],
         "Config Management": [
