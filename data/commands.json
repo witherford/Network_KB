@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-01T00:00:00.000Z",
+  "updatedAt": "2026-07-02T00:00:00.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -791,6 +791,13 @@
             "type": "show",
             "flagged": false,
             "example": "Name: Sel_URL, Rule: HTTP.REQ.URL"
+          },
+          {
+            "cmd": "stat cache",
+            "desc": "Live, continuously-refreshing integrated-caching counters (hit ratio, hits/sec, misses/sec, bytes served from cache) — the \"stat\" family updates in place like \"top\" (Q to quit), unlike \"show cache stats\" which prints a single static snapshot",
+            "type": "show",
+            "flagged": false,
+            "example": "> stat cache\n\nIntegrated Caching Statistics\n                                            Rate (/s)         Total\nHits                                            1250        8452019\nMisses                                           340        2210044\nCache hit ratio (%)                             78.6              -\nBytes served from cache                       42.1 Mbps            -\nOrigin requests suppressed                       910        6011230\n\nDone\n\n# Press Q to stop the live refresh and return to the prompt."
           }
         ],
         "Configuration Management": [
@@ -4628,6 +4635,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show interface management\n\nname: management\nstatus: up\nspeed/duplex: 1000/full\nIP address: 10.10.10.5/24\nMAC address: 00:1b:17:00:01:02\nMTU: 1500\ncounters:\n   ibytes: 184293021  obytes: 92834012\n   ipackets: 1238492   opackets: 982341\n   ierrors: 0           oerrors: 0"
+          },
+          {
+            "cmd": "show system state filter-pretty",
+            "desc": "Dumps the firewall's internal running-state database (cfg, session, interface, HA and dataplane state trees) in a human-readable pretty-printed format — the standard data-collection command PAN TAC asks for alongside a tech-support file when the GUI/CLI config view disagrees with actual dataplane behaviour",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA-VM> show system state filter-pretty\n\ncfg.ha.config.enabled: True\ncfg.ha.config.group.mode: Active-Passive\ncfg.general.hostname: PA-VM\ncfg.general.model: PA-VM\nsys.s1.p1.if.ethernet1/1.dhcp: False\nsys.s1.p1.if.ethernet1/1.ip: 10.10.10.1/24\nsys.s1.p1.if.ethernet1/1.state: up\n\n# Narrow to one subtree instead of dumping everything:\nadmin@PA-VM> show system state filter-pretty cfg.ha.config\n\ncfg.ha.config.enabled: True\ncfg.ha.config.group.mode: Active-Passive\n\n# Save the full state to a file for a support case:\nadmin@PA-VM> show system state filter-pretty > state-dump.txt"
           }
         ],
         "Interfaces": [
@@ -7631,6 +7645,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl verify -CAfile ca-chain.crt server.crt\nserver.crt: OK\n\n# If the chain is incomplete or the cert is revoked / expired:\n$ openssl verify -CAfile ca-chain.crt expired.crt\nerror 10 at 0 depth lookup: certificate has expired\n\n# Depth 0 = the leaf cert; depth 1 = intermediate CA; depth 2 = root CA.\n# Use -partial_chain to allow verification against an intermediate CA\n# without requiring the root in the CAfile.\n# Combine with -crl_check -CRLfile crl.pem to verify against a local CRL."
+          },
+          {
+            "cmd": "openssl x509 -noout -fingerprint -sha256 -in cert.pem",
+            "desc": "Prints the SHA-256 fingerprint (hash) of a certificate's DER encoding — used to verify a certificate matches what a browser/client reports, to pin a cert, or to confirm two files contain the exact same certificate without a byte-for-byte diff",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl x509 -noout -fingerprint -sha256 -in cert.pem\nsha256 Fingerprint=A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90:A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90\n\n# Compare against what a live server presents:\n$ openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | \\\n  openssl x509 -noout -fingerprint -sha256\nsha256 Fingerprint=A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90:A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90\n# Matching fingerprints confirm it is the same certificate."
           }
         ],
         "Verification & Matching": [
@@ -8597,10 +8618,10 @@
           },
           {
             "cmd": "openssl base64 -d -in <file> -out <out>",
-            "desc": "Decodes Base64",
+            "desc": "Decodes a Base64-encoded text file back into its original binary form — the inverse of \"openssl base64 -in <file> -out <out>.b64\"; functionally equivalent to the standalone \"base64 -d\" utility but useful when scripting against OpenSSL directly",
             "type": "show",
             "flagged": false,
-            "example": "$ openssl base64 -d -in binary.b64 -out binary.dat\n$ file binary.dat\nbinary.dat: data\n# Decodes Base64 text back to binary.\n# Equivalent to: base64 -d binary.b64 > binary.dat"
+            "example": "$ openssl base64 -d -in binary.b64 -out binary.dat\n$ file binary.dat\nbinary.dat: data\n\n# Round-trip check — encode then decode should reproduce the original file:\n$ openssl base64 -in original.bin -out original.b64\n$ openssl base64 -d -in original.b64 -out roundtrip.bin\n$ diff original.bin roundtrip.bin && echo \"identical\"\nidentical\n\n# Equivalent to: base64 -d binary.b64 > binary.dat"
           },
           {
             "cmd": "openssl enc -aes-256-cbc -salt -in <file> -out <enc>",
@@ -15497,6 +15518,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ sudo tcpdump -i any -nn -s0 'port 80 or port 443' -w /tmp/cap.pcap\ntcpdump: listening on any, link-type LINUX_SLL (Linux cooked v1), snapshot length 262144 bytes\n^C\n3412 packets captured\n3412 packets received by filter\n0 packets dropped by kernel\n\n# Analyse the capture in Wireshark:\n  wireshark /tmp/cap.pcap &\n\n# Quick text summary instead of writing a file:\n  sudo tcpdump -i eth0 -nn 'port 443' -c 20\n\n# Filter by host and port:\n  sudo tcpdump -i eth0 -nn 'host 10.0.0.5 and port 443'"
+          },
+          {
+            "cmd": "nft list tables",
+            "desc": "Lists every nftables table (and its address family) currently loaded in the kernel — the quickest first step before \"nft list table <family> <name>\" or \"nft list ruleset\" when you just need to know what exists",
+            "type": "show",
+            "flagged": false,
+            "example": "$ nft list tables\ntable inet filter\ntable ip nat\ntable bridge filter\n\n# Drill into one table once you know its name/family:\n$ nft list table inet filter\ntable inet filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n        iif lo accept\n        tcp dport 22 accept\n    }\n}"
           }
         ],
         "Diagnostics": [
@@ -19967,10 +19995,10 @@
           },
           {
             "cmd": "tls.record.version == 0x0304",
-            "desc": "TLS 1.3",
+            "desc": "Matches TLS record-layer frames whose declared version is TLS 1.3 (0x0304) — note that TLS 1.3 ClientHello messages still advertise a legacy_version of 0x0303 for middlebox compatibility, so also check the \"Supported Versions\" extension when confirming a handshake actually negotiated 1.3",
             "type": "show",
             "flagged": false,
-            "example": "# Matches TLS 1.3 record-layer frames (version 0x0304).\n# TLS 1.3 provides forward secrecy and a shorter 1-RTT handshake.\n# Frame 5:  TLSv1.3 Record Layer: Handshake Protocol: Client Hello\n#   Supported Versions extension: TLS 1.3 (0x0304), TLS 1.2 (0x0303)"
+            "example": "# Matches TLS 1.3 record-layer frames (version 0x0304).\n# TLS 1.3 provides forward secrecy and a shorter 1-RTT handshake.\nFrame 5:  TLSv1.3 Record Layer: Handshake Protocol: Client Hello\n  Supported Versions extension: TLS 1.3 (0x0304), TLS 1.2 (0x0303)\n\n# To find the negotiated version regardless of record-layer wrapper version,\n# filter on the extension instead:\ntls.handshake.extensions.supported_version == 0x0304"
           },
           {
             "cmd": "tls.alert_message",
@@ -21572,6 +21600,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ tshark -z follow,tcp,ascii,0 -r in.pcap\n===================================================================\nFollow: tcp,ascii\nFilter: tcp.stream eq 0\nNode 0: 10.10.10.20:54321\nNode 1: 198.51.100.55:443\n\tGET /index.html HTTP/1.1\\r\\n\n\tHost: example.com\\r\\n\n\tConnection: keep-alive\\r\\n\n\\r\\n\n\tHTTP/1.1 200 OK\\r\\n\n\tContent-Type: text/html\\r\\n\n\tContent-Length: 1024\\r\\n\n==================================================================="
+          },
+          {
+            "cmd": "tshark -r in.pcap -x",
+            "desc": "Prints each packet's full hex-and-ASCII byte dump alongside the normal one-line summary — use when you need to see raw bytes on the wire (e.g. verifying a malformed header or a protocol not yet dissected by Wireshark) rather than the decoded field tree",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tshark -r in.pcap -x -c 1\n    1   0.000000 10.10.10.20 → 93.184.216.34 TCP 74 54321 → 443 [SYN] Seq=0 Win=64240 Len=0\n\n0000  02 42 ac 11 00 02 02 42 ac 11 00 03 08 00 45 00   .B....B.......E.\n0010  00 3c 1a 2b 40 00 40 06 5f 1e 0a 0a 0a 14 5d b8   .<.+@.@._.....].\n0020  d8 22 d4 31 01 bb 00 00 00 00 00 00 00 00 a0 02   .\"1.............\n0030  ff d7 fa 5c 00 00 02 04 05 b4 04 02 08 0a 00 00   ...\\............\n\n# Combine with -c N to limit output, or pipe through less for long captures."
           }
         ]
       },
@@ -27529,7 +27564,7 @@
           },
           {
             "cmd": "ping 8.8.8.8 size 1500 df-bit count 5",
-            "desc": "Path-MTU test",
+            "desc": "Manual Path MTU Discovery technique: sends oversized ICMP echoes with the Don't-Fragment bit set so any link along the path that can't carry that frame size drops it instead of fragmenting — binary-search the size (1500, then 1400, etc.) to bracket the actual path MTU",
             "type": "show",
             "flagged": false,
             "example": "R1# ping 8.8.8.8 size 1500 df-bit count 5\n\nType escape sequence to abort.\nSending 5, 1500-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\nPacket sent with the DF bit set\n.....\nSuccess rate is 0 percent (0/5)\n\n# Retry with smaller MTU:\nR1# ping 8.8.8.8 size 1400 df-bit count 5\nSending 5, 1400-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)\n\nWhat it means:\n- Path MTU discovery technique. df-bit (Don't Fragment) prevents\n  intermediate routers from fragmenting the packet.\n- 1500 fails / 1400 succeeds = path MTU is between 1400 and 1499.\n  Typical cause: MPLS / GRE / VPN tunnel overhead.\n- Some intermediate routers drop ICMP Frag Needed messages — this\n  is the most common reason for hidden MTU bugs."
@@ -28205,24 +28240,24 @@
           },
           {
             "cmd": "esxcli vm process kill --type=soft --world-id=<id>",
-            "desc": "Soft?kills VM",
-            "type": "show",
+            "desc": "Requests a clean guest shutdown by sending an ACPI power-off signal to the VM — the safest of the three kill types; try this first before escalating to hard or force",
+            "type": "action",
             "flagged": false,
-            "example": "(Sends ACPI shutdown to guest — guest OS begins clean shutdown)"
+            "example": "$ esxcli vm process list\nWorld ID: 123456\nProcess ID: 0\nVMX Cartel ID: 123455\nUUID: 42 1a 2b 3c ...\nDisplay Name: web01\nConfig File: /vmfs/volumes/datastore1/web01/web01.vmx\n\n$ esxcli vm process kill --type=soft --world-id=123456\n# Sends ACPI shutdown to the guest — the guest OS begins a normal, clean shutdown.\n# Give it time to complete; verify with:\n$ esxcli vm process list | grep -A5 web01\n(no output once the VM has fully powered off)"
           },
           {
             "cmd": "esxcli vm process kill --type=hard --world-id=<id>",
-            "desc": "Hard?kills VM",
-            "type": "show",
+            "desc": "Forces an immediate power-off equivalent to pulling the virtual power cord — no ACPI signal is sent to the guest, so the guest OS gets no chance for a clean shutdown; use when soft kill hangs but the VM still needs to come down cleanly at the hypervisor level",
+            "type": "action",
             "flagged": false,
-            "example": "(Sends hard reset to VM — immediate, no guest OS notification)"
+            "example": "$ esxcli vm process kill --type=hard --world-id=123456\n# Immediate hard power-off — equivalent to pulling the power cable.\n# No guest OS notification; unsaved data in the guest is lost.\n$ esxcli vm process list | grep -A5 web01\n(no output once the VM process has terminated)"
           },
           {
             "cmd": "esxcli vm process kill --type=force --world-id=<id>",
-            "desc": "Force?kills VM",
-            "type": "show",
-            "flagged": false,
-            "example": "(Force-terminates the vmx process — last resort; risk of disk corruption)"
+            "desc": "Last-resort option that force-terminates the vmx process directly on the host when soft and hard both fail to kill a stuck VM — carries a real risk of virtual-disk corruption since the VM is torn down mid-I/O, so only use it when the VM is unresponsive to the other two kill types",
+            "type": "action",
+            "flagged": true,
+            "example": "$ esxcli vm process kill --type=force --world-id=123456\n# Force-terminates the vmx process itself. Last resort only —\n# use when both soft and hard kill fail to remove a hung/zombie VM.\n$ esxcli vm process list | grep -A5 web01\n(no output — process forcibly removed)\n\n# Always run a filesystem/disk consistency check on the guest after a force kill."
           },
           {
             "cmd": "esxcli hardware cpu global get",
@@ -29169,6 +29204,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "asa# show processes cpu-usage sorted\nPC         Thread       5Sec     1Min     5Min  Process\n0x081e3b40 0xd8c1de40   12.1%    11.8%    11.4%  Dispatch Unit\n0x082a04a0 0xd8c215c0    3.4%     3.1%     3.0%  ssh\n0x082c1140 0xd8c22b80    1.0%     0.9%     0.9%  snmp\n0x082d1500 0xd8c23b80    0.4%     0.3%     0.3%  ASDM Session\n0x082e1700 0xd8c24b80    0.1%     0.1%     0.1%  Logger"
+          },
+          {
+            "cmd": "packet-tracer input inside tcp 10.0.0.1 12345 10.0.0.2 443",
+            "desc": "Simulates a single packet through the entire ASA processing pipeline (routing, NAT, ACLs, inspection, VPN) without sending real traffic, and reports the exact phase and rule where the packet would be permitted or dropped — the fastest way to answer \"why is this connection being blocked?\"",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "asa# packet-tracer input inside tcp 10.0.0.1 12345 10.0.0.2 443\n\nPhase: 1\nType: ROUTE-LOOKUP\nSubtype: Resolve Egress Interface\nResult: ALLOW\nConfig:\nAdditional Information:\nfound next-hop 198.51.100.1 using egress ifc outside\n\nPhase: 2\nType: ACCESS-LIST\nSubtype:\nResult: DROP\nConfig:\nAccess-group \"inside_access_in\" in interface inside\nAdditional Information:\n\nResult:\ninput-interface: inside\ninput-status: up\ninput-line-status: up\nAction: drop\nDrop-reason: (acl-drop) Flow is denied by configured rule\n\n# Action: drop tells you immediately which ACL/ACE dropped it, without\n# needing a live capture or debug on the box."
           }
         ],
         "NAT": [
@@ -29617,6 +29659,13 @@
             "type": "show",
             "flagged": false,
             "example": "C:\\> netsh advfirewall show allprofiles\n\nDomain Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound\nLogAllowedConnections                Disable\nLogDroppedConnections                Enable\n\nPrivate Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound\n\nPublic Profile Settings:\n----------------------------------------------------------------\nState                                ON\nFirewall Policy                      BlockInbound,AllowOutbound"
+          },
+          {
+            "cmd": "Resolve-DnsName -Name <name> -Type <A|AAAA|MX|TXT|CNAME>",
+            "desc": "PowerShell DNS lookup cmdlet (DnsClient module) — modern replacement for nslookup that returns structured objects you can pipe, filter and script against instead of parsing text",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Resolve-DnsName -Name example.com -Type A\n\nName                                           Type   TTL   Section    IPAddress\n----                                           ----   ---   -------    ---------\nexample.com                                    A      300   Answer     93.184.216.34\n\n# Query a specific DNS server and record type:\nPS C:\\> Resolve-DnsName -Name example.com -Type MX -Server 8.8.8.8\n\nName        Type TTL   Section    NameExchange              Preference\n----        ---- ---   -------    ------------              ----------\nexample.com MX   3600  Answer     mail.example.com                   10\n\n# Force a specific query type over TCP and skip the local cache:\nPS C:\\> Resolve-DnsName -Name example.com -Type TXT -TcpOnly -NoHostsFile"
           }
         ],
         "Processes": [
@@ -29771,10 +29820,10 @@
           },
           {
             "cmd": "chkdsk <drive>:",
-            "desc": "Checks disk",
+            "desc": "Scans a volume for file-system and (optionally) bad-sector errors — read-only by default; add /f to fix errors (requires exclusive volume access, so the system drive schedules the check for next reboot) or /r to also locate and mark bad sectors, which implies /f",
             "type": "show",
             "flagged": false,
-            "example": "The type of the file system is NTFS.\nVolume label is Windows.\n\nStage 1: Examining basic file system structure ...\n  256 file records processed.\nFile verification completed.\nNo errors found."
+            "example": "C:\\> chkdsk C:\nThe type of the file system is NTFS.\nVolume label is Windows.\n\nStage 1: Examining basic file system structure ...\n  256 file records processed.\nFile verification completed.\nNo errors found.\n\nStage 2: Examining file name linkage ...\nStage 3: Examining security descriptors ...\n\n499808255 KB total disk space.\n412331120 KB in use.\n 87477135 KB available.\n\n# Fix errors on the system volume (schedules for next reboot since it is in use):\nC:\\> chkdsk C: /f\nCannot lock current drive.\nChkdsk cannot run because the volume is in use by another process.\nWould you like to schedule this volume to be checked the next time the system restarts? (Y/N)"
           },
           {
             "cmd": "defrag <drive>: /A",
@@ -30230,6 +30279,13 @@
             "type": "show",
             "flagged": false,
             "example": "https://acme-data-lake.s3.eu-west-2.amazonaws.com/reports/report.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA...&X-Amz-Expires=3600&X-Amz-Signature=abc..."
+          },
+          {
+            "cmd": "aws s3api list-buckets --query \"Buckets[].Name\" --output table",
+            "desc": "Low-level S3 API call that enumerates every bucket in the account (global, not region-scoped) — use over \"aws s3 ls\" when you need the raw CreationDate/Owner fields or want to filter with --query/JMESPath",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws s3api list-buckets --query \"Buckets[].Name\" --output table\n---------------------------\n|       ListBuckets        |\n+---------------------------+\n|  acme-data-lake           |\n|  acme-static-assets       |\n|  acme-terraform-state     |\n+---------------------------+\n\n# Full JSON with creation dates and owner:\n$ aws s3api list-buckets\n{\n    \"Buckets\": [\n        {\"Name\": \"acme-data-lake\", \"CreationDate\": \"2024-03-11T09:12:41+00:00\"},\n        {\"Name\": \"acme-static-assets\", \"CreationDate\": \"2023-08-02T14:03:10+00:00\"}\n    ],\n    \"Owner\": {\"DisplayName\": \"acme-admin\", \"ID\": \"a1b2c3...\"}\n}"
           }
         ],
         "CloudWatch": [
@@ -30284,10 +30340,10 @@
           },
           {
             "cmd": "aws logs filter-log-events --log-group-name <group> --filter-pattern <pattern>",
-            "desc": "Filters logs",
+            "desc": "Searches a CloudWatch Logs group across all (or a time-bounded set of) log streams for entries matching a filter pattern — the CLI equivalent of the Logs Insights \"Filter\" box, useful for grepping application errors without opening the console",
             "type": "show",
             "flagged": false,
-            "example": "{\n    \"events\": [\n        {\"logStreamName\":\"i-0a1b2c3d\",\"timestamp\":1749714137000,\"message\":\"ERROR Connection refused to db.internal:5432\",\"eventId\":\"123\"},\n        {\"logStreamName\":\"i-0a1b2c3d\",\"timestamp\":1749714198000,\"message\":\"ERROR Timeout on db query\",\"eventId\":\"124\"}\n    ]\n}"
+            "example": "$ aws logs filter-log-events \\\n    --log-group-name /aws/lambda/order-processor \\\n    --filter-pattern \"ERROR\" \\\n    --start-time $(date -d \"-1 hour\" +%s000)\n\n{\n    \"events\": [\n        {\"logStreamName\": \"2026/07/02/[$LATEST]abc123\", \"timestamp\": 1749714137000,\n         \"message\": \"ERROR Connection refused to db.internal:5432\", \"eventId\": \"123\"},\n        {\"logStreamName\": \"2026/07/02/[$LATEST]abc123\", \"timestamp\": 1749714198000,\n         \"message\": \"ERROR Timeout on db query\", \"eventId\": \"124\"}\n    ]\n}\n\n# --filter-pattern supports the CloudWatch Logs pattern syntax, e.g. \"?ERROR ?WARN\"\n# for an OR match, or JSON-field matching like \"{ $.statusCode = 500 }\" for JSON logs."
           },
           {
             "cmd": "aws logs put-retention-policy --log-group-name <group> --retention-in-days <days>",
@@ -41493,6 +41549,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ pvesh get /nodes/pve01/status\n{\n  \"uptime\": 4123800,\n  \"loadavg\": [\"0.42\", \"0.38\", \"0.31\"],\n  \"cpu\": 0.06,\n  \"cpuinfo\": {\"cpus\": 32, \"model\": \"AMD EPYC 7763 64-Core Processor\"},\n  \"memory\": {\"total\": 270582939648, \"used\": 98765432109, \"free\": 171817507539},\n  \"rootfs\": {\"total\": 107374182400, \"used\": 21474836480},\n  \"ksm\": {\"shared\": 0},\n  \"pveversion\": \"pve-manager/8.2.4/123456ab\",\n  \"current-kernel\": {\"release\": \"6.8.4-2-pve\"}\n}"
+          },
+          {
+            "cmd": "pvesh ls /nodes",
+            "desc": "Lists the child resources under a given path in the Proxmox REST API tree — a quick way to explore the API hierarchy interactively from the shell before writing a \"get\"/\"create\" call against a specific endpoint",
+            "type": "show",
+            "flagged": false,
+            "example": "$ pvesh ls /nodes\nDl node                    \n   pve01                   \n   pve02                   \n\n$ pvesh ls /nodes/pve01\nDr status                 \nDr network                \nDr qemu                   \nDr lxc                    \nDr storage                \nDr tasks                  \n\n# \"D\" = directory (has children), \"l\"/\"r\" show link/regular endpoint type.\n# Follow up with: pvesh get /nodes/pve01/qemu"
           }
         ],
         "Firewall (pve-firewall)": [
@@ -42926,7 +42989,7 @@
           },
           {
             "cmd": "show cdp neighbors detail",
-            "desc": "CDP neighbours",
+            "desc": "Full per-neighbour CDP detail (platform, IOS/NX-OS version, all management addresses, native VLAN, duplex, holdtime) rather than the one-line-per-neighbour summary from \"show cdp neighbors\" — use when the terse table doesn't show enough to confirm the far end is what you expect, or when LLDP is disabled and CDP is the only neighbour-discovery source",
             "type": "show",
             "flagged": false,
             "example": "-------------------------\nDevice ID: Distribution1.corp.example.com\nEntry address(es):\n  IP address: 10.0.0.2\nPlatform: cisco WS-C9500-48Y4C,  Capabilities: Router Switch IGMP\nInterface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/12\nHoldtime : 132 sec\n\nVersion :\nCisco IOS XE Software, Version 17.12.04\n\nadvertisement version: 2\nDuplex: full\nManagement address(es):\n  IP address: 10.0.0.2"
@@ -43464,7 +43527,7 @@
           },
           {
             "cmd": "show bgp ipv4 unicast",
-            "desc": "BGP IPv4 RIB",
+            "desc": "Displays the BGP IPv4 unicast RIB (Loc-RIB) — every prefix learned or originated, next hop, local preference, weight and AS path, with \">\" marking the best path selected for the forwarding table; the AOS-CX equivalent of \"show ip bgp\" on Cisco platforms",
             "type": "show",
             "flagged": false,
             "example": "BGP table version is 49\nStatus codes: s suppressed, d damped, h history, * valid, > best\nOrigin codes: i - IGP, e - EGP, ? - incomplete\n   Network          Next Hop        Metric LocPrf Weight Path\n*> 0.0.0.0/0        1.2.3.4              0    100      0 65002 i\n*> 10.0.0.0/8       1.2.3.4              0    100      0 65002 i"
@@ -45839,6 +45902,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
+          },
+          {
+            "cmd": "show platform hardware qfp active statistics drop",
+            "desc": "Aggregate table of every packet-drop reason counted by the QFP (Quantum Flow Processor) forwarding ASIC on ASR1000/ISR4000-class routers — the top-level view to check before drilling into a single reason with \"show platform hardware qfp active feature mfr datapath drops\" or a per-interface punt/drop counter",
+            "type": "show",
+            "flagged": false,
+            "example": "router# show platform hardware qfp active statistics drop\n\n  Global Drop Stats                              Packets           Octets\n  -----------------------------------------------------------------------\n  Ipv4NoRoute                                          42             2688\n  Ipv4Acl                                            1245           789012\n  UnconfiguredIpv4Fia                                    3              192\n  QfpNaturalDrops                                      512            32768\n\n# Reset counters before reproducing an issue so the next check shows a clean delta:\nrouter# clear platform hardware qfp active statistics drop"
           }
         ],
         "Config Management": [
