@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-02T00:00:00.000Z",
+  "updatedAt": "2026-07-03T00:00:00.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -6939,6 +6939,13 @@
             "type": "show",
             "flagged": false,
             "example": "SD-WAN path monitor test for VPN: HQ-Branch01  Link ID: 1\n  Local:  198.51.100.1  Remote: 203.0.113.5\n  Latency:      12 ms\n  Jitter:        2 ms\n  Packet Loss:   0 %\n  Status: UP   Threshold: latency ≤ 100ms  jitter ≤ 30ms  loss ≤ 5%"
+          },
+          {
+            "cmd": "show plugins",
+            "desc": "Lists installed PAN-OS plugins (e.g. sd-wan, vm_series) with version and running status — SD-WAN configuration requires the sd-wan plugin to be installed and enabled.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show plugins\n\nName        Version    Release Date    Status\nsd-wan      3.2.1      2026/02/10      Up to date, Registered\nvm_series   3.0.4      2025/11/03      Up to date, Registered\n# If SD-WAN options are missing from the CLI/GUI, check this first — install\n# via Panorama > Plugins or 'request plugins install'."
           }
         ],
         "Quality of Service": [
@@ -8845,6 +8852,13 @@
             "type": "config",
             "flagged": false,
             "example": "$ openssl kdf -keylen 32 -kdfopt digest:SHA256 -kdfopt key:password     -kdfopt salt:saltsalt -kdfopt iter:100000 PBKDF2 | xxd | head -2\n00000000: 3c4f 9a1b 2d5e 6f78 90ab c1d2 e3f4 a5b6  <O..-^ox........\n00000010: c7d8 e9f0 a1b2 c3d4 e5f6 0102 0304 0506  ................\n# Derives a 32-byte key using PBKDF2-SHA256 with 100,000 iterations.\n# OpenSSL 3.x kdf subcommand replaces manual EVP_KDF API usage for testing."
+          },
+          {
+            "cmd": "openssl storeutl -noout -text file:cert.pem",
+            "desc": "Generic OSSL_STORE loader (OpenSSL 3+) — inspects any URI-addressable store (file:, engine:, pkcs11:) without needing a type-specific subcommand",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl storeutl -noout -text file:cert.pem\nCertificate\nsubject=CN = www.example.com, O = Example Corp\nissuer=CN = DigiCert TLS RSA SHA256 2020 CA1\nNot Before: Jan 15 00:00:00 2026 GMT\nNot After : Jan 15 23:59:59 2027 GMT\n# storeutl unifies access to certs/keys/CRLs across file:, pkcs11: and other\n# OSSL_STORE-registered schemes — useful for inspecting HSM-backed keys."
           }
         ]
       },
@@ -10010,10 +10024,10 @@
           },
           {
             "cmd": "no dot11 6ghz",
-            "desc": "Disable 6 GHz on the WLAN.",
+            "desc": "Disables 6 GHz radio band support on the WLAN profile — use when client devices don't support the WPA3/OWE-only requirements of 6E, or when no 6 GHz radios are provisioned on the AP group bound to this WLAN.",
             "type": "config",
             "flagged": false,
-            "example": "WLC-01(config-wlan)# no dot11 6ghz"
+            "example": "WLC-01(config-wlan)# no dot11 6ghz\nWLC-01(config-wlan)# do show wlan id 5 | include 6 GHz\n802.11 6GHz                                     : Disabled\n# 6 GHz mandates WPA3/OWE security per the Wi-Fi Alliance 6E spec — disabling\n# it here does not relax that security requirement on the 2.4/5 GHz radios."
           },
           {
             "cmd": "regulatory-domain <CODE>",
@@ -10979,7 +10993,7 @@
           {
             "cmd": "show environment all",
             "desc": "PSU, fan, temperature across the chassis.",
-            "type": "PSU",
+            "type": "show",
             "flagged": false,
             "example": "WLC-01# show environment all\nSwitch    PS  Watts  Status\n1         A   715    OK\n1         B   715    OK\nSwitch    FAN  Status\n1         1    OK\n1         2    OK\nSwitch    Sensor              Current  Yellow Threshold  Red Threshold\n1         Inlet Temperature   28 C     45 C              55 C\n1         Outlet Temperature  38 C     55 C              65 C"
           },
@@ -18577,6 +18591,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ btrfs subvolume snapshot /data /snap/data-2026-06-21\nCreate a snapshot of '/data' in '/snap/data-2026-06-21'"
+          },
+          {
+            "cmd": "restic backup /data --repo /backup/restic-repo",
+            "desc": "# Encrypted, deduplicated backup (restic)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ export RESTIC_PASSWORD=changeme\n$ restic init --repo /backup/restic-repo\ncreated restic repository 8f3b2a1c4d at /backup/restic-repo\n$ restic backup /data --repo /backup/restic-repo\nscan finished in 1.203s: 4213 files, 812.4 MiB\nFiles:        4213 new,     0 changed,     0 unmodified\nAdded to the repo: 340.1 MiB\nsnapshot a1b2c3d4 saved\n# restic dedupes and encrypts client-side; source: restic.readthedocs.io"
           }
         ],
         "Ref 21. SSH Hardening & Key Management": [
@@ -18798,6 +18819,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ sysctl fs.file-max\nfs.file-max = 9223372036854775807\n$ cat /proc/sys/fs/file-max\n9223372036854775807"
+          },
+          {
+            "cmd": "sysctl --system",
+            "desc": "# Reload all sysctl config files",
+            "type": "config",
+            "flagged": false,
+            "example": "$ sysctl --system\n* Applying /etc/sysctl.d/10-console-messages.conf ...\nkernel.printk = 3 4 1 3\n* Applying /etc/sysctl.d/99-custom.conf ...\nnet.ipv4.ip_forward = 1\n* Applying /etc/sysctl.conf ...\n# Reads every file in /etc/sysctl.d/, /run/sysctl.d/, /usr/lib/sysctl.d/\n# and /etc/sysctl.conf in lexical order, applying each in turn (man sysctl)."
           }
         ],
         "Ref 23. Docker & Containers": [
@@ -21607,6 +21635,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ tshark -r in.pcap -x -c 1\n    1   0.000000 10.10.10.20 → 93.184.216.34 TCP 74 54321 → 443 [SYN] Seq=0 Win=64240 Len=0\n\n0000  02 42 ac 11 00 02 02 42 ac 11 00 03 08 00 45 00   .B....B.......E.\n0010  00 3c 1a 2b 40 00 40 06 5f 1e 0a 0a 0a 14 5d b8   .<.+@.@._.....].\n0020  d8 22 d4 31 01 bb 00 00 00 00 00 00 00 00 a0 02   .\"1.............\n0030  ff d7 fa 5c 00 00 02 04 05 b4 04 02 08 0a 00 00   ...\\............\n\n# Combine with -c N to limit output, or pipe through less for long captures."
+          },
+          {
+            "cmd": "tshark -G fields",
+            "desc": "Dumps the full protocol field database (name, filter name, type, description) that Wireshark/TShark understands — the reference for building '-e'/'-Y' field and filter expressions.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tshark -G fields | grep -i \"ip.addr\"\nF\tSource or Destination Address\tip.addr\tIPv4 address\t2\t\t0\nF\tSource or Destination Address\tipv6.addr\tIPv6 address\t2\t\t0\n# Each line: entry type (F=field/P=protocol), full name, filter name, field\n# type, base, blurb. Use it to find the exact filter name for '-T fields -e <name>'."
           }
         ]
       },
@@ -28175,10 +28210,10 @@
           },
           {
             "cmd": "esxcli storage nfs remove -v <name>",
-            "desc": "Removes NFS datastore",
+            "desc": "Unmounts and removes an NFS datastore from the host's storage inventory — the datastore must have no powered-on VMs or registered files referencing it, or the command fails with a 'datastore in use' error.",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success; NFS datastore removed)"
+            "example": "[root@esxi:~] esxcli storage nfs remove -v nfs-backup-01\n[root@esxi:~] esxcli storage nfs list\nVolume Name  Host          Share       Accessible  Mounted\n-----------  ------------  ----------  ----------  -------\nnfs-prod-01  10.10.10.50   /vol/prod   true        true\n# 'nfs-backup-01' no longer appears in the list. Run 'esxcli storage\n# filesystem list' first to confirm no active VM disks (.vmdk) live there."
           },
           {
             "cmd": "esxcli storage vmfs extent list",
@@ -29297,7 +29332,7 @@
           {
             "cmd": "wmic logicaldisk get size",
             "desc": "List each logical disk's total size and free space in bytes; convert by dividing by 1073741824 for GiB",
-            "type": "Shows disk sizes",
+            "type": "show",
             "flagged": false,
             "example": "C:\\> wmic logicaldisk get DeviceID,FreeSpace,Size\nDeviceID  FreeSpace          Size\nC:        47,244,640,256     511,068,889,088\nD:        214,748,364,800    1,099,511,627,776\n\n# 47,244,640,256 ÷ 1,073,741,824 = 44 GiB free on C:\n# 511,068,889,088 ÷ 1,073,741,824 = 476 GiB total on C:\n\n# PowerShell with human-readable output:\n#   Get-PSDrive -PSProvider FileSystem | Select Name,@{N=\"Used(GB)\";E={[math]::Round($_.Used/1GB,1)}},@{N=\"Free(GB)\";E={[math]::Round($_.Free/1GB,1)}}"
           },
@@ -29678,10 +29713,10 @@
           },
           {
             "cmd": "taskkill /PID <pid> /F",
-            "desc": "Kills a process",
+            "desc": "Force-terminates a process by PID (/F skips the graceful WM_CLOSE request) — try plain 'taskkill /PID <pid>' first for apps that should save state; add /T to also kill its child process tree.",
             "type": "show",
             "flagged": false,
-            "example": "SUCCESS: The process with PID 9421 has been terminated."
+            "example": "C:\\> taskkill /PID 9421 /F\nSUCCESS: The process with PID 9421 has been terminated.\nC:\\> tasklist /FI \"PID eq 9421\"\nINFO: No tasks are running which match the specified criteria.\n# /F is a hard kill — unsaved application state is lost. Combine with /T\n# (e.g. 'taskkill /PID 9421 /T /F') to also terminate spawned child processes."
           },
           {
             "cmd": "Get-Process",
@@ -30158,6 +30193,13 @@
             "type": "show",
             "flagged": false,
             "example": "> aws ec2 describe-snapshots --owner-ids self --query \"Snapshots[].[SnapshotId,VolumeId,State,Progress,StartTime]\" --output table\n---------------------------------------------------------------------------\n| DescribeSnapshots                                                       |\n+-----------------------+----------------------+----------+------+--------+\n| snap-0a1b2c3d4e5f678  | vol-0a1b2c3d4e5f678 | completed| 100% | 2026-06-16T10:05:12Z |\n| snap-0b2c3d4e5f67891  | vol-0b2c3d4e5f67891 | completed| 100% | 2026-06-15T02:00:05Z |\n| snap-0c3d4e5f6789012  | vol-0c3d4e5f6789012 | pending  | 23%  | 2026-06-16T10:00:00Z |\n+-----------------------+----------------------+----------+------+--------+"
+          },
+          {
+            "cmd": "aws ec2 describe-instance-topology --instance-ids i-0a1b2c3d4e5f67890",
+            "desc": "Shows the physical network hierarchy (network-node layers) for EC2 instances — used to place latency-sensitive HPC/ML workloads for the tightest network proximity within a placement group.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-instance-topology --instance-ids i-0a1b2c3d4e5f67890 --output table\n-------------------------------------------------------------------\n|                     DescribeInstanceTopology                    |\n+---------------------+----------------+----------------------------+\n|  InstanceId          | InstanceType   | NetworkNodes               |\n+---------------------+----------------+----------------------------+\n|  i-0a1b2c3d4e5f67890 | p4d.24xlarge   | nn-1a2b, nn-3c4d, nn-5e6f  |\n+---------------------+----------------+----------------------------+\n# NetworkNodes lists the network layers from top-of-rack down; instances\n# sharing all node IDs sit on the same rack for lowest inter-node latency."
           }
         ],
         "S3": [
@@ -32447,10 +32489,10 @@
           },
           {
             "cmd": "xl destroy <domid>",
-            "desc": "Destroys domain",
+            "desc": "Immediately powers off (hard-kills) a running Xen domain by ID — equivalent to pulling the power cord; use 'xl shutdown' for a graceful ACPI shutdown instead when the VPX guest OS is still responsive.",
             "type": "show",
             "flagged": false,
-            "example": "Destroying domain 4\nDomain 4 has been destroyed"
+            "example": "# xl destroy 4\nDestroying domain 4\nDomain 4 has been destroyed\n$ xl list\nName                          ID   Mem VCPUs State    Time(s)\nDomain-0                        0  4096     4 r-----   18432.1\n# The domain disappears from 'xl list' immediately; any unflushed disk\n# writes inside the VPX guest are lost — reserve this for hung/unresponsive VPX."
           }
         ],
         "Open vSwitch": [
@@ -32463,10 +32505,10 @@
           },
           {
             "cmd": "ovs-vsctl list-br",
-            "desc": "Lists OVS bridges",
+            "desc": "Lists all OVS bridges configured on the SDX host node — these bridges carry the backplane and VPX data-plane networking; cross-reference with 'ovs-vsctl show' for full port/interface detail.",
             "type": "show",
             "flagged": false,
-            "example": "$ ovs-vsctl list-br\novsbr0\novsbr1"
+            "example": "$ ovs-vsctl list-br\novsbr0\novsbr1\n# ovsbr0 is typically the management/backplane bridge; additional bridges\n# (ovsbr1, ...) map to dedicated VPX data interfaces.\n# Use 'ovs-vsctl list-ports <bridge>' to see member ports on each bridge."
           },
           {
             "cmd": "ovs-vsctl list-ports <bridge>",
@@ -34782,6 +34824,13 @@
             "type": "show",
             "flagged": false,
             "example": "sw# show platform software fed switch active fwd-asic utilization\nForwarding Engine Utilisation:\n  ASIC 0:\n    Pipeline 0: 23% (1-min avg), 18% (5-min avg)\n    Pipeline 1: 22% (1-min avg), 18% (5-min avg)\n    Lookup Engine: 31%\n    Modify Engine: 28%\n  ASIC 1:\n    Pipeline 0: 27% (1-min avg), 22% (5-min avg)"
+          },
+          {
+            "cmd": "show platform software fed switch active punt cause summary",
+            "desc": "Ranks packet-punt reasons hitting the CPU (ARP, DHCP snooping, CoPP-exceeded, L2 control, etc.) — the first place to look when CPU is pegged from data-plane traffic on an IOS-XE switch.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show platform software fed switch active punt cause summary\n\nCause                          Rx Pkts        Rx Rate (pps)\n------------------------------ -------------- -------------\nARP_REQ_OR_RES                 1,842,033      412\nDHCP_SNOOPING                    284,912       58\nL2_CONTROL_PKT                    98,412       12\nCOPP_EXCEEDED                     12,048        2\n# A high Rx Rate on one cause is the fastest way to spot a control-plane\n# storm; cross-reference with 'show platform software fed switch active punt cpuq rates'."
           }
         ],
         "Hardware": [
@@ -41322,10 +41371,10 @@
           },
           {
             "cmd": "ha-manager remove vm:<VMID>",
-            "desc": "Remove from HA management",
+            "desc": "Removes a VM/CT from HA management — the guest keeps running but Proxmox stops restarting it on node failure or enforcing its group/priority; the resource entry is deleted from /etc/pve/ha/resources.cfg.",
             "type": "config",
             "flagged": false,
-            "example": "(VM 100 removed from HA management)"
+            "example": "$ ha-manager remove vm:100\n$ ha-manager status\nquorum OK\nmaster node1 (active, Wed Jul  1 09:12:04 2026)\nlrm node1 (idle, Wed Jul  1 09:12:09 2026)\n# vm:100 no longer appears in the resource list — it will NOT fail over\n# automatically if node1 goes down. Re-add with 'ha-manager add vm:100'."
           },
           {
             "cmd": "ha-manager migrate vm:<VMID> <TARGET-NODE>",
@@ -41489,10 +41538,10 @@
         "API & Automation (pvesh)": [
           {
             "cmd": "pvesh get /version",
-            "desc": "API version",
+            "desc": "Queries the Proxmox VE REST API version endpoint — a quick, low-privilege connectivity/health check for the pvedaemon API before running scripted automation against a node.",
             "type": "show",
             "flagged": false,
-            "example": "{\"release\":\"8.2\",\"repoid\":\"abcd1234\",\"version\":\"8.2.4\"}"
+            "example": "$ pvesh get /version\n{\n  \"release\": \"8.2\",\n  \"repoid\": \"abcd1234\",\n  \"version\": \"8.2.4\"\n}\n# Same data is reachable over HTTPS at https://<node>:8006/api2/json/version\n# once authenticated — 'pvesh' just wraps the local API call for CLI/scripts."
           },
           {
             "cmd": "pvesh get /cluster/status",
@@ -41556,6 +41605,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ pvesh ls /nodes\nDl node                    \n   pve01                   \n   pve02                   \n\n$ pvesh ls /nodes/pve01\nDr status                 \nDr network                \nDr qemu                   \nDr lxc                    \nDr storage                \nDr tasks                  \n\n# \"D\" = directory (has children), \"l\"/\"r\" show link/regular endpoint type.\n# Follow up with: pvesh get /nodes/pve01/qemu"
+          },
+          {
+            "cmd": "pvesh get /nodes/<NODE>/lxc",
+            "desc": "Lists all LXC containers on a node via the Proxmox REST API (machine-readable) — the container equivalent of 'pvesh get /nodes/<NODE>/qemu'.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ pvesh get /nodes/pve01/lxc\n[\n  {\"vmid\":200,\"name\":\"nginx-proxy\",\"status\":\"running\",\"maxmem\":536870912,\"maxswap\":536870912},\n  {\"vmid\":201,\"name\":\"pihole\",\"status\":\"stopped\",\"maxmem\":268435456,\"maxswap\":268435456}\n]\n# Same shape as the qemu endpoint; feed into jq or a script for container\n# inventory automation without parsing 'pct list' text output."
           }
         ],
         "Firewall (pve-firewall)": [
@@ -42118,6 +42174,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# vrf context TENANT_A\nswitch(config-vrf)# description Tenant A — production\nswitch(config-vrf)# vni 50001\nswitch(config-vrf)# rd auto\nswitch(config-vrf)# address-family ipv4 unicast\nswitch(config-vrf-af-ipv4)#   route-target both auto\nswitch(config-vrf-af-ipv4)#   route-target both auto evpn\nswitch# show vrf TENANT_A detail\nVRF-Name: TENANT_A, VRF-ID: 3, State: Up\n    VPNID: unknown\n    RD: 1.1.1.1:50001\n    Max Routes: 0  Mid-Threshold: 0\n    Table-ID: 0x80000003, AF: IPv6, Fwd-ID: 0x80000003, State: Up\n    Table-ID: 0x00000003, AF: IPv4, Fwd-ID: 0x00000003, State: Up"
+          },
+          {
+            "cmd": "show forwarding ipv4 route",
+            "desc": "Shows the hardware-programmed FIB (forwarding table) as installed in the ASIC/TCAM — compare against 'show ip route' (software RIB) to catch RIB/FIB programming mismatches.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show forwarding ipv4 route\n\nIPv4 routes for table default/base\n-------------------+----------------+----------------+-----------\nPrefix              Next-Hop          Interface        Partial-flag\n0.0.0.0/0            10.0.0.254        Vlan10           false\n10.0.0.0/24          attached          Vlan10           false\n172.16.0.0/16        1.1.1.1           Eth1/1           false\n# 'Partial-flag: true' means the FIB entry is incomplete (e.g. unresolved\n# adjacency) — traffic to that prefix punts to software or drops."
           }
         ],
         "Routing › OSPF": [
@@ -43325,10 +43388,10 @@
           },
           {
             "cmd": "interface 1/1/49\n lag 1",
-            "desc": "Add a member port to LAG 1",
+            "desc": "Adds physical interface 1/1/49 as a member port of LAG 1 — issued from interface config context; all member ports must share matching speed/duplex before the LAG comes up.",
             "type": "config",
             "flagged": false,
-            "example": "(Interface 1/1/49 added to LAG 1)"
+            "example": "switch(config)# interface 1/1/49\nswitch(config-if)# lag 1\nswitch(config-if)# exit\nswitch# show lag 1\nLAG 1 is up\n Interfaces: 1/1/49, 1/1/50\n Aggregate-mode: active (LACP)\n# 'show lag <n>' confirms the port joined and LACP negotiated; a port stuck\n# in 'individual' state indicates an LACP mismatch on the connected peer."
           },
           {
             "cmd": "shutdown",
@@ -43657,10 +43720,10 @@
           },
           {
             "cmd": "show vsf detail",
-            "desc": "Detailed stack diagnostics",
+            "desc": "Detailed VSF (Virtual Switching Framework) stack member state: role (conductor/standby/member), member ID, MAC, priority, and split-detection status — the primary command when a stack won't form or a member drops out.",
             "type": "show",
             "flagged": false,
-            "example": "VSF is not configured on this system."
+            "example": "switch# show vsf detail\n\nVSF Status                    : Enabled\nVSF Split Detection            : Enabled, LACP MAD\nMember  Role       MAC Address        Priority  Status\n1       Conductor  aa:bb:cc:00:01:01  128       In-domain\n2       Standby    aa:bb:cc:00:01:02  64        In-domain\n3       Member     aa:bb:cc:00:01:03  0         In-domain\n# A member showing 'Split' or missing entirely from the table indicates a\n# broken VSF link — check the dedicated VSF/stacking ports and cabling first."
           },
           {
             "cmd": "show vsf topology",
@@ -44007,15 +44070,22 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show lldp neighbor-info\n\nLocal Port  Chassis ID           Port ID          Port Description      TTL  System Name\n----------  --------------------  ---------------  ---------------------  ---  -----------\n1/1/1       9c:1c:37:aa:bb:cc     1/1/48           GigabitEthernet1/1/48  120  core-switch01\n1/1/2       9c:1c:37:dd:ee:ff     Gi0/1            uplink to closet-A     120  ap-idf2-01"
+          },
+          {
+            "cmd": "diag-dump basic",
+            "desc": "Collects a scoped 'basic' diagnostic bundle (vs the full 'diag-dump') — faster to generate when only core system, interface, and log state are needed for a quick triage.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "switch# diag-dump basic\nCollecting basic diagnostic information...\nBasic diag-dump collected to /var/diagnostic/diag-dump-basic-20260703-101532.tar.gz\n# Levels available: basic, l2, l3, all. 'basic' skips the larger L2/L3 state\n# tables, keeping the bundle small enough to email directly to TAC."
           }
         ],
         "Config Management": [
           {
             "cmd": "copy running-config startup-config",
-            "desc": "Save running to startup",
+            "desc": "Persists the active running-config to startup-config (NVRAM) so it survives a reboot — AOS-CX does not auto-save, so any unsaved change is lost on the next power cycle.",
             "type": "config",
             "flagged": false,
-            "example": "(Configuration saved to startup-config)"
+            "example": "switch# copy running-config startup-config\nCopying running-config to startup-config\n#\nswitch# show running-config diff startup-config\n(no differences)\n# Confirming with 'show running-config diff startup-config' is the standard\n# post-save check — an empty diff means startup-config is fully in sync."
           },
           {
             "cmd": "write memory",
