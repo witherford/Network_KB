@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-03T00:00:00.000Z",
+  "updatedAt": "2026-07-04T18:40:38.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5649,6 +5649,13 @@
             "type": "show",
             "flagged": false,
             "example": "Revoked certificate Web-Server. CRL will be updated on next publish."
+          },
+          {
+            "cmd": "request certificate generate signed-by external certificate-name <name> name <cn> filename <csr-file>",
+            "desc": "Generates a Certificate Signing Request (CSR) for signing by a public/external CA — writes the PEM-encoded CSR to <csr-file> on the firewall instead of self-signing with an internal CA.",
+            "type": "show",
+            "flagged": false,
+            "example": "> request certificate generate signed-by external certificate-name web-server name www.example.com filename web-server.csr\nSuccess: CSR generated and stored as web-server.csr\n\n# Export the CSR to a workstation for submission to your CA:\n> scp export certificate name web-server.csr to admin@10.0.0.5:/tmp/\n\n# After the CA signs it, import the certificate:\n> request certificate import format pem certificate-name web-server file <path-to-signed-cert>"
           }
         ],
         "Monitoring & Diagnostics": [
@@ -6010,6 +6017,13 @@
             "type": "config",
             "flagged": true,
             "example": "Warning: This operation will permanently delete all private data including\n  configurations, administrator accounts, certificates, and logs.\n  The device will reboot and return to factory defaults.\n  Type \"yes\" to confirm: yes\n\nPrivate data reset initiated. System will reboot momentarily."
+          },
+          {
+            "cmd": "set cli config-output-format {default|json|set|xml}",
+            "desc": "Changes the format the CLI prints configuration in (e.g. for \"show config running\") — json/xml are useful for scripting and diffing, set mirrors the CLI set-command syntax.",
+            "type": "show",
+            "flagged": false,
+            "example": "> set cli config-output-format json\n> show config running\n{\n  \"config\": {\n    \"devices\": {\n      \"entry\": [ { \"@name\": \"localhost.localdomain\" } ]\n    }\n  }\n}\n\n# Revert to the human-readable default:\n> set cli config-output-format default"
           }
         ],
         "User-ID": [
@@ -12564,7 +12578,7 @@
         "1. FILE & DIRECTORY NAVIGATION": [
           {
             "cmd": "pwd",
-            "desc": "# show current working directory",
+            "desc": "Prints the absolute path of the current working directory.",
             "type": "show",
             "flagged": false,
             "example": "$ pwd\n/home/user/projects/webapp"
@@ -12631,7 +12645,7 @@
         "rm file  # remove file": [
           {
             "cmd": "rm -rf dir",
-            "desc": "# force remove directory recursively",
+            "desc": "Recursively removes a directory and everything inside it without prompting for confirmation — bypasses the trash entirely, so double-check the path before running.",
             "type": "show",
             "flagged": false,
             "example": "$ rm -rf /tmp/build-artifacts/\n# recursively removes directory tree; no confirmation"
@@ -12647,7 +12661,7 @@
         "mkdir dir  # create directory": [
           {
             "cmd": "mkdir -p parent/child",
-            "desc": "# create nested directories",
+            "desc": "Creates a directory along with any missing parent directories in the given path, without erroring if it already exists.",
             "type": "show",
             "flagged": false,
             "example": "$ mkdir -p /opt/app/config/certs\n$ ls /opt/app/config/\ncerts/"
@@ -12705,7 +12719,7 @@
           },
           {
             "cmd": "tail -f logfile",
-            "desc": "# follow log output",
+            "desc": "Prints the last lines of logfile, then keeps the terminal open and streams new lines as they're appended — the standard way to watch a log file live.",
             "type": "show",
             "flagged": false,
             "example": "$ tail -f /var/log/nginx/access.log\n10.0.0.1 - - [21/Jun/2026:09:35:01 +0000] \"GET /api/health HTTP/1.1\" 200 4\n10.0.0.5 - - [21/Jun/2026:09:35:02 +0000] \"POST /api/login HTTP/1.1\" 200 128\n^C"
@@ -12726,7 +12740,7 @@
           },
           {
             "cmd": "grep -R pattern dir",
-            "desc": "# recursive search",
+            "desc": "Recursively searches every file under dir for lines matching pattern, prefixing each match with its file path.",
             "type": "show",
             "flagged": false,
             "example": "$ grep -R \"PermitRootLogin\" /etc/ssh/\n/etc/ssh/sshd_config:PermitRootLogin no"
@@ -12761,7 +12775,7 @@
           },
           {
             "cmd": "find /path -name \"*.conf\"",
-            "desc": "# find files by name",
+            "desc": "Recursively searches the directory tree under /path for files whose name matches the *.conf glob pattern.",
             "type": "show",
             "flagged": false,
             "example": "$ find /etc -name \"*.conf\" | head -5\n/etc/ssh/sshd_config\n/etc/nginx/nginx.conf\n/etc/systemd/resolved.conf\n/etc/rsyslog.conf"
@@ -12821,7 +12835,7 @@
         "gzip file  # compress file": [
           {
             "cmd": "gunzip file.gz",
-            "desc": "# decompress gzip file",
+            "desc": "Decompresses a .gz file in place, replacing it with the original uncompressed file.",
             "type": "show",
             "flagged": false,
             "example": "$ gunzip access.log.gz\n$ ls\naccess.log"
@@ -12853,14 +12867,14 @@
         "ps  # list processes": [
           {
             "cmd": "ps aux",
-            "desc": "# detailed process list",
+            "desc": "Lists every process on the system, including those from other users and without a controlling terminal, in BSD-style columns (USER, PID, %CPU, %MEM, COMMAND).",
             "type": "show",
             "flagged": false,
             "example": "$ ps aux | head -5\nUSER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\nroot         1  0.0  0.1 167456  9876 ?        Ss   Jun20   0:02 /sbin/init\nroot       123  0.0  0.0  14568  1024 ?        Ss   Jun20   0:00 /usr/sbin/sshd"
           },
           {
             "cmd": "ps -ef",
-            "desc": "# full-format process list",
+            "desc": "Lists every process in System V full-format syntax, showing UID, PID, PPID, start time (STIME), and the full command line.",
             "type": "show",
             "flagged": false,
             "example": "$ ps -ef | grep nginx\nroot      1234     1  0 Jun20 ?        00:00:01 nginx: master process\nwww-data  1235  1234  0 Jun20 ?        00:02:45 nginx: worker process"
@@ -12885,7 +12899,7 @@
         "kill PID  # terminate process": [
           {
             "cmd": "kill -9 PID",
-            "desc": "# force kill process",
+            "desc": "Sends SIGKILL to the process, terminating it immediately and unconditionally — the process cannot catch, block, or clean up after this signal, so try a plain 'kill' (SIGTERM) first.",
             "type": "show",
             "flagged": false,
             "example": "$ kill -9 9999\n# sends SIGKILL; process cannot intercept or ignore"
@@ -27764,6 +27778,20 @@
             "type": "troubleshooting",
             "flagged": true,
             "example": "# Step 1: create a tight ACL to scope the debug\nR1(config)# ip access-list extended DEBUG_SCOPE\nR1(config-ext-nacl)# permit ip host 10.1.1.100 any\nR1(config-ext-nacl)# permit ip any host 10.1.1.100\n\n# Step 2: enable scoped debug\nR1# debug ip packet detail 100\n\nIP: s=10.1.1.100 (Gi0/1), d=8.8.8.8 (Gi0/0), len 60, forward\n   ICMP type=8, code=0\nIP: s=10.1.1.100 (Gi0/1), d=10.1.1.254, len 60, encapsulation failed\n\n# \"encapsulation failed\" = no ARP entry for next-hop; check show ip arp\n# \"no route\"            = missing route; check show ip route <dest>\n\nR1# undebug all    ← ALWAYS run when finished\n\n⚠ WARNING: Without an ACL, ALL process-switched packets are logged.\n  This can overwhelm the console and crash routers under load."
+          },
+          {
+            "cmd": "show controllers ethernet-controller <interface>",
+            "desc": "Displays hardware-level Ethernet ASIC counters for the interface (CRC, symbol errors, runts, giants, collisions) — catches physical-layer faults that 'show interface' can miss because it reads software-layer counters.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show controllers ethernet-controller Gi1/0/1\n\nTransmit GigabitEthernet1/0/1                Receive\n     0 Bytes                        123456789 Bytes\n     0 Unicast frames                  654321 Unicast frames\n     0 Multicast frames                   120 Multicast frames\n     0 Broadcast frames                    45 Broadcast frames\n     0 Single Collision frames             0 CRC errors\n     0 Multiple Collision frames           0 Symbol errors\n     0 Excessive Collision frames          0 Giant frames\n\nWhat it means:\n- Counters come straight from the switch's forwarding ASIC, not the\n  IOS software layer — more reliable for physical-layer faults.\n- Nonzero CRC/Symbol errors point to a bad cable, SFP, or duplex\n  mismatch even when 'show interface' looks clean."
+          },
+          {
+            "cmd": "debug ip icmp",
+            "desc": "Logs every ICMP packet the router originates, receives, or forwards (echo request/reply, redirects, unreachables) to the console/log in real time. Scope it and run 'undebug all' when done — it's CPU-intensive on busy routers.",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "R1# debug ip icmp\nICMP packet debugging is on\n\n*Jun 12 10:15:02.441: ICMP: echo reply sent, src 10.0.0.1, dst 10.0.0.5\n*Jun 12 10:15:07.223: ICMP: dst (10.0.0.99) host unreachable sent to 10.0.0.5\n\nR1# undebug all\nAll possible debugging has been turned off"
           }
         ],
         "Config Management": [
@@ -29419,6 +29447,13 @@
             "type": "show",
             "flagged": false,
             "example": "AMServiceEnabled         : True\nAntispywareEnabled       : True\nAntispywareSignatureLastUpdated : 6/12/2026 6:05:52 AM\nAntispywareSignatureVersion     : 1.413.472.0\nAntivirusEnabled         : True\nAntivirusSignatureLastUpdated   : 6/12/2026 6:05:52 AM\nRealTimeProtectionEnabled: True\nNISEnabled               : True"
+          },
+          {
+            "cmd": "Get-LocalGroupMember -Group \"Administrators\"",
+            "desc": "Lists every member of the local Administrators group — local accounts, domain users, and domain groups — the quickest way to audit who has local admin rights on a machine.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-LocalGroupMember -Group \"Administrators\"\n\nObjectClass Name                       PrincipalSource\n----------- ----                       ----------------\nUser        WIN-SERVER01\\Administrator Local\nGroup       CORP\\Domain Admins         ActiveDirectory\nUser        CORP\\jane.doe              ActiveDirectory"
           }
         ],
         "Networking": [
@@ -29950,6 +29985,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-ChildItem -Path C:\\Logs -Recurse -Filter *.log | Sort-Object LastWriteTime -Descending | Select -First 5\n\nDirectory: C:\\Logs\\App\nMode  LastWriteTime         Length Name\n----  -------------         ------ ----\n-a--  6/28/2026  10:42 AM  1.2MB  app-2026-06-28.log\n-a--  6/28/2026   8:00 AM  4.5MB  app-2026-06-27.log\n-a--  6/27/2026  10:15 PM  3.2MB  error-2026-06-27.log\n\n# Find large log files over 100MB:\nPS C:\\> Get-ChildItem C:\\ -Recurse -Filter *.log | Where {$_.Length -gt 100MB} | Select FullName,Length"
+          },
+          {
+            "cmd": "Get-FileHash <path> -Algorithm SHA256",
+            "desc": "Computes a cryptographic hash of a file — use to verify a download against a publisher-provided checksum or to confirm two files are byte-identical.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-FileHash .\\installer.exe -Algorithm SHA256\n\nAlgorithm       Hash                                                                   Path\n---------       ----                                                                   ----\nSHA256          3A7BD3E2360A3D8F1B9C4E5A6D7F8091A2B3C4D5E6F70819202A3B4C5D6E7F80        C:\\Users\\admin\\installer.exe\n\n# Compare against a published checksum:\n(Get-FileHash .\\installer.exe -Algorithm SHA256).Hash -eq \"<published-hash>\""
           }
         ],
         "OOBE & Setup": [
@@ -30595,6 +30637,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws route53 test-dns-answer --hosted-zone-id Z1D633PJN98FT9 --record-name www.example.com --record-type A\n{\n  \"Nameserver\": \"ns-1234.awsdns-56.org\",\n  \"RecordName\": \"www.example.com.\",\n  \"RecordType\": \"A\",\n  \"RecordData\": [\"203.0.113.10\"],\n  \"ResponseCode\": \"NOERROR\",\n  \"Protocol\": \"UDP\"\n}"
+          },
+          {
+            "cmd": "aws route53 change-resource-record-sets --hosted-zone-id <zone-id> --change-batch file://change.json",
+            "desc": "Applies CREATE/DELETE/UPSERT record changes to a hosted zone from a JSON change-batch file — the standard scripted way to update DNS records via the CLI.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ cat change.json\n{\n  \"Changes\": [{\n    \"Action\": \"UPSERT\",\n    \"ResourceRecordSet\": {\n      \"Name\": \"app.example.com\",\n      \"Type\": \"A\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"10.0.0.25\"}]\n    }\n  }]\n}\n\n$ aws route53 change-resource-record-sets --hosted-zone-id Z1R8UBAEXAMPLE --change-batch file://change.json\n{\n    \"ChangeInfo\": {\n        \"Id\": \"/change/C2XXXXXXXXXXXX\",\n        \"Status\": \"PENDING\",\n        \"SubmittedAt\": \"2026-07-04T10:00:00.000Z\"\n    }\n}"
           }
         ],
         "SNS": [
@@ -42023,6 +42072,13 @@
             "type": "show",
             "flagged": false,
             "example": "type is 10Gbase-SR\nname is CISCO\npart number is SFP-10G-SR"
+          },
+          {
+            "cmd": "show interface counters",
+            "desc": "Displays cumulative RX/TX packet and byte counters for every Layer-2 interface in one table — the fast way to spot which port is passing traffic without drilling into each interface individually.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface counters\n\n--------------------------------------------------------------------------------\nPort           InOctets       InUcastPkts      InMcastPkts      InBcastPkts\n--------------------------------------------------------------------------------\nEth1/1        1234567890          9876543             1200               45\nEth1/2         987654321          5432109              340               12\n\n--------------------------------------------------------------------------------\nPort          OutOctets      OutUcastPkts     OutMcastPkts     OutBcastPkts\n--------------------------------------------------------------------------------\nEth1/1        2345678901         12345678              200               30\nEth1/2        1876543210          8765432              150               20"
           }
         ],
         "VLANs / VPC": [
@@ -45010,6 +45066,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "(instant-AP) # show tech-support\n<Compiling tech-support data...>\n\n--- System Info ---\nHostname: AP-FLOOR1-01\nModel: AP-505\nFirmware: 8.10.0.4-8.10.0.4\nUptime: 3 days 04:22:11\n\n--- Radio Summary ---\nRadio 0: Channel 6, Tx Power 17 dBm, Clients 8\nRadio 1: Channel 36, Tx Power 20 dBm, Clients 14\n\n# Output is long (~10,000 lines) — redirect to file: show tech-support > flash:tech-support.txt"
+          },
+          {
+            "cmd": "show ap arm history",
+            "desc": "Shows the ARM (Adaptive Radio Management) channel and power-change history per radio, with a reason code for each change (interference, radar, noise, rogue containment) — the first place to look when a radio has been hopping channels.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap arm history\n\nRadio 0 (2.4GHz) ARM History\n-----------------------------\nTime                 Channel  Power  Reason\n2026-06-20 09:14:02   1        18     I (Interference)\n2026-06-20 14:02:11   6        18     N (Noise exceeded)\n2026-06-21 02:00:00   11       18     AIRMATCH\n\nLegend: I=Interference R=Radar N=Noise Q=Bad Quality G=Rogue Containment"
           }
         ],
         "Network": [
@@ -45267,6 +45330,13 @@
             "type": "show",
             "flagged": false,
             "example": "Interface  Filter                  Packets  File\nradio0     host 10.0.50.100         1241     /tmp/pcap_radio0.pcap\n(Use Ctrl+C or timeout to stop)"
+          },
+          {
+            "cmd": "ap-leds ap-name <name> blink",
+            "desc": "Makes the physical LEDs on the named AP blink so you can visually locate it in a rack or ceiling — restore normal status LEDs with 'ap-leds ap-name <name> normal'.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "(instant-AP) # ap-leds ap-name ap-floor3 blink\nLEDs on ap-floor3 set to blink\n\n# Once located, restore normal status LEDs:\n(instant-AP) # ap-leds ap-name ap-floor3 normal\nLEDs on ap-floor3 set to normal"
           }
         ],
         "Provisioning & Updates": [
