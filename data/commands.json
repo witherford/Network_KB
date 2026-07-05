@@ -521,10 +521,10 @@
           },
           {
             "cmd": "show ns stats -full",
-            "desc": "Display the full configuration of 'show ns stats' including all parameters, including defaults.",
+            "desc": "Full \"show ns stats\" output — every counter group with raw values, including zeroed defaults (vs. the summarised default view)",
             "type": "show",
             "flagged": false,
-            "example": "(Displays all global counters in raw format)"
+            "example": "> show ns stats -full\nRx Packets                          482910234\nTx Packets                          479120044\nRx Bytes                            612093482910\nTx Bytes                            598812093442\nHTTP requests                       18293441\nHTTP responses                      18293301\nTCP current client connections      4821\nTCP current server connections      3902\nSSL total transactions              1829344\nSSL sessions hits                   1204552\nDone"
           },
           {
             "cmd": "show ns unit -detail",
@@ -894,10 +894,10 @@
           },
           {
             "cmd": "show ns runningConfig -output unified",
-            "desc": "Display the merged local + cluster configuration in a single unified view.",
+            "desc": "Merges the local node config with the cluster/HA-synced config into one view — useful for spotting drift between a node's local settings and what the cluster actually pushed",
             "type": "show",
             "flagged": false,
-            "example": "(Displays merged local and cluster config)"
+            "example": "> show ns runningConfig -output unified\n#NS13.1 Build 42.47.nc\nset ns config -IPAddress 10.10.10.11 -netmask 255.255.255.0\nadd ns ip 10.10.10.12 255.255.255.0 -type SNIP\nadd lb vserver LB_WEB HTTP 10.10.10.100 80\nbind lb vserver LB_WEB SVC_WEB1\n# Lines prefixed with source node differ only when local config has\n# diverged from the last successful cluster sync — check for those\n# before assuming all nodes are identical."
           },
           {
             "cmd": "set ns hostname",
@@ -5882,6 +5882,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show lldp neighbors all\n\nInterface    Chassis ID          Port ID         System Name         Capabilities  TTL\nethernet1/1  00:50:56:aa:bb:cc   GigabitEthernet0/1  core-sw01.example.com  B, R        120\nethernet1/2  00:1a:2b:3c:4d:5e   Gi1/0/24        dist-sw02.example.com  B           120\n\nCapabilities: B=Bridge, R=Router, T=Telephone, W=WLAN-AP\n\n# Enable LLDP: Device → Setup → Session → LLDP → enable per-interface.\n# Requires LLDP enabled on both this PA and the connected neighbour."
+          },
+          {
+            "cmd": "tail follow yes mp-log system.log",
+            "desc": "Streams a management-plane log file in real time (like tail -f)",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "> tail follow yes mp-log system.log\n2026-06-30 09:14:02  system: Configuration committed successfully\n2026-06-30 09:14:03  system: HA state changed to active\n\n# Ctrl+C stops the follow.\n# Other useful mp-log targets: mp-log ms.log (management server),\n# mp-log authd.log (authentication daemon), mp-log logrcvr.log (log receiver)."
           }
         ],
         "Commit & Config": [
@@ -6024,6 +6031,13 @@
             "type": "show",
             "flagged": false,
             "example": "> set cli config-output-format json\n> show config running\n{\n  \"config\": {\n    \"devices\": {\n      \"entry\": [ { \"@name\": \"localhost.localdomain\" } ]\n    }\n  }\n}\n\n# Revert to the human-readable default:\n> set cli config-output-format default"
+          },
+          {
+            "cmd": "request tech-support dump",
+            "desc": "Generates a full tech-support file (configs, logs, core files) for TAC case uploads",
+            "type": "action",
+            "flagged": false,
+            "example": "> request tech-support dump\nExecuting tech support...\nlast dump file : filename.tgz\n\n# Bundle is written to /var/tmp or similar internal path and exposed via\n# the WebUI: Device > Support > Generate Tech Support File.\n# Retrieve with: scp (from a management workstation) or\n#   > scp export tech-support to admin@10.10.10.5:/tmp/"
           }
         ],
         "User-ID": [
@@ -15553,6 +15567,20 @@
             "type": "show",
             "flagged": false,
             "example": "$ nft list tables\ntable inet filter\ntable ip nat\ntable bridge filter\n\n# Drill into one table once you know its name/family:\n$ nft list table inet filter\ntable inet filter {\n    chain input {\n        type filter hook input priority 0; policy drop;\n        iif lo accept\n        tcp dport 22 accept\n    }\n}"
+          },
+          {
+            "cmd": "ntpq -p",
+            "desc": "Lists configured NTP peers and their sync status (offset, jitter, stratum)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ ntpq -p\n     remote           refid      st t when poll reach   delay   offset  jitter\n==============================================================================\n*ntp.ubuntu.com  91.189.94.4      2 u   34   64  377    1.234    0.045   0.312\n+time.cloudflare 10.11.12.13      3 u   50   64  377    5.678   -0.120   0.501\n\n# '*' = current synced peer, '+' = candidate. st = stratum, reach = poll\n# success history (octal, 377 = last 8 polls all succeeded)."
+          },
+          {
+            "cmd": "chronyc tracking",
+            "desc": "Shows chronyd sync status: current reference clock, offset, and drift",
+            "type": "show",
+            "flagged": false,
+            "example": "$ chronyc tracking\nReference ID    : 5B189E04 (ntp.ubuntu.com)\nStratum         : 3\nRef time (UTC)  : Tue Jun 30 09:10:02 2026\nSystem time     : 0.000012345 seconds slow of NTP time\nLast offset     : +0.000034567 seconds\nRMS offset      : 0.000045678 seconds\nFrequency       : 3.456 ppm slow\nLeap status     : Normal"
           }
         ],
         "Diagnostics": [
@@ -24365,10 +24393,10 @@
           },
           {
             "cmd": "show ip bgp community-list <number>",
-            "desc": "Filter the BGP table down to routes matching a predefined community-list.",
+            "desc": "Filters the BGP table to routes matching a numbered (standard or expanded) community-list — combine with a route-map to confirm which prefixes a policy will match before applying it",
             "type": "show",
             "flagged": false,
-            "example": "(Standard BGP table output filtered by community-list)"
+            "example": "Router# show ip community-list 10\nCommunity standard list 10\n    permit 65001:100\nRouter# show ip bgp community-list 10\nNetwork          Next Hop            Metric LocPrf Weight Path\n*> 10.10.10.0/24  192.0.2.1                0             0 65001 i\n*> 10.10.20.0/24  192.0.2.1                0             0 65001 i\n# Output has the same columns as 'show ip bgp' but pre-filtered to only\n# the prefixes carrying that community — much faster than eyeballing\n# the full table for a tag."
           },
           {
             "cmd": "neighbor <IP> soft-reconfiguration inbound",
@@ -28138,10 +28166,10 @@
           },
           {
             "cmd": "esxcli network firewall ruleset set --ruleset-id=<id> --enabled=true",
-            "desc": "Enable an ESXi firewall ruleset",
+            "desc": "Enables a named ESXi firewall ruleset (e.g. sshServer, ntpClient) — returns no output on success; verify with the list command",
             "type": "config",
             "flagged": false,
-            "example": "(No output on success; ruleset enabled)"
+            "example": "$ esxcli network firewall ruleset set --ruleset-id=sshServer --enabled=true\n$ esxcli network firewall ruleset list | grep -i ssh\nsshServer          true      TCP  22\n# No confirmation is printed by the 'set' command itself — always\n# follow up with 'ruleset list' to confirm the rule is now Enabled=true."
           },
           {
             "cmd": "esxcli network ip dns server list",
@@ -30242,6 +30270,20 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws ec2 describe-instance-topology --instance-ids i-0a1b2c3d4e5f67890 --output table\n-------------------------------------------------------------------\n|                     DescribeInstanceTopology                    |\n+---------------------+----------------+----------------------------+\n|  InstanceId          | InstanceType   | NetworkNodes               |\n+---------------------+----------------+----------------------------+\n|  i-0a1b2c3d4e5f67890 | p4d.24xlarge   | nn-1a2b, nn-3c4d, nn-5e6f  |\n+---------------------+----------------+----------------------------+\n# NetworkNodes lists the network layers from top-of-rack down; instances\n# sharing all node IDs sit on the same rack for lowest inter-node latency."
+          },
+          {
+            "cmd": "aws ec2 describe-regions --query \"Regions[].RegionName\" --output table",
+            "desc": "Lists all AWS regions enabled for the account",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-regions --query \"Regions[].RegionName\" --output table\n----------------------\n|   DescribeRegions   |\n+----------------------+\n|  eu-west-2           |\n|  eu-west-1           |\n|  us-east-1           |\n|  us-west-2           |\n|  ap-southeast-2      |\n+----------------------+"
+          },
+          {
+            "cmd": "aws ec2 describe-instance-types --instance-types <type>",
+            "desc": "Shows vCPU, memory, network, and storage specs for an EC2 instance type",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-instance-types --instance-types t3.medium\n{\n    \"InstanceTypes\": [{\n        \"InstanceType\": \"t3.medium\",\n        \"VCpuInfo\": {\"DefaultVCpus\": 2},\n        \"MemoryInfo\": {\"SizeInMiB\": 4096},\n        \"NetworkInfo\": {\"NetworkPerformance\": \"Up to 5 Gigabit\"},\n        \"BurstablePerformanceSupported\": true\n    }]\n}"
           }
         ],
         "S3": [
@@ -30556,6 +30598,27 @@
             "type": "show",
             "flagged": false,
             "example": "# Retrieve a plaintext String parameter:\n$ aws ssm get-parameter --name \"/app/db/host\"\n{\n    \"Parameter\": {\n        \"Name\": \"/app/db/host\",\n        \"Type\": \"String\",\n        \"Value\": \"db.prod.internal\",\n        \"Version\": 3,\n        \"ARN\": \"arn:aws:ssm:eu-west-2:123456789012:parameter/app/db/host\"\n    }\n}\n\n# Retrieve a KMS-encrypted SecureString:\n$ aws ssm get-parameter --name \"/app/db/password\" --with-decryption\n{\n    \"Parameter\": {\n        \"Name\": \"/app/db/password\",\n        \"Type\": \"SecureString\",\n        \"Value\": \"correct-horse-battery-staple\"\n    }\n}\n\n# Value only (for scripting):\n$ aws ssm get-parameter --name \"/app/db/host\" \\\n    --query \"Parameter.Value\" --output text\ndb.prod.internal"
+          },
+          {
+            "cmd": "aws configure list",
+            "desc": "Shows the active profile, access key source, region, and output format",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws configure list\n      Name                    Value             Type    Location\n      ----                    -----             ----    --------\n   profile                <not set>             None    None\naccess_key     ****************ABCD shared-credentials-file\nsecret_key     ****************1234 shared-credentials-file\n    region                eu-west-2      config-file    ~/.aws/config"
+          },
+          {
+            "cmd": "aws sts assume-role --role-arn <role-arn> --role-session-name <session-name>",
+            "desc": "Assumes an IAM role and returns temporary credentials for it",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws sts assume-role \\\n    --role-arn arn:aws:iam::123456789012:role/DeployRole \\\n    --role-session-name ci-deploy\n{\n    \"Credentials\": {\n        \"AccessKeyId\": \"ASIAEXAMPLE12345\",\n        \"SecretAccessKey\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n        \"SessionToken\": \"FQoGZXIvYXdzEJr...\",\n        \"Expiration\": \"2026-06-30T10:15:00+00:00\"\n    },\n    \"AssumedRoleUser\": {\n        \"AssumedRoleId\": \"AROAEXAMPLE12345:ci-deploy\",\n        \"Arn\": \"arn:aws:sts::123456789012:assumed-role/DeployRole/ci-deploy\"\n    }\n}"
+          },
+          {
+            "cmd": "aws iam list-attached-role-policies --role-name <role-name>",
+            "desc": "Lists the managed (customer or AWS) policies attached to an IAM role",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws iam list-attached-role-policies --role-name LambdaExecutionRole\n{\n    \"AttachedPolicies\": [\n        {\n            \"PolicyName\": \"AWSLambdaBasicExecutionRole\",\n            \"PolicyArn\": \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n        },\n        {\n            \"PolicyName\": \"AmazonS3ReadOnlyAccess\",\n            \"PolicyArn\": \"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess\"\n        }\n    ]\n}"
           }
         ],
         "VPC": [
@@ -30770,6 +30833,15 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws secretsmanager list-secrets --query \"SecretList[].Name\"\n[\n    \"prod/db/password\",\n    \"prod/api/stripe-key\",\n    \"staging/db/password\"\n]"
+          }
+        ],
+        "CloudTrail": [
+          {
+            "cmd": "aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=<EventName>",
+            "desc": "Searches recent CloudTrail management events by attribute (e.g. EventName, Username)",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws cloudtrail lookup-events \\\n    --lookup-attributes AttributeKey=EventName,AttributeValue=TerminateInstances\n{\n    \"Events\": [{\n        \"EventId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"EventName\": \"TerminateInstances\",\n        \"EventTime\": \"2026-06-29T14:02:11+00:00\",\n        \"Username\": \"matthew.witherford\",\n        \"Resources\": [{\"ResourceType\": \"AWS::EC2::Instance\", \"ResourceName\": \"i-0abcd1234ef567890\"}]\n    }]\n}"
           }
         ]
       },
@@ -40773,10 +40845,10 @@
           },
           {
             "cmd": "qm config <VMID> --current",
-            "desc": "Show only the running (effective) configuration",
+            "desc": "Shows the live, in-effect VM configuration — differs from plain \"qm config\" when pending changes are queued for next boot (e.g. after \"qm set\" on an offline-only setting)",
             "type": "show",
             "flagged": false,
-            "example": "(Same as qm config but shows live runtime values only, not pending changes)"
+            "example": "$ qm set 100 --memory 8192\n$ qm config 100\nmemory: 8192\npending:\n  memory: 4096\n$ qm config 100 --current\nmemory: 8192\n# 'qm config' without --current shows the pending (not-yet-applied) value\n# for offline-only settings; --current shows what the running VM actually\n# has right now — 4096 MB until the VM is rebooted to pick up 8192."
           },
           {
             "cmd": "qm start <VMID>",
@@ -42673,10 +42745,10 @@
           },
           {
             "cmd": "clear bgp ipv4 unicast * soft",
-            "desc": "Soft-refresh on every BGP peer at once.",
+            "desc": "Soft-refreshes inbound and outbound policy on every IPv4 unicast BGP peer without tearing down sessions — use after an in/out route-map or prefix-list change",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "switch# clear bgp ipv4 unicast * soft"
+            "example": "switch# clear bgp ipv4 unicast * soft\nswitch# show bgp ipv4 unicast summary\nNeighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.0.0.1        4 65001   18234   18201    48212    0    0 3d02h          212\n10.0.0.2        4 65002   15021   14998    48212    0    0 5d11h          140\n# Session Up/Down time is unaffected — soft refresh re-applies policy\n# in-place using stored (soft-reconfig or route-refresh capable) state."
           },
           {
             "cmd": "ip prefix-list PEER-IN seq 10 permit 0.0.0.0/0 le 24",
@@ -43820,10 +43892,10 @@
           },
           {
             "cmd": "access-list ip ALLOW_WEB\n 10 permit tcp any any eq 443\n 20 permit tcp any any eq 80\n 30 deny any any any log",
-            "desc": "Named ACL with logged deny",
+            "desc": "Creates a named IPv4 ACL permitting HTTPS/HTTP and logging everything else denied — must be applied to an interface to take effect (see \"apply access-list\")",
             "type": "config",
             "flagged": false,
-            "example": "(ACL ALLOW_WEB created with 3 entries)"
+            "example": "switch(config)# access-list ip ALLOW_WEB\nswitch(config-acl-ip)# 10 permit tcp any any eq 443\nswitch(config-acl-ip)# 20 permit tcp any any eq 80\nswitch(config-acl-ip)# 30 deny any any any log\nswitch(config-acl-ip)# exit\nswitch# show access-list ip ALLOW_WEB\nACL ALLOW_WEB (IPv4)\n 10 permit tcp any any eq 443\n 20 permit tcp any any eq 80\n 30 deny any any any log\n# Logged denies show up in 'show access-list log'; unattached ACLs have\n# no effect on traffic until applied to an interface with 'apply access-list ... in'."
           },
           {
             "cmd": "interface 1/1/1\n apply access-list ip ALLOW_WEB in",
@@ -44224,10 +44296,10 @@
           },
           {
             "cmd": "https-server rest access-mode read-write",
-            "desc": "Enable REST read-write access",
+            "desc": "Switches the AOS-CX REST API from its default read-only mode to read-write, allowing POST/PUT/PATCH/DELETE calls against /rest/v10 endpoints",
             "type": "config",
             "flagged": false,
-            "example": "(REST API set to read-write mode)"
+            "example": "switch(config)# https-server rest access-mode read-write\nswitch# show https-server\nHTTPS server                : enabled\nRest access mode            : read-write\nVRF                         : mgmt\n# Read-write mode lets automation tools (Ansible, Terraform, scripts using\n# the /rest/v10 API) change configuration, not just read it — scope\n# access with 'https-server vrf mgmt' and local user roles."
           },
           {
             "cmd": "https-server vrf mgmt",
@@ -44947,10 +45019,10 @@
           },
           {
             "cmd": "copy running-config flash:bkp.cfg",
-            "desc": "Save running-config to a named file",
+            "desc": "Saves the current running configuration to a named file in onboard flash — use before risky changes so you can restore with \"copy flash:bkp.cfg running-config\"",
             "type": "config",
             "flagged": false,
-            "example": "Configuration saved to flash:bkp.cfg"
+            "example": "(ArubaOS) #copy running-config flash:bkp.cfg\nCopying running-config...\nConfiguration saved to bkp.cfg\n(ArubaOS) #dir flash:\n-rw-  148213  Jun 30 2026  bkp.cfg\n-rw-  147890  Jun 12 2026  default.cfg\n# Distinct from 'write memory', which saves to the active startup-config —\n# named checkpoints like this let you keep multiple restore points."
           },
           {
             "cmd": "copy flash:bkp.cfg tftp 10.50.50.50 bkp.cfg",
@@ -46489,10 +46561,10 @@
           },
           {
             "cmd": "ipv6 ospf cost 10",
-            "desc": "OSPFv3 per-interface cost override.",
+            "desc": "OSPFv3 per-interface cost override — lower cost is preferred; overrides the auto-calculated reference-bandwidth/interface-bandwidth cost",
             "type": "config",
             "flagged": false,
-            "example": "router(config-if)# ipv6 ospf cost 10"
+            "example": "router(config)# interface GigabitEthernet0/0/1\nrouter(config-if)# ipv6 ospf cost 10\nrouter(config-if)# end\nrouter# show ipv6 ospf interface GigabitEthernet0/0/1 | include Cost\n  Cost: 10\n# Without this, OSPFv3 derives cost from 'ospf auto-cost reference-bandwidth'\n# ÷ interface bandwidth — set explicitly on unequal-bandwidth parallel links\n# to control ECMP or force a preferred/backup path."
           },
           {
             "cmd": "ipv6 ospf network point-to-point",
