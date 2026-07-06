@@ -1078,10 +1078,10 @@
           },
           {
             "cmd": "show lb persistentSessions",
-            "desc": "Active persistence entries",
+            "desc": "Lists active persistence entries binding a client (by source IP, cookie, or session token) to the specific backend service the LB vserver chose, so repeat requests keep landing on the same server",
             "type": "show",
             "flagged": false,
-            "example": "Vserver: LB_1  Source: 192.168.1.50  Time: 120s"
+            "example": "> show lb persistentSessions LB_WEB\n\nVserver: LB_WEB  Persistence: SOURCEIP  Timeout: 20 min\n1)  Source: 192.168.1.50   Service: SVC_WEB_01 (10.10.10.11:80)  Time: 4m 12s\n2)  Source: 192.168.1.77   Service: SVC_WEB_02 (10.10.10.12:80)  Time: 11m 40s\n\nDone\n\nWhat it means:\n- Each row is one active \"sticky\" session; \"Time\" counts up from the\n  entry's last hit and resets on every matching request.\n- If a backend server is drained/disabled, its existing persistence\n  entries still route there until they expire or are cleared —\n  check this table before assuming a drain took effect immediately.\n- Clear a single stuck entry with:\n  > clear lb persistentSessions <vserver-name> -persistenceParam <value>"
           },
           {
             "cmd": "bind lb vserver <vs> <service>",
@@ -6460,10 +6460,10 @@
           },
           {
             "cmd": "show session meter",
-            "desc": "Per-vsys session-rate counters",
+            "desc": "Shows the dataplane session-rate meter — new sessions/sec, active session count, and per-vsys packet/byte counters used to gauge whether the firewall is approaching its session-setup rate limit",
             "type": "show",
             "flagged": false,
-            "example": "Meter ID : 432\nCounter:\n - Total Packets : 6789\n - Bytes In      : 12345\n - Bytes Out     : 54321"
+            "example": "> show session meter\n\nvsys1:\nNumber of sessions          : 18422\nPackets per second           : 96341\nNew connection establish rate: 2140 cps\nKBps                         : 486213\n\nTotal (all vsys):\nSessions       : 18422 / 262144 max\nSession setup rate : 2140 cps  (platform max ~40000 cps on this model)\n\nWhat it means:\n- \"cps\" (connections per second) climbing toward the platform max\n  during a spike often shows up as new-connection timeouts before\n  CPU or session-table exhaustion does — check this first when\n  users report \"sometimes it's slow to connect.\"\n- Compare against \"show session info\" for the raw active/max session\n  counts without the per-second rate."
           },
           {
             "cmd": "clear session all filter source <ip>",
@@ -7687,6 +7687,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -noout -fingerprint -sha256 -in cert.pem\nsha256 Fingerprint=A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90:A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90\n\n# Compare against what a live server presents:\n$ openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | \\\n  openssl x509 -noout -fingerprint -sha256\nsha256 Fingerprint=A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90:A1:B2:C3:D4:E5:F6:07:18:29:3A:4B:5C:6D:7E:8F:90\n# Matching fingerprints confirm it is the same certificate."
+          },
+          {
+            "cmd": "openssl x509 -in cert.crt -noout -ocspid",
+            "desc": "Prints the issuer name hash, issuer key hash, and serial number that an OCSP responder uses to identify this certificate — useful for cross-checking OCSP requests/responses by hand",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl x509 -in cert.crt -noout -ocspid\nIssuer Name Hash: 4A5C3B8F9E1D2A6C7B8E9F0A1B2C3D4E5F6A7B8C\nIssuer Key Hash:  9F8E7D6C5B4A39281706F5E4D3C2B1A0918273645\nSerial Number:    0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B\n\nWhat it means:\n- These three values are exactly what OCSP request/response CertID fields\n  encode (RFC 6960) — compare them against a captured OCSP request to\n  confirm the responder is being asked about the right certificate.\n- Handy when an OCSP responder returns \"unknown\" and you need to verify\n  the client hashed the correct issuer before blaming the CA."
           }
         ],
         "Verification & Matching": [
@@ -9142,6 +9149,13 @@
             "desc": "Per-radio summary. Asterisks (*) on channel or power indicate manually assigned (not RRM-controlled). TX power format: <current_level>/<max_level> (<dBm>); level 1 = max, level 8 = min.",
             "type": "show",
             "example": "* global assignment\nAP Name       Mac Address     Slot  Admin State  Oper State  Width  Txpwr          Channel    Mode\nAP-OFFICE-01  70bd.9685.9c80  1     Enabled      Up          40     3/8 (14 dBm)   (149,153)  REAP"
+          },
+          {
+            "cmd": "show wireless media-stream group summary",
+            "desc": "Lists configured media-stream (multicast-direct) groups with their multicast address range and QoS/admission settings, used to convert best-effort multicast video/voice into per-client unicast-like delivery",
+            "type": "show",
+            "flagged": false,
+            "example": "WLC# show wireless media-stream group summary\n\nNumber of Groups: 2\n\nGroup Name          Start IP         End IP           Qos\n------------------  ---------------  ---------------  ---\nvideo-stream-hd     239.1.1.1        239.1.1.10        Platinum\nvoice-multicast      239.2.2.1        239.2.2.5         Platinum\n\nWhat it means:\n- Media-stream groups let the WLC admit specific multicast ranges onto\n  wireless with per-client stream limits, instead of blasting multicast\n  at the lowest mandatory rate to every client.\n- If a group shows here but streams still look choppy, check\n  \"show wireless media-stream client\" for per-client admission failures."
           }
         ],
         "AP Management": [
@@ -15581,6 +15595,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ chronyc tracking\nReference ID    : 5B189E04 (ntp.ubuntu.com)\nStratum         : 3\nRef time (UTC)  : Tue Jun 30 09:10:02 2026\nSystem time     : 0.000012345 seconds slow of NTP time\nLast offset     : +0.000034567 seconds\nRMS offset      : 0.000045678 seconds\nFrequency       : 3.456 ppm slow\nLeap status     : Normal"
+          },
+          {
+            "cmd": "nsenter -t <pid> -n ip addr show",
+            "desc": "Enters the network namespace of another process (e.g. a container) without a shell inside it, then runs a command in that namespace — here, listing its interfaces/IPs",
+            "type": "show",
+            "flagged": false,
+            "example": "$ docker inspect -f '{{.State.Pid}}' web01\n4821\n$ sudo nsenter -t 4821 -n ip addr show\n1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN\n    inet 127.0.0.1/8 scope host lo\n3: eth0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n    inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0\n\nWhat it means:\n- -t <pid> selects the target process; -n enters its network namespace only\n  (mount, PID, etc. are untouched).\n- Lets you run any normal host tool (ip, ss, tcpdump) as if it were inside\n  the container — no need for the image to ship those tools itself.\n- Requires root (or CAP_SYS_ADMIN) on the host, since it's reading\n  /proc/<pid>/ns/net."
           }
         ],
         "Diagnostics": [
@@ -21272,6 +21293,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Start capture in Wireshark: Capture → Options → enter filter in Capture filter box\n# Or via tshark:\n#   tshark -i eth0 -f 'tcp port 443 and not host 10.0.0.1' -w /tmp/tls.pcap\n\n# BPF syntax notes:\n#   and / or / not   → boolean operators\n#   host <ip>        → matches src OR dst\n#   src host <ip>    → source only\n#   dst host <ip>    → destination only\n#   port <n>         → src OR dst port\n#   tcp / udp        → protocol qualifier\n\n# Common extensions of this pattern:\n#   'tcp port 443 and (host 10.0.0.5 or host 10.0.0.6)' → two specific hosts\n#   'tcp port 443 and net 192.168.0.0/16'                → entire subnet\n#   'tcp port 443 and not net 10.0.0.0/8'                → exclude RFC 1918"
+          },
+          {
+            "cmd": "not broadcast and not multicast",
+            "desc": "Excludes broadcast and multicast traffic to focus a capture on unicast conversations",
+            "type": "capture",
+            "flagged": false,
+            "example": "# Cuts out ARP broadcasts, DHCP broadcasts, mDNS/LLMNR multicast, and\n# routing-protocol multicast (OSPF/EIGRP hellos) — the background noise\n# that fills a capture on a busy LAN segment.\n# Apply in Wireshark: Capture -> Options -> Capture filter field\n# tshark: tshark -i eth0 -f \"not broadcast and not multicast\"\n# Combine with a host filter to isolate one conversation cleanly:\n#   host 10.0.0.50 and not broadcast and not multicast"
           }
         ],
         "Analysis & Statistics": [
@@ -22340,6 +22368,13 @@
             "type": "show",
             "flagged": false,
             "example": "Router# show mpls ldp bindings\n  lib entry: 10.0.1.0/24, rev 6\n        local binding:  label: 16\n        remote binding: lsr: 10.0.0.2:0, label: 18\n        remote binding: lsr: 10.0.0.3:0, label: 21\n  lib entry: 10.0.2.0/24, rev 8\n        local binding:  label: 17\n        remote binding: lsr: 10.0.0.2:0, label: 19\n\nWhat it means:\n- \"local binding\"  = label this router advertises to its LDP peers.\n- \"remote binding\" = labels received from each peer for the same prefix.\n- The LFIB selects the best remote label for the chosen next-hop."
+          },
+          {
+            "cmd": "show ip cef exact-route <source-ip> <destination-ip>",
+            "desc": "Shows the exact CEF next-hop (interface and adjacency) that would be chosen for one specific source/destination pair when multiple ECMP paths exist",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip cef exact-route 10.1.1.10 8.8.8.8\n\n10.1.1.10 -> 8.8.8.8 => IP adj out of GigabitEthernet0/1, via 192.168.1.2\n\nWhat it means:\n- With CEF load-balancing (per-destination or per-flow hashing) across\n  multiple equal-cost paths, this shows which one an actual flow hashes to.\n- Useful when troubleshooting \"some traffic works, some doesn't\" on\n  ECMP/port-channel uplinks — run it for the exact src/dst pair the\n  customer reports and compare against the working one.\n- Does not send any traffic; it's a hash lookup against the current\n  CEF adjacency table."
           }
         ],
         "Routing › OSPF": [
@@ -28543,10 +28578,10 @@
           },
           {
             "cmd": "esxcli system coredump file get",
-            "desc": "Core-dump file configuration",
+            "desc": "Shows whether a file-based core dump target is configured and active on this host — the destination ESXi writes a PSOD (purple screen) core dump to for VMware support analysis",
             "type": "show",
             "flagged": false,
-            "example": "   Configured: false\n   Active: false\n   Path:"
+            "example": "$ esxcli system coredump file get\n   Enabled: true\n   Active: true\n   Configured: true\n   File: /vmfs/volumes/5f2a1b3c-.../vmkdump/host.dumpfile\n   Size: 2432696320\n\nWhat it means:\n- Active/Configured both need to be true for a crash to actually be\n  captured — a host that shows Configured: false will silently lose\n  its PSOD diagnostics on the next crash.\n- If this comes back empty/false on every host, set one up:\n  esxcli system coredump file add --datastore=<ds> --file=<name>\n  esxcli system coredump file set --enable=true --path=<path>"
           },
           {
             "cmd": "esxtop -b -n 5 -d 2 | gzip > /tmp/esxtop.csv.gz",
@@ -29346,6 +29381,13 @@
             "type": "show",
             "flagged": false,
             "example": "asa# show xlate count\n1247 in use, 8192 most used\n\nWhat it means:\n- \"in use\" : active translations right now.\n- \"most used\" : high-water mark since last clear/reload — compare\n  against the platform max-xlate limit to check for PAT pool exhaustion."
+          },
+          {
+            "cmd": "show running-config object network",
+            "desc": "Displays every network object definition (host, subnet, or range) from the running config — the building blocks referenced by NAT rules and ACLs",
+            "type": "show",
+            "flagged": false,
+            "example": "asa# show running-config object network\n\nobject network WEB-PRIVATE\n host 10.10.10.50\nobject network WEB-PUBLIC\n host 203.0.113.50\nobject network INTERNAL-LAN\n subnet 10.10.10.0 255.255.255.0\nobject network DMZ-RANGE\n range 10.20.20.10 10.20.20.50\n\nWhat it means:\n- Each named object is reused across NAT statements and ACL entries —\n  changing the object's host/subnet here updates every rule that\n  references it, without editing each rule individually.\n- Cross-reference with \"show nat\" to see which object pairs are actually\n  translated, and \"show run object-group\" for group-of-objects used in ACLs."
           }
         ]
       },
@@ -29939,10 +29981,10 @@
           },
           {
             "cmd": "fsutil volume diskfree <drive>:",
-            "desc": "Shows free disk space",
+            "desc": "Reports raw free-space, total-space, and available-to-caller-space byte counts for a volume — the same numbers behind Explorer's disk-space bar, but exact and scriptable",
             "type": "show",
             "flagged": false,
-            "example": "Total # of free bytes        : 58,128,412,672\nTotal # of bytes              : 511,068,889,088\nTotal # of avail free bytes   : 58,128,412,672"
+            "example": "C:\\> fsutil volume diskfree C:\nTotal free bytes        : 58,128,412,672  (54.1 GB)\nTotal bytes              : 511,068,889,088 (476.1 GB)\nTotal quota free bytes   : 58,128,412,672  (54.1 GB)\n\nWhat it means:\n- \"Total free bytes\" is what's physically free on disk; \"Total quota\n  free bytes\" is what the current user could use if disk quotas are\n  enabled — they only differ when per-user quotas are configured.\n- Useful in scripts/alerts where Explorer's rounded GB display isn't\n  precise enough to catch a slow disk-fill trend early."
           },
           {
             "cmd": "Get-SmbShare",
@@ -30338,10 +30380,10 @@
           },
           {
             "cmd": "aws s3api get-bucket-acl --bucket <bucket>",
-            "desc": "Shows ACL",
+            "desc": "Shows the legacy S3 access-control list for a bucket — owner and each grantee's permission (READ, WRITE, FULL_CONTROL) — separate from and usually overridden by the bucket policy",
             "type": "show",
             "flagged": false,
-            "example": "{\n    \"Owner\": {\"DisplayName\": \"admin\",\"ID\": \"abc123\"},\n    \"Grants\": [{\"Grantee\":{\"Type\":\"CanonicalUser\",\"ID\":\"abc123\"},\"Permission\":\"FULL_CONTROL\"}]\n}"
+            "example": "$ aws s3api get-bucket-acl --bucket my-app-bucket\n{\n    \"Owner\": {\n        \"DisplayName\": \"prod-account\",\n        \"ID\": \"a1b2c3...deadbeef\"\n    },\n    \"Grants\": [\n        {\n            \"Grantee\": {\"Type\": \"CanonicalUser\", \"ID\": \"a1b2c3...deadbeef\"},\n            \"Permission\": \"FULL_CONTROL\"\n        },\n        {\n            \"Grantee\": {\"Type\": \"Group\", \"URI\": \"http://acs.amazonaws.com/groups/global/AllUsers\"},\n            \"Permission\": \"READ\"\n        }\n    ]\n}\n\nWhat it means:\n- A Grantee of type \"Group\" with the AllUsers URI and READ permission\n  means the bucket (or specific object) is world-readable via ACL —\n  this is the classic \"public bucket\" misconfiguration to grep for.\n- Most modern buckets disable ACLs entirely (BucketOwnerEnforced) and\n  rely solely on the bucket policy — check\n  \"aws s3api get-bucket-policy-status\" if this call returns only the\n  owner with no extra grants."
           },
           {
             "cmd": "aws s3api get-bucket-policy --bucket <bucket>",
@@ -30619,6 +30661,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws iam list-attached-role-policies --role-name LambdaExecutionRole\n{\n    \"AttachedPolicies\": [\n        {\n            \"PolicyName\": \"AWSLambdaBasicExecutionRole\",\n            \"PolicyArn\": \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n        },\n        {\n            \"PolicyName\": \"AmazonS3ReadOnlyAccess\",\n            \"PolicyArn\": \"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess\"\n        }\n    ]\n}"
+          },
+          {
+            "cmd": "aws iam get-account-summary",
+            "desc": "Returns account-wide IAM entity counts and quota usage (users, groups, roles, policies, MFA devices) — a quick way to check how close the account is to IAM service limits",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws iam get-account-summary\n{\n    \"SummaryMap\": {\n        \"Users\": 42,\n        \"UsersQuota\": 5000,\n        \"Groups\": 8,\n        \"GroupsQuota\": 300,\n        \"Roles\": 116,\n        \"RolesQuota\": 1000,\n        \"Policies\": 63,\n        \"PoliciesQuota\": 1500,\n        \"MFADevices\": 39,\n        \"MFADevicesInUse\": 39,\n        \"AccountMFAEnabled\": 1,\n        \"AccessKeysPerUserQuota\": 2\n    }\n}\n\nWhat it means:\n- \"*Quota\" fields are the account's hard service limits — most IAM quotas\n  cannot be raised via a support ticket, so watch Roles/Policies/Users\n  approaching quota before automation starts failing.\n- AccountMFAEnabled refers to the root user only, not IAM users."
           }
         ],
         "VPC": [
@@ -31002,10 +31051,10 @@
           },
           {
             "cmd": "show system hostname",
-            "desc": "Displays hostname",
+            "desc": "Displays the hostname configured on the SDX management service (SVM) — the identity shown in its own UI/CLI prompt, independent of DNS or the hostnames of any VPX instances it hosts",
             "type": "show",
             "flagged": false,
-            "example": "> show system hostname\n\nHostname: sdx-datacenter-01"
+            "example": "> show system hostname\n\nHostname: sdx-datacenter-01\n\nWhat it means:\n- This is the SDX Management Service's own hostname, not the hostname\n  of any NetScaler VPX instance running on it — check inside each VPX\n  (via its own \"show ns hostName\") for that.\n- Change it with: > set system hostname <new-name>\n  (takes effect immediately; does not require a reboot)."
           },
           {
             "cmd": "show system hardware",
@@ -31181,6 +31230,13 @@
             "type": "show",
             "flagged": false,
             "example": "Platform:     Citrix NetScaler SDX 26000-50G\nSerial No.:   FX6200C123456\nMfg Date:     2022-04-12\nCPU0:         Intel Xeon Gold 6230  2.1GHz  20-core  FCLGA3647\nCPU1:         Intel Xeon Gold 6230  2.1GHz  20-core  FCLGA3647\nDIMM Slots:   16  Populated: 8  Total: 128 GB\nNIC:          Intel X710-DA4 (4x 10GbE SFP+)\nNIC:          Intel XXV710-DA2 (2x 25GbE SFP28)\nSSL Chip 0:   Cavium CN1620-NHB  S/N: CN162000A1\nSSL Chip 1:   Cavium CN1620-NHB  S/N: CN162000A2"
+          },
+          {
+            "cmd": "show system snmp",
+            "desc": "Shows the SNMP agent configuration on the SDX management service: community strings (masked), configured trap destinations, and system contact/location",
+            "type": "show",
+            "flagged": false,
+            "example": "> show system snmp\n\nSNMP Agent: Enabled\nCommunity Strings:\n  public***  (read-only)\nTrap Destinations:\n  10.0.1.60:162  (v2c)\n  10.0.1.61:162  (v2c)\nSystem Contact:  netops@corp.local\nSystem Location: DC1-Rack14\n\n# Verify a trap destination is reachable before relying on it for alerts:\n> exec ping 10.0.1.60"
           }
         ],
         "Chassis": [
@@ -39872,10 +39928,10 @@
           },
           {
             "cmd": "show ntp clock",
-            "desc": "Current NTP-derived clock.",
+            "desc": "Displays the switch's current time as synchronised via NTP, without the peer/association detail that \"show ntp status\" or \"show ntp associations\" include",
             "type": "show",
             "flagged": false,
-            "example": "sw# show ntp\n14:30:01.234 GMT Tue Apr 21 2026"
+            "example": "sw# show ntp clock\n\n14:30:01.234 GMT Tue Apr 21 2026\n\nWhat it means:\n- Confirms wall-clock time only — pair with \"show ntp status\" to see\n  whether that time is actually synchronised (clock state) versus just\n  free-running off the local clock after losing all NTP peers.\n- Timestamp skew here throws off syslog correlation and can break TLS/\n  certificate validation, so check this first when logs \"don't line up\"\n  across devices."
           },
           {
             "cmd": "show ntp server-status",
@@ -41564,10 +41620,10 @@
           },
           {
             "cmd": "zpool scrub <POOL>",
-            "desc": "Trigger a scrub",
+            "desc": "Starts a background scrub that reads every block in the pool and verifies its checksum against the redundant copy/parity, repairing silent corruption on redundant (mirror/RAIDZ) pools",
             "type": "config",
             "flagged": false,
-            "example": "(Scrub started; monitor with zpool status until \"scrub repaired 0B\")"
+            "example": "$ zpool scrub tank\n$ zpool status tank\n  pool: tank\n state: ONLINE\n  scan: scrub in progress since Sun Jul  6 02:00:03 2026\n        1.20T scanned at 512M/s, 340G issued at 145M/s, 3.50T total\n        0B repaired, 9.71% done, 0 days 06:15:22 to go\n\nWhat it means:\n- Runs continuously in the background at low priority; check progress\n  any time with \"zpool status\" — it will show \"scrub repaired N in\n  HH:MM:SS with 0 errors\" when finished.\n- Non-redundant (single-disk) pools can detect corruption via checksum\n  mismatch but cannot repair it — a scrub there only reports errors.\n- Proxmox schedules a monthly scrub by default (via a systemd timer);\n  running it manually here is for on-demand verification after a\n  suspected disk issue or unclean shutdown.\n- Cancel an in-progress scrub with: zpool scrub -s tank"
           },
           {
             "cmd": "zpool replace <POOL> <OLD-DEV> <NEW-DEV>",
@@ -43534,6 +43590,13 @@
             "type": "config",
             "flagged": false,
             "example": "switch(config)# interface 1/1/5\nswitch(config-if)# no shutdown\n\n# Verify state after a few seconds:\nswitch# show interface 1/1/5\n Interface 1/1/5 is up\n  Admin state is up\n  Link state is up, Link speed is 1 Gbps, Link duplex is Full\n  ...\n\n# If link stays down after \"no shutdown\":\n#   Check cable: show interface 1/1/5 transceiver\n#   Check the far end is also not shut: show cdp neighbors"
+          },
+          {
+            "cmd": "show lacp interfaces",
+            "desc": "Shows per-interface LACP actor/partner state for all interfaces bundled into LAGs — port ID, priority, key, and aggregation flags",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show lacp interfaces\n\nState abbreviations :\nA - Active        P - Passive      F - Forced\nS - Short-timeout  L - Long-timeout ...\n\n------------------------------------------------------------------\n                    Actor                   Partner\n------------------------------------------------------------------\nInterface   Key    Port   Prio  State  |  Key   Port   Prio  State\n------------------------------------------------------------------\n1/1/1       1      1      1     ALFPC  |  1     1      1     ALFPC\n1/1/2       1      2      1     ALFPC  |  1     2      1     ALFPC\n\nWhat it means:\n- Both sides must show the \"C\" (Collecting/Distributing) flag for the\n  member to actually pass traffic — if only \"A\" and \"S\" show, LACP is\n  negotiating but the port isn't forwarding yet.\n- Mismatched Key values between members means they won't join the same\n  aggregate — check \"show lacp aggregates\" for the resulting LAG state."
           }
         ],
         "VLANs": [
@@ -45233,6 +45296,13 @@
             "type": "show",
             "flagged": false,
             "example": "Band   Channel  Nbr APs  CCI  Utilization  Noise (dBm)\n5GHz   36       3        1    14%          -94\n5GHz   40       2        0    8%           -95\n2.4GHz 6        5        2    32%          -92"
+          },
+          {
+            "cmd": "show ap bss-table",
+            "desc": "Lists every BSSID this Instant AP is broadcasting, one row per radio per SSID, with channel, power, and the associated client count",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap bss-table\n\nBSS                Ess          Ph  Ch  EIRP  Cl\n---                ---          --  --  ----  --\n00:1a:1e:ab:cd:ef  Corporate    AC  36  18    14\n00:1a:1e:ab:cd:f0  Corporate    AN  6   15    9\n00:1a:1e:ab:cd:f1  Guest        AC  36  18    3\n\nNum BSS:3\n\nWhat it means:\n- One row per radio/band the SSID is broadcast on — a single \"Ess\"\n  (SSID) usually appears twice (2.4GHz + 5GHz) unless band-steering or\n  band-only config restricts it.\n- \"Cl\" is live associated client count per BSSID — use it to spot an\n  overloaded radio before clients start reporting slow Wi-Fi."
           }
         ],
         "Clients": [
