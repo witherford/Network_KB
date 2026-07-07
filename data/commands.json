@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-04T18:40:38.000Z",
+  "updatedAt": "2026-07-07T18:40:03.674Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -28354,6 +28354,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ esxcli storage core device smart get -d naa.6001405abc123456789abcdef012345\nParameter                     Value  Threshold  Worst\n-----------------------------  -----  ---------  -----\nHealth Status                  OK     N/A        N/A\nMedia Wearout Indicator        97     0          97\nWrite Error Count               0     0          0\nRead Error Count                0     0          0\nPower-on Hours               18432    0          N/A\nPower Cycle Count               42     0          N/A\nReallocated Sector Count         0     36         100\nDrive Temperature               34     0          N/A\nDrive Life Protection Status     OK     N/A        N/A"
+          },
+          {
+            "cmd": "vmkfstools -i <source>.vmdk <dest>.vmdk -d thin",
+            "desc": "Clones a virtual disk to a new path while converting its provisioning format — here to thin (other valid -d values: zeroedthick, eagerzeroedthick) — the CLI equivalent of 'Convert' in the vSphere client, useful for reclaiming space or moving a disk between datastores from the ESXi shell without vCenter.",
+            "type": "action",
+            "flagged": false,
+            "example": "$ vmkfstools -i \"/vmfs/volumes/DS-FAST/web01/web01.vmdk\" \"/vmfs/volumes/DS-ARCHIVE/web01/web01-thin.vmdk\" -d thin\nClone: 100% done.\n\n# The destination directory must already exist.\n# Add -W vsan when cloning onto a vSAN datastore.\n# Official docs: https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/using-vmkfstools-in-vsphere/vmkfstools-options/virtual-disk-options-of-vsphere-vmkfstools-command/cloning-a-virtual-or-raw-disk.html"
           }
         ],
         "VM Management": [
@@ -28603,6 +28610,13 @@
             "type": "show",
             "flagged": false,
             "example": "Platform Information\n  UUID: 00000000-1111-2222-3333-444444444444\n  Product Name: ProLiant DL380 Gen10\n  Vendor Name: HPE\n  Serial Number: CZ12345678\n  IPMI Supported: true\n  BIOS Version: U30\n  BIOS Release Date: 11/05/2023\n  BIOS Build Date: 11/05/2023"
+          },
+          {
+            "cmd": "esxtop -b -d <seconds> -n <count> > output.csv",
+            "desc": "Runs esxtop in non-interactive batch mode, sampling every <seconds> (min 2) for <count> iterations, and writes CPU/memory/disk/network counters to a CSV — used to capture a performance baseline over time (e.g. via cron) for later analysis in Windows Perfmon or esxplot, since the interactive view only shows the current moment.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "$ esxtop -b -d 5 -n 180 > /vmfs/volumes/datastore1/esxtop-batch.csv\n# Captures 180 samples at 5s intervals (15 minutes total), one row per sample.\n\n$ head -1 esxtop-batch.csv | cut -d, -f1-3\n\"Interval\",\"PCPU UTIL(%) - Core 0\",\"PCPU UTIL(%) - Core 1\"\n\n# Import into Windows Perfmon (Load Counters) or open with esxplot for graphing.\n# Official docs: https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-monitoring-and-performance/performance-monitoring-utilities-resxtop-and-esxtop/using-batch-mode/use-esxtop-or-resxtop-in-batch-mode.html"
           }
         ]
       },
@@ -30891,6 +30905,51 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudtrail lookup-events \\\n    --lookup-attributes AttributeKey=EventName,AttributeValue=TerminateInstances\n{\n    \"Events\": [{\n        \"EventId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"EventName\": \"TerminateInstances\",\n        \"EventTime\": \"2026-06-29T14:02:11+00:00\",\n        \"Username\": \"matthew.witherford\",\n        \"Resources\": [{\"ResourceType\": \"AWS::EC2::Instance\", \"ResourceName\": \"i-0abcd1234ef567890\"}]\n    }]\n}"
+          }
+        ],
+        "Lambda": [
+          {
+            "cmd": "aws lambda invoke --function-name <function> --payload '<json>' --cli-binary-format raw-in-base64-out response.json",
+            "desc": "Synchronously invokes a Lambda function with the given JSON payload and writes the function's response body to response.json — the fastest way to test a function from the CLI without going through API Gateway; add --invocation-type Event to fire-and-forget instead.",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws lambda invoke --function-name my-function \\\n  --cli-binary-format raw-in-base64-out \\\n  --payload '{\"key\": \"value\"}' response.json\n{\n    \"StatusCode\": 200,\n    \"ExecutedVersion\": \"$LATEST\"\n}\n\n$ cat response.json\n{\"statusCode\": 200, \"body\": \"Hello from Lambda!\"}\n\n# StatusCode 200 only confirms the invocation succeeded — check the response\n# body (or FunctionError in the invoke output) for errors raised inside the function.\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/lambda/invoke.html"
+          }
+        ],
+        "ECS": [
+          {
+            "cmd": "aws ecs describe-services --cluster <cluster> --services <service>",
+            "desc": "Shows a service's deployment status, task definition, desired/running/pending task counts, and load balancer bindings — the go-to command for confirming a deployment finished rolling out (desiredCount == runningCount, pendingCount == 0) or diagnosing why tasks won't reach steady state.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ecs describe-services --cluster prod-cluster --services my-http-service \\\n  --query \"services[0].[serviceName,status,desiredCount,runningCount,pendingCount]\" --output table\n----------------------------------------------------\n|  my-http-service | ACTIVE | 10 | 10 | 0           |\n\n# runningCount < desiredCount for an extended period usually means tasks are\n# crash-looping — check 'aws ecs describe-tasks' or CloudWatch Logs next.\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/ecs/describe-services.html"
+          }
+        ],
+        "ECR": [
+          {
+            "cmd": "aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<region>.amazonaws.com",
+            "desc": "Fetches a short-lived (12-hour) ECR authorization token and pipes it into 'docker login' so the local Docker CLI can push/pull images from a private ECR registry — the current, non-deprecated replacement for the old 'aws ecr get-login' command which printed a full docker login string.",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws ecr get-login-password --region us-east-1 \\\n  | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com\nLogin Succeeded\n\n$ docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest\n\n# Re-run before every push/pull once the 12-hour token expires (Docker itself\n# does not refresh it automatically).\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login-password.html"
+          }
+        ],
+        "DynamoDB": [
+          {
+            "cmd": "aws dynamodb scan --table-name <table>",
+            "desc": "Reads every item in a table (or up to 1MB per page) and returns them as Items — useful for small tables or ad-hoc inspection, but an expensive, non-indexed full read; prefer 'aws dynamodb query' with a key condition on production-sized tables since scan consumes read capacity proportional to the whole table.",
+            "type": "show",
+            "flagged": true,
+            "example": "$ aws dynamodb scan --table-name Music --max-items 2\n{\n    \"Items\": [\n        {\"SongTitle\": {\"S\": \"Call Me Today\"}, \"AlbumTitle\": {\"S\": \"Somewhat Famous\"}},\n        {\"SongTitle\": {\"S\": \"Scared of My Shadow\"}, \"AlbumTitle\": {\"S\": \"Blue Sky Blues\"}}\n    ],\n    \"Count\": 2,\n    \"ScannedCount\": 2\n}\n\n# Use --filter-expression to narrow client-side after the (still full) table read,\n# and NextToken/--starting-token to page through results >1MB.\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/dynamodb/scan.html"
+          }
+        ],
+        "Auto Scaling": [
+          {
+            "cmd": "aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names <name>",
+            "desc": "Shows an Auto Scaling group's min/max/desired capacity, availability zones, health-check type, and the current list of member instances with their lifecycle state — the first command to run when instance count looks wrong or a scaling policy doesn't seem to be firing.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names web-asg \\\n  --query \"AutoScalingGroups[0].[AutoScalingGroupName,MinSize,MaxSize,DesiredCapacity]\" --output table\n----------------------------------------\n|  web-asg | 2 | 6 | 3                 |\n\n$ aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names web-asg \\\n  --query \"AutoScalingGroups[0].Instances[].[InstanceId,LifecycleState,HealthStatus]\" --output table\n\n# DesiredCapacity stuck below MinSize/above MaxSize, or instances stuck in\n# Pending:Wait, points to a launch template or health-check misconfiguration.\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/autoscaling/describe-auto-scaling-groups.html"
           }
         ]
       },
@@ -40817,6 +40876,13 @@
             "type": "show",
             "flagged": false,
             "example": "HEALTH_OK\ncluster:\n  id:     a1b2c3d4-e5f6-7890-abcd-ef1234567890\n  health: HEALTH_OK\nservices:\n  mon: 3 daemons, quorum pve01,pve02,pve03\n  mgr: pve01(active), standbys: pve02\n  osd: 12 osds: 12 up (since 47d), 12 in (since 47d)\ndata:\n  pools:   4 pools, 256 pgs\n  objects: 124.21k objects, 482 GiB\n  usage:   1.45 TiB used, 10.55 TiB / 12 TiB avail\n  pgs:     256 active+clean"
+          },
+          {
+            "cmd": "pvenode config get",
+            "desc": "Reads this node's stored configuration options — ACME account/domains bound to the node, description, and the wake-on-LAN MAC address — the node-level counterpart to 'qm config'/'pct config'.",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve# pvenode config get\nacme: account=default\nacmedomain0: domain=pve01.example.com\ndescription: Rack 3, U12 — primary hypervisor\nwakeonlan: 00:1A:2B:3C:4D:5E\n\n# Set a value with: pvenode config set --description \"...\"\n# Official docs: https://pve.proxmox.com/pve-docs/pvenode.1.html"
           }
         ],
         "Cluster (pvecm)": [
@@ -40882,6 +40948,13 @@
             "type": "config",
             "flagged": false,
             "example": "Configuring Corosync QDevice for 2-node cluster...\nQDevice 10.0.0.250 added as vote-device"
+          },
+          {
+            "cmd": "pvesr status",
+            "desc": "Lists the status of every storage replication job configured on this node: source/target guest, last sync time, next scheduled run, and last error — the primary command for confirming ZFS storage replication is healthy across a cluster.",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve# pvesr status\nJobID    Enabled    Target                        LastSync             NextSync             Duration    FailCount    State\n100-0    Yes        local/pve02                   2026-07-07_10:00:01  2026-07-07_10:15:00  4.201       0\n101-0    Yes        local/pve03                   2026-07-07_10:00:03  2026-07-07_10:15:00  2.884       0\n\n# Column 7 (FailCount) is the one to alert on — a non-zero value means the\n# last replication run failed; check 'pvesr read <jobid>' or\n# 'journalctl -u pvesr' for the underlying zfs send/recv error.\n# Official docs: https://pve.proxmox.com/pve-docs/pvesr.1.html"
           }
         ],
         "Virtual Machines (qm)": [
@@ -41313,6 +41386,13 @@
             "type": "show",
             "flagged": false,
             "example": "root@pve# pct snapshot list 200\n\n┌─────────────────┬──────────────┬──────────────────────────────────┐\n│ Name            │ Parent       │ Description                      │\n╞═════════════════╪══════════════╪══════════════════════════════════╡\n│ current         │ baseline     │                                  │\n├─────────────────┼──────────────┼──────────────────────────────────┤\n│ baseline        │ no-parent    │ Fresh Debian 12 install          │\n└─────────────────┴──────────────┴──────────────────────────────────┘\n\n# Roll back: pct rollback 200 baseline\n# Delete:    pct delsnapshot 200 baseline\n# Take new:  pct snapshot 200 snap-$(date +%Y%m%d) -description \"Pre-update\"\n# Note: snapshots require ZFS, LVM-thin, or Btrfs storage backend."
+          },
+          {
+            "cmd": "pct fsck <CTID>",
+            "desc": "Runs a filesystem check (fsck) against a stopped container's root filesystem (or a specific mount point with --device) — use after an unclean shutdown or when a container fails to start with a filesystem error; add --force to check even if the filesystem reports clean.",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "root@pve# pct stop 200\nroot@pve# pct fsck 200\nrunning fsck on volume /dev/mapper/pve-vm--200--disk--0 [rootfs]\nfsck from util-linux 2.38\next2fs_check_desc: Corrupt group descriptor: bad block for block bitmap\nfsck.ext4: Group descriptors look bad... trying backup blocks...\nPass 1: Checking inodes, blocks, and sizes\n...\n200-rootfs: 12345/655360 files, 456789/2621440 blocks\n\n# Check a specific mount point instead of the rootfs:\nroot@pve# pct fsck 200 --device mp0 --force\n# Official docs: https://pve.proxmox.com/pve-docs/pct.1.html"
           }
         ],
         "Storage (pvesm)": [
