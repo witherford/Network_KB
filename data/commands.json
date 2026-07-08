@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-07T18:40:03.674Z",
+  "updatedAt": "2026-07-08T12:00:00.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -7004,6 +7004,13 @@
             "type": "show",
             "flagged": false,
             "example": "Interface     Class    Drops (1m)    Cause\nethernet1/1   2          412         exceed-policed\nethernet1/1   3           18         shaper-queue-full"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "show qos interface <name> counter",
+            "desc": "Shows real-time per-class QoS counters (bytes, packets, tail-drops) for an interface — confirms traffic is actually being classified and shaped the way the QoS policy intends.",
+            "example": "admin@PA-VM> show qos interface ethernet1/3 counter\n\nQoS interface: ethernet1/3, enabled\nClass  Bytes           Packets     Tail-drop bytes   Tail-drop packets\n1      1048576         8192        0                 0\n2      2345678         15234       0                 0"
           }
         ],
         "Threat Prevention": [
@@ -7578,7 +7585,7 @@
           },
           {
             "cmd": "openssl pkcs12 -export -out <pfx> -inkey <key> -in <cert>",
-            "desc": "Creates PFX file",
+            "desc": "Bundles a private key, certificate, and optional CA chain into a password-protected PKCS#12 (.pfx/.p12) file — the format Windows, IIS, and Java keystores import directly.",
             "type": "show",
             "flagged": false,
             "example": "$ openssl pkcs12 -export -out bundle.pfx -inkey server.key -in server.crt -certfile chain.crt\nEnter Export Password:\nVerifying - Enter Export Password:\n$ ls -lh bundle.pfx\n-rw------- 1 user user 4.1K Jan  1 12:00 bundle.pfx\n# Packages a certificate, private key, and optional chain into a PKCS#12 file.\n# Import into Windows: double-click bundle.pfx → Certificate Import Wizard."
@@ -20025,6 +20032,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Matches all QUIC (Quick UDP Internet Connections) packets — HTTP/3 transport.\n# QUIC runs over UDP (typically port 443) with TLS 1.3 embedded.\n# Frame 1:  10.0.0.5:54321 → 10.0.0.10:443  QUIC Initial  DCID=0x1234...\n# Frame 2:  10.0.0.10:443  → 10.0.0.5:54321  QUIC Handshake  SCID=0xABCD...\n# Frame 3:  10.0.0.5:54321 → 10.0.0.10:443  QUIC 1-RTT (application data)\n# Requires Wireshark 3.3+ for full QUIC dissection."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "quic.long.packet_type == 0",
+            "desc": "Matches QUIC long-header Initial packets on QUIC v1 traffic — the packet-type enum reorders on QUIC v2, where Initial is value 1 instead (Retry becomes 0).",
+            "example": "# QUIC v1: 0=Initial, 1=0-RTT, 2=Handshake, 3=Retry — this filter targets the handshake-start packet.\nNo.   Time      Source        Destination     Protocol  Info\n 14   0.001203  10.0.0.5      93.184.216.34   QUIC      Initial, DCID=... SCID=... Token Length: 0\n 15   0.001987  10.0.0.5      93.184.216.34   QUIC      Initial, DCID=... SCID=... PKN: 1\n# On QUIC v2 captures use quic.long.packet_type == 1 for the equivalent Initial-packet match."
           }
         ],
         "Display Filters — TLS/SSL": [
@@ -20072,7 +20086,7 @@
           },
           {
             "cmd": "tls.record.version == 0x0301",
-            "desc": "TLS 1.0",
+            "desc": "Matches TLS 1.0 record-layer frames (legacy_version 0x0301) — flags a deprecated protocol version (RFC 8996) that shouldn't appear on a modern network.",
             "type": "show",
             "flagged": false,
             "example": "# Matches TLS 1.0 record-layer frames (version 0x0301).\n# TLS 1.0 is deprecated (RFC 8996) — should not appear in modern traffic.\n# Frame 5:  TLSv1.0 Record Layer  — legacy client detected.\n# Pair with ip.src to identify which clients are still using TLS 1.0."
@@ -27690,7 +27704,7 @@
           },
           {
             "cmd": "show ip arp",
-            "desc": "ARP cache",
+            "desc": "Displays the IPv4 ARP cache — IP-to-MAC mappings the router/switch has learned, each entry's age in minutes, and the interface it was learned on.",
             "type": "show",
             "flagged": false,
             "example": "Protocol  Address          Age (min)  Hardware Addr   Type   Interface\nInternet  10.0.0.1                -   7c21.0d6a.0001  ARPA   GigabitEthernet0/1\nInternet  10.0.0.2               12   001a.b3c4.5678  ARPA   GigabitEthernet0/1\nInternet  10.0.0.10              45   0050.5612.3456  ARPA   GigabitEthernet0/1\nInternet  10.0.0.254              8   0024.5612.0001  ARPA   GigabitEthernet0/1"
@@ -28098,6 +28112,13 @@
             "type": "show",
             "flagged": false,
             "example": "[root@esxi:~] esxcli system module list | head -10\nName                   Is Loaded  Is Enabled\n---------------------  ---------  ----------\natomics                true       true\ne1000e                 true       true\nnvme                   true       true\nvmklinux_9             true       true\nbnxtnet                true       true"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "esxcli system account list",
+            "desc": "Lists local ESXi host user accounts (root, dcui, vpxuser, etc.) with each account's description — check before adding or auditing host-local logins.",
+            "example": "[root@esxi01:~] esxcli system account list\nUser ID  Description\n-------  ---------------------------------------------\nroot     Administrator\ndcui     DCUI User\nvpxuser  VMware VirtualCenter administration account"
           }
         ],
         "Networking": [
@@ -28145,10 +28166,10 @@
           },
           {
             "cmd": "esxcli network ip route ipv6 list",
-            "desc": "Shows IPv6 routes",
+            "desc": "Lists the ESXi host's IPv6 routing table, including the link-local (fe80::/64) route ESXi auto-creates on every VMkernel interface.",
             "type": "show",
             "flagged": false,
-            "example": "   Network                  Prefix Length  Gateway                  Interface\n   -------                  -------------  -------                  ---------\n   fe80::                   64             ::                       vmk0"
+            "example": "   Network                  Prefix Length  Gateway                  Interface\n   -------                  -------------  -------                  ---------\n   fe80::                   64             ::                       vmk0\n   2001:db8:10::            64             ::                       vmk0\n   ::                       0              fc00::1                 vmk0"
           },
           {
             "cmd": "esxcli network vswitch standard list",
@@ -29351,6 +29372,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "asa# packet-tracer input inside tcp 10.0.0.1 12345 10.0.0.2 443\n\nPhase: 1\nType: ROUTE-LOOKUP\nSubtype: Resolve Egress Interface\nResult: ALLOW\nConfig:\nAdditional Information:\nfound next-hop 198.51.100.1 using egress ifc outside\n\nPhase: 2\nType: ACCESS-LIST\nSubtype:\nResult: DROP\nConfig:\nAccess-group \"inside_access_in\" in interface inside\nAdditional Information:\n\nResult:\ninput-interface: inside\ninput-status: up\ninput-line-status: up\nAction: drop\nDrop-reason: (acl-drop) Flow is denied by configured rule\n\n# Action: drop tells you immediately which ACL/ACE dropped it, without\n# needing a live capture or debug on the box."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "show flow-export counters",
+            "desc": "Displays NetFlow/NSEL flow-export statistics per collector destination — packets sent and error counters for template, route, and block-allocation failures.",
+            "example": "ciscoasa# show flow-export counters\ndestination: inside 209.165.200.224 2055\nStatistics:\n  packets sent 1000\nErrors:\n  block allocation failure 0\n  invalid interface 0\n  template send failure 0\n  no route to collector 0\n  source port allocation 0"
           }
         ],
         "NAT": [
@@ -29634,10 +29662,10 @@
           },
           {
             "cmd": "Resolve-DnsName <host>",
-            "desc": "Performs DNS lookup",
+            "desc": "Resolves a hostname to its DNS records (A/AAAA/CNAME/MX/etc.) using Windows' native resolver — the PowerShell replacement for nslookup.",
             "type": "show",
             "flagged": false,
-            "example": "Name                                           Type   TTL   Section    IPAddress\n----                                           ----   ---   -------    ---------\nexample.com                                    A      300   Answer     93.184.216.34"
+            "example": "Name                                           Type   TTL   Section    IPAddress\n----                                           ----   ---   -------    ---------\nexample.com                                    A      300   Answer     93.184.216.34\nexample.com                                    AAAA   300   Answer     2606:2800:220:1:248:1893:25c8:1946"
           },
           {
             "cmd": "Get-NetTCPConnection",
@@ -29820,6 +29848,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Resolve-DnsName -Name example.com -Type A\n\nName                                           Type   TTL   Section    IPAddress\n----                                           ----   ---   -------    ---------\nexample.com                                    A      300   Answer     93.184.216.34\n\n# Query a specific DNS server and record type:\nPS C:\\> Resolve-DnsName -Name example.com -Type MX -Server 8.8.8.8\n\nName        Type TTL   Section    NameExchange              Preference\n----        ---- ---   -------    ------------              ----------\nexample.com MX   3600  Answer     mail.example.com                   10\n\n# Force a specific query type over TCP and skip the local cache:\nPS C:\\> Resolve-DnsName -Name example.com -Type TXT -TcpOnly -NoHostsFile"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "nltest /dsgetdc:<domain>",
+            "desc": "Queries the Locator/Netlogon service to find a domain controller for the specified Active Directory domain — useful when DNS SRV lookups for a DC are failing.",
+            "example": "C:\\>nltest /dsgetdc:corp.local\n           DC: \\\\DC01.corp.local\n      Address: \\\\192.168.1.10\n     Dom Guid: 3f6a1b2c-9a4d-41e2-8b7f-1a2b3c4d5e6f\n     Dom Name: corp.local\n  Forest Name: corp.local\n Dc Site Name: Default-First-Site-Name\nOur Site Name: Default-First-Site-Name\n        Flags: GC DS LDAP KDC TIMESERV WRITABLE DNS_DC DNS_DOMAIN DNS_FOREST CLOSE_SITE\nThe command completed successfully"
           }
         ],
         "Processes": [
@@ -30345,7 +30380,7 @@
         "S3": [
           {
             "cmd": "aws s3 ls",
-            "desc": "Lists buckets",
+            "desc": "Lists every S3 bucket in the account with its creation date — the entry point for the high-level `aws s3` sync/cp/rm commands (add a bucket name to list its objects instead).",
             "type": "show",
             "flagged": false,
             "example": "2025-11-03 14:21:09 cf-templates-corp-eu-west-2\n2026-01-17 09:08:42 acme-data-lake\n2026-02-24 11:47:33 acme-logs-archive\n2026-04-08 16:52:15 acme-static-assets"
@@ -30848,6 +30883,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws eks describe-cluster --name prod-cluster --query \"cluster.[name,version,status,endpoint]\" --output table\n-----------------------------------------------------------------------\n| prod-cluster | 1.30 | ACTIVE | https://ABCDEF1234567890.gr7.us-east-1.eks.amazonaws.com |\n\n# Get kubeconfig for kubectl access:\n$ aws eks update-kubeconfig --name prod-cluster --region us-east-1\nUpdated context arn:aws:eks:us-east-1:123456789012:cluster/prod-cluster in ~/.kube/config"
+          },
+          {
+            "type": "config",
+            "flagged": false,
+            "cmd": "aws eks update-kubeconfig --name <cluster> --region <region>",
+            "desc": "Writes the cluster endpoint, CA data, and an aws-iam-authenticator entry into ~/.kube/config so kubectl can authenticate to the specified EKS cluster.",
+            "example": "$ aws eks update-kubeconfig --name my-cluster --region us-east-1\nAdded new context arn:aws:eks:us-east-1:813759318741:cluster/my-cluster to /home/user/.kube/config"
           }
         ],
         "ACM": [
@@ -40309,11 +40351,11 @@
             "example": "sw# show cts sxp connections\nSXP             : Enabled\nDefault Password: Set\nDefault Source IP: 1.1.1.1\nConnection retry open period: 120 secs\nReconcile period: 120 secs\n\nPeer IP       : 10.99.0.1\nSource IP     : 1.1.1.1\nConn status   : On\nConn version  : 4\nConn mode     : Speaker\nLocal mode    : Speaker\nConnection inst: 1\nTCP conn fd   : 12\nTCP conn password: default SXP password"
           },
           {
-            "cmd": "show cts sxp peers",
-            "desc": "Shows SXP peers",
+            "cmd": "show cts sxp connection brief",
+            "desc": "Shows a one-line-per-peer summary of SXP (SGT Exchange Protocol) connection state — role, peer/source IP, and duration — confirms SGT-to-IP mappings are being exchanged with devices that lack native CTS hardware support.",
             "type": "show",
             "flagged": false,
-            "example": "sw# show cts sxp sgt-map\nIP-SGT Mappings as follows:\n IPv4,SGT                Source\n========\n10.10.10.20,10          INTERNAL\n10.10.10.99,999         INTERNAL\n10.99.99.50,1000        SXP\n"
+            "example": "Switch# show cts sxp connection brief\n\nSXP                          : Enabled\nHighest Version Supported    : 4\nDefault Password              : Set\nDefault Source IP             : Not Set\nConnection retry open period : 120 secs\nReconcile period              : 120 secs\n\n-----------------------------------------------------\nPeer_IP        Source_IP      Conn Status                 Duration\n-----------------------------------------------------\n10.10.10.20    10.10.10.10    On(Speaker)                 1:02:34:12 (dd:hr:mm:sec)\n10.99.99.50    10.10.10.10    On(Speaker)::On(Listener)   0:14:22:05 (dd:hr:mm:sec)\nTotal num of SXP Connections = 2"
           }
         ],
         "SD-Access": [
@@ -41244,6 +41286,13 @@
             "type": "show",
             "flagged": false,
             "example": "root@pve# qm snapshot list 100\n\n┌──────────────────┬──────────────────┬─────────┬──────────────────────────────────┐\n│ Name             │ Parent           │ Running │ Description                      │\n╞══════════════════╪══════════════════╪═════════╪══════════════════════════════════╡\n│ current          │ snap-2026-06-01  │ *       │                                  │\n├──────────────────┼──────────────────┼─────────┼──────────────────────────────────┤\n│ snap-2026-06-01  │ pre-upgrade      │         │ Before kernel 6.8 upgrade        │\n├──────────────────┼──────────────────┼─────────┼──────────────────────────────────┤\n│ pre-upgrade      │ no-parent        │         │ Clean Debian 12 baseline         │\n└──────────────────┴──────────────────┴─────────┴──────────────────────────────────┘\n\n# Running * = snapshot includes saved VM RAM state (live/memory snapshot).\n# Roll back: qm rollback 100 snap-2026-06-01\n# Delete:    qm delsnapshot 100 pre-upgrade\n# Take new:  qm snapshot 100 snap-$(date +%Y%m%d) --description \"Pre-patch\""
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "qm status <VMID>",
+            "desc": "Shows a VM's current runtime status (running/stopped/paused); add --verbose for uptime, PID, and CPU/memory allocation from QMP.",
+            "example": "# qm status 100\nstatus: running\n\n# qm status 100 --verbose\nqmpstatus: running\nstatus: running\nname: web01\nvmid: 100\npid: 24831\nuptime: 431265\ncpus: 2\nmaxmem: 4294967296"
           }
         ],
         "LXC Containers (pct)": [
@@ -41679,7 +41728,7 @@
           },
           {
             "cmd": "zfs list -t snapshot",
-            "desc": "All snapshots",
+            "desc": "Lists every ZFS snapshot across all pools/datasets with space used and referenced size — USED reflects only data unique to that snapshot, not the full dataset size.",
             "type": "show",
             "flagged": false,
             "example": "NAME                                        USED  AVAIL     REFER  MOUNTPOINT\nrpool/data/vm-100-disk-0@vzdump              840M      -       32G  -\nrpool/data/vm-100-disk-0@pre-update          1.2G      -       32G  -"
@@ -43323,7 +43372,7 @@
           },
           {
             "cmd": "show lldp neighbors detail",
-            "desc": "LLDP neighbours",
+            "desc": "Shows full LLDP neighbor detail per local interface — chassis/port IDs, system name/description, capabilities, and management IP — the fastest way to confirm physical cabling matches the intended topology.",
             "type": "show",
             "flagged": false,
             "example": "------------------------------------------------\nLocal Intf: Gi1/0/24\nChassis id: 0c4b.f0d2.c000\nPort id: Gi1/0/12\nPort Description: UPLINK-TO-ACCESS1\nSystem Name: Distribution1\n\nSystem Description:\nCisco IOS Software [Cupertino], Catalyst L3 Switch Software (CAT9K_IOSXE), Version 17.12.04\n\nTime remaining: 105 seconds\nSystem Capabilities: B,R\nEnabled Capabilities: B,R\nManagement Addresses:\n    IP: 10.0.0.2"
@@ -43369,6 +43418,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show hardware capacity\nModule: 1\n  FIB (IPv4 unicast):  Used: 12,045 / Total: 32,768  (36%)\n  FIB (IPv6 unicast):  Used: 3,211  / Total: 8,192   (39%)\n  ARP/ND:              Used: 5,100  / Total: 8,000   (63%)\n  ACL:                 Used: 18,432 / Total: 32,768  (56%)\n  VLAN:                Used: 248    / Total: 4,094   (6%)\n  Multicast:           Used: 512    / Total: 2,048   (25%)\n\nNote: ACL capacity above 80% may cause silent drops."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "show cores",
+            "desc": "Lists processes that have generated core dump files on the switch, with the owning module, instance, PID, and timestamp — the starting point when investigating an unexpected process restart.",
+            "example": "switch# show cores\nModule  Instance  Process-name    PID     Date(Year-Month-Day Time)\n------  --------  --------------  ------  -------------------------\n28      1         bgp-64551       5179    2026-05-08 23:51:26"
           }
         ],
         "Config Management": [
@@ -44675,7 +44731,7 @@
           },
           {
             "cmd": "show ap-group <name>",
-            "desc": "Per-group config",
+            "desc": "Shows the full configuration bound to a specific AP group — virtual AP (SSID) assignments, RF/radio profiles, and PoE profile — the settings every AP placed in that group inherits.",
             "type": "show",
             "flagged": false,
             "example": "AP Group \"default-ap\"\n  Virtual AP list : Corp-WiFi, Guest\n  Dot11a Profile  : 80mhz-profile\n  Dot11g Profile  : default-a\n  PoE Profile     : poe-class8"
@@ -44700,6 +44756,13 @@
             "type": "show",
             "flagged": false,
             "example": "(ArubaWLC) #show ap arm state AP-Floor2-01\nARM State for AP: AP-Floor2-01\n  Channel (2.4GHz): 6 (+10 dBm)\n  Channel (5GHz)  : 100 (+23 dBm)\n  Coverage Index  : 2.4GHz=5/5GHz=3\n  Interference    : 2.4GHz=18%  5GHz=4%\n  Noise Floor     : 2.4GHz=-94dBm  5GHz=-96dBm"
+          },
+          {
+            "type": "config",
+            "flagged": false,
+            "cmd": "reprovision ap-name <ap-name>",
+            "desc": "Pushes the AP's current provisioning-profile values (RF, AAA, SSID, etc.) to a specific AP and reboots it to apply them — use after changing an AP-group's provisioning profile.",
+            "example": "(host) [mynode] #reprovision ap-name AP-Floor3-12\nReprovisioning AP-Floor3-12 with current provisioning parameters...\nAP-Floor3-12 will reboot to apply new provisioning parameters."
           }
         ],
         "WLAN & SSID": [
@@ -45150,6 +45213,13 @@
             "type": "show",
             "flagged": false,
             "example": "(Aruba) #show ap debug client-table ap-name AP-FLOOR2-01\nClient Table for AP: AP-FLOOR2-01\nMAC Address        BSSID              SSID         Channel  RSSI  State\n-----------------  -----------------  -----------  -------  ----  -----\naa:bb:cc:dd:ee:ff  00:11:22:33:44:55  CorpWLAN     36       -58   Auth"
+          },
+          {
+            "type": "troubleshooting",
+            "flagged": false,
+            "cmd": "tar logs tech-support",
+            "desc": "Bundles controller/AP log files plus tech-support data into logs.tar on flash — copy it off with `copy flash: logs.tar tftp: <server-ip>` before opening a support case.",
+            "example": "(host) [mynode] #tar logs tech-support\nCreating logs.tar ... done\n\n(host) [mynode] #copy flash: logs.tar tftp: 10.0.0.50\nTransfer complete"
           }
         ],
         "Config Management": [
