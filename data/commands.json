@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-08T12:00:00.000Z",
+  "updatedAt": "2026-07-09T12:00:00.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -6893,6 +6893,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "DNS Security category refresh job enqueued. Job ID 520."
+          },
+          {
+            "cmd": "show dns-proxy fqdn all",
+            "desc": "Lists every FQDN address object the firewall has resolved through DNS proxy, along with the resolved IP addresses, record type, remaining TTL, and hit count — the PAN-OS 9.1+ replacement for the deprecated \"request system fqdn show\", and the fastest way to confirm an FQDN object actually resolved before blaming a security rule.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA-VM> show dns-proxy fqdn all\n\nDomain               IP/Name          Type  Class  TTL   Hits\n------               -------          ----  -----  ---   ----\nupdates.example.com  203.0.113.10     A     IN     118   42\nupdates.example.com  203.0.113.11     A     IN     118   17\napi.example.com      Not Used\n\n# \"Not Used\" means the FQDN object isn't referenced by any active\n# security rule, so the firewall never queries DNS for it — add it to a\n# rule and wait for the next refresh cycle (default every 30 min) to\n# populate a real IP."
           }
         ],
         "Policy-Based Forwarding": [
@@ -8525,14 +8532,14 @@
         "Hashing & HMAC": [
           {
             "cmd": "openssl dgst -sha256 <file>",
-            "desc": "Computes SHA?256 hash",
+            "desc": "Computes SHA-256 hash",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha256 /etc/hosts\nSHA256(/etc/hosts)= 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\n# Computes the SHA-256 digest of a file and prints in \"name(file)= hash\" format.\n# Compare: sha256sum /etc/hosts — produces the same hash value."
           },
           {
             "cmd": "openssl dgst -sha1 <file>",
-            "desc": "Computes SHA?1 hash",
+            "desc": "Computes SHA-1 hash",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha1 firmware.bin\nSHA1(firmware.bin)= da39a3ee5e6b4b0d3255bfef95601890afd80709\n# SHA-1 is cryptographically broken — use only for non-security checksums.\n# Many firmware vendors still publish SHA-1 hashes for file integrity checks."
@@ -8546,7 +8553,7 @@
           },
           {
             "cmd": "openssl dgst -sha512 <file>",
-            "desc": "Computes SHA?512 hash",
+            "desc": "Computes SHA-512 hash",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha512 backup.tar.gz\nSHA512(backup.tar.gz)= cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n# SHA-512 provides 256-bit collision resistance — suitable for high-security contexts."
@@ -8674,21 +8681,21 @@
           },
           {
             "cmd": "openssl enc -aes-256-cbc -salt -in <file> -out <enc>",
-            "desc": "Encrypts file with AES?256",
+            "desc": "Encrypts file with AES-256",
             "type": "show",
             "flagged": false,
             "example": "$ openssl enc -aes-256-cbc -salt -pbkdf2 -in plaintext.txt -out encrypted.enc\nenter aes-256-cbc encryption password:\nVerifying - enter aes-256-cbc encryption password:\n# -salt adds a random 8-byte salt prefix to the ciphertext (important for PBKDF2).\n# Always include -pbkdf2 to use PBKDF2 key derivation (OpenSSL 1.1.1+)."
           },
           {
             "cmd": "openssl enc -aes-256-cbc -d -in <enc> -out <file>",
-            "desc": "Decrypts AES?256 file",
+            "desc": "Decrypts AES-256 file",
             "type": "show",
             "flagged": false,
             "example": "$ openssl enc -aes-256-cbc -d -pbkdf2 -in encrypted.enc -out decrypted.txt\nenter aes-256-cbc decryption password:\n# Decrypts an AES-256-CBC encrypted file.  Must use the same parameters as encryption.\n# If encrypted without -pbkdf2, omit -pbkdf2 on decryption (though deprecated)."
           },
           {
             "cmd": "openssl rand -hex 32",
-            "desc": "Generates 32?byte hex string",
+            "desc": "Generates 32-byte hex string",
             "type": "show",
             "flagged": false,
             "example": "$ openssl rand -hex 32\na3f8c21d9b04e765c8f2d91a4b30e5879c2a1d3b8f0e4c7d6a5b2e1f9c0d8a7b\n# Generates 32 cryptographically random bytes printed as 64 hex characters.\n# Useful for AES-256 keys, HMAC secrets, or unique identifiers."
@@ -12622,7 +12629,7 @@
         "tree  # show directory tree": [
           {
             "cmd": "tree -L 2",
-            "desc": "# limit tree depth to 2 levels",
+            "desc": "Renders a directory tree but stops recursing after 2 levels deep — keeps the output readable on large trees instead of dumping every nested file.",
             "type": "show",
             "flagged": false,
             "example": "$ tree -L 2 /var\n/var\n├── backups\n│   └── dpkg.status.0\n├── cache\n│   ├── apt\n│   └── debconf\n└── log\n    ├── syslog\n    └── auth.log"
@@ -12687,7 +12694,7 @@
           },
           {
             "cmd": "rm -f file",
-            "desc": "# force remove file",
+            "desc": "Removes a file without prompting for confirmation and without erroring if the file doesn't already exist — the flag rm scripts use for unattended bulk deletes.",
             "type": "show",
             "flagged": false,
             "example": "$ rm -f /tmp/stale.lock\n# force removes; no error if file doesn't exist"
@@ -12710,7 +12717,7 @@
           },
           {
             "cmd": "install -m 755 file /usr/local/bin/",
-            "desc": "# copy file with permissions",
+            "desc": "Copies a file to its destination and sets its permission mode in the same step — the standard way to deploy an executable script without a separate chmod call afterward.",
             "type": "show",
             "flagged": false,
             "example": "$ install -m 755 myscript.sh /usr/local/bin/\n$ ls -l /usr/local/bin/myscript.sh\n-rwxr-xr-x 1 root root 512 Jun 21 myscript.sh"
@@ -12992,7 +12999,7 @@
         "dstat  # combined system stats": [
           {
             "cmd": "sar -u 1",
-            "desc": "# CPU usage report",
+            "desc": "Reports CPU utilization (user/system/iowait/idle percentages) once per second via sysstat's sar — useful for spotting sustained CPU pressure that a single top snapshot can miss.",
             "type": "show",
             "flagged": false,
             "example": "$ sar -u 1 5\n09:35:00  CPU  %user  %nice  %system  %iowait  %steal  %idle\n09:35:01  all   12.5    0.0      3.2      0.8      0.0   83.5\n09:35:02  all   14.2    0.0      4.1      0.3      0.0   81.4"
@@ -13162,7 +13169,7 @@
           },
           {
             "cmd": "usermod -L user",
-            "desc": "# lock user account",
+            "desc": "Locks a user account by prefixing the password hash in /etc/shadow with '!', blocking password logins while leaving the account, UID, and files intact — reversed with usermod -U.",
             "type": "show",
             "flagged": false,
             "example": "$ usermod -L alice\n# locks alice's account (prepends ! to password hash)"
@@ -13385,7 +13392,7 @@
           },
           {
             "cmd": "journalctl -p err",
-            "desc": "# show only errors",
+            "desc": "Filters the systemd journal to priority err (3) and worse, skipping info/notice/warning noise — the fastest way to jump straight to what actually broke.",
             "type": "show",
             "flagged": false,
             "example": "$ journalctl -p err --since today\nJun 21 08:05:11 host kernel: [22.341567] usb 1-1: device not accepting address 5, error -71\nJun 21 08:12:44 host systemd[1]: Failed to start iscsi.service"
@@ -13445,7 +13452,7 @@
         "parted -l  # list partitions": [
           {
             "cmd": "mkfs.ext4 /dev/sda1",
-            "desc": "# create ext4 filesystem",
+            "desc": "Formats a partition with the ext4 filesystem, irreversibly wiping any existing data on it — the default Linux filesystem, balancing journaling, performance, and broad tooling support.",
             "type": "show",
             "flagged": false,
             "example": "$ mkfs.ext4 /dev/sdb1\nmke2fs 1.46.5\nCreating filesystem with 26214400 4k blocks\nFilesystem UUID: a1b2c3d4-e5f6-7890-abcd-ef1234567890\nWriting inode tables: done\nDone."
@@ -13521,7 +13528,7 @@
           },
           {
             "cmd": "lvresize -L 5G /dev/vgname/lvname",
-            "desc": "# shrink LV (dangerous)",
+            "desc": "Resizes a logical volume to an absolute size. Shrinking below the filesystem's current data footprint destroys data — the filesystem must be shrunk first (e.g. resize2fs to the target size) before running this, or use lvresize -r to do both in the correct order.",
             "type": "show",
             "flagged": false,
             "example": "$ lvresize -L 5G /dev/datavg/applv\n  Size of logical volume datavg/applv changed to 5.00 GiB.\n# can shrink or grow; ensure filesystem is reduced first when shrinking"
@@ -13711,7 +13718,7 @@
           },
           {
             "cmd": "iptables -A INPUT -j DROP",
-            "desc": "# drop all other traffic",
+            "desc": "Appends a catch-all DROP rule to the INPUT chain. Must be added last — iptables evaluates rules in order, so anything above this ACCEPTs as intended, but any ACCEPT rule added after it is dead code that will never match.",
             "type": "show",
             "flagged": false,
             "example": "$ iptables -A INPUT -j DROP\n# default-deny: drops all traffic not matching earlier ACCEPT rules"
@@ -13882,7 +13889,7 @@
           },
           {
             "cmd": "git reset --hard HEAD",
-            "desc": "# discard changes",
+            "desc": "Resets the working directory and staging area to match HEAD, permanently discarding all uncommitted changes — unlike git reset --soft/--mixed this also touches tracked files on disk and cannot be undone.",
             "type": "show",
             "flagged": false,
             "example": "$ git reset --hard HEAD\nHEAD is now at a1b2c3d feat: add linux command examples\n# discards all uncommitted changes; use with caution"
@@ -15085,7 +15092,7 @@
           },
           {
             "cmd": "top",
-            "desc": "Displays real?time process usage",
+            "desc": "Displays real-time process usage",
             "type": "show",
             "flagged": false,
             "example": "$ top\ntop - 10:25:01 up 3 days,  4:12,  2 users,  load average: 0.42, 0.38, 0.31\nTasks: 193 total,   1 running, 192 sleeping\n%Cpu(s):  3.1 us,  0.8 sy,  0.0 ni, 95.8 id\nMiB Mem :  15872.0 total,   8234.4 free"
@@ -15409,14 +15416,14 @@
           },
           {
             "cmd": "ss -o state syn-recv",
-            "desc": "Shows SYN?RECV sockets",
+            "desc": "Shows SYN-RECV sockets",
             "type": "show",
             "flagged": false,
             "example": "$ ss -o state syn-recv\nNetid  Recv-Q  Send-Q  Local Address:Port  Peer Address:Port\ntcp    0       0       0.0.0.0:22          192.168.1.20:51234"
           },
           {
             "cmd": "ss -o state syn-sent",
-            "desc": "Shows SYN?SENT sockets",
+            "desc": "Shows SYN-SENT sockets",
             "type": "show",
             "flagged": false,
             "example": "$ ss -o state syn-sent\nNetid  Recv-Q  Send-Q  Local Address:Port  Peer Address:Port\ntcp    0       0       192.168.1.10:51002  10.0.0.5:443"
@@ -15609,6 +15616,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ docker inspect -f '{{.State.Pid}}' web01\n4821\n$ sudo nsenter -t 4821 -n ip addr show\n1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN\n    inet 127.0.0.1/8 scope host lo\n3: eth0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n    inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0\n\nWhat it means:\n- -t <pid> selects the target process; -n enters its network namespace only\n  (mount, PID, etc. are untouched).\n- Lets you run any normal host tool (ip, ss, tcpdump) as if it were inside\n  the container — no need for the image to ship those tools itself.\n- Requires root (or CAP_SYS_ADMIN) on the host, since it's reading\n  /proc/<pid>/ns/net."
+          },
+          {
+            "cmd": "ss -tulnp",
+            "desc": "Lists all TCP and UDP sockets currently listening, with the owning process name and PID — the modern, faster replacement for netstat -tulnp built on netlink instead of /proc scraping.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ ss -tulnp\nNetid  State   Recv-Q  Send-Q   Local Address:Port    Peer Address:Port  Process\nudp    UNCONN  0       0            0.0.0.0:68            0.0.0.0:*      users:((\"dhclient\",pid=612,fd=6))\ntcp    LISTEN  0       128          0.0.0.0:22             0.0.0.0:*      users:((\"sshd\",pid=734,fd=3))\ntcp    LISTEN  0       511        127.0.0.1:3306            0.0.0.0:*      users:((\"mysqld\",pid=1102,fd=21))\ntcp    LISTEN  0       128             [::]:22                [::]:*      users:((\"sshd\",pid=734,fd=4))\n# Requires root (or CAP_NET_ADMIN) to see the Process column; without it\n# the users:(()) field is blank."
           }
         ],
         "Diagnostics": [
@@ -15810,7 +15824,7 @@
           },
           {
             "cmd": "fsck -n /dev/<disk>",
-            "desc": "Checks filesystem (read?only)",
+            "desc": "Checks filesystem (read-only)",
             "type": "show",
             "flagged": false,
             "example": "# Run a filesystem check in read-only (non-destructive) mode — no changes made\n# Must unmount the filesystem first, or run on an unmounted partition\numount /dev/sdb1\nfsck -n /dev/sdb1\ne2fsck 1.46.5 (30-Dec-2021)\nPass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\n/dev/sdb1: 48294/30547968 files (0.2% non-contiguous), 4820173/122159360 blocks\n\n# If errors are found, run without -n to repair:\n# fsck -y /dev/sdb1    (-y auto-answers yes to all repair prompts)\n\n# For XFS:\n# xfs_repair -n /dev/sdb1   (read-only check)"
@@ -21100,7 +21114,7 @@
           },
           {
             "cmd": "vlan",
-            "desc": "Captures VLAN?tagged frames",
+            "desc": "Captures VLAN-tagged frames",
             "type": "capture",
             "flagged": false,
             "example": "# BPF: captures all 802.1Q VLAN-tagged frames (Ethertype 0x8100).\n# Requires a monitor/SPAN port that delivers raw 802.1Q tags.\n# Combine: vlan and host 10.20.0.5  → VLAN-tagged traffic to/from a host.\n# vlan 20  → only frames tagged with VLAN ID 20."
@@ -21156,7 +21170,7 @@
           },
           {
             "cmd": "udp port 4500",
-            "desc": "Captures NAT?T IPsec",
+            "desc": "Captures NAT-T IPsec",
             "type": "capture",
             "flagged": false,
             "example": "# BPF: captures NAT-Traversal IPsec (IKE + ESP encapsulated in UDP 4500).\n# When one or both peers are behind NAT, IKE moves from 500 to 4500.\n# Frame 3: 10.0.0.1:4500 → 10.0.0.2:4500  IKEv2 IKE_AUTH Request\n# ESP packets are also wrapped in UDP 4500 for NAT traversal:\n# Frame 10: 10.0.0.1:4500 → 10.0.0.2:4500  ESP (encrypted payload)"
@@ -21191,14 +21205,14 @@
           },
           {
             "cmd": "ip6 dst ff02::1",
-            "desc": "Captures IPv6 all?nodes multicast",
+            "desc": "Captures IPv6 all-nodes multicast",
             "type": "capture",
             "flagged": false,
             "example": "# BPF: captures IPv6 all-nodes multicast (link-local scope ff02::1).\n# All IPv6 interfaces join this group — equivalent to IPv4 broadcast for some purposes.\n# Frame 1: fe80::1 → ff02::1  ICMPv6 Router Advertisement (RA)\n# Frame 2: fe80::1 → ff02::1  ICMPv6 Redirect\n# RAs sent to ff02::1 provide prefix, gateway, and SLAAC configuration to all hosts."
           },
           {
             "cmd": "ip6 dst ff02::2",
-            "desc": "Captures IPv6 all?routers multicast",
+            "desc": "Captures IPv6 all-routers multicast",
             "type": "capture",
             "flagged": false,
             "example": "# BPF: captures IPv6 all-routers multicast (ff02::2).\n# Only routers and DHCPv6 relay agents listen on this address.\n# Frame 1: fe80::2 → ff02::2  ICMPv6 Router Solicitation (RS)\n# RS is sent by hosts at boot to request an immediate RA from routers.\n# If no RA reply follows the RS, the host won't get SLAAC addressing."
@@ -21314,6 +21328,13 @@
             "type": "capture",
             "flagged": false,
             "example": "# Cuts out ARP broadcasts, DHCP broadcasts, mDNS/LLMNR multicast, and\n# routing-protocol multicast (OSPF/EIGRP hellos) — the background noise\n# that fills a capture on a busy LAN segment.\n# Apply in Wireshark: Capture -> Options -> Capture filter field\n# tshark: tshark -i eth0 -f \"not broadcast and not multicast\"\n# Combine with a host filter to isolate one conversation cleanly:\n#   host 10.0.0.50 and not broadcast and not multicast"
+          },
+          {
+            "cmd": "ether proto 0x88cc",
+            "desc": "Captures only LLDP (Link Layer Discovery Protocol) frames by matching their EtherType 0x88cc — useful for isolating neighbor-discovery advertisements on a trunk without capturing every other Layer 2 control protocol.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tcpdump -i eth0 -e \"ether proto 0x88cc\"\n09:14:02.001122 00:1a:a1:22:33:44 > 01:80:c2:00:00:0e, ethertype LLDP (0x88cc), length 199: LLDP, length 185\n        Chassis ID TLV (1), length 7\n          Subtype MAC address (4): 00:1a:a1:22:33:44\n        Port ID TLV (2), length 8\n          Subtype Interface Name (5): GigabitEthernet0/1\n\n# 0x88cc is the IEEE 802.1AB EtherType reserved for LLDP; CDP instead\n# uses SNAP-encapsulated frames and needs a different filter."
           }
         ],
         "Analysis & Statistics": [
@@ -21788,7 +21809,7 @@
           },
           {
             "cmd": "show interfaces accounting",
-            "desc": "Shows per?interface traffic accounting",
+            "desc": "Shows per-interface traffic accounting",
             "type": "show",
             "flagged": false,
             "example": "Switch# show interfaces accounting Gi0/0\n\nGigabitEthernet0/0\n  Protocol           Pkts In   Chars In   Pkts Out   Chars Out\n  Other              50        21000      40         18000\n  IP                 12,453,012  9.8 GB   12,490,000  10.1 GB\n  ARP                4,502     360,160    4,500       360,000\n  STP                14,503    1.16 MB    0           0\n\nWhat it means:\n- Per-protocol packet/byte counters since last \"clear counters\".\n- Useful for protocol-distribution analysis.\n- \"Other\" usually = ICMP, IGMP, internal control traffic.\n- Disable globally if not needed: \"no ip accounting-list\" — small\n  CPU saving on busy boxes."
@@ -27969,6 +27990,13 @@
             "type": "show",
             "flagged": false,
             "example": "R1# show archive log config all\n\nidx  sess  user@line     Logged command\n1    1    admin@vty0    | enable\n2    1    admin@vty0    | configure terminal\n3    1    admin@vty0    | interface gi0/1\n4    1    admin@vty0    | ip address 10.20.0.1 255.255.255.0\n5    1    admin@vty0    | no shutdown\n6    1    admin@vty0    | end\n7    1    admin@vty0    | write memory\n\nWhat it means:\n- Full chronological log of all config-mode commands across all\n  user sessions.\n- \"sess\" groups commands within a single config session — can\n  reconstruct exactly what one operator did from start to finish.\n- Combine with \"show clock\" + admin notebook for change-management\n  audit."
+          },
+          {
+            "cmd": "show archive config differences nvram:startup-config system:running-config",
+            "desc": "Diffs the startup config against the running config line-by-line, prefixing lines only in the running config with + and lines only in the startup config with - — confirms exactly what unsaved changes exist before a reload discards them or before running write memory.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show archive config differences nvram:startup-config system:running-config\n\n!Contextual Config Diffs:\n+interface GigabitEthernet0/1\n+ description Uplink to Core\n+ no shutdown\n-interface GigabitEthernet0/1\n-shutdown\n\n! Lines prefixed with + exist only in the running config (unsaved changes).\n! Lines prefixed with - exist only in the startup config (lost on reload\n! if the running config is never saved with \"write memory\")."
           }
         ]
       },
@@ -28382,6 +28410,13 @@
             "type": "action",
             "flagged": false,
             "example": "$ vmkfstools -i \"/vmfs/volumes/DS-FAST/web01/web01.vmdk\" \"/vmfs/volumes/DS-ARCHIVE/web01/web01-thin.vmdk\" -d thin\nClone: 100% done.\n\n# The destination directory must already exist.\n# Add -W vsan when cloning onto a vSAN datastore.\n# Official docs: https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/using-vmkfstools-in-vsphere/vmkfstools-options/virtual-disk-options-of-vsphere-vmkfstools-command/cloning-a-virtual-or-raw-disk.html"
+          },
+          {
+            "cmd": "esxcli storage core adapter list",
+            "desc": "Lists every storage HBA/adapter (local RAID controller, SAS, iSCSI, FC) registered with the host, its driver, and link state — the starting point before drilling into a specific adapter's paths or devices.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esxi01:~] esxcli storage core adapter list\nHBA Name  Driver      Link State  UID              Capabilities         Description\n--------  ----------  ----------  ---------------  -------------------  -----------\nvmhba0    lsi_mr3     link-n/a    sas.5001636...   Second Level Lun ID  (0000:03:00.0) Broadcom MegaRAID SAS\nvmhba1    vmkata      link-n/a    ide.vmhba1                            (0000:00:1f.2) Intel AHCI\nvmhba64   iscsi_vmk   online      iscsi.vmk...     Second Level Lun ID  iSCSI Software Adapter\nvmhba2    qla2xxx     link-up     fc.20000024...   Second Level Lun ID  (0000:04:00.0) QLogic FC HBA"
           }
         ],
         "VM Management": [
@@ -29855,6 +29890,13 @@
             "cmd": "nltest /dsgetdc:<domain>",
             "desc": "Queries the Locator/Netlogon service to find a domain controller for the specified Active Directory domain — useful when DNS SRV lookups for a DC are failing.",
             "example": "C:\\>nltest /dsgetdc:corp.local\n           DC: \\\\DC01.corp.local\n      Address: \\\\192.168.1.10\n     Dom Guid: 3f6a1b2c-9a4d-41e2-8b7f-1a2b3c4d5e6f\n     Dom Name: corp.local\n  Forest Name: corp.local\n Dc Site Name: Default-First-Site-Name\nOur Site Name: Default-First-Site-Name\n        Flags: GC DS LDAP KDC TIMESERV WRITABLE DNS_DC DNS_DOMAIN DNS_FOREST CLOSE_SITE\nThe command completed successfully"
+          },
+          {
+            "cmd": "Get-NetAdapterAdvancedProperty -Name \"<adapter>\"",
+            "desc": "Lists a network adapter's driver-level advanced properties (Jumbo Packet, *FlowControl, *InterruptModeration, RSS, offload settings) with their current registry value — the properties normally buried in Device Manager > Advanced tab, exposed for scripting.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-NetAdapterAdvancedProperty -Name \"Ethernet\"\n\nName      DisplayName            DisplayValue    RegistryKeyword       RegistryValue\n----      -----------            ------------    ---------------       -------------\nEthernet  Jumbo Packet           Disabled        *JumboPacket           {1514}\nEthernet  Flow Control           Rx & Tx Enabled *FlowControl           {3}\nEthernet  Receive Side Scaling   Enabled         *RSS                   {1}\nEthernet  Interrupt Moderation   Enabled         *InterruptModeration   {1}\n\n# Change one with Set-NetAdapterAdvancedProperty, e.g. enabling jumbo frames:\nPS C:\\> Set-NetAdapterAdvancedProperty -Name \"Ethernet\" -DisplayName \"Jumbo Packet\" -DisplayValue \"9014 Bytes\""
           }
         ],
         "Processes": [
@@ -32678,6 +32720,13 @@
             "type": "show",
             "flagged": false,
             "example": "uuid ( RO): a1b2c3d4-e5f6-7890-abcd-ef1234567890\nname-label ( RW): SDX-XS-01\nhostname ( RW): SDX-XS-01.corp.local\naddress ( RW): 10.0.0.5\nenabled ( RO): true\nsoftware-version/product_version: 8.2.1"
+          },
+          {
+            "cmd": "xe vbd-list vm-name-label=<vm-name>",
+            "desc": "Lists the Virtual Block Devices (disk attachments) for a given VM — each VBD's uuid, the userdevice slot it's attached at, and whether it's bootable — the step before xe vbd-unplug/vbd-destroy when detaching or resizing a VPX instance's virtual disk.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@sdx ~]# xe vbd-list vm-name-label=NS-VPX01\nuuid ( RO)             : 3f7a9c1e-4b2d-4a11-9c3e-1122334455aa\n         vm-uuid ( RO): 8b21e4d0-...\n vm-name-label ( RO): NS-VPX01\n    userdevice ( RW): 0\n      bootable ( RW): true\n          mode ( RW): RW\n          type ( RO): Disk\n\n# Find the attached VDI (virtual disk) for that VBD:\n[root@sdx ~]# xe vbd-param-get uuid=3f7a9c1e-4b2d-4a11-9c3e-1122334455aa param-name=vdi-uuid"
           }
         ],
         "Xen Hypervisor": [
@@ -32990,14 +33039,14 @@
           },
           {
             "cmd": "xentop -i 1",
-            "desc": "Shows 1?second interval stats",
+            "desc": "Shows 1-second interval stats",
             "type": "show",
             "flagged": false,
             "example": "$ xentop -i 1\n# single iteration then exit; useful in scripts"
           },
           {
             "cmd": "xentop -d 5",
-            "desc": "Shows 5?second interval stats",
+            "desc": "Shows 5-second interval stats",
             "type": "show",
             "flagged": false,
             "example": "xentop - 14:32:07   Xen 4.14.5\n4 domains: 1 running, 3 blocked, 0 paused, 0 crashed, 0 dying\nMem: 131072k total, 98304k used, 32768k free    CPUs: 16\n\nNAME  STATE CPU(sec) CPU(%)  MEM(k) MEM(%)  MAXMEM(k) VCPUS\nDomain-0 r-----  124832  12.4  16384000  12.5  16384000    4\nNS01     --b---   38291   4.2   8192000   6.3  16384000    2"
@@ -33046,7 +33095,7 @@
           },
           {
             "cmd": "mpstat -P ALL 1",
-            "desc": "Shows per?CPU stats",
+            "desc": "Shows per-CPU stats",
             "type": "show",
             "flagged": false,
             "example": "$ mpstat -P ALL 1 1\n09:35:00  CPU  %usr  %sys  %iowait  %idle\n09:35:01  all  12.5   3.2     0.8    83.5\n09:35:01    0  14.2   4.1     0.3    81.4\n09:35:01    1  10.8   2.3     1.3    85.6"
@@ -40797,6 +40846,13 @@
             "type": "config",
             "flagged": false,
             "example": "Destination filename [startup-config]?\nBuilding configuration...\n[OK]"
+          },
+          {
+            "cmd": "show archive config differences nvram:startup-config system:running-config",
+            "desc": "Diffs the startup config against the running config line-by-line, prefixing lines only in the running config with + and lines only in the startup config with - — confirms exactly what unsaved changes exist before a reload discards them or before running write memory.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show archive config differences nvram:startup-config system:running-config\n\n!Contextual Config Diffs:\n+interface GigabitEthernet0/1\n+ description Uplink to Core\n+ no shutdown\n-interface GigabitEthernet0/1\n-shutdown\n\n! Lines prefixed with + exist only in the running config (unsaved changes).\n! Lines prefixed with - exist only in the startup config (lost on reload\n! if the running config is never saved with \"write memory\")."
           }
         ],
         "Show & Status": [
@@ -43425,6 +43481,13 @@
             "cmd": "show cores",
             "desc": "Lists processes that have generated core dump files on the switch, with the owning module, instance, PID, and timestamp — the starting point when investigating an unexpected process restart.",
             "example": "switch# show cores\nModule  Instance  Process-name    PID     Date(Year-Month-Day Time)\n------  --------  --------------  ------  -------------------------\n28      1         bgp-64551       5179    2026-05-08 23:51:26"
+          },
+          {
+            "cmd": "show interface status err-disabled",
+            "desc": "Lists only the interfaces currently in the err-disabled state along with the triggering reason (BPDU Guard, UDLD, link-flap, etc.) — the fastest way to find which ports a protection feature has shut down without scanning the full show interface status table.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface status err-disabled\n\nPort          Name               Status       Reason\n--------------------------------------------------------------\nEth1/12       --                 err-disabled BPDUGuard errDisable\nEth1/27       --                 err-disabled UDLD errDisable\n\n# Recover a port once the underlying cause is fixed:\nswitch(config)# interface eth1/12\nswitch(config-if)# shutdown\nswitch(config-if)# no shutdown\n# Or configure automatic recovery: errdisable recovery cause bpduguard"
           }
         ],
         "Config Management": [
@@ -46454,6 +46517,13 @@
             "type": "show",
             "flagged": false,
             "example": "Routing entry for 10.10.0.0/16\n  Known via \"ospf 1\", distance 110, metric 20\n  * 192.168.1.2, via GigabitEthernet0/0"
+          },
+          {
+            "cmd": "show ip cef exact-route <source-ip> <destination-ip>",
+            "desc": "Shows the exact CEF next-hop (interface and adjacency) that would be chosen for one specific source/destination pair when multiple ECMP paths exist",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip cef exact-route 10.1.1.10 8.8.8.8\n\n10.1.1.10 -> 8.8.8.8 => IP adj out of GigabitEthernet0/1, via 192.168.1.2\n\nWhat it means:\n- With CEF load-balancing (per-destination or per-flow hashing) across\n  multiple equal-cost paths, this shows which one an actual flow hashes to.\n- Useful when troubleshooting \"some traffic works, some doesn't\" on\n  ECMP/port-channel uplinks — run it for the exact src/dst pair reported\n  and compare against a working pair.\n- Does not send any traffic; it's a hash lookup against the current\n  CEF adjacency table."
           }
         ],
         "Routing › OSPF": [
