@@ -8,7 +8,7 @@
 // Bump CACHE_VERSION when shipping a release that changes the app shell.
 // Old caches are pruned in the activate step.
 
-const CACHE_VERSION = 'nkb-v91-2026-07-09';
+const CACHE_VERSION = 'nkb-v92-2026-07-10';
 const SHELL_CACHE = `shell-${CACHE_VERSION}`;
 const DATA_CACHE  = `data-${CACHE_VERSION}`;
 
