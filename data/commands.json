@@ -7708,6 +7708,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -in cert.crt -noout -ocspid\nIssuer Name Hash: 4A5C3B8F9E1D2A6C7B8E9F0A1B2C3D4E5F6A7B8C\nIssuer Key Hash:  9F8E7D6C5B4A39281706F5E4D3C2B1A0918273645\nSerial Number:    0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B\n\nWhat it means:\n- These three values are exactly what OCSP request/response CertID fields\n  encode (RFC 6960) — compare them against a captured OCSP request to\n  confirm the responder is being asked about the right certificate.\n- Handy when an OCSP responder returns \"unknown\" and you need to verify\n  the client hashed the correct issuer before blaming the CA."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl storeutl -text -noout <uri>",
+            "desc": "OpenSSL 3+ STORE interface: fetches and displays certificates/keys/CRLs from a URI (file, PKCS#11 token, or engine-backed store) without needing to know the object type in advance",
+            "example": "$ openssl storeutl -text -noout -certs server.pem\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number: 04:3a:...\n        Issuer: C=US, O=Example CA, CN=Example Root CA\n        Validity\n            Not Before: Jan 10 00:00:00 2026 GMT\n            Not After : Jan 10 00:00:00 2027 GMT\n        Subject: CN=www.example.com\n# -certs / -keys / -crls filter the store to one object type.\n# Works with any registered STORE loader — e.g. \"openssl storeutl -certs pkcs11:token=MyToken\"\n# to enumerate certificates on a hardware token, not just local files."
           }
         ],
         "Verification & Matching": [
@@ -8799,6 +8806,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ openssl cms -verify -in signed.p7s -inform DER -content document.txt -CAfile ca.crt\nVerification successful\n# \"Verification successful\" = signature is valid and signer cert is trusted.\n# The -content flag provides the original data for detached signatures."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "openssl pkeyutl -verify -pubin -inkey public.pem -sigfile sig.bin -in file.txt",
+            "desc": "Verifies a raw signature using the generic pkeyutl interface — works across RSA, DSA, EC and Ed25519/Ed448 keys unlike dgst -verify",
+            "example": "$ openssl dgst -sha256 -binary -out hash.bin document.txt\n$ openssl pkeyutl -verify -pubin -inkey public.pem -sigfile signature.bin -in hash.bin\nSignature Verified Successfully\n# pkeyutl operates on a digest (or raw data with -rawin -digest sha256) rather than requiring\n# dgst's -sign/-verify combo, so it also supports EdDSA keys, which dgst cannot sign/verify directly.\n# Sign the equivalent hash with: openssl pkeyutl -sign -inkey private.pem -in hash.bin -out signature.bin"
           }
         ],
         "Performance & Benchmarks": [
@@ -10203,6 +10217,13 @@
             "desc": "Enable MAC filtering using a named AAA list (MAB / hybrid auth — MAC sent as username to RADIUS).",
             "type": "config",
             "example": "WLC-01(config-wlan)# mac-filtering DOT1X-LIST"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "show run wlan",
+            "desc": "Displays the running configuration for all configured WLAN profiles (SSID, security, QoS, broadcast settings) in one block — quicker than paging through the full running-config",
+            "example": "WLC-01# show run wlan\nwlan CORPORATE-WIFI 1 CORPORATE-WIFI\n ccx aironet-iesupport\n security wpa akm dot1x\n security wpa wpa2 ciphers aes\n security dot1x authentication-list DOT1X-LIST\n no shutdown\nwlan GUEST-WIFI 2 GUEST-WIFI\n no security wpa\n no security wpa akm dot1x\n no security wpa wpa2 ciphers aes\n no shutdown\n# Scoped equivalent of \"show running-config\" for just the wlan stanzas.\n# Pair with \"show wlan summary\" for operational (admin/oper) state rather than config intent."
           }
         ],
         "Tags & Profiles": [
@@ -17698,6 +17719,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ who\nalice    pts/0        2026-06-25 09:05 (192.168.1.5)\nbob      pts/1        2026-06-25 10:30 (192.168.1.12)\nroot     tty1         2026-06-25 08:00"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "journalctl -p err -b",
+            "desc": "Shows only error-priority-and-above journal entries from the current boot — fast way to triage what went wrong since the last reboot",
+            "example": "$ journalctl -p err -b\n-- Logs begin at Mon 2026-06-01, end at Sat 2026-07-11 --\nJul 11 07:02:14 host kernel: nvme0n1: I/O error, dev nvme0n1, sector 48212\nJul 11 07:15:03 host systemd[1]: nginx.service: Main process exited, code=exited, status=1/FAILURE\nJul 11 08:41:59 host sshd[2211]: error: kex_exchange_identification: read: Connection reset by peer\n# -p accepts syslog priority levels: emerg, alert, crit, err, warning, notice, info, debug.\n# -p err shows err and everything more severe (crit, alert, emerg); combine with -b -1 for the previous boot."
           }
         ],
         "Ref 12. Text Processing": [
@@ -20067,6 +20095,13 @@
             "cmd": "quic.long.packet_type == 0",
             "desc": "Matches QUIC long-header Initial packets on QUIC v1 traffic — the packet-type enum reorders on QUIC v2, where Initial is value 1 instead (Retry becomes 0).",
             "example": "# QUIC v1: 0=Initial, 1=0-RTT, 2=Handshake, 3=Retry — this filter targets the handshake-start packet.\nNo.   Time      Source        Destination     Protocol  Info\n 14   0.001203  10.0.0.5      93.184.216.34   QUIC      Initial, DCID=... SCID=... Token Length: 0\n 15   0.001987  10.0.0.5      93.184.216.34   QUIC      Initial, DCID=... SCID=... PKN: 1\n# On QUIC v2 captures use quic.long.packet_type == 1 for the equivalent Initial-packet match."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "quic.version == 0x00000001",
+            "desc": "Filters QUIC packets by wire version — isolates RFC 9000 QUIC v1 traffic (used by HTTP/3) from older/draft QUIC versions or version-negotiation packets",
+            "example": "# Matches only QUIC v1 (0x00000001, RFC 9000) long-header packets.\n# Frame 12:  10.0.0.5 → 142.250.80.14  QUIC  Initial, DCID=... SCID=... Token Length: 0\n# Frame 13:  142.250.80.14 → 10.0.0.5  QUIC  Initial, DCID=... Token Length: 0\n# quic.version == 0x51303530 style values identify older Google QUIC (gQUIC) drafts.\n# Combine with \"quic.long.packet_type == 0\" to narrow to Initial packets, or \"quic and !quic.version\" to spot Version Negotiation packets."
           }
         ],
         "Display Filters — TLS/SSL": [
@@ -30687,6 +30722,20 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudwatch describe-alarms --state-value ALARM --query \"MetricAlarms[].{Name:AlarmName,Metric:MetricName,State:StateValue,Reason:StateReason}\" --output table\n-------------------------------------------------------------------\n|                        DescribeAlarms                           |\n+----------------+-----------+---------+-------------------------+\n| CPUUtilization | CPU-Alert | ALARM   | Threshold crossed: ...  |\n| DiskReadOps    | Disk-Warn | ALARM   | Threshold crossed: ...  |\n+----------------+-----------+---------+-------------------------+"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "aws logs tail <log-group-name> --follow",
+            "desc": "Tails a CloudWatch Logs group in near real time, interleaving events from all log streams",
+            "example": "$ aws logs tail /aws/lambda/order-processor --follow --since 10m\n2026-07-11T09:12:03.221000+00:00 2026/07/11/[$LATEST]abc123 START RequestId: 8f2e...\n2026-07-11T09:12:03.512000+00:00 2026/07/11/[$LATEST]abc123 INFO Processing order 44821\n2026-07-11T09:12:03.890000+00:00 2026/07/11/[$LATEST]abc123 END RequestId: 8f2e...\n# --follow streams new events like tail -f; --since accepts ISO 8601 or relative time (e.g. 10m, 2h).\n# --filter-pattern applies CloudWatch Logs filter syntax; --format short prints only timestamp + message."
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "aws cloudwatch get-metric-data --metric-data-queries file://queries.json --start-time <time> --end-time <time>",
+            "desc": "Retrieves datapoints for one or more metrics via metric math queries — the modern replacement for get-metric-statistics when pulling many metrics at once",
+            "example": "$ aws cloudwatch get-metric-data \\\n    --metric-data-queries file://queries.json \\\n    --start-time 2026-07-11T08:00:00Z --end-time 2026-07-11T09:00:00Z\n{\n    \"MetricDataResults\": [\n        {\n            \"Id\": \"cpu\",\n            \"Label\": \"CPUUtilization\",\n            \"Timestamps\": [\"2026-07-11T08:55:00Z\", \"2026-07-11T08:50:00Z\"],\n            \"Values\": [23.4, 19.8],\n            \"StatusCode\": \"Complete\"\n        }\n    ]\n}\n# queries.json defines each query's MetricStat (namespace/metric/dimensions/period/stat) or an expression.\n# Preferred over get-metric-statistics for batching multiple metrics/expressions in a single call."
           }
         ],
         "IAM": [
@@ -32355,7 +32404,7 @@
           },
           {
             "cmd": "stop vm <name>",
-            "desc": "Stops a VM",
+            "desc": "Gracefully shuts down the named VPX instance (sends an ACPI/guest shutdown signal rather than a hard power-off) — the VM stays defined and can be restarted with \"start vm <name>\"",
             "type": "show",
             "flagged": false,
             "example": "> stop vm VPX-4\nSending shutdown signal to VM VPX-4...\nVM VPX-4 is now Stopped."
@@ -32639,7 +32688,7 @@
           },
           {
             "cmd": "xe vm-list",
-            "desc": "Lists VMs",
+            "desc": "Lists every VM known to the XenServer host (Citrix ADC VPX instances and any other guests), showing UUID, name-label, and current power-state — the XenServer-level view underneath the SDX GUI’s VM list",
             "type": "show",
             "flagged": false,
             "example": "$ xe vm-list\nuuid ( RO)           : 11111111-2222-3333-4444-555555555555\n          name-label ( RW): VPX-1\n         power-state ( RO): running"
@@ -41398,6 +41447,13 @@
             "cmd": "qm status <VMID>",
             "desc": "Shows a VM's current runtime status (running/stopped/paused); add --verbose for uptime, PID, and CPU/memory allocation from QMP.",
             "example": "# qm status 100\nstatus: running\n\n# qm status 100 --verbose\nqmpstatus: running\nstatus: running\nname: web01\nvmid: 100\npid: 24831\nuptime: 431265\ncpus: 2\nmaxmem: 4294967296"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "qm guest cmd <vmid> <command>",
+            "desc": "Sends a QEMU Guest Agent command directly to a running VM (requires qemu-guest-agent installed and enabled in the guest) — e.g. network-get-interfaces, ping, fsfreeze-status",
+            "example": "$ qm guest cmd 100 network-get-interfaces\n[\n  {\n    \"name\": \"eth0\",\n    \"hardware-address\": \"aa:bb:cc:dd:ee:01\",\n    \"ip-addresses\": [\n      {\"ip-address\": \"10.0.10.15\", \"ip-address-type\": \"ipv4\", \"prefix\": 24}\n    ]\n  }\n]\n$ qm guest cmd 100 ping\n{}\n# Common commands: network-get-interfaces, get-osinfo, get-fsinfo, fsfreeze-status, shutdown.\n# For arbitrary shell commands inside the guest use \"qm guest exec <vmid> -- <command>\" instead."
           }
         ],
         "LXC Containers (pct)": [
@@ -41547,6 +41603,13 @@
             "type": "troubleshooting",
             "flagged": true,
             "example": "root@pve# pct stop 200\nroot@pve# pct fsck 200\nrunning fsck on volume /dev/mapper/pve-vm--200--disk--0 [rootfs]\nfsck from util-linux 2.38\next2fs_check_desc: Corrupt group descriptor: bad block for block bitmap\nfsck.ext4: Group descriptors look bad... trying backup blocks...\nPass 1: Checking inodes, blocks, and sizes\n...\n200-rootfs: 12345/655360 files, 456789/2621440 blocks\n\n# Check a specific mount point instead of the rootfs:\nroot@pve# pct fsck 200 --device mp0 --force\n# Official docs: https://pve.proxmox.com/pve-docs/pct.1.html"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "pct exec <ctid> -- <command>",
+            "desc": "Runs a single command inside a running container from the host shell, without an interactive session — the container equivalent of qm guest exec for VMs",
+            "example": "$ pct exec 200 -- systemctl status nginx\n● nginx.service - A high performance web server\n     Loaded: loaded (/lib/systemd/system/nginx.service; enabled)\n     Active: active (running) since Sat 2026-07-11 07:00:12 UTC; 2h 12min ago\n\n$ pct exec 200 -- df -h /\nFilesystem      Size  Used Avail Use% Mounted on\n/dev/mapper/... 8.0G  2.1G  5.5G  28% /\n# Runs as root inside the container with no TTY allocation — for an interactive shell use \"pct enter <ctid>\".\n# Everything after \"--\" is passed through untouched, so quote arguments the same as you would locally."
           }
         ],
         "Storage (pvesm)": [
@@ -42548,6 +42611,13 @@
             "type": "show",
             "flagged": false,
             "example": "N9K# show spanning-tree detail\n\nVLAN0010 is executing the rstp compatible Spanning Tree protocol\n  Bridge Identifier has priority 32768, sysid 10, address 001e.1432.5f00\n  Configured hello time 2, max age 20, forward delay 15\n  Current root has priority 4106, address 0023.eb9e.4680\n  Root port is Po1 (Port-channel1), cost of root path is 4\n  Topology change flag not set, detected flag not set\n  Number of topology changes 12, last change occurred 4d02h ago\n    from Ethernet1/5\n  Times:  hold 1, topology change 35, notification 2\n          hello 2, max age 20, forward delay 15\n  Timers: hello 0, topology change 0, notification 0\n\nPort 4097 (Port-channel1) of VLAN0010 is Root Forwarding\n   Port path cost 4, Port priority 128, Port Identifier 128.4097\n   Designated root has priority 4106, address 0023.eb9e.4680\n   BPDUs: sent 43210, received 287654\n\nWhat it means:\n- topology changes 12 in 4d02h — low churn, healthy\n- last change from Eth1/5 — investigate that port if changes spike"
+          },
+          {
+            "type": "show",
+            "flagged": false,
+            "cmd": "show vpc consistency-parameters { global | vpc <number> }",
+            "desc": "Compares Type-1 (must-match) and Type-2 configuration parameters between vPC peers — the primary command for diagnosing why a vPC or vPC peer-link/keepalive won’t come up",
+            "example": "switch# show vpc consistency-parameters global\nLegend:\n  Type 1 : vPC will be suspended in case of mismatch\n\nName                        Type  Local Value            Peer Value\n---------------              ----  ----------------       ----------------\nSTP Mode                     1     Rapid-PVST              Rapid-PVST\nSTP Disabled                 1     None                     None\nSTP MST Region Name          1     \"\"                       \"\"\nNativevlan                   1     1                        1\nEnable vPC Global filter     1     Disabled                 Disabled\nInterface-vlan admin up      2     1,10,20,30               1,10,20,30\n\nswitch# show vpc consistency-parameters vpc 10\n# Same table scoped to a single vPC's member port-channel — use when only one vPC is down/suspended.\n# Any Type 1 mismatch (e.g. differing STP mode or native VLAN) suspends the vPC on the secondary side."
           }
         ],
         "Routing": [
@@ -43987,7 +44057,7 @@
           },
           {
             "cmd": "show ip arp",
-            "desc": "ARP cache",
+            "desc": "Shows the IPv4 ARP cache — resolved IP-to-MAC mappings with the learning port, VLAN, and age — used to confirm L3 adjacency and locate which port a host is connected through",
             "type": "show",
             "flagged": false,
             "example": "IPv4 Address      MAC Address        Port          VLAN  Age\n10.0.0.1          aa:bb:cc:00:00:01  1/1/49        -      2min\n10.0.10.100       00:50:56:ab:cd:01  1/1/1         10     1min"
@@ -44196,7 +44266,7 @@
         "ACLs": [
           {
             "cmd": "show access-list",
-            "desc": "All ACLs",
+            "desc": "Summarises every configured ACL on the switch — name, type (IPv4/IPv6/MAC), entry count, and how many interfaces each is applied to (Refs)",
             "type": "show",
             "flagged": false,
             "example": "Access List Summary\nName            Type   Entries  Refs\nALLOW_WEB       ip     3        2\nDENY_RFC1918    ip     12       0\nINTERNAL_ONLY   ip     4        5"
@@ -44210,7 +44280,7 @@
           },
           {
             "cmd": "show access-list hitcounts ip <name>",
-            "desc": "Per-rule hit counts",
+            "desc": "Displays the match counter for each rule in a named IPv4 ACL — the fastest way to confirm traffic is actually hitting (or being denied by) a specific line, and to spot unused rules that are safe to remove",
             "type": "show",
             "flagged": false,
             "example": "Access List ALLOW_WEB hit counts:\n  10 permit tcp any any eq 443    : 1,824,441 matches\n  20 permit tcp any any eq 80     :   124,221 matches\n  30 deny any any any log          :        82 matches"
@@ -44356,7 +44426,7 @@
         "Logging & Telemetry": [
           {
             "cmd": "show events",
-            "desc": "Event log",
+            "desc": "Displays the switch’s local event log — link-state changes, routing adjacency transitions, and configuration changes, each timestamped with severity — the first place to check after an unexpected outage or flap",
             "type": "show",
             "flagged": false,
             "example": "Jun 12 09:42:15  INFO     Interface 1/1/1: link-state up\nJun 12 09:41:22  INFO     OSPF neighbor 10.0.0.2: state changed to Full\nJun 12 09:30:00  INFO     System: config saved by admin from 10.0.0.50"
@@ -44414,7 +44484,7 @@
         "Diagnostics": [
           {
             "cmd": "ping 1.1.1.1",
-            "desc": "IPv4 ping",
+            "desc": "Sends ICMP echo requests to the target IPv4 address to verify basic Layer 3 reachability and measure round-trip latency",
             "type": "show",
             "flagged": false,
             "example": "PING 1.1.1.1 (1.1.1.1): 56 data bytes\n64 bytes from 1.1.1.1: icmp_seq=0 ttl=56 time=4.837 ms\n64 bytes from 1.1.1.1: icmp_seq=1 ttl=56 time=4.621 ms\n--- 1.1.1.1 ping statistics ---\n5 packets transmitted, 5 packets received, 0% packet loss\nround-trip min/avg/max = 4.621/4.792/4.837 ms"
@@ -44428,14 +44498,14 @@
           },
           {
             "cmd": "traceroute 1.1.1.1",
-            "desc": "Traceroute",
+            "desc": "Traces the Layer 3 hop-by-hop path to the destination IPv4 address using incrementing TTL probes — useful for isolating which hop in the path is dropping or delaying traffic",
             "type": "show",
             "flagged": false,
             "example": "traceroute to 1.1.1.1, 30 hops max, 60 byte packets\n 1  10.0.0.1  1.121 ms\n 2  192.168.1.1  2.441 ms\n 3  1.1.1.1  5.021 ms"
           },
           {
             "cmd": "show mac-address-table",
-            "desc": "MAC address table",
+            "desc": "Displays the full MAC address table — learned/static entries mapped to VLAN, port, and type, with an age counter for dynamic entries — used to trace which switch port a given host is plugged into",
             "type": "show",
             "flagged": false,
             "example": "MAC address     VLAN  Type     Port         Age\naa:bb:cc:dd:ee:01   10  dynamic  1/1/1        240\naa:bb:cc:dd:ee:02   10  dynamic  1/1/2        120\naa:bb:cc:dd:ee:ff    1  static   1/1/49       -"
@@ -45221,7 +45291,7 @@
           },
           {
             "cmd": "show acl ace <id>",
-            "desc": "ACE detail",
+            "desc": "Shows the full definition of a single Access Control Entry (ACE) by its ID — priority, action, protocol, source/destination, and port — useful for confirming exactly what one rule inside a larger role-based ACL does",
             "type": "show",
             "flagged": false,
             "example": "ACE detail for ACL allow-web (ID 4):\n  Priority  : 1\n  Action    : permit\n  Protocol  : TCP\n  Source    : any\n  Dest      : any\n  Dest Port : 443"
