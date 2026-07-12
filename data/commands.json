@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-10T12:00:00.000Z",
+  "updatedAt": "2026-07-12T18:39:13.656Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -3965,6 +3965,13 @@
             "type": "config",
             "flagged": false,
             "example": "> start nstrace -size 0 \\\n        -filter \"CONNECTION.LB_VSERVER.NAME.EQ(\\\"lb-web-prod\\\")\" \\\n        -link ENABLED \\\n        -skipLocalSSH ENABLED \\\n        -capsslkeys ENABLED \\\n        -capdroppkt ENABLED\nnstrace: started, full diagnostic capture for lb-web-prod\n\nWhat it means:\n- -size 0           : full packet capture (no truncation).\n- -link ENABLED     : also capture the linked back-end / front-end leg.\n- -skipLocalSSH ENABLED : exclude your management SSH from the trace\n                          (otherwise you capture yourself!).\n- -capsslkeys ENABLED   : export the SSL master keys to ns_sslkey.log\n                          so Wireshark can decrypt TLS in the trace.\n- -capdroppkt ENABLED   : also write packets that the ADC dropped —\n                          critical for \"which ACL/policy is blocking\n                          this traffic?\" investigations.\n- Combine with -nf / -time for long-running captures."
+          },
+          {
+            "cmd": "show techsupport",
+            "desc": "Bundles logs, running config, and diagnostic command output into a single archive for TAC/support cases",
+            "type": "show",
+            "flagged": false,
+            "example": "> show techsupport\n\n...collecting data (this can take several minutes)...\nTechsupport data collected successfully.\n/var/tmp/support/collector_P_10.10.10.11_12Jul2026_10_45_02.tar.gz\n\nWhat it means:\n- Runs a script that gathers ns.conf, core files, newnslog, running\n  counters, and dozens of \"show\" command outputs into one .tar.gz.\n- Use \"show techsupport -scope CLUSTER\" to collect an abbreviated\n  archive from every node in a cluster in one pass.\n- Add \"-upload\" (with valid My Citrix Support credentials) to push the\n  archive straight to a Citrix support case over SSL instead of\n  downloading it manually via SCP/WinSCP from /var/tmp/support/."
           }
         ],
         "VIP Hit Counter Troubleshooting": [
@@ -5889,6 +5896,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "> tail follow yes mp-log system.log\n2026-06-30 09:14:02  system: Configuration committed successfully\n2026-06-30 09:14:03  system: HA state changed to active\n\n# Ctrl+C stops the follow.\n# Other useful mp-log targets: mp-log ms.log (management server),\n# mp-log authd.log (authentication daemon), mp-log logrcvr.log (log receiver)."
+          },
+          {
+            "cmd": "show system resources",
+            "desc": "Displays management-plane CPU and memory utilisation in a Linux top-style live view",
+            "type": "show",
+            "flagged": false,
+            "example": "> show system resources\n\ntop - 10:41:02 up 62 days, 14:12,  1 user,  load average: 0.42, 0.51, 0.48\nTasks: 210 total,   1 running, 209 sleeping,   0 stopped,   0 zombie\n%Cpu(s):  8.3 us,  2.1 sy,  0.0 ni, 89.0 id,  0.4 wa,  0.0 hi,  0.2 si,  0.0 st\nMiB Mem :   7987.5 total,   1204.3 free,   4102.7 used,   2680.5 buff/cache\nMiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   3421.9 avail Mem\n\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 1234 root      20   0  482116  91232  20344 S   4.3   1.1   142:08.11 mgmtsrvr\n 5678 root      20   0  221004  40120  11288 S   1.7   0.5    38:22.44 devsrvr\n\nWhat it means:\n- This is the management-plane (MP) view, not the dataplane — use\n  \"show running resource-monitor\" for dataplane CPU per core.\n- %wa (I/O wait) and swap \"used\" > 0 sustained are the two clearest\n  signs of MP resource exhaustion (often from logging/reporting load).\n- Compare against \"show system state filter-pretty sys.info\" for a\n  static hardware summary rather than a live snapshot."
           }
         ],
         "Commit & Config": [
@@ -21796,6 +21810,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ tshark -G fields | grep -i \"ip.addr\"\nF\tSource or Destination Address\tip.addr\tIPv4 address\t2\t\t0\nF\tSource or Destination Address\tipv6.addr\tIPv6 address\t2\t\t0\n# Each line: entry type (F=field/P=protocol), full name, filter name, field\n# type, base, blurb. Use it to find the exact filter name for '-T fields -e <name>'."
+          },
+          {
+            "cmd": "tshark -r file.pcap -q -z conv,ip",
+            "desc": "Prints IPv4 conversation statistics — frames and bytes exchanged between each pair of endpoints",
+            "type": "cli",
+            "flagged": false,
+            "example": "$ tshark -r capture.pcap -q -z conv,ip\n\n================================================================================\nIPv4 Conversations\nFilter:<No Filter>\n                                       |       <-      |       ->      |      Total     |    Duration    |\n10.0.0.5      <-> 10.0.0.10           |   18     19344 |   16      1351|   34     20695 |     30.3937    |\n10.0.0.10     <-> 8.8.8.8             |    4       883 |    3      3236|    7       4119|      1.7926    |\n================================================================================\n# -q suppresses per-packet output so only the summary table is printed.\n# Sorted by total frames by default; add \"conv,ip\" filters e.g.\n#   tshark -r file.pcap -q -z \"conv,ip,ip.addr==10.0.0.5\"\n# Use \"conv,tcp\" / \"conv,udp\" for per-connection instead of per-host stats."
           }
         ]
       },
@@ -26323,7 +26344,7 @@
           },
           {
             "cmd": "vlan 10\n name DATA",
-            "desc": "Create a VLAN",
+            "desc": "Creates VLAN 10 in the local VLAN database, names it DATA, and activates it",
             "type": "config",
             "flagged": false,
             "example": "Switch(config)# vlan 10\nSwitch(config-vlan)# name DATA\nSwitch(config-vlan)# state active\n\nSwitch# show vlan id 10\nVLAN Name    Status   Ports\n---- ------- -------- ----------------------------------\n10   DATA    active\n\nWhat it means:\n- Creates VLAN 10 with name \"DATA\" in the local VLAN database.\n- VLAN range 1-4094; 1002-1005 reserved (legacy ATM/FDDI).\n- VLANs 1-1005 propagated by VTP; 1006-4094 stay local.\n- \"state active\" is default. Use \"state suspend\" for VLANs not\n  yet ready for traffic."
@@ -27097,7 +27118,7 @@
           },
           {
             "cmd": "policy-map MARK\n class VOICE\n  set dscp ef\n class class-default\n  set dscp default",
-            "desc": "Re-mark policy",
+            "desc": "Builds a policy-map that re-marks VOICE class traffic to DSCP EF and all other traffic to DSCP default",
             "type": "config",
             "flagged": false,
             "example": "R1(config)# policy-map MARK\nR1(config-pmap)# class VOICE\nR1(config-pmap-c)# set dscp ef\nR1(config-pmap-c)# exit\nR1(config-pmap)# class class-default\nR1(config-pmap-c)# set dscp default\n\nR1# show policy-map MARK\n  Policy Map MARK\n    Class VOICE\n     set dscp ef (46)\n    Class class-default\n     set dscp default (0)\n\nWhat it means:\n- Re-marks voice traffic to DSCP EF and everything else to\n  DSCP default (0).\n- Apply with \"service-policy input MARK\" on the interface where\n  traffic enters the network (typically a user-access port).\n- Re-marking at the edge ensures consistent QoS treatment in\n  the core."
@@ -27323,7 +27344,7 @@
           },
           {
             "cmd": "ip pim rp-address 10.0.0.1",
-            "desc": "Static PIM RP",
+            "desc": "Statically configures the multicast Rendezvous Point (RP) address for all groups (224/4)",
             "type": "config",
             "flagged": false,
             "example": "R1(config)# ip pim rp-address 10.0.0.1\n\nR1# show ip pim rp | include 10.0.0.1\nGroup: 224.0.0.0/4 → RP: 10.0.0.1 (static)\n\nWhat it means:\n- Statically configures the RP for ALL multicast groups (224/4).\n- Simplest RP discovery mechanism — works in small networks where\n  every router can be configured manually.\n- For larger networks, use Auto-RP or BSR for automatic discovery.\n- Add \"override\" to override Auto-RP / BSR with the static config."
@@ -27416,7 +27437,7 @@
           },
           {
             "cmd": "ip nat inside source static 10.0.0.10 198.51.100.10",
-            "desc": "1:1 static NAT",
+            "desc": "Creates a permanent 1:1 static NAT mapping between an inside local and outside global address",
             "type": "config",
             "flagged": false,
             "example": "R1(config)# ip nat inside source static 10.0.0.10 198.51.100.10\n\nR1# show ip nat translations\nPro Inside global   Inside local    Outside local   Outside global\n--- 198.51.100.10   10.0.0.10       ---             ---\n\nWhat it means:\n- 1:1 static mapping: traffic destined to 198.51.100.10 from outside\n  is forwarded to internal 10.0.0.10. Outbound from 10.0.0.10\n  reverses to 198.51.100.10.\n- Use for inbound services (web servers, mail relays) that need\n  a stable public IP.\n- Add \"extendable\" + \"no-alias\" for advanced VRF / multihoming\n  scenarios."
@@ -27723,7 +27744,7 @@
           },
           {
             "cmd": "show event manager statistics",
-            "desc": "EEM counters",
+            "desc": "Displays EEM policy engine counters: matched/run/error counts and average runtime per applet",
             "type": "show",
             "flagged": false,
             "example": "R1# show event manager statistics\n\nEvent Manager Policy Statistics:\nevent server status     : Active\nqueue size              : 64\nmatched events          : 124\nrunning policies        : 0\nprocessed policies      : 124\nqueued events           : 0\n\nPer-policy:\nLOG-LINK-DOWN  matched 23  ran 23  errors 0  avg-time 12 ms\nAUTO-SAVE      matched 7   ran 7   errors 0  avg-time 240 ms\n\nWhat it means:\n- Per-applet match / run counters with average runtime and error\n  count.\n- \"errors > 0\" warrants drilling into \"show event manager history\n  events\" for the failure detail.\n- \"queued events\" should normally be 0 — sustained > 0 means EEM\n  can't keep up with event rate."
@@ -27939,6 +27960,13 @@
             "type": "troubleshooting",
             "flagged": true,
             "example": "R1# debug ip icmp\nICMP packet debugging is on\n\n*Jun 12 10:15:02.441: ICMP: echo reply sent, src 10.0.0.1, dst 10.0.0.5\n*Jun 12 10:15:07.223: ICMP: dst (10.0.0.99) host unreachable sent to 10.0.0.5\n\nR1# undebug all\nAll possible debugging has been turned off"
+          },
+          {
+            "cmd": "show processes cpu sorted",
+            "desc": "Lists processes by CPU utilisation, highest first, with 5-second/1-minute/5-minute averages per process",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show processes cpu sorted\n\nCPU utilization for five seconds: 12%/3%; one minute: 9%; five minutes: 7%\n PID Runtime(ms)     Invoked      uSecs   5Sec   1Min   5Min TTY Process\n 142      982341      834211       1177  4.23%  3.10%  2.85%   0 IP Input\n  87      441200      120983       3647  2.11%  1.98%  1.72%   0 OSPF Router\n 201       88120       55210       1596  0.87%  0.65%  0.51%   0 SSH Process\n\nWhat it means:\n- Rows are sorted descending by 5-second CPU%, so the top rows are the\n  current biggest consumers.\n- The header line's first percentage includes time spent at interrupt\n  level (packet switching); the second is interrupt-only.\n- A single process pinned near 100% for sustained periods (not just a\n  5-second spike) points to a real problem — e.g. a routing flap\n  hammering \"IP Input\" or \"OSPF Router\".\n- Compare against \"show processes cpu history\" for a graphical trend\n  over the last 60 seconds/minutes/hours."
           }
         ],
         "Config Management": [
@@ -28196,6 +28224,13 @@
             "cmd": "esxcli system account list",
             "desc": "Lists local ESXi host user accounts (root, dcui, vpxuser, etc.) with each account's description — check before adding or auditing host-local logins.",
             "example": "[root@esxi01:~] esxcli system account list\nUser ID  Description\n-------  ---------------------------------------------\nroot     Administrator\ndcui     DCUI User\nvpxuser  VMware VirtualCenter administration account"
+          },
+          {
+            "cmd": "vim-cmd hostsvc/hostsummary",
+            "desc": "Dumps the host summary object: hardware, runtime connection/power state, and maintenance-mode status",
+            "type": "show",
+            "flagged": false,
+            "example": "$ vim-cmd hostsvc/hostsummary\n\n(vim.host.Summary) {\n   host = 'vim.HostSystem:ha-host',\n   hardware = (vim.host.Summary.HardwareSummary) {\n      vendor = \"Dell Inc.\",\n      model = \"PowerEdge R650\",\n      cpuModel = \"Intel(R) Xeon(R) Gold 6338\",\n      numCpuPkgs = 2,\n      numCpuCores = 64,\n      memorySize = 274877906944,\n   },\n   runtime = (vim.host.Summary.RuntimeSummary) {\n      connectionState = \"connected\",\n      powerState = \"poweredOn\",\n      inMaintenanceMode = false,\n   },\n}\n\nWhat it means:\n- Single call surfaces hardware inventory + live runtime state without\n  needing vCenter or the vSphere Client.\n- \"inMaintenanceMode\" is the field to script against before triggering\n  reboots or patch installs via esxcli/PowerCLI.\n- Grep specific fields, e.g.\n  vim-cmd hostsvc/hostsummary | grep -A2 hardware"
           }
         ],
         "Networking": [
@@ -28499,7 +28534,7 @@
           },
           {
             "cmd": "esxcli hardware cpu global get",
-            "desc": "Shows CPU info",
+            "desc": "Shows host-wide CPU hardware details: package/core/thread counts and hyperthreading state",
             "type": "show",
             "flagged": false,
             "example": "   CPU Hyperthreading: true\n   CPU Packages: 2\n   CPU Cores: 32\n   CPU Threads: 64\n   CPU Hyperthreading Active: true"
@@ -28613,7 +28648,7 @@
           },
           {
             "cmd": "esxcli system stats load get",
-            "desc": "Shows CPU load",
+            "desc": "Shows the 1/5/15-minute CPU load averages for the ESXi host, similar to Linux uptime",
             "type": "show",
             "flagged": false,
             "example": "   1-minute load average: 0.56\n   5-minute load average: 0.71\n   15-minute load average: 0.62"
@@ -29463,6 +29498,13 @@
             "cmd": "show flow-export counters",
             "desc": "Displays NetFlow/NSEL flow-export statistics per collector destination — packets sent and error counters for template, route, and block-allocation failures.",
             "example": "ciscoasa# show flow-export counters\ndestination: inside 209.165.200.224 2055\nStatistics:\n  packets sent 1000\nErrors:\n  block allocation failure 0\n  invalid interface 0\n  template send failure 0\n  no route to collector 0\n  source port allocation 0"
+          },
+          {
+            "cmd": "show conn count",
+            "desc": "Shows the current and historical peak number of active connections through the ASA",
+            "type": "show",
+            "flagged": false,
+            "example": "ciscoasa# show conn count\n\n12451 in use, 48210 most used\n\nWhat it means:\n- \"in use\" is the live connection table size right now; \"most used\" is\n  the high-water mark since the last reload.\n- A connection is built on the first SYN (TCP) or first packet (UDP)\n  and torn down on the final ACK / idle timeout, so \"in use\" tracks\n  active sessions, not total traffic.\n- Sustained counts 50-100x the normal baseline is a common early\n  indicator of a SYN flood or scanning activity — correlate with\n  \"show conn count\" trended over time plus \"show cpu usage\"."
           }
         ],
         "NAT": [
@@ -29986,7 +30028,7 @@
           },
           {
             "cmd": "Get-Service",
-            "desc": "Lists services",
+            "desc": "Lists local Windows services with their current status (Running/Stopped) and display name",
             "type": "show",
             "flagged": false,
             "example": "Status   Name               DisplayName\n------   ----               -----------\nRunning  AudioSrv           Windows Audio\nRunning  BFE                Base Filtering Engine\nStopped  AppMgmt            Application Management\nRunning  BITS               Background Intelligent Transfer Service"
@@ -30067,12 +30109,19 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "TimeCreated                     Id LevelDisplayName Message\n-----------                     -- ---------------- -------\n6/12/2026 9:38:42 AM          1000 Error            Faulting application name: example.exe...\n6/12/2026 9:21:14 AM          1002 Error            The program example.exe stopped interacting with Windows..."
+          },
+          {
+            "cmd": "Get-Counter -Counter '\\Processor(_Total)\\% Processor Time' -SampleInterval 2 -MaxSamples 5",
+            "desc": "Samples the total CPU utilisation performance counter at a fixed interval for a fixed number of samples",
+            "type": "cli",
+            "flagged": false,
+            "example": "PS C:\\> Get-Counter -Counter '\\Processor(_Total)\\% Processor Time' -SampleInterval 2 -MaxSamples 5\n\nTimestamp                 CounterSamples\n---------                 --------------\n7/12/2026 10:41:02 AM     \\\\host\\processor(_total)\\% processor time :\n                           14.32\n7/12/2026 10:41:04 AM     \\\\host\\processor(_total)\\% processor time :\n                           9.87\n\nWhat it means:\n- -SampleInterval is seconds between samples; -MaxSamples caps the run\n  (omit both and add -Continuous to stream until Ctrl+C).\n- Pull just the numeric value for scripting/alerting:\n  (Get-Counter '\\Processor(_Total)\\% Processor Time').CounterSamples.CookedValue\n- Swap the counter path for '\\Memory\\Available MBytes' or\n  '\\PhysicalDisk(_Total)\\% Disk Time' to watch other subsystems the\n  same way."
           }
         ],
         "Storage": [
           {
             "cmd": "Get-Volume",
-            "desc": "Shows volumes",
+            "desc": "Lists local volumes with drive letter, filesystem, health status, and free/total capacity",
             "type": "show",
             "flagged": false,
             "example": "DriveLetter  FileSystemLabel  FileSystem  DriveType  HealthStatus  SizeRemaining  Size\n-----------  ---------------  ----------  ---------  ------------  -------------  ----\nC            Windows          NTFS        Fixed      Healthy         54.13 GB     476 GB\nD            Data             NTFS        Fixed      Healthy        600.00 GB     800 GB"
@@ -30599,7 +30648,7 @@
         "CloudWatch": [
           {
             "cmd": "aws cloudwatch describe-alarms",
-            "desc": "Lists alarms",
+            "desc": "Lists CloudWatch alarms with their current state (OK/ALARM/INSUFFICIENT_DATA), metric, and threshold",
             "type": "show",
             "flagged": false,
             "example": "{\n    \"MetricAlarms\": [{\n        \"AlarmName\": \"HighCPU-web01\",\n        \"AlarmDescription\": \"CPU > 80% for 5 min\",\n        \"StateValue\": \"OK\",\n        \"MetricName\": \"CPUUtilization\",\n        \"Namespace\": \"AWS/EC2\",\n        \"Statistic\": \"Average\",\n        \"Period\": 300,\n        \"Threshold\": 80.0,\n        \"ComparisonOperator\": \"GreaterThanThreshold\"\n    }]\n}"
@@ -30880,6 +30929,13 @@
             "type": "show",
             "flagged": false,
             "example": "-------------------------------------------------------------------\n|           DescribeVpcPeeringConnections                          |\n+-------------------+---------------+---------------+-----------+\n| pcx-0a1b2c3d4e5f | vpc-11111111  | vpc-22222222  | active    |\n| pcx-0b2c3d4e5f6a | vpc-33333333  | vpc-44444444  | active    |\n+-------------------+---------------+---------------+-----------+"
+          },
+          {
+            "cmd": "aws ec2 describe-vpc-endpoints --query \"VpcEndpoints[].[VpcEndpointId,ServiceName,State]\" --output table",
+            "desc": "Lists VPC endpoints (Gateway and Interface) with their service name and current state",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-vpc-endpoints --query \"VpcEndpoints[].[VpcEndpointId,ServiceName,State]\" --output table\n\n---------------------------------------------------------------------------------\n|                            DescribeVpcEndpoints                               |\n+------------------------+--------------------------------------+---------------+\n|  vpce-0a1b2c3d4e5f6g7h8 |  com.amazonaws.us-east-1.s3           |  available    |\n|  vpce-0h8g7f6e5d4c3b2a1 |  com.amazonaws.us-east-1.ec2          |  available    |\n+------------------------+--------------------------------------+---------------+\n\nWhat it means:\n- \"Gateway\" endpoints (S3, DynamoDB) attach directly to route tables;\n  \"Interface\" endpoints (most other services) create an ENI with a\n  private IP in the subnet — State reflects that ENI's provisioning.\n- State stuck at \"pending\" past a couple of minutes usually means the\n  security group attached to the endpoint ENI is blocking the\n  PrivateLink health check.\n- Filter to one endpoint: add\n  --filters Name=vpc-endpoint-id,Values=vpce-xxxxxxxx"
           }
         ],
         "Route53": [
@@ -41761,6 +41817,13 @@
             "type": "config",
             "flagged": false,
             "example": "root@pve# pvesh set /nodes/pve-node-01/network --reload 1\n(Pending network changes applied successfully)\n\n# Verify new bridge is up:\nroot@pve# ip link show vmbr2\n6: vmbr2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n\n# If reload fails, check /etc/network/interfaces syntax:\nroot@pve# ifupdown2 --syntax-check -a"
+          },
+          {
+            "cmd": "ip -s link",
+            "desc": "Shows per-interface RX/TX packet, byte, error, and drop counters — the network equivalent of ifconfig -a stats",
+            "type": "show",
+            "flagged": false,
+            "example": "# ip -s link\n\n2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master vmbr0 state UP\n    RX: bytes  packets  errors  dropped overrun mcast\n    482910344  512033   0       12      0       894\n    TX: bytes  packets  errors  dropped carrier collsns\n    391022881  478221   0       0       0       0\n\n3: vmbr0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP\n    RX: bytes  packets  errors  dropped overrun mcast\n    482910344  512033   0       0       0       894\n    TX: bytes  packets  errors  dropped carrier collsns\n    391022881  478221   0       0       0       0\n\nWhat it means:\n- Non-zero \"dropped\" on a physical NIC (eno1) but 0 on its bridge\n  (vmbr0) points at a driver/ring-buffer or NIC-level issue, not a\n  bridge/VM-side one.\n- \"errors\" > 0 usually means a duplex mismatch, bad cable/SFP, or a\n  failing NIC — check with ethtool <iface> next.\n- Run twice a few seconds apart and diff the counters to get a live\n  rate instead of a lifetime total."
           }
         ],
         "Backup & Restore (vzdump)": [
@@ -43614,6 +43677,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show interface status err-disabled\n\nPort          Name               Status       Reason\n--------------------------------------------------------------\nEth1/12       --                 err-disabled BPDUGuard errDisable\nEth1/27       --                 err-disabled UDLD errDisable\n\n# Recover a port once the underlying cause is fixed:\nswitch(config)# interface eth1/12\nswitch(config-if)# shutdown\nswitch(config-if)# no shutdown\n# Or configure automatic recovery: errdisable recovery cause bpduguard"
+          },
+          {
+            "cmd": "show fex",
+            "desc": "Lists all attached Fabric Extenders with their FEX number, description, model, serial, and state",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show fex\n\n  FEX      FEX           FEX                       FEX\nNumber   Description     State        Model            Serial\n------------------------------------------------------------------------\n  101     FEX0101         Online       N2K-C2232PP-10GE FOX1234G5H6\n  102     FEX0102         Online       N2K-C2232PP-10GE FOX1234G5H7\n\nWhat it means:\n- \"Online\" is the only healthy steady state; \"Image Download\",\n  \"Registered\", or \"Offline\" all indicate the FEX is still coming up\n  or has lost its fabric uplink.\n- Use \"show fex detail\" for per-FEX hardware/thermal/PSU detail, or\n  \"show fex <n> detail\" for a single unit.\n- FEX ports show up in \"show interface\" as Ethernet<FEX#>/slot/port\n  once the FEX reaches Online state."
           }
         ],
         "Config Management": [
