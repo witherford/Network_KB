@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-12T18:39:13.656Z",
+  "updatedAt": "2026-07-13T18:39:14.632Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -6506,6 +6506,13 @@
             "type": "show",
             "flagged": false,
             "example": "Session distribution:\n  DP0:  Core 0: 2156  Core 1: 2089  Core 2: 2201  Core 3: 2134\n  DP1:  Core 0: 1980  Core 1: 2050  Core 2: 1995  Core 3: 2040\n  Total active sessions: 16645\n  Max sessions: 131072\n  Session utilization: 12%"
+          },
+          {
+            "cmd": "show session all filter state active",
+            "desc": "List only sessions currently in the active flow state, excluding discard and predict entries — the quickest way to see real traffic without noise from denied sessions or speculative ALG predictions.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show session all filter state active\n\n--------------------------------------------------------------------------------\nID          Application    State   Type Flag  Src[Sport]/Zone/Proto (translated IP[Port])\n                                                Vsys  Dst[Dport]/Zone (translated IP[Port])\n--------------------------------------------------------------------------------\n104521      ssl            ACTIVE  FLOW  NS   10.20.0.15[52344]/trust  (10.20.0.15[52344])\n                                                vsys1  1.1.1.1[443]/untrust (203.0.113.5[52344])\n\nNumber of sessions that match filter: 1\n\n# Combine with other filters for narrower troubleshooting:\n#   show session all filter state active application ssl source 10.20.0.15"
           }
         ],
         "Packet Diagnostics": [
@@ -8560,14 +8567,14 @@
           },
           {
             "cmd": "openssl dgst -sha1 <file>",
-            "desc": "Computes SHA-1 hash",
+            "desc": "Computes the SHA-1 digest of a file using the dgst subcommand — fast, but cryptographically broken for collision resistance, so use only for non-security integrity checks.",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha1 firmware.bin\nSHA1(firmware.bin)= da39a3ee5e6b4b0d3255bfef95601890afd80709\n# SHA-1 is cryptographically broken — use only for non-security checksums.\n# Many firmware vendors still publish SHA-1 hashes for file integrity checks."
           },
           {
             "cmd": "openssl dgst -md5 <file>",
-            "desc": "Computes MD5 hash",
+            "desc": "Computes the MD5 digest of a file using the dgst subcommand — cryptographically broken, acceptable only for legacy checksum/download-integrity checks, never for security purposes.",
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -md5 archive.tar.gz\nMD5(archive.tar.gz)= d41d8cd98f00b204e9800998ecf8427e\n# MD5 is cryptographically broken — do NOT use for security purposes.\n# Acceptable only for non-security integrity checks (download verification)."
@@ -8730,7 +8737,7 @@
           },
           {
             "cmd": "openssl enc -d -aes-256-gcm -pbkdf2 -in enc.bin -out plain.txt",
-            "desc": "Decrypt AES-256-GCM",
+            "desc": "Decrypts a file that was encrypted with AES-256-GCM using a PBKDF2-derived key — GCM is an authenticated mode, so tampered or truncated ciphertext fails decryption instead of silently producing garbage.",
             "type": "config",
             "flagged": false,
             "example": "$ openssl enc -d -aes-256-gcm -pbkdf2 -in encrypted.bin -out decrypted.txt\nenter aes-256-gcm decryption password:\n# Decrypts an AES-256-GCM encrypted file (authenticated decryption).\n# Tampered ciphertext will fail with an authentication error."
@@ -8795,7 +8802,7 @@
           },
           {
             "cmd": "openssl pkeyutl -verify -pubin -inkey public.key -in hash.bin -sigfile sig.bin",
-            "desc": "Low-level verify",
+            "desc": "Low-level signature verification via pkeyutl: checks a detached signature (sigfile) against a pre-computed hash (in) using a public key (pubin/inkey) — the modern replacement for the deprecated openssl rsautl -verify.",
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ openssl pkeyutl -verify -pubin -inkey public.key -in hash.bin -sigfile sig.bin\nSignature Verified Successfully\n# Verifies a signature created with openssl pkeyutl -sign.\n# -pubin = input is a public key file (SubjectPublicKeyInfo format)."
@@ -20170,7 +20177,7 @@
           },
           {
             "cmd": "tls.record.version == 0x0303",
-            "desc": "TLS 1.2",
+            "desc": "Matches TLS 1.2 record-layer frames (version 0x0303) — note that TLS 1.3 ClientHello/ServerHello record layers also advertise 0x0303 for middlebox compatibility, so check the \"Supported Versions\" extension to confirm the negotiated version.",
             "type": "show",
             "flagged": false,
             "example": "# Matches TLS 1.2 record-layer frames (version 0x0303).\n# TLS 1.2 is still widely used but being phased out in favour of 1.3.\n# Note: TLS 1.3 also uses 0x0303 in the record layer for backward compatibility.\n# Frame 5:  TLSv1.2 Record Layer: Handshake Protocol: Client Hello"
@@ -20307,28 +20314,28 @@
           },
           {
             "cmd": "dhcp.option.dhcp == 1",
-            "desc": "DHCPDISCOVER",
+            "desc": "Matches DHCPDISCOVER packets (option 53 value = 1) — the client's initial broadcast to locate any DHCP server on the segment.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DHCP Discover packets (option 53 value = 1).\n# Sent by client at boot as a broadcast to locate DHCP servers.\n# Frame 1:  0.0.0.0 → 255.255.255.255  DHCP Discover  chaddr: aa:bb:cc:dd:ee:ff\n# Multiple Discovers without an Offer = no DHCP server reachable on this VLAN."
           },
           {
             "cmd": "dhcp.option.dhcp == 2",
-            "desc": "DHCPOFFER",
+            "desc": "Matches DHCPOFFER packets (option 53 value = 2) — a server's response to a Discover, proposing an IP lease to the client.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DHCP Offer packets (option 53 value = 2).\n# Server response to Discover — offering an IP address to the client.\n# Frame 2:  10.0.0.1 → 255.255.255.255  DHCP Offer  IP: 10.0.0.100  lease: 86400\n# Multiple Offers from different source IPs = rogue DHCP server on network."
           },
           {
             "cmd": "dhcp.option.dhcp == 3",
-            "desc": "DHCPREQUEST",
+            "desc": "Matches DHCPREQUEST packets (option 53 value = 3) — the client broadcasting acceptance of a specific server's offer, or requesting renewal of an existing lease.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DHCP Request packets (option 53 value = 3).\n# Client broadcasts acceptance of a specific server's Offer.\n# Frame 3:  0.0.0.0 → 255.255.255.255  DHCP Request  requesting 10.0.0.100\n# Also sent unicast during lease renewal (50% of lease time)."
           },
           {
             "cmd": "dhcp.option.dhcp == 5",
-            "desc": "DHCPACK",
+            "desc": "Matches DHCPACK packets (option 53 value = 5) — the server confirming the lease, at which point the client applies the IP, mask, gateway, and DNS options.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DHCP ACK packets (option 53 value = 5) — lease confirmed.\n# Frame 4:  10.0.0.1 → 10.0.0.100  DHCP ACK  lease: 86400s  router: 10.0.0.1\n# Client configures the IP, mask, gateway, and DNS options from the ACK."
@@ -20342,7 +20349,7 @@
           },
           {
             "cmd": "dhcp.option.dhcp == 7",
-            "desc": "DHCPRELEASE",
+            "desc": "Matches DHCPRELEASE packets (option 53 value = 7) — a client voluntarily giving up its lease before expiry, e.g. on graceful disconnect.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DHCP Release packets (option 53 value = 7).\n# Client gracefully releases its lease when disconnecting.\n# Frame 10: 10.0.0.100 → 10.0.0.1  DHCP Release  releasing 10.0.0.100"
@@ -28622,6 +28629,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "(VM config reloaded from disk — no restart of guest OS)"
+          },
+          {
+            "cmd": "vim-cmd vmsvc/getallvms",
+            "desc": "List every VM registered on the host with its VMID, display name, datastore path, guest OS, and running annotation — the VMID from this output is required as the argument to every other vmsvc/* command.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esxi:~] vim-cmd vmsvc/getallvms\nVmid  Name              File                              Guest OS       Version   Annotation\n12    web-app-01        [datastore1] web-app-01/web-app-01.vmx   rhel8_64Guest  vmx-19\n15    db-primary        [datastore1] db-primary/db-primary.vmx   centos8_64Guest vmx-19\n\n# Use the Vmid with other vmsvc commands, e.g.:\n#   vim-cmd vmsvc/power.getstate 12"
           }
         ],
         "Diagnostics": [
@@ -30989,6 +31003,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws sns list-topics --output table\n----------------------------------------------------------------------\n|                             ListTopics                             |\n+----------------------------------------------------------------------+\n|  arn:aws:sns:us-east-1:123456789012:MyAlerts                        |\n|  arn:aws:sns:us-east-1:123456789012:BillingAlarms                   |\n+----------------------------------------------------------------------+"
+          },
+          {
+            "cmd": "aws sns subscribe --topic-arn <arn> --protocol email --notification-endpoint <email>",
+            "desc": "Subscribe an endpoint (email, SMS, HTTPS, SQS, Lambda) to an SNS topic; email and HTTP(S) endpoints stay in \"PendingConfirmation\" until the owner confirms via the link/token SNS sends them.",
+            "type": "config",
+            "flagged": false,
+            "example": "$ aws sns subscribe --topic-arn arn:aws:sns:us-east-1:123456789012:alerts --protocol email --notification-endpoint ops@example.com\n{\n    \"SubscriptionArn\": \"pending confirmation\"\n}\n\n# The endpoint receives a confirmation email/link and must accept it before\n# messages are delivered. Check status with:\n#   aws sns list-subscriptions-by-topic --topic-arn <arn>"
           }
         ],
         "SQS": [
@@ -31028,6 +31049,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudformation list-stacks     --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE     --query 'StackSummaries[*].[StackName,StackStatus,CreationTime]'     --output table\n\n---------------------------------------------------\n|                   ListStacks                    |\n+---------------------+------------------+--------+\n| prod-vpc-stack      | CREATE_COMPLETE  | 2025-01-10T09:22:14Z |\n| prod-rds-stack      | UPDATE_COMPLETE  | 2025-03-14T15:33:01Z |\n| staging-eks-cluster | CREATE_COMPLETE  | 2025-05-02T11:05:44Z |\n+---------------------+------------------+--------+\n\nNote: Deleted stacks are retained in the list for 90 days.\nFilter by DELETE_FAILED to find stacks that failed to clean up."
+          },
+          {
+            "cmd": "aws cloudformation create-stack --stack-name <name> --template-body file://template.yaml --parameters ParameterKey=<key>,ParameterValue=<value>",
+            "desc": "Create a new CloudFormation stack from a local template file; the call returns immediately with a StackId while provisioning proceeds asynchronously in the background.",
+            "type": "config",
+            "flagged": false,
+            "example": "$ aws cloudformation create-stack --stack-name web-app --template-body file://template.yaml \\\n    --parameters ParameterKey=InstanceType,ParameterValue=t3.micro --capabilities CAPABILITY_IAM\n{\n    \"StackId\": \"arn:aws:cloudformation:us-east-1:123456789012:stack/web-app/8a2f1c30\"\n}\n\n# Block until creation finishes (or fails):\n$ aws cloudformation wait stack-create-complete --stack-name web-app\n\n# Check status/events if it rolls back:\n$ aws cloudformation describe-stack-events --stack-name web-app"
           }
         ],
         "EKS": [
@@ -31083,6 +31111,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws kms describe-key --key-id 12345678-1234-1234-1234-123456789012 \\\n    --query \"KeyMetadata.[KeyId,KeyState,Enabled,KeySpec,CreationDate]\"\n[\n    \"12345678-1234-1234-1234-123456789012\",\n    \"Enabled\",\n    true,\n    \"SYMMETRIC_DEFAULT\",\n    \"2024-01-15T09:00:00+00:00\"\n]"
+          },
+          {
+            "cmd": "aws kms create-key --description \"<description>\"",
+            "desc": "Create a new symmetric encryption KMS key (customer managed key) in the current account and Region; the default parameters produce a symmetric key suitable for encrypt/decrypt, so no key-spec flags are required for the common case.",
+            "type": "config",
+            "flagged": false,
+            "example": "$ aws kms create-key --description \"app-secrets-encryption-key\"\n{\n    \"KeyMetadata\": {\n        \"KeyId\": \"1234abcd-12ab-34cd-56ef-1234567890ab\",\n        \"Arn\": \"arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab\",\n        \"Enabled\": true,\n        \"KeyUsage\": \"ENCRYPT_DECRYPT\",\n        \"KeyState\": \"Enabled\"\n    }\n}\n\n# Give it a friendly name so scripts don't hard-code the KeyId:\n$ aws kms create-alias --alias-name alias/app-secrets --target-key-id 1234abcd-12ab-34cd-56ef-1234567890ab"
           }
         ],
         "Secrets Manager": [
@@ -31115,6 +31150,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudtrail lookup-events \\\n    --lookup-attributes AttributeKey=EventName,AttributeValue=TerminateInstances\n{\n    \"Events\": [{\n        \"EventId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"EventName\": \"TerminateInstances\",\n        \"EventTime\": \"2026-06-29T14:02:11+00:00\",\n        \"Username\": \"matthew.witherford\",\n        \"Resources\": [{\"ResourceType\": \"AWS::EC2::Instance\", \"ResourceName\": \"i-0abcd1234ef567890\"}]\n    }]\n}"
+          },
+          {
+            "cmd": "aws cloudtrail get-trail-status --name <trail-name>",
+            "desc": "Show whether a trail is actively logging plus the most recent delivery timestamps and errors for S3, SNS, and CloudWatch Logs — the first thing to check when expected events stop showing up in a trail.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws cloudtrail get-trail-status --name management-events\n{\n    \"IsLogging\": true,\n    \"LatestDeliveryTime\": 1752400000.0,\n    \"LatestDeliveryAttemptSucceeded\": \"2026-07-13T09:26:40Z\",\n    \"LatestNotificationAttemptSucceeded\": \"2026-07-13T09:26:41Z\",\n    \"LatestDeliveryError\": \"\"\n}\n\n# LatestDeliveryError non-empty usually means the S3 bucket policy no\n# longer grants CloudTrail PutObject — check bucket policy first."
           }
         ],
         "Lambda": [
@@ -31165,6 +31207,13 @@
             "type": "show",
             "flagged": true,
             "example": "$ aws dynamodb scan --table-name Music --max-items 2\n{\n    \"Items\": [\n        {\"SongTitle\": {\"S\": \"Call Me Today\"}, \"AlbumTitle\": {\"S\": \"Somewhat Famous\"}},\n        {\"SongTitle\": {\"S\": \"Scared of My Shadow\"}, \"AlbumTitle\": {\"S\": \"Blue Sky Blues\"}}\n    ],\n    \"Count\": 2,\n    \"ScannedCount\": 2\n}\n\n# Use --filter-expression to narrow client-side after the (still full) table read,\n# and NextToken/--starting-token to page through results >1MB.\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/dynamodb/scan.html"
+          },
+          {
+            "cmd": "aws dynamodb query --table-name <table> --key-condition-expression \"<expr>\" --expression-attribute-values file://values.json",
+            "desc": "Retrieve items whose partition key matches a given value, optionally narrowed by a sort-key condition — targets a single partition, so it is far cheaper than scan for lookups against a known key.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ cat values.json\n{\":pk\": {\"S\": \"USER#42\"}}\n\n$ aws dynamodb query --table-name Orders \\\n    --key-condition-expression \"PK = :pk\" \\\n    --expression-attribute-values file://values.json\n{\n    \"Items\": [\n        {\"PK\": {\"S\": \"USER#42\"}, \"SK\": {\"S\": \"ORDER#1001\"}, \"Total\": {\"N\": \"59.99\"}}\n    ],\n    \"Count\": 1,\n    \"ScannedCount\": 1\n}"
           }
         ],
         "Auto Scaling": [
@@ -31181,6 +31230,13 @@
             "type": "action",
             "flagged": false,
             "example": "$ aws autoscaling set-desired-capacity --auto-scaling-group-name web-asg \\\n  --desired-capacity 5 --honor-cooldown\n\n$ aws autoscaling describe-scaling-activities --auto-scaling-group-name web-asg \\\n  --query \"Activities[0].[StatusCode,Description]\" --output table\n------------------------------------------------------------\n|  Successful  |  Launching a new EC2 instance: i-0abc123  |\n\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/autoscaling/set-desired-capacity.html"
+          },
+          {
+            "cmd": "aws autoscaling update-auto-scaling-group --auto-scaling-group-name <name> --min-size <n> --max-size <n>",
+            "desc": "Change the min/max capacity bounds of an existing Auto Scaling group; omitting --desired-capacity leaves current running-instance count untouched while only the scaling limits change.",
+            "type": "action",
+            "flagged": false,
+            "example": "$ aws autoscaling update-auto-scaling-group --auto-scaling-group-name web-asg --min-size 2 --max-size 8\n(No output on success)\n\n# Confirm the new bounds took effect:\n$ aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names web-asg \\\n    --query \"AutoScalingGroups[].[MinSize,MaxSize,DesiredCapacity]\""
           }
         ]
       },
@@ -42739,6 +42795,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show forwarding ipv4 route\n\nIPv4 routes for table default/base\n-------------------+----------------+----------------+-----------\nPrefix              Next-Hop          Interface        Partial-flag\n0.0.0.0/0            10.0.0.254        Vlan10           false\n10.0.0.0/24          attached          Vlan10           false\n172.16.0.0/16        1.1.1.1           Eth1/1           false\n# 'Partial-flag: true' means the FIB entry is incomplete (e.g. unresolved\n# adjacency) — traffic to that prefix punts to software or drops."
+          },
+          {
+            "cmd": "show routing vrf <vrf-name>",
+            "desc": "Display the protocol-agnostic unified RIB (URIB) for a VRF, showing every learned route with its owning protocol and admin distance — complements the AFI-specific \"show ip route vrf\", which only covers IPv4.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show routing vrf TENANT_A\n\nIP Route Table for VRF \"TENANT_A\"\n'*' denotes best ucast next-hop\n'**' denotes best mcast next-hop\n'[x/y]' denotes [preference/metric]\n\n10.10.0.0/24, ubest/mbest: 1/0, attached\n    *via 10.10.0.1, Vlan10, [0/0], 04:12:33, direct\n0.0.0.0/0, ubest/mbest: 1/0\n    *via 10.10.0.254, [20/0], 02:01:10, bgp-65001, external"
           }
         ],
         "Routing › OSPF": [
@@ -44101,6 +44164,13 @@
             "type": "config",
             "flagged": false,
             "example": "(Interface 1/1/1 set as edge port with BPDU-guard enabled — will err-disable on BPDU receipt)"
+          },
+          {
+            "cmd": "show spanning-tree interface 1/1/1",
+            "desc": "Show STP/MSTP state for a single interface — port role, port state, designated bridge, and path cost — to narrow down troubleshooting when one port is stuck in blocking or listening instead of forwarding.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show spanning-tree interface 1/1/1\n\nInterface 1/1/1 (VLAN 10) - Role: Designated - State: Forwarding\n  Port Identifier      : 128.1\n  Designated Root       : 32768.9c1c.1234.5678\n  Designated Bridge     : 32768.9c1c.1234.5678\n  Designated Path Cost  : 0\n  BPDU Guard            : Disabled\n  Port-Type             : Normal"
           }
         ],
         "L3 Routing": [
