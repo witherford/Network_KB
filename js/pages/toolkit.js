@@ -1,5 +1,8 @@
 // Toolkit container — grouped sub-router over calculators, cheat sheets,
 // password/hash tools, scripts & builders, WIFI tools and Palo Alto helpers.
+//
+// Witherrss theme: renders a two-column shell (left rail + main) instead of
+// the original top grouped nav. Data + routing logic are unchanged.
 
 const SUBS = {
   // Calculators
@@ -70,9 +73,12 @@ export async function mount(root) {
       </div>
     </div>`).join('');
 
+  // Two-column shell: sticky left rail + scrolling main column.
   root.innerHTML = `
-    <nav class="sub-nav grouped" id="tkNav">${nav}</nav>
-    <div id="tkBody" class="page"></div>`;
+    <div class="tk-shell">
+      <nav class="tk-rail" id="tkNav" aria-label="Toolkit">${nav}</nav>
+      <div id="tkBody" class="tk-main page"></div>
+    </div>`;
 
   const body = root.querySelector('#tkBody');
   async function showSub(key) {

@@ -1,0 +1,267 @@
+/* ============================================================
+   Witherrss — dark + light monochrome theme
+   Drop-in override. Load AFTER themes.css, main.css, components.css.
+   - Light = default (:root), Dark = body.theme-dark (matches prefs.js).
+   - The header bar stays dark in BOTH modes (as the original did).
+   - Content surfaces flip via CSS variables.
+   - Diagram colours (packet-flow / wifi SVGs) are left untouched.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
+
+/* ---- LIGHT palette (default) ---- */
+:root {
+  --bg: #f4f4f5;
+  --card: #ffffff;
+  --card-2: #f4f4f5;
+  --border: rgba(0,0,0,.10);
+  --border-2: rgba(0,0,0,.22);
+  --text: #141414;
+  --text-2: rgba(0,0,0,.60);
+  --text-3: rgba(0,0,0,.42);
+  --header: #0c0c0d;          /* dark bar in both modes */
+  --accent: #111111;
+  --accent-fg: #ffffff;
+  --code: #1a1a1a;
+  --hover: rgba(0,0,0,.04);
+  --sel: rgba(0,0,0,.06);
+  --hl: rgba(0,0,0,.14);
+  --danger: #b91c1c;  --danger-bg: rgba(185,28,28,.10);
+  --success: #333333; --success-bg: rgba(0,0,0,.06);
+  --warn: #444444;    --warn-bg: rgba(0,0,0,.05);
+  --input-bg: #ffffff;
+  --arrow: #333333;
+}
+
+/* ---- DARK palette ---- */
+body.theme-dark {
+  --bg: #0a0a0a;
+  --card: #101012;
+  --card-2: #0d0d0e;
+  --border: rgba(255,255,255,.09);
+  --border-2: rgba(255,255,255,.20);
+  --text: #ededed;
+  --text-2: rgba(255,255,255,.60);
+  --text-3: rgba(255,255,255,.40);
+  --header: #0c0c0d;
+  --accent: #fafafa;
+  --accent-fg: #0a0a0a;
+  --code: #eaeaea;
+  --hover: rgba(255,255,255,.035);
+  --sel: rgba(255,255,255,.06);
+  --hl: rgba(255,255,255,.22);
+  --danger: #f87171;  --danger-bg: rgba(248,113,113,.12);
+  --success: #e6e6e6; --success-bg: rgba(255,255,255,.08);
+  --warn: #d4d4d4;    --warn-bg: rgba(255,255,255,.06);
+  --input-bg: #141416;
+  --arrow: #ffffff;
+}
+
+/* ---- Typography ---- */
+html, body {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.cmd-code, .cmd-cmd-text, .tbl td.mono, pre.script-out, .kbd,
+.lc-cli-pre, .lc-diagram-pre, .lc-table td code, .lc-prose code,
+.cmd-example, .ver-current, .visits-pill, code {
+  font-family: 'Geist Mono', 'SF Mono', Consolas, monospace !important;
+}
+
+/* ---- Header + two-line wordmark (dark bar → always light text) ---- */
+.app-header {
+  background: var(--header);
+  border-bottom: 1px solid rgba(255,255,255,.09);
+  align-items: flex-start;
+  padding-top: max(14px, env(safe-area-inset-top));
+}
+.brand { display: flex; flex-direction: column; }
+.brand .wordmark {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 26px;
+  line-height: .85;
+  color: #fff;
+  letter-spacing: .01em;
+}
+.brand h1 {
+  font-size: 13px; font-weight: 600; letter-spacing: -.01em;
+  color: rgba(255,255,255,.72); margin-top: 4px;
+}
+.brand-sub {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px; text-transform: uppercase; letter-spacing: .11em;
+  color: rgba(255,255,255,.34); opacity: 1; margin-top: 5px;
+}
+
+/* Header controls — on the dark bar, so keep light regardless of mode */
+.nav-tab {
+  background: transparent; border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.6); border-radius: 8px; padding: 7px 15px; font-size: 12.5px;
+}
+.nav-tab:hover { background: rgba(255,255,255,.06); color: #fff; }
+.nav-tab.active, .nav-tab[aria-selected="true"] {
+  background: #fafafa; color: #0a0a0a; border-color: #fafafa;
+}
+.icon-btn {
+  border: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.72);
+  border-radius: 8px; padding: 6px 12px;
+}
+.icon-btn:hover { background: rgba(255,255,255,.06); color: #fff; }
+.icon-btn.active { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.4); }
+.icon-btn.edit-on { background: #fafafa; color: #0a0a0a; border-color: #fafafa; }
+.stats-bar { background: var(--header); border-top-color: rgba(255,255,255,.09); }
+.stats-bar, .stats-bar strong { color: rgba(255,255,255,.9); }
+
+/* ---- Search input ---- */
+.search-input {
+  background: var(--input-bg); border: 1px solid var(--border);
+  color: var(--text); border-radius: 9px; padding: 10px 14px; width: 320px;
+}
+.search-input:focus { border-color: var(--border-2); }
+
+/* ---- Toolbars / filter tabs ---- */
+.page-toolbar, .filter-tabs, .filter-tabs.type-row, .sub-nav { background: var(--bg); border-bottom-color: var(--border); }
+.ftab {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-2); border-radius: 20px;
+}
+.ftab:hover { background: transparent; border-color: var(--border-2); color: var(--text); }
+.ftab.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.ftab .cnt { background: var(--sel); color: var(--text-3); }
+.ftab.active .cnt { background: rgba(127,127,127,.25); color: var(--accent-fg); }
+.filter-tabs.type-row .ftab.active.tt-show,
+.filter-tabs.type-row .ftab.active.tt-config,
+.filter-tabs.type-row .ftab.active.tt-troubleshooting,
+.filter-tabs.type-row .ftab.active.tt-all {
+  background: var(--accent); color: var(--accent-fg); border-color: var(--accent);
+}
+
+/* ---- Command list ---- */
+.section-card { background: var(--card); border-color: var(--border); border-radius: 12px; }
+.section-title { background: var(--card-2); border-bottom-color: var(--border); }
+.platform-header .ptitle { color: var(--text); }
+.cmd-item { border-bottom-color: var(--border); }
+.cmd-item:hover { background: var(--hover); }
+.cmd-cmd-text { background: var(--sel); border-radius: 5px; }
+.cpy-btn { background: transparent; border: 1px solid var(--border); color: var(--text-2); border-radius: 6px; }
+.cpy-btn:hover, .cpy-btn.copied { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+/* Command-type badges → B&W: Show = solid outline · Config/Trbl = dashed */
+.type-badge, .tb-show, .tb-config, .tb-troubleshooting,
+.theme-dark .tb-show, .theme-dark .tb-config, .theme-dark .tb-troubleshooting {
+  background: transparent !important; color: var(--text) !important;
+  border: 1px solid var(--border-2); border-radius: 5px;
+}
+.tb-show, .theme-dark .tb-show { border-style: solid; }
+.tb-config, .tb-troubleshooting,
+.theme-dark .tb-config, .theme-dark .tb-troubleshooting { border-style: dashed; }
+
+.type-chip.tt-show.on, .type-chip.tt-config.on, .type-chip.tt-troubleshooting.on,
+.theme-dark .type-chip.tt-show.on, .theme-dark .type-chip.tt-config.on, .theme-dark .type-chip.tt-troubleshooting.on {
+  background: var(--sel) !important; color: var(--text) !important;
+}
+.cmd-filter-btn.on, .sec-ctl.on, .collapse-all-btn, .collapse-vendor-btn,
+.theme-dark .cmd-filter-btn.on, .theme-dark .sec-ctl.on, .theme-dark .collapse-all-btn {
+  background: var(--sel) !important; color: var(--text) !important; border-color: var(--border-2) !important;
+}
+.cmd-filter-btn:hover, .collapse-all-btn:hover, .collapse-vendor-btn:hover { background: var(--hover) !important; }
+
+/* ---- Toolkit grouped nav ---- */
+.sub-nav.grouped { gap: 22px; padding: 14px 20px; }
+.tk-group-label { color: var(--text-3); letter-spacing: .12em; }
+
+/* Toolkit status badges → B&W (solid = good, outline = caution, dashed = new, dim = avoid) */
+.tk-badge { background: transparent; color: var(--text); border: 1px solid var(--border-2); border-radius: 20px; }
+.tk-badge.use, .tk-badge.yes { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.tk-badge.dep { border-style: solid; }
+.tk-badge.info { border-style: dashed; }
+.tk-badge.avoid, .tk-badge.no { background: var(--sel); color: var(--text-3); border-color: transparent; }
+.tk-badge.neutral { color: var(--text-2); border-color: var(--border); }
+
+.tbl tr.tk-row-use   td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.tbl tr.tk-row-dep   td:first-child { box-shadow: inset 3px 0 0 var(--border-2); }
+.tbl tr.tk-row-avoid td:first-child { box-shadow: inset 3px 0 0 var(--sel); }
+
+/* Reference-table legend swatches → B&W (packet-flow legend uses inline colours, untouched) */
+.tk-legend .sw.use   { background: var(--accent); border-color: var(--accent); }
+.tk-legend .sw.dep   { background: transparent; border: 1px solid var(--border-2); }
+.tk-legend .sw.info  { background: transparent; border: 1px dashed var(--border-2); }
+.tk-legend .sw.avoid { background: var(--sel); border-color: transparent; }
+
+/* ---- Tables ---- */
+.tbl th { background: var(--card-2); color: var(--text-3); }
+.tbl td.mono { color: var(--code); }
+.tbl tr:hover td { background: var(--hover); }
+
+/* ---- Form controls: monochrome dropdown arrow on selects ---- */
+.form-row select, .settings-section select {
+  appearance: none; -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--arrow) 50%),
+    linear-gradient(135deg, var(--arrow) 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% - 1px), calc(100% - 10px) calc(50% - 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat; padding-right: 30px;
+}
+.form-row input, .form-row select, .form-row textarea {
+  background: var(--input-bg); border-color: var(--border); border-radius: 9px; color: var(--text);
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--border-2); }
+
+/* ---- Buttons ---- */
+.btn { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 8px; }
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(.92); }
+.btn.ghost { border-color: transparent; color: var(--text-2); }
+
+/* ---- Misc ---- */
+@keyframes wr-blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+.modal { border-radius: 16px; }
+pre.script-out, .kbd { background: var(--card-2); border-color: var(--border); }
+.hub-eyebrow { color: var(--text); border-color: var(--border-2); background: var(--sel); }
+.hub-card-cta { color: var(--text); }
+
+/* ============================================================
+   Toolkit left-rail layout (pairs with the modified js/pages/toolkit.js)
+   ============================================================ */
+.tk-shell { display: flex; align-items: flex-start; min-height: calc(100vh - 118px); }
+.tk-rail {
+  width: 256px; flex: none; align-self: stretch;
+  border-right: 1px solid var(--border);
+  background: var(--card-2);
+  padding: 20px 12px;
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 0; max-height: calc(100vh - 50px); overflow: auto;
+}
+.tk-rail .tk-group { display: flex; flex-direction: column; gap: 2px; }
+.tk-rail .tk-group-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--text-3); padding: 0 8px 6px;
+}
+.tk-rail .tk-group-tabs { display: flex; flex-direction: column; gap: 2px; }
+.tk-rail .ftab {
+  position: relative; display: block; width: 100%; text-align: left;
+  border: none !important; background: transparent; border-radius: 8px;
+  padding: 9px 10px 9px 14px; font-size: 12.5px; color: var(--text-2); font-weight: 500;
+}
+.tk-rail .ftab:hover { background: var(--hover); color: var(--text); }
+.tk-rail .ftab.active { background: var(--sel); color: var(--text); }
+.tk-rail .ftab.active::before {
+  content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 2px; background: var(--accent); border-radius: 2px;
+}
+.tk-main { flex: 1; min-width: 0; padding: 26px 30px 48px; }
+.tk-main h2:first-child { font-size: 24px; font-weight: 600; letter-spacing: -.02em; }
+
+@media (max-width: 860px) {
+  .tk-shell { flex-direction: column; }
+  .tk-rail {
+    width: auto; position: static; max-height: none; align-self: auto;
+    border-right: none; border-bottom: 1px solid var(--border);
+    flex-direction: row; flex-wrap: wrap; gap: 14px;
+  }
+  .tk-rail .ftab.active::before { display: none; }
+  .tk-main { padding: 18px 14px 40px; }
+}
