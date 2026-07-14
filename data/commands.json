@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-13T18:39:14.632Z",
+  "updatedAt": "2026-07-14T18:41:04.579Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -3972,6 +3972,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show techsupport\n\n...collecting data (this can take several minutes)...\nTechsupport data collected successfully.\n/var/tmp/support/collector_P_10.10.10.11_12Jul2026_10_45_02.tar.gz\n\nWhat it means:\n- Runs a script that gathers ns.conf, core files, newnslog, running\n  counters, and dozens of \"show\" command outputs into one .tar.gz.\n- Use \"show techsupport -scope CLUSTER\" to collect an abbreviated\n  archive from every node in a cluster in one pass.\n- Add \"-upload\" (with valid My Citrix Support credentials) to push the\n  archive straight to a Citrix support case over SSL instead of\n  downloading it manually via SCP/WinSCP from /var/tmp/support/."
+          },
+          {
+            "cmd": "show cache global",
+            "desc": "Shows the integrated (built-in) content-caching feature's global policy bindings and configuration state — confirms whether caching is globally enabled and which policies are bound before digging into per-object cache hit/miss counters.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show cache global\n\tGlobal bindings:\n\t1)\tPolicy Name: cache_policy_static\n\t\tPriority: 100\n\t\tGoto Priority Expression: END\n\tGlobal cache state: ENABLED\n Done\n\n# If global state shows DISABLED, no object will be cached regardless of\n# per-vserver cache policy bindings — check \"enable ns feature IC\" first."
           }
         ],
         "VIP Hit Counter Troubleshooting": [
@@ -5903,6 +5910,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show system resources\n\ntop - 10:41:02 up 62 days, 14:12,  1 user,  load average: 0.42, 0.51, 0.48\nTasks: 210 total,   1 running, 209 sleeping,   0 stopped,   0 zombie\n%Cpu(s):  8.3 us,  2.1 sy,  0.0 ni, 89.0 id,  0.4 wa,  0.0 hi,  0.2 si,  0.0 st\nMiB Mem :   7987.5 total,   1204.3 free,   4102.7 used,   2680.5 buff/cache\nMiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   3421.9 avail Mem\n\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 1234 root      20   0  482116  91232  20344 S   4.3   1.1   142:08.11 mgmtsrvr\n 5678 root      20   0  221004  40120  11288 S   1.7   0.5    38:22.44 devsrvr\n\nWhat it means:\n- This is the management-plane (MP) view, not the dataplane — use\n  \"show running resource-monitor\" for dataplane CPU per core.\n- %wa (I/O wait) and swap \"used\" > 0 sustained are the two clearest\n  signs of MP resource exhaustion (often from logging/reporting load).\n- Compare against \"show system state filter-pretty sys.info\" for a\n  static hardware summary rather than a live snapshot."
+          },
+          {
+            "cmd": "debug dataplane pool statistics",
+            "desc": "Displays dataplane packet-buffer and resource-pool usage (remaining/total) for each internal memory pool — a pool showing 0 remaining is depleted and will drop or slow traffic tied to that resource, making this the first command to run when throughput degrades without an obvious session or CPU cause.",
+            "type": "show",
+            "flagged": false,
+            "example": "> debug dataplane pool statistics\n\npacket buffers (Bytes): 1046898 total, 1046898 free\npacket descriptors: 262144 total, 261980 free\nsession: 524288 total, 512003 free\n\n# \"free\" trending toward 0 on a pool that maps to your bottleneck (e.g.\n# packet buffers during a throughput drop) confirms a resource-exhaustion\n# issue rather than a policy or routing problem."
           }
         ],
         "Commit & Config": [
@@ -5992,7 +6006,7 @@
           },
           {
             "cmd": "configure",
-            "desc": "Enter candidate-config mode",
+            "desc": "Enters candidate-configuration mode from operational mode (prompt changes to a trailing #), giving access to set/edit/delete commands — changes here are staged and invisible to the dataplane until \"commit\" pushes them to the running-config.",
             "type": "config",
             "flagged": false,
             "example": "Entering configuration mode\n[edit]\nadmin@PA-3220#"
@@ -6297,7 +6311,7 @@
           },
           {
             "cmd": "show devices connected",
-            "desc": "Currently-connected managed devices",
+            "desc": "Lists every managed firewall currently connected to this Panorama, with serial, hostname, model, and connect time — the first place to check when a device stops appearing under Managed Devices in the GUI.",
             "type": "show",
             "flagged": false,
             "example": "Serial          Hostname        Model     Connected since\n0123456789      PA-3220-1       PA-3220   2026/05/01 08:00:00\n0123456790      PA-3220-2       PA-3220   2026/05/01 08:00:00\n9876543211      PA-220-LON      PA-220    2026/05/24 06:11:18"
@@ -11316,7 +11330,7 @@
           },
           {
             "cmd": "show wireless rrm stats",
-            "desc": "RRM run statistics.",
+            "desc": "Shows how many times Dynamic Channel Assignment (DCA) and Transmit Power Control (TPC) have run, plus the timestamps of the last coverage-hole and profile-threshold events — useful for confirming RRM is actively adjusting the RF plan rather than sitting idle.",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless rrm stats\nTotal DCA runs: 1234 (last 24h: 12)\nTotal TPC runs: 1234 (last 24h: 12)\nLast Coverage Hole Detection: 14:00:00 Apr 21 2026\nLast Profile Threshold Hit: 12:15:33 Apr 20 2026"
@@ -15187,6 +15201,13 @@
             "type": "show",
             "flagged": false,
             "example": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        50G   18G   30G  38% /\ntmpfs           7.9G  6.8M  7.9G   1% /run\n/dev/sdb1       500G  213G  262G  45% /data\ntmpfs           7.9G     0  7.9G   0% /dev/shm"
+          },
+          {
+            "cmd": "numactl --hardware",
+            "desc": "Prints the machine's NUMA topology — how many nodes exist, which CPUs and how much memory belong to each, and the relative access-distance matrix between nodes — essential when tuning workload/CPU pinning on multi-socket hosts, since cross-node memory access is measurably slower.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ numactl --hardware\navailable: 2 nodes (0-1)\nnode 0 cpus: 0 1 2 3 4 5 6 7\nnode 0 size: 64207 MB\nnode 0 free: 21033 MB\nnode 1 cpus: 8 9 10 11 12 13 14 15\nnode 1 size: 64434 MB\nnode 1 free: 18877 MB\nnode distances:\nnode   0   1\n  0:  10  21\n  1:  21  10\n\n# Distance 21 vs. 10 for node 1→0 means a process on node 1 touching\n# node 0 memory pays roughly 2x the local-access latency."
           }
         ],
         "Networking": [
@@ -20939,6 +20960,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Matches WireGuard VPN frames (UDP, default port 51820).\n# Frame 1:  10.0.0.5:51820 → 10.0.0.10:51820  WireGuard  Handshake Initiation\n# Frame 2:  10.0.0.10:51820 → 10.0.0.5:51820  WireGuard  Handshake Response\n# After handshake: Transport Data frames carry encrypted packets (opaque payload)."
+          },
+          {
+            "cmd": "quic.frame_type == 0x1c",
+            "desc": "Matches QUIC CONNECTION_CLOSE frames signalling a transport-level error (frame type 0x1d is the application-level variant) — isolates the exact packet where a QUIC/HTTP3 connection was torn down, letting you read the embedded error code instead of scrolling through the whole handshake.",
+            "type": "show",
+            "flagged": false,
+            "example": "# Matches QUIC CONNECTION_CLOSE (transport error) frames.\n# Frame 812:  10.0.0.5:51234 → 93.184.216.34:443  QUIC  CONNECTION_CLOSE, Error: 0x0a (PROTOCOL_VIOLATION)\n\n# Use quic.frame_type == 0x1d to catch application-layer close frames\n# (e.g. HTTP/3 errors) instead of transport-layer ones."
           }
         ],
         "Display Filters — Operators & Syntax": [
@@ -28164,7 +28192,7 @@
           },
           {
             "cmd": "esxcli hardware platform get",
-            "desc": "Server vendor/model/serial",
+            "desc": "Reports the physical server's vendor, product name, serial number, BIOS version, and UUID as seen by the ESXi hardware abstraction layer — handy for confirming asset/serial records or opening a vendor support case without physically inspecting the chassis.",
             "type": "show",
             "flagged": false,
             "example": "   Enclosure Serial Number: CZ2140ABCD\n   IPMI Supported: true\n   OEM String: Dell Inc.\n   Product Name: PowerEdge R740\n   Serial Number: 8ABCD12\n   System BIOS Version: 2.21.0\n   UUID: 4c4c4544-0041-4210-8042-c3c04f443312\n   Vendor Name: Dell Inc."
@@ -28771,6 +28799,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ esxtop -b -d 5 -n 180 > /vmfs/volumes/datastore1/esxtop-batch.csv\n# Captures 180 samples at 5s intervals (15 minutes total), one row per sample.\n\n$ head -1 esxtop-batch.csv | cut -d, -f1-3\n\"Interval\",\"PCPU UTIL(%) - Core 0\",\"PCPU UTIL(%) - Core 1\"\n\n# Import into Windows Perfmon (Load Counters) or open with esxplot for graphing.\n# Official docs: https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-monitoring-and-performance/performance-monitoring-utilities-resxtop-and-esxtop/using-batch-mode/use-esxtop-or-resxtop-in-batch-mode.html"
+          },
+          {
+            "cmd": "esxcli system coredump network get",
+            "desc": "Shows the current network coredump configuration — enabled/disabled state, source VMkernel interface, and the target ESXi Dump Collector server IP/port — check this before assuming PSOD diagnostics were captured, since network coredump is off by default.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esxi:~] esxcli system coredump network get\n   Enabled: true\n   Host VNic: vmk0\n   Network Server IP: 10.0.0.50\n   Network Server Port: 6500\n\n# Enabled: false means a PSOD will only write to local disk (if a\n# diagnostic partition/file exists) — configure with:\n#   esxcli system coredump network set --interface-name vmk0 \\\n#     --server-ipv4 10.0.0.50 --server-port 6500\n#   esxcli system coredump network set --enable true"
           }
         ]
       },
@@ -29570,6 +29605,13 @@
             "type": "show",
             "flagged": false,
             "example": "asa# show running-config object network\n\nobject network WEB-PRIVATE\n host 10.10.10.50\nobject network WEB-PUBLIC\n host 203.0.113.50\nobject network INTERNAL-LAN\n subnet 10.10.10.0 255.255.255.0\nobject network DMZ-RANGE\n range 10.20.20.10 10.20.20.50\n\nWhat it means:\n- Each named object is reused across NAT statements and ACL entries —\n  changing the object's host/subnet here updates every rule that\n  references it, without editing each rule individually.\n- Cross-reference with \"show nat\" to see which object pairs are actually\n  translated, and \"show run object-group\" for group-of-objects used in ACLs."
+          },
+          {
+            "cmd": "show nat pool",
+            "desc": "Lists every dynamic NAT/PAT pool with its interface, address range or PAT address, and how many times each address/port combination has been allocated — the fastest way to confirm a pool is exhausted when new connections start failing with a NAT allocation error.",
+            "type": "show",
+            "flagged": false,
+            "example": "ciscoasa# show nat pool\nTCP PAT pool outside, address 203.0.113.10, range 1-511, allocated 511\nTCP PAT pool outside, address 203.0.113.10, range 512-1023, allocated 87\nUDP PAT pool outside, address 203.0.113.10, range 1-511, allocated 340\n\n# \"allocated\" at or near the range size means the pool is exhausted —\n# add addresses to the pool or investigate connections that aren't\n# closing/timing out normally."
           }
         ]
       },
@@ -29739,7 +29781,7 @@
           },
           {
             "cmd": "netstat -s",
-            "desc": "Shows protocol statistics",
+            "desc": "Prints cumulative per-protocol counters (IPv4/IPv6, TCP, UDP, ICMP) since the last reboot — segment errors, retransmits, and failed connection attempts here point to path MTU, NIC driver, or upstream network issues rather than an application bug.",
             "type": "show",
             "flagged": false,
             "example": "IPv4 Statistics\n  Packets Received                   = 3847521\n  Received Header Errors             = 0\n  Discarded Received Packets         = 12\n  Datagrams Successfully Sent        = 3621047\nTCP Statistics for IPv4\n  Active Opens                       = 18431\n  Passive Opens                      = 892\n  Failed Connection Attempts         = 14"
@@ -30265,6 +30307,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-FileHash .\\installer.exe -Algorithm SHA256\n\nAlgorithm       Hash                                                                   Path\n---------       ----                                                                   ----\nSHA256          3A7BD3E2360A3D8F1B9C4E5A6D7F8091A2B3C4D5E6F70819202A3B4C5D6E7F80        C:\\Users\\admin\\installer.exe\n\n# Compare against a published checksum:\n(Get-FileHash .\\installer.exe -Algorithm SHA256).Hash -eq \"<published-hash>\""
+          },
+          {
+            "cmd": "Get-CimInstance Win32_LogicalDisk",
+            "desc": "Queries WMI/CIM for every logical drive on the system — drive letter, filesystem, free/total space, and drive type (fixed, removable, network, CD-ROM) — the scriptable equivalent of the Disk Management GUI, and the modern replacement for the deprecated Get-WmiObject cmdlet.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID,DriveType,@{N='FreeGB';E={[math]::Round($_.FreeSpace/1GB,1)}},@{N='SizeGB';E={[math]::Round($_.Size/1GB,1)}}\n\nDeviceID DriveType FreeGB SizeGB\n-------- --------- ------ ------\nC:               3  102.4  237.0\nD:               3  850.2 1863.0\n\n# DriveType: 2=Removable, 3=Fixed (local disk), 4=Network, 5=CD-ROM."
           }
         ],
         "OOBE & Setup": [
@@ -30950,6 +30999,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws ec2 describe-vpc-endpoints --query \"VpcEndpoints[].[VpcEndpointId,ServiceName,State]\" --output table\n\n---------------------------------------------------------------------------------\n|                            DescribeVpcEndpoints                               |\n+------------------------+--------------------------------------+---------------+\n|  vpce-0a1b2c3d4e5f6g7h8 |  com.amazonaws.us-east-1.s3           |  available    |\n|  vpce-0h8g7f6e5d4c3b2a1 |  com.amazonaws.us-east-1.ec2          |  available    |\n+------------------------+--------------------------------------+---------------+\n\nWhat it means:\n- \"Gateway\" endpoints (S3, DynamoDB) attach directly to route tables;\n  \"Interface\" endpoints (most other services) create an ENI with a\n  private IP in the subnet — State reflects that ENI's provisioning.\n- State stuck at \"pending\" past a couple of minutes usually means the\n  security group attached to the endpoint ENI is blocking the\n  PrivateLink health check.\n- Filter to one endpoint: add\n  --filters Name=vpc-endpoint-id,Values=vpce-xxxxxxxx"
+          },
+          {
+            "cmd": "aws elbv2 describe-target-health --target-group-arn <arn>",
+            "desc": "Reports the health-check state (healthy, unhealthy, draining, unused) of every target registered in an ALB/NLB target group, along with the reason code for any unhealthy target — the direct way to confirm whether a 502/504 from a load balancer is caused by the backend rather than the LB itself.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws elbv2 describe-target-health --target-group-arn arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/web-tg/6d0ecf831eec9f09\n{\n    \"TargetHealthDescriptions\": [\n        {\n            \"Target\": {\"Id\": \"i-0abcd1234ef567890\", \"Port\": 8080},\n            \"TargetHealth\": {\"State\": \"unhealthy\", \"Reason\": \"Target.Timeout\", \"Description\": \"Health checks failed to complete within timeout\"}\n        }\n    ]\n}\n\n# Reason \"Target.Timeout\"/\"Target.FailedHealthChecks\" points at the\n# instance/app; \"Target.NotRegistered\" points at the target-group config."
           }
         ],
         "Route53": [
@@ -39981,7 +40037,7 @@
           },
           {
             "cmd": "show ip mroute summary",
-            "desc": "Multicast routing summary.",
+            "desc": "Displays a condensed multicast routing table — one line per (S,G)/(*,G) entry with uptime, expiry timer, RP, and OIF count — for a quick census of active groups without the verbose flag/timer detail of the full \"show ip mroute\" output.",
             "type": "show",
             "flagged": false,
             "example": "sw# show ip mroute summary\nIP Multicast Routing Table\n4 groups, 1.25 average sources per group\nFlags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,\n       L - Local, P - Pruned, R - RP-bit set, F - Register flag, T - SPT-bit set\n\n(*, 239.10.10.10), 02:34:56/stopped, RP 10.99.99.1, OIF count: 1, flags: SJC\n(10.50.50.50, 239.10.10.10), 02:34:55/00:02:14, OIF count: 1, flags: T"
@@ -41263,6 +41319,13 @@
             "type": "show",
             "flagged": false,
             "example": "root@pve# pvesr status\nJobID    Enabled    Target                        LastSync             NextSync             Duration    FailCount    State\n100-0    Yes        local/pve02                   2026-07-07_10:00:01  2026-07-07_10:15:00  4.201       0\n101-0    Yes        local/pve03                   2026-07-07_10:00:03  2026-07-07_10:15:00  2.884       0\n\n# Column 7 (FailCount) is the one to alert on — a non-zero value means the\n# last replication run failed; check 'pvesr read <jobid>' or\n# 'journalctl -u pvesr' for the underlying zfs send/recv error.\n# Official docs: https://pve.proxmox.com/pve-docs/pvesr.1.html"
+          },
+          {
+            "cmd": "corosync-quorumtool -s",
+            "desc": "Shows the corosync cluster engine's live quorum status directly (node ID, ring status, and per-member votes) — lower-level than \"pvecm status\" and useful when the pvecm wrapper itself is unresponsive or when diagnosing a split-brain / lost-quorum condition after a node or network outage.",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve1:~# corosync-quorumtool -s\nQuorum information\n-------------------\nDate:             Tue Jul 14 09:12:03 2026\nQuorum provider:  corosync_votequorum\nNodes:             3\nNode ID:           1\nQuorate:           Yes\n\nVotequorum information\n----------------------\nExpected votes:   3\nHighest expected: 3\nTotal votes:      3\nQuorum:           2\nFlag:             Quorate\n\n# \"Quorate: No\" means this node has lost quorum and will fence/pause\n# HA-managed VMs — check network reachability to the other cluster members."
           }
         ],
         "Virtual Machines (qm)": [
@@ -42630,6 +42693,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show interface counters\n\n--------------------------------------------------------------------------------\nPort           InOctets       InUcastPkts      InMcastPkts      InBcastPkts\n--------------------------------------------------------------------------------\nEth1/1        1234567890          9876543             1200               45\nEth1/2         987654321          5432109              340               12\n\n--------------------------------------------------------------------------------\nPort          OutOctets      OutUcastPkts     OutMcastPkts     OutBcastPkts\n--------------------------------------------------------------------------------\nEth1/1        2345678901         12345678              200               30\nEth1/2        1876543210          8765432              150               20"
+          },
+          {
+            "cmd": "show interface counters detailed",
+            "desc": "Shows only the nonzero counters for every interface (unicast/multicast/broadcast packets, bytes, errors) instead of the full fixed-field table — much faster to scan on a switch with many idle or lightly-used ports since zeroed counters are omitted entirely.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface counters detailed\n\nEthernet1/1\n\nRX\n  591357 unicast packets  1245 multicast packets  87 broadcast packets\n  612993582 bytes\nTX\n  588210 unicast packets  0 multicast packets  0 broadcast packets\n  598104221 bytes\n\n# Interfaces with every counter at zero are omitted from the output —\n# add \"all\" (show interface counters detailed all) to include them."
           }
         ],
         "VLANs / VPC": [
@@ -43529,7 +43599,7 @@
           },
           {
             "cmd": "feature tacacs+",
-            "desc": "Enable TACACS+ feature.",
+            "desc": "Enables the TACACS+ feature set on the switch, which unlocks the tacacs-server and aaa group server tacacs+ configuration commands — like all NX-OS features, TACACS+ config is rejected until this feature is turned on.",
             "type": "config",
             "flagged": false,
             "example": "switch(config)# feature tacacs+\nswitch(config)# show feature | include tacacs\ntacacs                1         enabled"
@@ -43923,7 +43993,7 @@
           },
           {
             "cmd": "show feature",
-            "desc": "Optional features installed/enabled",
+            "desc": "Lists every licensed/optional software feature (STP, OSPF, BGP, VSX, QoS, LLDP, etc.) and whether each is currently enabled — check here before configuring a protocol that appears to have no effect, since a disabled feature silently ignores its config block.",
             "type": "show",
             "flagged": false,
             "example": "Feature            Status\n-----------------  --------\nstp                enabled\nospf               enabled\nbgp                disabled\nvsx                enabled\nqos                enabled\nlldp               enabled"
@@ -45074,7 +45144,7 @@
           },
           {
             "cmd": "show ap lms-distribution",
-            "desc": "AP-to-LMS controller assignments",
+            "desc": "Shows which controller (primary vs. standby LMS) each AP is currently terminating its CAPWAP tunnel to — mismatches between the configured primary and the \"Current LMS\" column indicate an AP failed over and hasn't rehomed.",
             "type": "show",
             "flagged": false,
             "example": "AP Name       Primary LMS      Standby LMS      Current LMS\nap-floor1     10.0.0.201       10.0.0.202       Primary\nap-floor2     10.0.0.201       10.0.0.202       Primary\nap-floor3     10.0.0.202       10.0.0.201       Primary"
@@ -45815,7 +45885,7 @@
           },
           {
             "cmd": "show client roaming-history",
-            "desc": "Roaming history",
+            "desc": "Lists each client's recent AP-to-AP roams with source/destination AP, SSID, and timestamp — use it to confirm fast roaming is working as expected or to spot a client ping-ponging between two APs with overlapping coverage.",
             "type": "show",
             "flagged": false,
             "example": "MAC               From AP     To AP       SSID       Time\n00:50:56:ab:cd:01  ap-floor2   ap-floor3  Corp-WiFi  2026-06-12 08:14:22\n00:50:56:ab:cd:01  ap-floor1   ap-floor2  Corp-WiFi  2026-06-12 07:55:41"
