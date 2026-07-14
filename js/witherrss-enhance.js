@@ -87,7 +87,10 @@
     try {
       ensureWordmark();
 
-      var search = document.querySelector('input.search-input');
+      // Only the Commands page search (#cmdSearch) gets the typed preview.
+      // The .search-input class is reused by learning/toolkit/settings/auth
+      // fields, so target the id to avoid animating every search box.
+      var search = document.getElementById('cmdSearch');
       if (search && !seen.has(search) && !search.value) { seen.add(search); cyclePlaceholder(search); }
 
       var sn = document.getElementById('snCidr');
