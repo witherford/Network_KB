@@ -28,8 +28,9 @@ export async function mount(root) {
         <input type="number" id="pCount" value="4" min="1" max="9999">
       </div>
       <div class="form-row">
-        <label>Input (one host/IP/CIDR per line)</label>
-        <textarea id="pInput" placeholder="10.0.0.1&#10;10.0.0.0/29&#10;example.com"></textarea>
+        <label>Input (one host / IP / CIDR / range per line)</label>
+        <textarea id="pInput" placeholder="10.0.0.1&#10;10.0.0.0/29&#10;10.1.1.1-10&#10;10.1.1.1-10.1.1.10&#10;example.com"></textarea>
+        <span class="hint" style="font-size:11px;margin-top:4px">Ranges: <code>10.1.1.1-10</code> (last-octet) or <code>10.1.1.1-10.1.1.10</code> (full) expand to every address inclusive.</span>
       </div>
       <div class="form-row">
         <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="pIncludeNet"> Include network/broadcast for CIDRs</label>
@@ -220,27 +221,75 @@ function parsePingOutput(text) {
   return order;
 }
 
+// Expand each input line into concrete ping targets:
+//   - plain host / IPv4          -> passed through unchanged
+//   - CIDR  (10.0.0.0/29)        -> every usable host (optionally incl. net/bcast)
+//   - range (10.1.1.1-10)        -> last-octet shorthand: .1 through .10 inclusive
+//   - range (10.1.1.1-10.1.1.10) -> full start..end inclusive
+const RANGE_CAP = 8192;   // shared cap for CIDR + dash ranges
+
+function ipToInt(a, b, c, d) { return (((a << 24) >>> 0) + (b << 16) + (c << 8) + d) >>> 0; }
+function intToIp(n) { return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.'); }
+
+// Parse a dotted-quad to an unsigned 32-bit int, or null if not a valid IPv4.
+function parseQuad(s) {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(s);
+  if (!m) return null;
+  const o = [1, 2, 3, 4].map(i => +m[i]);
+  if (o.some(x => x > 255)) return null;
+  return ipToInt(o[0], o[1], o[2], o[3]);
+}
+
+// Expand a dash range. Returns {ips:[...]} or {error:'# ...'}, or null when
+// `line` isn't a range (so the caller treats it as a literal host — this keeps
+// hostnames containing '-' like "web-01" working).
+function expandRange(line) {
+  const dash = line.indexOf('-');
+  if (dash < 1) return null;
+  const start = parseQuad(line.slice(0, dash).trim());
+  if (start === null) return null;                         // left side must be a full IPv4
+  const right = line.slice(dash + 1).trim();
+  let end;
+  if (/^\d{1,3}$/.test(right)) {                           // last-octet shorthand (…-10)
+    const last = +right;
+    if (last > 255) return { error: '# Invalid range: ' + line };
+    end = (((start & 0xffffff00) >>> 0) | last) >>> 0;
+  } else {
+    end = parseQuad(right);                                // full end IP (…-10.1.1.10)
+    if (end === null) return null;                         // neither number nor IPv4 -> not a range
+  }
+  if (end < start) return { error: '# Invalid range (end before start): ' + line };
+  if (end - start + 1 > RANGE_CAP) return { error: '# Range too large: ' + line };
+  const ips = [];
+  for (let n = start; n <= end; n++) ips.push(intToIp(n >>> 0));
+  return { ips };
+}
+
 function expandHosts(lines, includeNet) {
   const out = [];
   for (const line of lines) {
-    if (!line.includes('/') || !/^\d+\.\d+\.\d+\.\d+\/\d+$/.test(line)) {
-      out.push(line);
+    // CIDR (10.0.0.0/29)
+    if (/^\d+\.\d+\.\d+\.\d+\/\d+$/.test(line)) {
+      const [addr, pStr] = line.split('/');
+      const prefix = parseInt(pStr, 10);
+      if (prefix < 0 || prefix > 32) { out.push(line); continue; }
+      const hostBits = 32 - prefix;
+      const size = 1 << hostBits;
+      if (size > RANGE_CAP) { out.push('# Range too large: ' + line); continue; }
+      const parts = addr.split('.').map(Number);
+      const base = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+      const network = base & (0xffffffff << hostBits >>> 0);
+      for (let i = 0; i < size; i++) {
+        if (!includeNet && hostBits >= 2 && (i === 0 || i === size - 1)) continue;
+        out.push(intToIp((network + i) >>> 0));
+      }
       continue;
     }
-    const [addr, pStr] = line.split('/');
-    const prefix = parseInt(pStr, 10);
-    if (prefix < 0 || prefix > 32) { out.push(line); continue; }
-    const hostBits = 32 - prefix;
-    const size = 1 << hostBits;
-    if (size > 8192) { out.push('# Range too large: ' + line); continue; }
-    const parts = addr.split('.').map(Number);
-    const base = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
-    const network = base & (0xffffffff << hostBits >>> 0);
-    for (let i = 0; i < size; i++) {
-      if (!includeNet && hostBits >= 2 && (i === 0 || i === size - 1)) continue;
-      const n = (network + i) >>> 0;
-      out.push([(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff].join('.'));
-    }
+    // Dash range (10.1.1.1-10 or 10.1.1.1-10.1.1.10)
+    const r = expandRange(line);
+    if (r) { out.push(...(r.error ? [r.error] : r.ips)); continue; }
+    // Plain host / IP
+    out.push(line);
   }
   return out;
 }
