@@ -488,11 +488,13 @@ function renderList() {
     const d = workingData();
     const p = d.platforms[pk];
     const platLabel = p.label || pk;
-    const badge = p.badge || 'badge-ns';
     const total = Array.from(secs.values()).reduce((a, s) => a + s.length, 0);
+    // Heading shows the full label only. The short-code pill was dropped: for
+    // almost every platform `short` is already contained in the label (e.g.
+    // "OpenSSL" / "OpenSSL", "NetScaler" / "Citrix NetScaler"), so it read as
+    // the platform name twice.
     html += `<section class="platform-section" data-plat="${esc(pk)}">
       <div class="platform-header">
-        <span class="pill ${esc(badge)}">${esc(p.short || platLabel)}</span>
         <h2 class="ptitle">${esc(platLabel)}</h2>
         <span class="pcnt">${total} command${total === 1 ? '' : 's'}</span>
         ${state.editMode ? `<span class="plat-edit-actions">
