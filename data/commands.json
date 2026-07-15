@@ -5314,6 +5314,106 @@
             "example": "# (configure) set tag Production color color1\n[edit]"
           }
         ],
+        "DHCP": [
+          {
+            "cmd": "set network dhcp interface <interface-id> server reserved <ip> mac <mac> description \"<text>\"",
+            "desc": "Bind a specific IP to a client MAC as a static DHCP reservation. The reserved address should fall inside the pool subnet so it is carved out rather than handed to another client; it appears in the lease table with state `reserved` and no expiry.",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set network dhcp interface ethernet1/2 server reserved 10.0.2.50 mac 00:1b:17:00:01:18 description \"Backup-NAS\"\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server ip-pool <range|subnet>",
+            "desc": "Define the dynamic address pool handed to DHCP clients. Accepts either a start-end range or a subnet/mask. A pool (or at least one reserved address) is mandatory for dynamic assignment.",
+            "type": "config",
+            "flagged": false,
+            "example": "# Range form:\n# (configure) set network dhcp interface ethernet1/2 server ip-pool 10.0.2.100-10.0.2.200\n# Subnet form:\n# (configure) set network dhcp interface ethernet1/2 server ip-pool 10.0.2.0/24\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server mode <auto|enabled|disabled>",
+            "desc": "Set the DHCP server operating mode. `enabled` always runs the server, `disabled` stops it, and `auto` enables it only while the interface is up.",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set network dhcp interface ethernet1/2 server mode auto\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server probe-ip <yes|no>",
+            "desc": "Enable or disable IP-conflict probing — the firewall probes a candidate address (ping/ARP) before leasing it, avoiding handing out an address already in use on the segment.",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set network dhcp interface ethernet1/2 server probe-ip yes\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server option lease <timeout <minutes>|unlimited>",
+            "desc": "Set the DHCP lease duration in minutes, or `unlimited` for a lease that never expires (shown with duration 0 in the lease table).",
+            "type": "config",
+            "flagged": false,
+            "example": "# Timed lease (1440 min = 24 h):\n# (configure) set network dhcp interface ethernet1/2 server option lease timeout 1440\n# Never-expiring lease:\n# (configure) set network dhcp interface ethernet1/2 server option lease unlimited\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server option <gateway|subnet-mask|dns|wins|ntp|dns-suffix> <value>",
+            "desc": "Push predefined DHCP options to clients — default gateway, subnet mask, DNS / WINS / NTP servers (each with `primary` and `secondary`) and the DNS search suffix.",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set network dhcp interface ethernet1/2 server option gateway 10.0.2.1\n# (configure) set network dhcp interface ethernet1/2 server option subnet-mask 255.255.255.0\n# (configure) set network dhcp interface ethernet1/2 server option dns primary 10.0.0.53\n# (configure) set network dhcp interface ethernet1/2 server option dns secondary 10.0.0.54\n# (configure) set network dhcp interface ethernet1/2 server option wins primary 10.0.0.60\n# (configure) set network dhcp interface ethernet1/2 server option ntp primary 10.0.0.123\n# (configure) set network dhcp interface ethernet1/2 server option dns-suffix corp.example.com\n[edit]"
+          },
+          {
+            "cmd": "set network dhcp interface <interface-id> server option inheritance source <source-interface>",
+            "desc": "Inherit DHCP options (DNS, NTP, domain, etc.) from an upstream DHCP-client interface instead of configuring them statically — handy when the WAN link learns them itself.",
+            "type": "config",
+            "flagged": false,
+            "example": "# (configure) set network dhcp interface ethernet1/2 server option inheritance source ethernet1/1\n[edit]"
+          },
+          {
+            "cmd": "show dhcp server lease interface <all|interface-id>",
+            "desc": "Display the DHCP lease table — pool statistics, assigned IP, MAC, lease state and duration, and lease start time. A reserved address shows state `reserved` with no duration/lease_time; an unlimited lease shows duration 0.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show dhcp server lease interface all\n\ninterface: \"ethernet1/2\", allocated 3, reserve 1, total 100\n   ip           mac                 state       duration  lease_time\n   10.0.2.50    00:1b:17:00:01:18   reserved           0\n   10.0.2.101   00:50:56:aa:bb:cc   committed       1440  Wed Jul 15 09:12:03 2026\n   10.0.2.102   00:50:56:aa:bb:cd   committed       1440  Wed Jul 15 09:31:47 2026"
+          },
+          {
+            "cmd": "show dhcp server settings interface all",
+            "desc": "Show the configured DHCP server settings per interface — mode, probe-ip, pool ranges, gateway, mask, DNS and the other options being handed out.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show dhcp server settings interface all\n\ninterface: ethernet1/2   mode: auto   probe-ip: yes\n   ip-pool: 10.0.2.100-10.0.2.200\n   gateway: 10.0.2.1   mask: 255.255.255.0\n   dns: 10.0.0.53, 10.0.0.54   lease: 1440 min"
+          },
+          {
+            "cmd": "show dhcp server statistics",
+            "desc": "Show DHCP server message counters (DISCOVER / OFFER / REQUEST / ACK / NAK / DECLINE / RELEASE) — useful when clients are not getting addresses.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show dhcp server statistics\n\nDISCOVER: 128   OFFER: 128\nREQUEST : 126   ACK  : 126   NAK: 2\nDECLINE : 0     RELEASE: 14   INFORM: 3"
+          },
+          {
+            "cmd": "clear dhcp lease interface <interface-id> expired-only",
+            "desc": "Return only expired leases to the pool (use `all` in place of the interface to sweep every interface). A hold timer temporarily reserves a freshly expired address before reassignment, so clearing manually is what frees it immediately unless the pool is exhausted.",
+            "type": "action",
+            "flagged": false,
+            "example": "> clear dhcp lease interface ethernet1/2 expired-only\n# Sweep every interface at once:\n> clear dhcp lease all expired-only"
+          },
+          {
+            "cmd": "clear dhcp lease interface <interface-id> <ip <ip>|mac <mac>>",
+            "desc": "Release a single active lease by IP or by MAC, returning that address to the pool.",
+            "type": "action",
+            "flagged": false,
+            "example": "# Release by IP:\n> clear dhcp lease interface ethernet1/2 ip 10.0.2.101\n# Release by MAC:\n> clear dhcp lease interface ethernet1/2 mac 00:50:56:aa:bb:cc"
+          },
+          {
+            "cmd": "show dhcp client state <interface-id>",
+            "desc": "When the firewall's own interface is a DHCP client, show the address it leased plus the DHCP server, gateway, DNS and remaining lease time.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show dhcp client state ethernet1/1\n\ninterface: ethernet1/1\n   state: Bound\n   ip: 203.0.113.25/24   gw: 203.0.113.1\n   server: 203.0.113.1   dns: 203.0.113.53\n   leasetime: 86400   remaining: 71204"
+          },
+          {
+            "cmd": "request dhcp client <interface-id> <renew|release>",
+            "desc": "Force the firewall's DHCP-client interface to renew its lease, or release the current address (e.g. before re-cabling or re-homing a WAN link).",
+            "type": "action",
+            "flagged": false,
+            "example": "# Renew the current lease:\n> request dhcp client ethernet1/1 renew\n# Release the address:\n> request dhcp client ethernet1/1 release"
+          }
+        ],
         "VPN": [
           {
             "cmd": "show vpn ipsec-sa",
