@@ -4082,7 +4082,7 @@
           },
           {
             "cmd": "stat cr vserver",
-            "desc": "Cache-redirection vserver counters.",
+            "desc": "Per-cache-redirection-vserver counters broken out by cache hit, origin hit, and bypass hit — use to gauge cache offload effectiveness",
             "type": "show",
             "flagged": false,
             "example": "> stat cr vserver\n\nCache Redirection Vserver Statistics — All\nName        Hits      Cache Hits  Origin Hits  Bypass Hits\ncr-vs-1     50,432    35,012      14,901       519\n\nWhat it means:\n- Per-CR-vserver counters split by destination decision:\n  - Cache Hits : sent to cache server (e.g. Squid).\n  - Origin Hits : sent to origin (cache miss / non-cacheable).\n  - Bypass Hits : skipped CR entirely (matched a bypass policy).\n- High Origin/Cache ratio = cache miss rate is bad — review\n  cacheability rules or cache server health."
@@ -7592,7 +7592,7 @@
           },
           {
             "cmd": "openssl x509 -in <cert> -text -noout",
-            "desc": "Displays certificate details",
+            "desc": "Decodes and prints the full contents of an X.509 certificate — version, subject/issuer DN, validity window, SANs, public key, and extensions — without altering the file (-noout suppresses re-emitting the PEM block)",
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -in example.crt -text -noout\nCertificate:\n    Data:\n        Version: 3 (0x2)\n        Subject: CN=example.com\n        X509v3 Subject Alternative Name:\n            DNS:example.com, DNS:www.example.com\n        Validity\n            Not After : Apr  1 00:00:00 2026 GMT\n# Generic form using a variable — substitute <cert> with the actual filename."
@@ -15234,7 +15234,7 @@
           },
           {
             "cmd": "ip r",
-            "desc": "Shows routing table",
+            "desc": "Shows the kernel IPv4 routing table (shorthand for 'ip route show') — default gateway, connected subnets, and static routes with their next-hop, egress interface, and preferred source address",
             "type": "show",
             "flagged": false,
             "example": "$ ip r\n\ndefault via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.100 metric 100\n10.0.0.0/8 via 192.168.1.1 dev eth0 proto static metric 100\n172.16.0.0/12 via 192.168.1.1 dev eth0 proto static metric 100\n192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100\n\nKey fields:\n  via   = next-hop gateway\n  dev   = egress interface\n  proto = route source (kernel=connected, dhcp, static)\n  src   = preferred source IP for packets leaving this route"
@@ -19970,7 +19970,7 @@
           },
           {
             "cmd": "tcp.analysis.window_update",
-            "desc": "Window-size updates",
+            "desc": "Matches TCP segments where Wireshark's expert analysis flags a receive-window size change — most useful for spotting a receiver reopening its window after advertising Zero Window",
             "type": "show",
             "flagged": false,
             "example": "# Matches TCP Window Update segments — receiver re-opening a previously\n# shrunk or zeroed window after freeing buffer space.\n# [TCP Window Update] in the Info column.\n# Frame 33: 10.0.0.10 → 10.0.0.5  [TCP Window Update] Win=65535\n# A Window Update after Zero Window means the receiver is ready to accept data again."
@@ -21886,7 +21886,7 @@
           },
           {
             "cmd": "show interfaces switchport",
-            "desc": "Shows switchport configuration",
+            "desc": "Per-port Layer 2 switchport state — administrative vs. operational trunk/access mode, native VLAN, allowed/pruned VLANs, and DTP negotiation status",
             "type": "show",
             "flagged": false,
             "example": "Switch# show interfaces switchport\n\nName: Gi1/0/24\nSwitchport: Enabled\nAdministrative Mode: trunk\nOperational Mode: trunk\nAdministrative Trunking Encapsulation: dot1q\nNegotiation of Trunking: Off\nAccess Mode VLAN: 1 (default)\nTrunking Native Mode VLAN: 99 (PRUNE-LIST)\nAdministrative Native VLAN tagging: enabled\nVoice VLAN: none\nTrunking VLANs Enabled: 10,20,30,99\nPruning VLANs Enabled: 2-1001\nCapture Mode: Disabled\n\nWhat it means:\n- One block per L2-capable port. Combines admin (configured) and\n  operational (actual) state.\n- \"Negotiation of Trunking: Off\" = DTP disabled — required by\n  most enterprise security baselines.\n- \"Pruning VLANs\" = VLANs eligible for VTP pruning to reduce\n  unnecessary broadcast traffic."
@@ -29879,7 +29879,7 @@
           },
           {
             "cmd": "Get-NetTCPConnection",
-            "desc": "Shows TCP connections",
+            "desc": "Lists active TCP connections and listening sockets with local/remote address, port, connection state, and owning process ID — the PowerShell-native replacement for 'netstat -ano'",
             "type": "show",
             "flagged": false,
             "example": "LocalAddress  LocalPort RemoteAddress  RemotePort State        OwningProcess\n12.0.0.1      49152     0.0.0.0        0          Listen       4\n10.0.0.42     50123     52.97.156.130  443        Established  8124"
@@ -30632,7 +30632,7 @@
           },
           {
             "cmd": "aws s3 sync <src> <dst>",
-            "desc": "Syncs directories",
+            "desc": "Recursively copies only new or changed files between a local directory and an S3 prefix (or between two S3 prefixes) — skips files whose size and modified time already match, unlike 'aws s3 cp --recursive' which always re-copies everything",
             "type": "show",
             "flagged": false,
             "example": "upload: ./dist/index.html to s3://acme-static-assets/index.html\nupload: ./dist/app.js to s3://acme-static-assets/app.js\nupload: ./dist/styles.css to s3://acme-static-assets/styles.css"
@@ -31502,7 +31502,7 @@
           },
           {
             "cmd": "show system hardware fans",
-            "desc": "Shows fan status",
+            "desc": "Per-fan operational status and current RPM on the SDX appliance's chassis — a fan reporting FAILED or an RPM far below its peers is a hardware alarm, not noise",
             "type": "show",
             "flagged": false,
             "example": "> show system hardware fans\n\nFan  Status  Speed (RPM)\n---  ------  -----------\n1    OK      2480\n2    OK      2510\n3    OK      2490\n4    OK      2505\n\nNote: Fan failure triggers a critical alarm and will be shown as FAILED."
@@ -42366,7 +42366,7 @@
           },
           {
             "cmd": "apt list --upgradable",
-            "desc": "Preview pending upgrades",
+            "desc": "Lists Debian packages with a newer version available in configured repositories, without installing anything — run before 'apt upgrade' to see exactly what will change, including Proxmox VE stack packages like pve-manager and qemu-server",
             "type": "show",
             "flagged": false,
             "example": "Listing... Done\nproxmox-ve/bookworm 8.2.6 amd64 [upgradable from: 8.2.4]\npve-manager/bookworm 8.2.6 amd64 [upgradable from: 8.2.4]\nqemu-server/bookworm 8.2.3 amd64 [upgradable from: 8.2.1]"
@@ -45216,7 +45216,7 @@
         "WLAN & SSID": [
           {
             "cmd": "show wlan ssid-profile",
-            "desc": "List SSID profiles",
+            "desc": "Lists every configured SSID profile by name — use 'show wlan ssid-profile <name>' for a single profile's full settings (security, VLAN, rate limiting, etc.)",
             "type": "show",
             "flagged": false,
             "example": "SSID Profile List\n-----------------\nCorp-WiFi\nGuest\nIoT-Devices"
