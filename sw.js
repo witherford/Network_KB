@@ -8,7 +8,7 @@
 // Bump CACHE_VERSION when shipping a release that changes the app shell.
 // Old caches are pruned in the activate step.
 
-const CACHE_VERSION = 'nkb-v101-2026-07-15';
+const CACHE_VERSION = 'nkb-v102-2026-07-15';
 const SHELL_CACHE = `shell-${CACHE_VERSION}`;
 const DATA_CACHE  = `data-${CACHE_VERSION}`;
 
@@ -25,6 +25,10 @@ const PRECACHE_URLS = [
   './css/main.css',
   './css/components.css',
   './css/theme-witherrss.css',
+  './fonts/geist.woff2',
+  './fonts/geist-mono.woff2',
+  './fonts/instrument-serif.woff2',
+  './fonts/instrument-serif-italic.woff2',
   './js/app.js',
   './js/version.js',
   './js/pwa.js',
