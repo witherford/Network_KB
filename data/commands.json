@@ -798,6 +798,13 @@
             "type": "show",
             "flagged": false,
             "example": "> stat cache\n\nIntegrated Caching Statistics\n                                            Rate (/s)         Total\nHits                                            1250        8452019\nMisses                                           340        2210044\nCache hit ratio (%)                             78.6              -\nBytes served from cache                       42.1 Mbps            -\nOrigin requests suppressed                       910        6011230\n\nDone\n\n# Press Q to stop the live refresh and return to the prompt."
+          },
+          {
+            "cmd": "show ns vpxparam",
+            "desc": "VPX-specific platform parameters: hypervisor/cloud environment, vCPU yield, master clock CPU, memory status",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ns vpxparam\n        VPX Configured Parameters:\n        CPU Yield: YES\n        Master Clock CPU: NO\n        VPX Running Environment: 1 (AWS)\n        Memory Status: NORMAL\n        KVMVirtioMultiqueue: NOT APPLICABLE\n Done\n\nWhat it means:\n- \"CPU Yield\" (cpuyield): when YES, this VPX releases its vCPU instead\n  of busy-polling when idle — lets other VMs on the same hypervisor\n  host use the core; set NO only when the VPX needs guaranteed\n  low-latency scheduling and co-tenancy isn't a concern.\n- \"VPX Running Environment\" reports the detected platform: 0 = on-prem\n  (ESXi/Hyper-V/KVM bare metal), 1 = AWS, 2 = OpenStack, 3 = Azure,\n  4 = GCP — useful when confirming a VPX picked up the right cloud\n  init profile after migration.\n- \"Master Clock CPU\" (masterclockcpu1): YES pins the NetScaler clock\n  source to vCPU1 instead of vCPU0, used on some hypervisors to avoid\n  clock-drift bugs."
           }
         ],
         "Configuration Management": [
@@ -5561,6 +5568,13 @@
             "type": "show",
             "flagged": false,
             "example": "Time                 From       To         Reason\n2026/05/24 04:12:08  passive    active     peer link-monitor failure (ethernet1/3)\n2026/05/24 04:18:12  active     passive    peer recovered"
+          },
+          {
+            "cmd": "show system state filter cfg.ha",
+            "desc": "Dump only the HA-related keys from the internal config-state database — narrower and faster than the full show system state, useful when show high-availability commands disagree with the running config",
+            "type": "show",
+            "flagged": false,
+            "example": "> show system state filter cfg.ha\ncfg.ha.config.enabled: yes\ncfg.ha.config.group.1.mode: active-passive\ncfg.ha.config.group.1.election-option.priority: 100\ncfg.ha.config.group.1.election-option.preemptive: yes\ncfg.ha.interface.ha1.port: ethernet1/5\ncfg.ha.interface.ha2.port: ethernet1/6\n\nWhat it means:\n- \"system state\" is PAN-OS's internal key/value config-and-state\n  database; \"filter <prefix>\" restricts the (very large) dump to keys\n  starting with that prefix instead of scrolling through everything.\n- Use this when \"show high-availability state\" looks wrong or stale —\n  it shows what the dataplane/mgmt process actually loaded, which can\n  briefly lag a \"commit\" if a config push or HA sync is still pending.\n- \"filter-pretty\" (e.g. show system state filter-pretty cfg.ha) prints\n  the same keys as indented JSON-style blocks instead of flat lines —\n  easier to read when a key's value is itself a nested structure."
           }
         ],
         "App-ID & Content-ID": [
@@ -29242,6 +29256,20 @@
             "type": "show",
             "flagged": false,
             "example": "asa# show local-host 10.10.10.20\nLocal Host: <10.10.10.20>,\n    TCP flow count/limit = 4/unlimited\n    TCP embryonic count to host = 0\n    TCP intercept watermark = unlimited\n    UDP flow count/limit = 1/unlimited\n  Xlate(s):\n    PAT Global 198.51.100.10(0) Local 10.10.10.20(0)\n  Conn(s):\n    TCP outside 198.51.100.55:443 inside 10.10.10.20:54321, idle 0:00:02, bytes 12345, flags UIO"
+          },
+          {
+            "cmd": "aaa authentication ssh console LOCAL",
+            "desc": "Require AAA authentication for SSH management sessions, falling back to the local user database",
+            "type": "config",
+            "flagged": false,
+            "example": "asa(config)# aaa-server TACACS-SVCS protocol tacacs+\nasa(config-aaa-server-group)# exit\nasa(config)# aaa-server TACACS-SVCS (inside) host 10.1.1.50\nasa(config-aaa-server-host)# key MyTacacsKey123\nasa(config)# aaa authentication ssh console TACACS-SVCS LOCAL\n\nasa# show run aaa\naaa authentication ssh console TACACS-SVCS LOCAL\n\nWhat it means:\n- Naming a server group before LOCAL makes TACACS-SVCS authoritative;\n  LOCAL is only consulted as a fallback if every server in the group\n  is unreachable (not on an explicit reject) — so lockouts from a dead\n  AAA server don't lock out the console/SSH admin path.\n- \"aaa authentication ssh console LOCAL\" alone (no server group) forces\n  every SSH login to check the local \"username\" database only — a\n  reasonable minimum on a box with no TACACS+/RADIUS server.\n- This only governs authentication (who can log in); pair it with\n  \"aaa authorization exec authentication-server\" to also gate which\n  privilege level/command set a user gets after login."
+          },
+          {
+            "cmd": "show aaa-server",
+            "desc": "AAA server group status and cumulative statistics — requests, accepts, rejects, timeouts, round-trip latency",
+            "type": "show",
+            "flagged": false,
+            "example": "asa# show aaa-server\n\nServer Group: TACACS-SVCS\nServer Protocol: tacacs+\nServer Address: 10.1.1.50\nServer port: 49\nServer status: ACTIVE, Last transaction at 14:32:07 UTC\nNumber of pending requests    0\nAverage round trip time       12ms\nNumber of authentication requests   1204\nNumber of authorization requests    1204\nNumber of accounting requests       0\nNumber of retransmissions           2\nNumber of accepts                   1198\nNumber of rejects                   6\nNumber of challenges                0\nNumber of malformed responses       0\nNumber of bad authenticators        0\nNumber of timeouts                  1\nNumber of unrecognized responses    0\n\nWhat it means:\n- \"Server status: ACTIVE\" confirms the ASA currently believes the\n  server is reachable — after enough consecutive timeouts it flips to\n  FAILED and the ASA fails over to the next server in the group (or\n  LOCAL, if configured as fallback).\n- A rising \"Number of timeouts\"/\"retransmissions\" against an otherwise\n  ACTIVE server points at network latency or an overloaded AAA server,\n  not a config problem — check \"Average round trip time\" over several\n  polls.\n- \"Number of rejects\" vs \"accepts\" separates real auth failures (bad\n  credentials) from connectivity failures (timeouts) — useful when a\n  user reports \"can't log in\" and you need to know which bucket it's in."
           }
         ],
         "VPN": [
@@ -42586,6 +42614,20 @@
             "type": "show",
             "flagged": false,
             "example": "Load average:   1 minute: 0.24   5 minutes: 0.31   15 minutes: 0.28\n\nProcesses   : 489 total, 1 running\nCPU states  : 4.82% user,  1.44% kernel,  93.73% idle\nMemory usage: 14366044K total, 8903408K used, 5462636K free\nKernel vmalloc: 0K\n\nPID    %CPU    %MEM    COMMAND\n4321   1.23    2.10    bgp\n1234   0.82    1.55    ospf\n5678   0.21    0.98    mrib"
+          },
+          {
+            "cmd": "show vdc",
+            "desc": "List all Virtual Device Contexts on a VDC-capable Nexus chassis (7000/7700 series): id, name, state, MAC and assigned line cards",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show vdc\nvdc_id  vdc_name           state    mac              type          lc\n------  -----------------  -------  ---------------  ------------  ----------\n1       switch              active  00:26:51:cb:bf:41  Ethernet      m1 m2 f2\n2       CORE-VDC            active  00:26:51:cb:bf:42  Ethernet      m2\n3       DMZ-VDC             active  00:26:51:cb:bf:43  Ethernet      f2\n\nWhat it means:\n- VDCs virtualize one physical Nexus 7000/7700 chassis into several\n  logically-separate switches, each with its own config, VLANs, VRFs\n  and (optionally) dedicated line cards — used to give different teams\n  or security zones a hard separation on shared hardware.\n- vdc_id 1 is always the default/Admin VDC — it's the only one that can\n  create, delete or reallocate resources to other VDCs and is where\n  \"show vdc\" and \"switchto vdc\" are run from.\n- The \"lc\" column shows which line-card modules are allocated to each\n  VDC when using dedicated (not shared) line-card allocation."
+          },
+          {
+            "cmd": "switchto vdc <vdc-name>",
+            "desc": "Switch the current CLI session into another Virtual Device Context",
+            "type": "cli",
+            "flagged": false,
+            "example": "switch# switchto vdc CORE-VDC\n\nswitch-CORE-VDC# show vdc current-vdc\nCurrent vdc id: 2 name: CORE-VDC\n\nswitch-CORE-VDC# switchback\n\nswitch#\n\nWhat it means:\n- Only usable from the default/Admin VDC (vdc_id 1); requires the\n  Advanced Services license on the chassis.\n- Once inside another VDC, a network-admin becomes a vdc-admin (scoped\n  to that VDC only) — they cannot \"switchto\" a third VDC directly and\n  must \"switchback\" to the default VDC first.\n- Each VDC has fully independent config, VLAN/VRF namespace and\n  management — treat it like logging into a separate physical switch,\n  not a context change within the same config."
           }
         ],
         "Interfaces": [
@@ -46842,6 +46884,20 @@
             "type": "show",
             "flagged": false,
             "example": "router# show memory\n                Head    Total(b)     Used(b)     Free(b)   Lowest(b)  Largest(b)\nProcessor   0x12345678  4294967296  1234567890  3060399406  3010000000  3050000000\n     I/O    0x23456789  1073741824   234567890   839173934   810000000   830000000"
+          },
+          {
+            "cmd": "show glbp brief",
+            "desc": "One-line-per-group GLBP status: interface, group, forwarder, priority, state, virtual/forwarder address, active and standby router",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show glbp brief\nInterface   Grp Fwd Pri State    Address         Active router   Standby router\nGi0/0       10  -   254 Active   10.21.8.10      local           unknown\nGi0/0       10  1   7   Active   0007.b400.0101  local           -\n\nWhat it means:\n- GLBP (Gateway Load Balancing Protocol, Cisco-proprietary) — unlike\n  HSRP/VRRP, all group members can actively forward traffic at once.\n- First row (Fwd \"-\") is the AVG (Active Virtual Gateway) — owns the\n  virtual IP and assigns virtual MAC addresses to AVFs.\n- Second row (Fwd \"1\") is an AVF (Active Virtual Forwarder) — actually\n  forwards packets sent to the virtual MAC it was assigned.\n- Clients round-robin across AVF virtual MACs, load-sharing egress\n  traffic across every router in the group instead of leaving one idle."
+          },
+          {
+            "cmd": "show vrrp brief",
+            "desc": "One-line-per-group VRRP status: interface, group, priority, timer, owner/preempt flags, state, master and group (virtual) address",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show vrrp brief\nInterface   Grp Pri Time  Own Pre State    Master addr    Group addr\nGi0/0       1   150 3570      Y   Master   10.0.0.1        10.0.0.10\n\nWhat it means:\n- VRRP (Virtual Router Redundancy Protocol, RFC 5798) is the open\n  IETF standard equivalent of HSRP — used when the redundant pair\n  is multi-vendor (e.g. Cisco + non-Cisco).\n- \"Pri 150\" is the VRRP priority; the router advertising the highest\n  priority becomes Master and answers ARP for the virtual/group\n  address (10.0.0.10 here).\n- \"Pre Y\" (preempt enabled, default) means a higher-priority router\n  reclaims Master as soon as it comes back online.\n- \"Own\" = Y only when this router's own interface IP is the virtual\n  address (IP-owner mode); normally N."
           }
         ],
         "NTP / SNMP / Logging": [
@@ -46874,6 +46930,20 @@
             "type": "show",
             "flagged": false,
             "example": "R1# show ip cef exact-route 10.1.1.10 8.8.8.8\n\n10.1.1.10 -> 8.8.8.8 => IP adj out of GigabitEthernet0/1, via 192.168.1.2\n\nWhat it means:\n- With CEF load-balancing (per-destination or per-flow hashing) across\n  multiple equal-cost paths, this shows which one an actual flow hashes to.\n- Useful when troubleshooting \"some traffic works, some doesn't\" on\n  ECMP/port-channel uplinks — run it for the exact src/dst pair reported\n  and compare against a working pair.\n- Does not send any traffic; it's a hash lookup against the current\n  CEF adjacency table."
+          },
+          {
+            "cmd": "glbp <group> ip <vip-address>",
+            "desc": "Enable GLBP on an interface and set the virtual IP shared by the group",
+            "type": "config",
+            "flagged": false,
+            "example": "R1(config)# interface GigabitEthernet0/0\nR1(config-if)# glbp 10 ip 10.21.8.10\nR1(config-if)# glbp 10 priority 254\nR1(config-if)# glbp 10 preempt\nR1(config-if)# glbp 10 load-balancing host-dependent\n\nR1# show glbp 10 brief\nInterface   Grp Fwd Pri State    Address         Active router   Standby router\nGi0/0       10  -   254 Active   10.21.8.10      local           unknown\n\nWhat it means:\n- \"priority 254\" + \"preempt\": this router should become (and reclaim)\n  the AVG role whenever it is available.\n- \"load-balancing host-dependent\": a given client MAC always hashes to\n  the same AVF — useful when asymmetric-routing-sensitive services\n  (e.g. stateful firewalls) sit behind the gateway pair. Other modes\n  are round-robin (default) and weighted.\n- Configure the same group number and VIP on every member interface\n  in the redundancy group."
+          },
+          {
+            "cmd": "vrrp <group> ip <vip-address>",
+            "desc": "Enable VRRP on an interface and set the virtual (group) IP shared by the redundancy pair",
+            "type": "config",
+            "flagged": false,
+            "example": "R1(config)# interface GigabitEthernet0/0\nR1(config-if)# vrrp 1 ip 10.0.0.10\nR1(config-if)# vrrp 1 priority 150\nR1(config-if)# vrrp 1 preempt\n\nR1# show vrrp brief\nInterface   Grp Pri Time  Own Pre State    Master addr    Group addr\nGi0/0       1   150 3570      Y   Master   10.0.0.1        10.0.0.10\n\nWhat it means:\n- The first IP address configured for the group becomes the VRRP\n  virtual (group) address advertised to hosts as their gateway.\n- \"priority 150\" (default 100) — highest priority on the segment wins\n  Master; on a tie, highest real interface IP wins.\n- Because VRRP is an open standard, it interoperates with non-Cisco\n  gear (Juniper, Arista, etc.) sharing the same LAN segment, which\n  HSRP/GLBP (Cisco-proprietary) cannot do."
           }
         ],
         "Routing › OSPF": [
