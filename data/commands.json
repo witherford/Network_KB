@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-14T18:41:04.579Z",
+  "updatedAt": "2026-07-16T18:43:58.794Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2073,7 +2073,7 @@
           },
           {
             "cmd": "show ns pbr6",
-            "desc": "Policy-based routes for IPv6.",
+            "desc": "Lists configured IPv6 policy-based routes with their match action, next-hop, and hit counter — the IPv6 counterpart to 'show ns pbr', used to force IPv6 traffic matching a rule down a specific next-hop instead of the routing table.",
             "type": "show",
             "flagged": false,
             "example": "Name: PBR_v6  Action: ALLOW  NextHop: 2001:db8::1  Hits: 0"
@@ -5259,7 +5259,7 @@
           },
           {
             "cmd": "show address all",
-            "desc": "Lists all address objects",
+            "desc": "Lists every configured address object with its type (ip-netmask, ip-range, or fqdn) and resolved value — the object-level counterpart to 'show address-group all', useful for auditing which hosts/subnets are defined before they're referenced in a security rule.",
             "type": "show",
             "flagged": false,
             "example": "Address          Type           Value\nWorkstations     ip-netmask     10.0.2.0/24\nDHCP-Pool        ip-range       10.0.2.100-10.0.2.200\nWeb-Server       fqdn           web.example.com\nRFC1918-10       ip-netmask     10.0.0.0/8"
@@ -5312,6 +5312,13 @@
             "type": "show",
             "flagged": false,
             "example": "# (configure) set tag Production color color1\n[edit]"
+          },
+          {
+            "cmd": "request system fqdn refresh",
+            "desc": "Forces PAN-OS to immediately re-resolve every FQDN address object against DNS and rebuild the internal IP-to-FQDN cache, instead of waiting for the next scheduled refresh interval or commit-triggered FqdnRefresh job.",
+            "type": "action",
+            "flagged": false,
+            "example": "> request system fqdn refresh\nFQDN refresh job enqueued. Job ID 512.\n\n> request system fqdn show\nFQDN                     Address-Object      Resolved IPs\nweb.example.com          Web-Server           203.0.113.10, 203.0.113.11\nupdates.example.com      Update-Server        203.0.113.20"
           }
         ],
         "DHCP": [
@@ -11204,7 +11211,7 @@
         "System": [
           {
             "cmd": "show platform",
-            "desc": "Hardware platform/chassis info.",
+            "desc": "Displays the WLC's chassis type and each supervisor slot's hardware model and redundancy role (Active / Standby Hot) — the fastest way to confirm hardware identity and HA state right after gaining console access.",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show platform\nChassis type: C9800-CL-K9\nSlot      Type                Status\n1         C9800-CL-K9         Active\n2         C9800-CL-K9         Standby Hot"
@@ -12618,6 +12625,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "WLC-01# show wireless trace-on-failure summary\nTotal Failures Captured: 12\nReasons:\n  EAP Timeout: 5\n  4-way Handshake Failure: 3\n  PSK Mismatch: 2\n  Association Reject: 2"
+          },
+          {
+            "cmd": "show ap multicast mom",
+            "desc": "Confirms whether each AP is receiving the controller's CAPWAP multicast-to-multicast (MoM) group traffic used to distribute multicast frames to APs — if MoM isn't arriving, multicast-enabled clients on that AP won't get IPTV/mDNS-style streams even though unicast traffic works fine.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "WLC-01# show ap multicast mom\nAP Name         VLAN   MoM Group      MoM Status     Last Packet\nAP-LON-01       100    239.0.10.1     Receiving      2s ago\nAP-LON-02       100    239.0.10.1     Receiving      4s ago\nAP-LON-03       100    239.0.10.1     Not Receiving  --\n\n# Scope to one AP: show ap name AP-LON-03 multicast mom"
           }
         ],
         "AP CLI — Show & Status": [
@@ -16082,6 +16096,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Server side (run first):\n$ iperf3 -s\n-----------------------------------------------------------\nServer listening on 5201\n\n# Client side:\n$ iperf3 -c 10.0.0.10 -t 10 -P 4\nConnecting to host 10.0.0.10, port 5201\n[ ID] Interval         Transfer     Bitrate         Retr\n[  4] 0.00-10.00 sec  1.12 GBytes   962 Mbits/sec    0  sender\n[  6] 0.00-10.00 sec  1.09 GBytes   935 Mbits/sec    0  sender\n[  8] 0.00-10.00 sec  1.10 GBytes   945 Mbits/sec    0  sender\n[ 10] 0.00-10.00 sec  1.11 GBytes   953 Mbits/sec    0  sender\n[SUM] 0.00-10.00 sec  4.42 GBytes  3795 Mbits/sec    0  sender\n\n# -c <host>  → target iperf3 server\n# -t 10      → test duration in seconds\n# -P 4       → number of parallel TCP streams (simulates multi-threaded apps)\n# Retr = TCP retransmit count; non-zero indicates congestion or packet loss"
+          },
+          {
+            "cmd": "nvme list",
+            "desc": "Lists every NVMe block device attached to the host with its model, firmware revision, namespace size, and used bytes — the nvme-cli equivalent of lsblk for NVMe SSDs, useful before running smart-log or firmware-update operations.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ nvme list\nNode             SN                   Model                    Namespace Usage                      Format         FW Rev\n---------------- -------------------- ------------------------ --------- -------------------------- ---------------- --------\n/dev/nvme0n1     S6EPNE0R123456       Samsung SSD 980 PRO 1TB  1         512.11  GB /   1.00  TB    512   B +  0 B   5B2QGXA7"
           }
         ],
         "Ref 01. File & Directory Navigation": [
@@ -28313,7 +28334,7 @@
           },
           {
             "cmd": "esxcli hardware cpu list",
-            "desc": "CPU topology and features",
+            "desc": "Lists every logical CPU with its physical package, core, and thread IDs plus family/model numbers and bus speed — use the Package ID and Core ID columns to work out physical socket/core counts versus Hyper-Threading siblings.",
             "type": "show",
             "flagged": false,
             "example": "   CPU:0\n      Address: 0\n      Bus Speed (MHz): 100\n      Core ID: 0\n      CPU ID: 0\n      Family: 6\n      Model: 85\n      Package ID: 0\n      Thread ID: 0\n   CPU:1\n      Core ID: 0\n      CPU ID: 1\n      Thread ID: 1"
@@ -28650,6 +28671,13 @@
             "type": "show",
             "flagged": false,
             "example": "[root@esxi01:~] esxcli storage core adapter list\nHBA Name  Driver      Link State  UID              Capabilities         Description\n--------  ----------  ----------  ---------------  -------------------  -----------\nvmhba0    lsi_mr3     link-n/a    sas.5001636...   Second Level Lun ID  (0000:03:00.0) Broadcom MegaRAID SAS\nvmhba1    vmkata      link-n/a    ide.vmhba1                            (0000:00:1f.2) Intel AHCI\nvmhba64   iscsi_vmk   online      iscsi.vmk...     Second Level Lun ID  iSCSI Software Adapter\nvmhba2    qla2xxx     link-up     fc.20000024...   Second Level Lun ID  (0000:04:00.0) QLogic FC HBA"
+          },
+          {
+            "cmd": "esxcli vsan cluster get",
+            "desc": "Reports this host's vSAN cluster membership — sub-cluster UUID, local node role (Master/Backup/Agent), health state, and member count — the first command to run when a host appears absent or partitioned from the vSAN cluster.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ esxcli vsan cluster get\nCluster Information\n   Enabled: true\n   Current Local Time: 2026-07-16T09:12:03Z\n   Local Node UUID: 5f2a1b3c-0000-1111-2222-b8ca3a6b1a40\n   Local Node Type: NORMAL\n   Local Node State: MASTER\n   Local Node Health State: HEALTHY\n   Sub-Cluster Master UUID: 5f2a1b3c-0000-1111-2222-b8ca3a6b1a40\n   Sub-Cluster Member Count: 4"
           }
         ],
         "VM Management": [
@@ -29482,7 +29510,7 @@
         "Diagnostics": [
           {
             "cmd": "show logging",
-            "desc": "Shows logging configuration",
+            "desc": "Shows which logging destinations are enabled and at what severity — console, monitor, buffer, and remote syslog server — followed immediately by the contents of the internal log buffer itself.",
             "type": "show",
             "flagged": false,
             "example": "Syslog logging: enabled (0 messages dropped, 0 messages rate-limited)\n                Console logging: level debugging, 28 messages logged\n                Monitor logging: level debugging, 0 messages logged\n                Buffer logging: level informational, 421 messages logged\n                Trap logging: level informational, 142 message lines logged\n                  Logging to 10.50.50.50 (transport tcp port 1514)\n\nLog Buffer (65536 bytes):\n*Feb  5 10:18:42.281: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:18:42.291: %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up\n*Feb  5 10:23:01.412: %SYS-5-CONFIG_I: Configured from console by admin on vty0"
@@ -29682,6 +29710,13 @@
             "type": "show",
             "flagged": false,
             "example": "ciscoasa# show conn count\n\n12451 in use, 48210 most used\n\nWhat it means:\n- \"in use\" is the live connection table size right now; \"most used\" is\n  the high-water mark since the last reload.\n- A connection is built on the first SYN (TCP) or first packet (UDP)\n  and torn down on the final ACK / idle timeout, so \"in use\" tracks\n  active sessions, not total traffic.\n- Sustained counts 50-100x the normal baseline is a common early\n  indicator of a SYN flood or scanning activity — correlate with\n  \"show conn count\" trended over time plus \"show cpu usage\"."
+          },
+          {
+            "cmd": "show asp table classify domain permit",
+            "desc": "Dumps the accelerated security path's compiled classify rules for the permit domain — the actual hardware-accelerated ACL lookup entries the ASA uses per-packet — letting you confirm a rule you expect to match a flow is really installed and not shadowed by a broader one above it.",
+            "type": "troubleshooting",
+            "flagged": false,
+            "example": "ciscoasa# show asp table classify domain permit\nInput Table\nin  id=0x14a8f3d0, priority=13, domain=permit, deny=false\n        hits=192843, user_data=0x14a75e40, cs_id=0x0, l3_type=0x8\n        src ip/id=10.0.0.0, mask=255.255.255.0, port=0, tag=any\n        dst ip/id=0.0.0.0, mask=0.0.0.0, port=0, tag=any, dscp=0x0\n        input_ifc=inside, output_ifc=any"
           }
         ],
         "NAT": [
@@ -30834,6 +30869,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws s3api list-buckets --query \"Buckets[].Name\" --output table\n---------------------------\n|       ListBuckets        |\n+---------------------------+\n|  acme-data-lake           |\n|  acme-static-assets       |\n|  acme-terraform-state     |\n+---------------------------+\n\n# Full JSON with creation dates and owner:\n$ aws s3api list-buckets\n{\n    \"Buckets\": [\n        {\"Name\": \"acme-data-lake\", \"CreationDate\": \"2024-03-11T09:12:41+00:00\"},\n        {\"Name\": \"acme-static-assets\", \"CreationDate\": \"2023-08-02T14:03:10+00:00\"}\n    ],\n    \"Owner\": {\"DisplayName\": \"acme-admin\", \"ID\": \"a1b2c3...\"}\n}"
+          },
+          {
+            "cmd": "aws s3api head-object --bucket <bucket> --key <key>",
+            "desc": "Fetches an S3 object's metadata (content length, ETag, storage class, server-side encryption, last-modified) without downloading its body — the API-level equivalent of a HEAD request, useful in scripts that need to check existence or size before a GET.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws s3api head-object --bucket my-app-backups --key db/2026-07-15.sql.gz\n{\n    \"LastModified\": \"2026-07-15T06:00:12+00:00\",\n    \"ContentLength\": 483920112,\n    \"ETag\": \"\\\"9f86d081884c7d659a2feaa0c55ad015\\\"\",\n    \"ContentType\": \"application/gzip\",\n    \"ServerSideEncryption\": \"aws:kms\",\n    \"StorageClass\": \"STANDARD_IA\"\n}"
           }
         ],
         "CloudWatch": [
@@ -31511,7 +31553,7 @@
           },
           {
             "cmd": "show system health",
-            "desc": "Displays system health summary",
+            "desc": "Rolls up CPU, memory, disk, fan, PSU, and temperature readings against their alert thresholds into a single Overall Health verdict — the fastest SDX triage check to run before drilling into individual 'show system' counters.",
             "type": "show",
             "flagged": false,
             "example": "> show system health\n\nOverall Health: Good\nCPU:           12%  (threshold 80%)\nMemory:        43%  (threshold 90%)\nDisk /flash:   28%  (threshold 85%)\nFan status:    All OK\nPSU status:    All OK\nTemperature:   Inlet 26°C  CPU 48°C  — All within limits"
@@ -35659,6 +35701,13 @@
             "type": "show",
             "flagged": false,
             "example": "Switch# show platform resources\n\nSystem Resources\n---------------\n  Load averages     :    0.47,    0.52,    0.55 for 1/5/15 min\n  Memory (kb)       : 8126736 Total, 3425992 Used,  4700744 Free\n  CPU Utilization   :  8.00% in last 5 secs\n\n*TCAM Utilization (per instance)*\nResource                        In Use  Available  Utilization\nIP routing                      4,212    32,768      12%\nMAC addresses                   2,134    32,768       6%\nACL entries                     1,023     4,096      24%"
+          },
+          {
+            "cmd": "show controllers ethernet-controller <interface>",
+            "desc": "Dumps PHY/MAC-level hardware counters for a single interface — runts, giants, CRC errors, collisions, and symbol errors sourced directly from the ASIC — a level below 'show interface' for chasing a physical-layer problem a simple error counter doesn't explain.",
+            "type": "show",
+            "flagged": false,
+            "example": "sw# show controllers ethernet-controller GigabitEthernet1/0/1\n\nTransmit GigabitEthernet1/0/1              Receive\n  0 Runts                                    0 Giants\n  0 Broadcasts                               0 CRC\n  0 Collisions                               0 Symbol\n\n  Rx Statistics:\n     bytes                       48213402\n     unicast frames                 302188\n     multicast frames                 1204\n     broadcast frames                  318"
           }
         ],
         "Licensing": [
@@ -35987,7 +36036,7 @@
           },
           {
             "cmd": "show platform integrity status",
-            "desc": "Compact integrity health check.",
+            "desc": "Summarizes the platform's Trusted Platform Module chain of trust in one line per stage — Secure Boot, image signature verification, and TPM presence/health — ending in an Overall verdict of TRUSTED or COMPROMISED for supply-chain integrity checks.",
             "type": "show",
             "flagged": false,
             "example": "sw# show platform integrity status\nSecure Boot: ENABLED\nTrust Anchor: PASSED\nImage Signature: VERIFIED\nTPM: PRESENT, OPERATIONAL\nOverall: TRUSTED"
@@ -42647,7 +42696,7 @@
           },
           {
             "cmd": "show feature",
-            "desc": "NX-OS features installed/enabled",
+            "desc": "Lists every licensable NX-OS feature (bgp, ospf, hsrp, vpc, etc.) and whether it's enabled or disabled per instance/VDC — a feature must show 'enabled' here before its configuration commands become available in config mode.",
             "type": "show",
             "flagged": false,
             "example": "Feature Name          Instance  State\n--------------------  --------  --------\nbash-shell            1         enabled\nbgp                   1         enabled\neigrp                 1         disabled\nhsrp                  1         enabled\ninterface-vlan        1         enabled\nlacp                  1         enabled\nlldp                  1         enabled\nnxapi                 1         enabled\nospf                  1         enabled\npim                   1         disabled\ntacacs                1         enabled\nvpc                   1         enabled"
@@ -43959,6 +44008,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show fex\n\n  FEX      FEX           FEX                       FEX\nNumber   Description     State        Model            Serial\n------------------------------------------------------------------------\n  101     FEX0101         Online       N2K-C2232PP-10GE FOX1234G5H6\n  102     FEX0102         Online       N2K-C2232PP-10GE FOX1234G5H7\n\nWhat it means:\n- \"Online\" is the only healthy steady state; \"Image Download\",\n  \"Registered\", or \"Offline\" all indicate the FEX is still coming up\n  or has lost its fabric uplink.\n- Use \"show fex detail\" for per-FEX hardware/thermal/PSU detail, or\n  \"show fex <n> detail\" for a single unit.\n- FEX ports show up in \"show interface\" as Ethernet<FEX#>/slot/port\n  once the FEX reaches Online state."
+          },
+          {
+            "cmd": "show fex <fex-id> detail",
+            "desc": "Drills into a single Nexus 2000 Fabric Extender — model, serial number, fabric-port pinning, power state, and per-uplink status — the per-FEX detail view behind the summary table printed by plain 'show fex'.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show fex 100 detail\nFEX: 100 Description: FEX0100   state: Online\n  FEX version: 9.3(5) [Switch version: 9.3(5)]\n  Extender Model: N2K-C2232PP-10GE,  Extender Serial: JAF1732AGTB\n  Part No: 73-14335-05\n  pinning-mode: static    Max-links: 1\n  Fabric port for control traffic: Eth1/1\n  Fabric interface state:\n    Po100 - Interface Eth1/1     State: Active"
           }
         ],
         "Config Management": [
@@ -44151,7 +44207,7 @@
           },
           {
             "cmd": "show interface brief",
-            "desc": "Short interface status table",
+            "desc": "One line per port summarizing admin/link status, port mode (access/trunk/routed), native VLAN, negotiated speed, and a down-reason column — the fastest way to spot disabled or down ports across the whole switch.",
             "type": "show",
             "flagged": false,
             "example": "Port    Native VLAN  Mode    Type    Enabled Status        Reason          Speed     Description\n--------------------------------------------------------------------------------------\n1/1/1   1            access  --      yes     up                            1000      uplink-to-core\n1/1/2   100          access  --      yes     up                            1000      ap-1\n1/1/3   100          access  --      yes     down          waiting for     auto      ap-2\n1/1/4   --           routed  --      yes     up                            10000     l3-uplink\n1/1/47  --           trunk   1G-T    yes     up                            1000\n1/1/48  --           trunk   1G-T    no      down          Administrativel auto"
@@ -45906,6 +45962,13 @@
             "type": "show",
             "flagged": false,
             "example": "(instant-AP) # show ap arm history\n\nRadio 0 (2.4GHz) ARM History\n-----------------------------\nTime                 Channel  Power  Reason\n2026-06-20 09:14:02   1        18     I (Interference)\n2026-06-20 14:02:11   6        18     N (Noise exceeded)\n2026-06-21 02:00:00   11       18     AIRMATCH\n\nLegend: I=Interference R=Radar N=Noise Q=Bad Quality G=Rogue Containment"
+          },
+          {
+            "cmd": "show ap system-profile",
+            "desc": "Displays the system profile bound to this AP — NTP servers, timezone, LED/console behavior, and management-user settings — the configuration counterpart to 'show version' for confirming which baseline settings an AP inherited.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap system-profile\nName                          : default\nNTP Server                    : 10.0.0.1\nTimezone                      : UTC 0:0\nLED Display                   : Enabled\nConsole access                : Enabled\nPreprovisioning                : Disabled\nRoot password Enable/Disable  : Disabled"
           }
         ],
         "Network": [
@@ -46020,7 +46083,7 @@
           },
           {
             "cmd": "show user-table",
-            "desc": "Detailed user table",
+            "desc": "Lists every client currently associated to this AP with its assigned role, IP/MAC address, session age, home AP, and the flag legend (regular/AP-user/wireless/VPN) — the AP-side equivalent of a WLC client table, useful for confirming role-based policy assignment.",
             "type": "show",
             "flagged": false,
             "example": "Users:1\nFlags: R=Regular, A=AP-User, W=WirelessUser, V=VPN, a=auth req, l=logoff\nName      IP              MAC               ROLE      Age  AP   11h  Fwd\n-         10.0.50.100     00:50:56:ab:cd:01 employee  21m  ap-floor3  a  -"
@@ -46552,6 +46615,13 @@
             "type": "config",
             "flagged": false,
             "example": "router(config)# crypto ipsec profile PROF1\nrouter(ipsec-profile)#  set transform-set TS1\nrouter(ipsec-profile)#  set ikev2-profile PROF1\nrouter(ipsec-profile)#  set security-association lifetime seconds 3600\nrouter(config)# interface Tunnel0\nrouter(config-if)#  tunnel protection ipsec profile PROF1"
+          },
+          {
+            "cmd": "show crypto isakmp sa",
+            "desc": "Lists IKEv1 (ISAKMP) Phase 1 security associations — peer address, connection state (QM_IDLE = fully negotiated and idle), and role — the legacy counterpart to 'show crypto ikev2 sa' for tunnels still running the older key-exchange protocol.",
+            "type": "show",
+            "flagged": false,
+            "example": "router# show crypto isakmp sa\n\nIPv4 Crypto ISAKMP SA\ndst             src             state          conn-id status\n198.51.100.10   203.0.113.5     QM_IDLE           1001    ACTIVE\n\nIPv6 Crypto ISAKMP SA\n"
           }
         ],
         "MPLS / L3VPN": [
