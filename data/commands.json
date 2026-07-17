@@ -805,6 +805,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show ns vpxparam\n        VPX Configured Parameters:\n        CPU Yield: YES\n        Master Clock CPU: NO\n        VPX Running Environment: 1 (AWS)\n        Memory Status: NORMAL\n        KVMVirtioMultiqueue: NOT APPLICABLE\n Done\n\nWhat it means:\n- \"CPU Yield\" (cpuyield): when YES, this VPX releases its vCPU instead\n  of busy-polling when idle — lets other VMs on the same hypervisor\n  host use the core; set NO only when the VPX needs guaranteed\n  low-latency scheduling and co-tenancy isn't a concern.\n- \"VPX Running Environment\" reports the detected platform: 0 = on-prem\n  (ESXi/Hyper-V/KVM bare metal), 1 = AWS, 2 = OpenStack, 3 = Azure,\n  4 = GCP — useful when confirming a VPX picked up the right cloud\n  init profile after migration.\n- \"Master Clock CPU\" (masterclockcpu1): YES pins the NetScaler clock\n  source to vCPU1 instead of vCPU0, used on some hypervisors to avoid\n  clock-drift bugs."
+          },
+          {
+            "cmd": "show ntp-sync",
+            "desc": "Reports whether NTP synchronisation is enabled on the ADC and, if so, whether the appliance clock is currently synchronised to a configured NTP server.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ntp-sync\n\tNTP synchronization: ENABLED\n Done"
           }
         ],
         "Configuration Management": [
@@ -7617,6 +7624,13 @@
             "cmd": "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes",
             "desc": "Generate a self-signed certificate and private key in a single command (-nodes = no passphrase)",
             "example": "# Generates key.pem and cert.pem in the current directory\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes \\\n  -subj \"/C=GB/ST=London/O=MyOrg/CN=internal.example.com\"\n\nGenerating a RSA private key\n...............................................................................................++++\n........++++\nwriting new private key to 'key.pem'\n\n# Verify the result:\nopenssl x509 -in cert.pem -noout -subject -dates\nsubject=C = GB, ST = London, O = MyOrg, CN = internal.example.com\nnotBefore=Jun 15 09:00:00 2026 GMT\nnotAfter=Jun 15 09:00:00 2027 GMT\n\n# Add SANs (required by modern browsers): append -addext \"subjectAltName=DNS:internal.example.com\""
+          },
+          {
+            "cmd": "openssl req -new -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes",
+            "desc": "Generate a new RSA key pair and a self-signed X.509 certificate in one step — skips the CSR entirely since there is no external CA to send it to. Common for internal test servers, dev environments, and quick mTLS testing where a publicly-trusted certificate isn't needed.",
+            "type": "show",
+            "flagged": false,
+            "example": "Generating a RSA private key\n....................+++++\nwriting new private key to 'key.pem'\n-----\nYou are about to be asked to enter information that will be incorporated\ninto your certificate request.\nCountry Name (2 letter code) [AU]: US\nCommon Name (e.g. server FQDN or YOUR name) []: dev.internal.example.com\n\n# key.pem  -> 2048-bit RSA private key, unencrypted (-nodes)\n# cert.pem -> self-signed certificate, valid 365 days"
           }
         ],
         "Certificate Inspection": [
@@ -10657,6 +10671,13 @@
             "type": "show",
             "flagged": false,
             "example": "IP Address : 10.50.100.27\nVLAN       : 100\nAP Name    : AP-LON-01\nRSSI       : -55 dBm\nSNR        : 38 dB"
+          },
+          {
+            "cmd": "show client summary",
+            "desc": "One-line-per-client summary of every wireless client currently associated to the controller: MAC address, hosting AP name, association status, WLAN ID, 802.1X authentication state, and radio protocol/port.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Cisco Controller) >show client summary\n\nNumber of Clients................................ 3\n\nMAC Address       AP Name         Status         WLAN Auth Protocol   Port\n------------------ --------------- -------------- ---- ---- --------- ----\n00:1a:2b:3c:4d:5e  ap-floor2-01    Associated     2    Yes  802.11ac  1\n00:1a:2b:3c:4d:6f  ap-floor2-01    Associated     2    Yes  802.11ax  1\nf8:e0:79:11:22:33  ap-floor1-04    Probing        1    No   802.11n   1"
           }
         ],
         "RRM": [
@@ -20170,7 +20191,7 @@
           },
           {
             "cmd": "http.request.method == \"POST\"",
-            "desc": "POST requests",
+            "desc": "HTTP POST requests — form submissions, API writes, and file uploads, as opposed to read-only GET requests.",
             "type": "show",
             "flagged": false,
             "example": "# Matches HTTP POST requests — form submissions, API writes, file uploads.\n# Frame 7:  POST /login HTTP/1.1  Host: 10.0.0.10\n#   Content-Type: application/x-www-form-urlencoded\n#   Content-Length: 32   username=admin&password=secret\n# Right-click → Follow → HTTP Stream to see the full request + response body."
@@ -20398,7 +20419,7 @@
           },
           {
             "cmd": "dns.qry.type == 1",
-            "desc": "Type A lookups",
+            "desc": "DNS queries for A records — the standard hostname-to-IPv4-address lookup, and the most common DNS query type on any capture.",
             "type": "show",
             "flagged": false,
             "example": "# Matches DNS A record queries (type 1 — IPv4 address lookups).\n# Frame 1:  DNS Query  A  example.com\n# A records are the most common query type — hostname to IPv4 mapping.\n# See also: dns.qry.type == 28 for AAAA (IPv6) lookups."
@@ -21102,6 +21123,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Matches QUIC CONNECTION_CLOSE (transport error) frames.\n# Frame 812:  10.0.0.5:51234 → 93.184.216.34:443  QUIC  CONNECTION_CLOSE, Error: 0x0a (PROTOCOL_VIOLATION)\n\n# Use quic.frame_type == 0x1d to catch application-layer close frames\n# (e.g. HTTP/3 errors) instead of transport-layer ones."
+          },
+          {
+            "cmd": "vxlan.vni == 5000",
+            "desc": "VXLAN-encapsulated frames carrying a specific VNI (Virtual Network Identifier) — isolates one overlay segment's traffic out of a capture that mixes VXLAN traffic for several VNIs on the same underlay.",
+            "type": "show",
+            "flagged": false,
+            "example": "# Matches VXLAN (UDP/4789 by default) frames whose VNI field equals 5000.\n# Frame 12:  10.0.0.5 → 10.0.0.10  VXLAN  VNI: 5000\n# Frame 13:  10.0.0.5 → 10.0.0.10  VXLAN  VNI: 5000\n# Combine with \"vxlan\" alone (no VNI filter) to see every overlay segment,\n# or with \"udp.port == 4789\" to catch VXLAN traffic on the default port\n# regardless of whether Wireshark has already dissected it as VXLAN."
           }
         ],
         "Display Filters — Operators & Syntax": [
@@ -22767,7 +22795,7 @@
           },
           {
             "cmd": "show ipv6 ospf database",
-            "desc": "OSPFv3 LSDB.",
+            "desc": "The OSPFv3 link-state database for IPv6 — the same router/network/summary LSA structure as OSPFv2's \"show ip ospf database\", but with IPv6-specific LSA types.",
             "type": "show",
             "flagged": false,
             "example": "R1# show ipv6 ospf database\n\n            OSPFv3 Router with ID (1.1.1.1) (Process ID 1)\n\n                Router Link States (Area 0)\n\nADV Router       Age   Seq#       Fragment ID  Link Count\n1.1.1.1          412   0x80000003          0   2\n2.2.2.2          410   0x80000004          0   2\n\n                Inter Area Prefix Link States (Area 0)\n\nADV Router       Age   Seq#       Prefix\n1.1.1.1          120   0x80000001 2001:DB8:99::/64\n\nWhat it means:\n- IPv6 OSPF (OSPFv3) LSDB. Same shape as IPv4 OSPF, with IPv6\n  specific LSA types (Type-8 = link, Type-9 = intra-area-prefix).\n- \"Inter Area Prefix\" replaces \"Summary Net\" from OSPFv2.\n- Use to verify IPv6-specific topology before drilling into\n  individual LSAs."
@@ -27944,7 +27972,7 @@
         "Diagnostics": [
           {
             "cmd": "ping 8.8.8.8 source loopback0",
-            "desc": "Sourced ping",
+            "desc": "ICMP ping with the source address forced to loopback0 instead of the egress interface's IP — used to test return-path routing to the loopback or when a remote ACL only permits the loopback address.",
             "type": "show",
             "flagged": false,
             "example": "R1# ping 8.8.8.8 source loopback0\n\nType escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:\nPacket sent with a source address of 1.1.1.1\n!!!!!\nSuccess rate is 100 percent (5/5), round-trip min/avg/max = 12/15/24 ms\n\nWhat it means:\n- Forces source IP = loopback0 instead of the egress interface IP.\n- Useful when:\n  - testing return-path routing (does upstream reach the loopback?)\n  - the destination ACL only permits the loopback /32\n- \"Packet sent with a source address of 1.1.1.1\" line confirms\n  the source IP that will appear on the wire."
@@ -28550,6 +28578,13 @@
             "type": "show",
             "flagged": false,
             "example": "[root@esxi:~] net-stats -A\n\n     Port    Pkts/s  MBps   Drops  Errors  Name\n     ----    ------  ----   -----  ------  ----\n     67108866  45120  350.2      0       0  vmnic0\n     67108867  44988  349.7      0       0  vmnic1\n     83886080     12    0.1      0       0  Management Network\n     83886081  22400  174.3      0       0  vMotion\n     83886082  88640  345.2     14       0  VM Network\n\nWhat it means:\n- Port 67108866/67: physical uplinks (vmnic0/1) — balanced traffic, no drops\n- vMotion at 174 MBps — active migration in progress\n- VM Network has 14 drops — possible uplink saturation or misconfigured MTU\n- Run 'net-stats -l' to list ports with friendly names"
+          },
+          {
+            "cmd": "vim-cmd hostsvc/net/info",
+            "desc": "Dumps the host's full networking configuration via the hostd service API: virtual standard switches and their uplinks/MTU, port groups and VLAN IDs, VMkernel (vmk) interfaces with IP/netmask, and DNS/routing config — a single-command alternative to running several esxcli network subcommands.",
+            "type": "show",
+            "flagged": false,
+            "example": "~ # vim-cmd hostsvc/net/info\n(vim.host.NetworkInfo) {\n   vswitch = (vim.host.VirtualSwitch) [\n      (vim.host.VirtualSwitch) {\n         name = \"vSwitch0\",\n         portgroup = [\"Management Network\", \"VM Network\"],\n         pnic = [\"vmnic0\"],\n         mtu = 1500,\n      }\n   ],\n   vnic = (vim.host.VirtualNic) [\n      (vim.host.VirtualNic) {\n         device = \"vmk0\",\n         spec = (vim.host.VirtualNic.Specification) {\n            ip = (vim.host.IpConfig) {\n               ipAddress = \"192.168.1.50\",\n               subnetMask = \"255.255.255.0\",\n            },\n         },\n      }\n   ],\n}"
           }
         ],
         "Storage": [
@@ -29911,6 +29946,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-LocalGroupMember -Group \"Administrators\"\n\nObjectClass Name                       PrincipalSource\n----------- ----                       ----------------\nUser        WIN-SERVER01\\Administrator Local\nGroup       CORP\\Domain Admins         ActiveDirectory\nUser        CORP\\jane.doe              ActiveDirectory"
+          },
+          {
+            "cmd": "Get-LocalUser",
+            "desc": "Lists local (non-domain) Windows accounts from the SAM database: name, enabled/disabled state, and description — the modern PowerShell replacement for \"net user\" with structured, filterable output.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-LocalUser\n\nName             Enabled Description\n----             ------- -----------\nAdministrator    False   Built-in account for administering the computer/domain\nDefaultAccount   False   A user account managed by the system.\nGuest            False   Built-in account for guest access to the computer/domain\nsvc-backup       True    Local service account for backup jobs\nWDAGUtilityAcc.. False   A user account managed and used by the system for Windows Defender Application Guard"
           }
         ],
         "Networking": [
@@ -30895,7 +30937,7 @@
           },
           {
             "cmd": "aws cloudwatch list-metrics",
-            "desc": "Lists metrics",
+            "desc": "List every CloudWatch metric currently published in the account/region, with its namespace and dimensions — use to discover exact metric/dimension names before writing a \"get-metric-data\" or \"put-metric-alarm\" call.",
             "type": "show",
             "flagged": false,
             "example": "{\n    \"Metrics\": [\n        {\"Namespace\":\"AWS/EC2\",\"MetricName\":\"CPUUtilization\",\"Dimensions\":[{\"Name\":\"InstanceId\",\"Value\":\"i-0a1b2c3d4e5f67890\"}]},\n        {\"Namespace\":\"AWS/EC2\",\"MetricName\":\"NetworkIn\",\"Dimensions\":[{\"Name\":\"InstanceId\",\"Value\":\"i-0a1b2c3d4e5f67890\"}]}\n    ]\n}"
@@ -32328,7 +32370,7 @@
           },
           {
             "cmd": "show vpx logs",
-            "desc": "Shows VPX logs",
+            "desc": "Tail the aggregated log stream across every VPX instance hosted on the SDX appliance — session, SSL, HA, and system events tagged with the originating VPX name, useful for spotting an issue without logging into each VPX individually.",
             "type": "show",
             "flagged": false,
             "example": "2026-06-25 06:14:02  VPX3  ERROR   NS-ICA-SESSION: Session limit reached on vserver VS_ICA_PRI\n2026-06-25 06:12:11  VPX1  WARN    NS-SSL: Certificate CN=vpx1.corp.local expires in 30 days\n2026-06-25 05:58:33  VPX2  INFO    NS-HA: Heartbeat received from peer 10.0.0.12\n2026-06-25 05:30:00  VPX4  INFO    NS-SYS: Scheduled config save completed"
@@ -40697,6 +40739,13 @@
             "type": "show",
             "flagged": false,
             "example": "sw# show flow monitor MON1 statistics\n  Cache type:                       Normal (Platform cache)\n  Cache size:                       200000\n  Current entries:                   12345\n  Flows added:                      4567890\n  Flows aged:                       4555545\n    - Active timeout       (60 secs)     9876543\n    - Inactive timeout     (15 secs)    12345678\n    - Event aged                                0\n    - Watermark aged                            0\n    - Emergency aged                            0"
+          },
+          {
+            "cmd": "show platform software fed switch active fnf sw-table-sizes asic 0 shadow 0",
+            "desc": "Internal FED (Forwarding Engine Driver) view of the Flexible NetFlow hardware table on a given ASIC/shadow instance: allocated size, current entry count, and utilisation — used when \"show flow monitor\" reports normal cache stats but flows still appear to be silently dropped from the hardware table on a Catalyst 9000 switch.",
+            "type": "show",
+            "flagged": false,
+            "example": "sw# show platform software fed switch active fnf sw-table-sizes asic 0 shadow 0\nFNF SW Table Sizes for ASIC 0, Shadow 0\n----------------------------------------\nTable Name          Max Size    Used     Utilization\nIPv4 Flow Table      131072      8421       6.4%\nIPv6 Flow Table       65536       102       0.2%"
           }
         ],
         "Telemetry": [
@@ -42568,6 +42617,13 @@
             "type": "config",
             "flagged": false,
             "example": "# apt autoremove --purge -y\nReading package lists... Done\nBuilding dependency tree... Done\nThe following packages will be REMOVED:\n  pve-kernel-6.8.4-2-pve* pve-kernel-6.8.4-3-pve*\n0 upgraded, 0 newly installed, 2 to remove\nAfter this operation, 612 MB disk space will be freed.\n(Reading database ...)\nRemoving pve-kernel-6.8.4-2-pve (6.8.4-2) ..."
+          },
+          {
+            "cmd": "pveam list local",
+            "desc": "List container/appliance templates already downloaded to a storage (here \"local\") — file name, size, and, once a container is deployed from it, the source template ID. Run \"pveam available\" first to see what can still be downloaded.",
+            "type": "show",
+            "flagged": false,
+            "example": "# pveam list local\nNAME                                                  SIZE\nlocal:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst  259.61MB\nlocal:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst  231.85MB"
           }
         ],
         "Logs & Diagnostics": [
@@ -44323,6 +44379,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show lacp interfaces\n\nState abbreviations :\nA - Active        P - Passive      F - Forced\nS - Short-timeout  L - Long-timeout ...\n\n------------------------------------------------------------------\n                    Actor                   Partner\n------------------------------------------------------------------\nInterface   Key    Port   Prio  State  |  Key   Port   Prio  State\n------------------------------------------------------------------\n1/1/1       1      1      1     ALFPC  |  1     1      1     ALFPC\n1/1/2       1      2      1     ALFPC  |  1     2      1     ALFPC\n\nWhat it means:\n- Both sides must show the \"C\" (Collecting/Distributing) flag for the\n  member to actually pass traffic — if only \"A\" and \"S\" show, LACP is\n  negotiating but the port isn't forwarding yet.\n- Mismatched Key values between members means they won't join the same\n  aggregate — check \"show lacp aggregates\" for the resulting LAG state."
+          },
+          {
+            "cmd": "show power-over-ethernet",
+            "desc": "PoE status and power budget for every PoE-capable port: admin state, detected device power draw, priority, and fault/error status — plus a system-wide summary of total PoE power available versus currently allocated.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show power-over-ethernet\nPoE is enabled on the following ports:\n\nPort     Enabled Status         Priority  Power(W)  Class\n-------- ------- -------------- --------- --------- -----\n1/1/1    yes     Delivering     low       8.5        4\n1/1/2    yes     Delivering     low       12.9       6\n1/1/3    yes     Searching      low       0.0        --\n1/1/4    no      Disabled       low       0.0        --\n\nSystem Power Budget: 370.0W    Power Used: 21.4W    Power Available: 348.6W"
           }
         ],
         "VLANs": [
@@ -44848,7 +44911,7 @@
           },
           {
             "cmd": "show ntp status",
-            "desc": "NTP sync state",
+            "desc": "Current NTP synchronisation state: whether the switch clock is synchronised, the reference server and its stratum, and the measured offset/jitter against it.",
             "type": "show",
             "flagged": false,
             "example": "NTP Status:\n  Synchronised: yes\n  Reference: 10.0.0.51 (stratum 2)\n  Offset:     0.421 ms\n  Jitter:     0.142 ms"
@@ -44899,7 +44962,7 @@
           },
           {
             "cmd": "ping 1.1.1.1 source-interface loopback0",
-            "desc": "Sourced ping",
+            "desc": "ICMP ping with the source address forced to loopback0 instead of the egress interface's IP — used to verify return-path routing to the loopback or when a remote ACL only permits the loopback address.",
             "type": "show",
             "flagged": false,
             "example": "PING 1.1.1.1 from 192.0.2.1: 56 data bytes\n64 bytes from 1.1.1.1: icmp_seq=0 ttl=56 time=5.012 ms"
@@ -45771,7 +45834,7 @@
           },
           {
             "cmd": "show log errorlog 50",
-            "desc": "Error log tail",
+            "desc": "Tail the last 50 lines of the mobility controller's error log — AP up/down events, authentication failures, and other WARN/ERROR-level system messages, useful for a quick look before pulling a full tech-support dump.",
             "type": "show",
             "flagged": false,
             "example": "Jun 12 03:14:32 aruba-mc01 stm: <305088> AP ap-floor5 Down (timeout)\nJun 12 03:14:40 aruba-mc01 stm: <305012> AP ap-floor5 Up (reconnected)"
@@ -46166,7 +46229,7 @@
         "Diagnostics": [
           {
             "cmd": "show log",
-            "desc": "AP log tail",
+            "desc": "Tail the AP's local system log — station association/disassociation, ARM channel changes, and other stm/sapd process events, scoped to this AP only rather than the controller-wide log.",
             "type": "show",
             "flagged": false,
             "example": "Jun 12 09:41:55 ap-floor3 stm[1234]: <305012> <WARN> |AP ap-floor3| ARM: channel changed from 44 to 36 (radar detected)\nJun 12 09:40:11 ap-floor3 sapd[1234]: <127004> <INFO> |AP ap-floor3| Station 00:50:56:ab:cd:01 associated"
@@ -46852,6 +46915,13 @@
             "type": "show",
             "flagged": false,
             "example": "Flow export v9 is enabled for main cache\n  Exporting flows to 10.0.0.100 (2055)\n  Exporting using source IP address 10.1.1.1\n  Version 9 flow records\n  0 flows exported in 0 udp datagrams\n  0 flows failed due to lack of export packet"
+          },
+          {
+            "cmd": "show ip sla summary",
+            "desc": "Roll-up view across all configured IP SLA operations: operation ID, type (icmp-echo, jitter, http, ...), destination, most recent return code, and last-run time — check this before drilling into a single operation with \"show ip sla statistics <id>\".",
+            "type": "show",
+            "flagged": false,
+            "example": "R1# show ip sla summary\nIPSLAs Latest Operation Summary\nCodes: * active, ^ inactive, ~ pending\n\n   ID  Type       Destination     Stats(ms)    Return  Last\n                                   RTT         Code    Run\n*  10  icmp-echo  10.0.0.1        1            OK      2 seconds ago\n*  20  udp-jitter 10.0.0.2        4            OK      6 seconds ago\n~  30  http       198.51.100.10   --           ---     Never"
           }
         ],
         "Diagnostics": [
