@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-16T18:43:58.794Z",
+  "updatedAt": "2026-07-18T18:43:24.973Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -2476,6 +2476,13 @@
             "type": "config",
             "flagged": false,
             "example": "> set ns ip 10.0.0.10 -arp DISABLED\nDone\n\n> show ns ip 10.0.0.10\nIP            Type   Mode    State    VLAN  Options\n10.0.0.10     VIP    Active  Enabled  100   ARP=DISABLED\n\nWhat it means:\n- Stops the ADC answering ARP for this IP — used when another device (HA peer, upstream router, anycast neighbour) must own L2 reachability for the address.\n- Common scenarios: Direct Server Return (loopback VIP on backend that mustn't ARP), striped cluster IPs owned by a single node, or quiescing a VIP without changing routing.\n- Disabling ARP on the only path to a SNIP/NSIP will black-hole traffic — verify the alternate ARP responder is live before applying."
+          },
+          {
+            "cmd": "show ip6tunnel",
+            "desc": "Lists every configured IPv6-over-IPv4 tunnel on the ADC (or one named tunnel) — remote and local tunnel endpoints, tunnel type, and the owning node group in a cluster deployment. Used to confirm an IPv6 migration tunnel is actually configured and pointed at the right peer before troubleshooting reachability through it.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show ip6tunnel\n\t1)\tName: tun-v6mig\n\t\tRemote: 2001:db8:1::1\n\t\tLocal: 2001:db8:2::1\n\t\tType: IP6-IP6\n\t\tEncapIP: 10.0.0.10\n Done"
           }
         ],
         "Rewrite & Responder": [
@@ -4670,6 +4677,13 @@
             "type": "show",
             "flagged": false,
             "example": "admin@PA-VM> show system state filter-pretty\n\ncfg.ha.config.enabled: True\ncfg.ha.config.group.mode: Active-Passive\ncfg.general.hostname: PA-VM\ncfg.general.model: PA-VM\nsys.s1.p1.if.ethernet1/1.dhcp: False\nsys.s1.p1.if.ethernet1/1.ip: 10.10.10.1/24\nsys.s1.p1.if.ethernet1/1.state: up\n\n# Narrow to one subtree instead of dumping everything:\nadmin@PA-VM> show system state filter-pretty cfg.ha.config\n\ncfg.ha.config.enabled: True\ncfg.ha.config.group.mode: Active-Passive\n\n# Save the full state to a file for a support case:\nadmin@PA-VM> show system state filter-pretty > state-dump.txt"
+          },
+          {
+            "cmd": "set clock date 2026/07/18 time 09:30:00",
+            "desc": "Manually sets the firewall's system date and time. Used on standalone devices without NTP configured, or to correct clock drift before a commit/cert operation where accurate timestamps matter — Panorama cannot push a clock change, so this has to be run locally on each managed firewall.",
+            "type": "show",
+            "flagged": false,
+            "example": "admin@PA-FW> set clock date 2026/07/18 time 09:30:00\n\nadmin@PA-FW> show clock\nFri Jul 18 09:30:03 BST 2026"
           }
         ],
         "Interfaces": [
@@ -5922,7 +5936,7 @@
           },
           {
             "cmd": "show system statistics session",
-            "desc": "Session-slot statistics",
+            "desc": "Dataplane-wide session table counters — current and maximum active sessions, sessions created/expired per second, and TCP/UDP/ICMP breakdowns. Fastest way to see whether the firewall is approaching its session capacity or churning sessions unusually fast, without paging through the full session table.",
             "type": "show",
             "flagged": false,
             "example": "Average session size                  : 412 bytes\nSessions per second                   : 1,832\nTCP / UDP / Other                     : 80% / 18% / 2%\nActive sessions                       : 18,233 / 250,000 capacity (7%)"
@@ -11027,6 +11041,13 @@
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless mesh stats AP-MESH-MAP-01\nMesh Stats for AP-MESH-MAP-01:\n  Backhaul link RX packets: 234567\n  Backhaul link TX packets: 198765\n  Mesh link errors        : 0\n  Mesh path changes       : 2"
+          },
+          {
+            "cmd": "show mesh backhaul <Cisco_AP>",
+            "desc": "Displays a mesh AP's current backhaul radio settings — radio type, role (uplink/downlink access), subband, administrative and operational state, and current Tx power level. First command to check when a mesh AP has joined but its backhaul link to the parent looks marginal.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Cisco Controller) >show mesh backhaul AP-Mesh-01\n\n Radio Type ................................ RADIO_TYPE_80211a\n Radio Role ................................ DOWNLINK ACCESS\n Radio Subband .............................. All\n Administrative State ....................... ADMIN_ENABLED\n Operation State ............................ UP\n Current Tx Power Level ..................... 1"
           }
         ],
         "Diagnostics": [
@@ -11940,7 +11961,7 @@
           },
           {
             "cmd": "show wireless mobility statistics",
-            "desc": "Shows mobility statistics",
+            "desc": "Counters for inter-controller mobility handoffs — successful and failed Layer 2/Layer 3 roams, and mobility-message retransmits/timeouts per peer controller. Confirms whether client roaming failures are actually mobility-tunnel problems between controllers rather than RF issues at the AP.",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless mobility statistics\nMobility Messages Sent: 12345\nMobility Messages Received: 12340\nFailed Messages: 0\nLast 5 sec rate: 12 msgs/sec"
@@ -14404,6 +14425,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ systemctl restart systemd-timesyncd\n$ systemctl status systemd-timesyncd | grep Active\n   Active: active (running) since Wed 2026-06-25 10:21:05 UTC; 2s ago"
+          },
+          {
+            "cmd": "chronyc sources",
+            "desc": "Lists every NTP source chrony is polling — reachability, stratum, and the current offset/estimated error for each — the chrony equivalent of \"ntpq -p\" and the first command to check when a chrony-managed clock is drifting or a source looks unreachable.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ chronyc sources\n\nMS Name/IP address         Stratum Poll Reach LastRx Last sample\n===============================================================================\n^* ntp1.example.com              2   6   377    23    -172us[ -230us] +/-  15ms\n^+ ntp2.example.com              2   6   377    24    +310us[ +290us] +/-  18ms\n^? ntp3.example.com              3   6     0     -     +0ns[   +0ns] +/-    0ns"
           }
         ],
         "atq  # list at jobs": [
@@ -15390,7 +15418,7 @@
           },
           {
             "cmd": "ss -tulpn",
-            "desc": "Shows listening sockets",
+            "desc": "Lists every listening TCP and UDP socket along with the owning process (PID/name) — the modern, faster replacement for \"netstat -tulpn\". Essential first step to confirm a service is actually bound to the port and interface you expect.",
             "type": "show",
             "flagged": false,
             "example": "Netid State   Recv-Q Send-Q  Local Address:Port  Peer Address:Port  Process\nudp   UNCONN  0      0       127.0.0.53%lo:53         0.0.0.0:*      users:((\"systemd-resolve\",pid=812,fd=14))\ntcp   LISTEN  0      128            0.0.0.0:22         0.0.0.0:*      users:((\"sshd\",pid=1024,fd=3))\ntcp   LISTEN  0      511            0.0.0.0:80         0.0.0.0:*      users:((\"nginx\",pid=1340,fd=6))\ntcp   LISTEN  0      4096          127.0.0.1:5432      0.0.0.0:*      users:((\"postgres\",pid=1481,fd=7))"
@@ -20198,7 +20226,7 @@
           },
           {
             "cmd": "http.request.method == \"GET\"",
-            "desc": "GET requests",
+            "desc": "HTTP GET requests — resource retrieval and read-only queries, as opposed to POST/PUT/DELETE requests which typically carry a request body. Useful for isolating page-load and asset-fetch traffic from form submissions or API writes in the same capture.",
             "type": "show",
             "flagged": false,
             "example": "# Matches HTTP GET requests — page loads, API reads, resource fetches.\n# Frame 3:  GET /index.html HTTP/1.1   Host: example.com\n# Frame 5:  GET /api/v1/status HTTP/1.1  Authorization: Bearer eyJhbGc..."
@@ -21130,6 +21158,13 @@
             "type": "show",
             "flagged": false,
             "example": "# Matches VXLAN (UDP/4789 by default) frames whose VNI field equals 5000.\n# Frame 12:  10.0.0.5 → 10.0.0.10  VXLAN  VNI: 5000\n# Frame 13:  10.0.0.5 → 10.0.0.10  VXLAN  VNI: 5000\n# Combine with \"vxlan\" alone (no VNI filter) to see every overlay segment,\n# or with \"udp.port == 4789\" to catch VXLAN traffic on the default port\n# regardless of whether Wireshark has already dissected it as VXLAN."
+          },
+          {
+            "cmd": "quic.connection.number == 1",
+            "desc": "Wireshark's internally-assigned per-capture QUIC connection index (not a wire field) — isolates every frame belonging to one QUIC connection when a capture has several overlapping connections that are hard to tell apart by IP:port alone (connection migration, 0-RTT resumption, multiplexed browser tabs).",
+            "type": "show",
+            "flagged": false,
+            "example": "# Matches every frame Wireshark has associated with QUIC connection #1\n# (numbered from 0, in the order Wireshark first saw them).\n# Frame 4:   10.0.0.5:51234 -> 93.184.216.34:443  QUIC  Initial\n# Frame 9:   93.184.216.34:443 -> 10.0.0.5:51234  QUIC  Handshake\n# Frame 20:  10.0.0.5:51234 -> 93.184.216.34:443  QUIC  Protected Payload (KP0)\n# Find the number for your connection via Statistics -> Conversations\n# (QUIC tab), or right-click a frame -> Conversation Filter -> QUIC."
           }
         ],
         "Display Filters — Operators & Syntax": [
@@ -22739,7 +22774,7 @@
           },
           {
             "cmd": "show ip route ospf",
-            "desc": "OSPF-installed routes only.",
+            "desc": "Filters the routing table down to routes learned via OSPF only (O, O IA, O E1, O E2) — skips connected/static/other-protocol routes so you can confirm OSPF is actually installing the prefixes you expect without scrolling the full RIB.",
             "type": "show",
             "flagged": false,
             "example": "R1# show ip route ospf\nCodes: O - OSPF, IA - inter area, N1/N2 - NSSA external, E1/E2 - external\n\nO    172.16.1.0/24 [110/2] via 10.1.1.2, 00:05:12, Gi0/0\nO IA 10.20.0.0/16 [110/11] via 10.1.1.2, 00:05:12, Gi0/0\nO E2 0.0.0.0/0    [110/1]  via 10.1.1.2, 00:05:12, Gi0/0\n\nWhat it means:\n- O      : intra-area OSPF route (within the same area).\n- O IA   : inter-area route (learned via an ABR from another area).\n- O E1/E2: external route imported via redistribution. E2 (default)\n           keeps the originating cost; E1 adds the path cost too.\n- [110/2]: AD 110 / metric 2. AD ranks against other protocols\n           (lower wins); metric ranks against other OSPF paths."
@@ -28483,7 +28518,7 @@
           },
           {
             "cmd": "esxcli network vswitch standard list",
-            "desc": "Lists standard vSwitches",
+            "desc": "Lists every standard (non-distributed) vSwitch on the host with its port count, MTU, uplinks, and the port groups attached to it. Starting point for tracing which physical NICs and VLANs a VM's port group actually rides on.",
             "type": "show",
             "flagged": false,
             "example": "   vSwitch0\n      Uplinks: vmnic2, vmnic3\n      Portgroups: Management Network, VM Network\n      MTU: 1500\n      Beacon Probing: false\n      Link Discovery Protocol: CDP (advertise)\n   vSwitch1\n      Uplinks: vmnic0, vmnic1\n      Portgroups: vMotion, iSCSI-A, iSCSI-B\n      MTU: 9000"
@@ -29953,6 +29988,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-LocalUser\n\nName             Enabled Description\n----             ------- -----------\nAdministrator    False   Built-in account for administering the computer/domain\nDefaultAccount   False   A user account managed by the system.\nGuest            False   Built-in account for guest access to the computer/domain\nsvc-backup       True    Local service account for backup jobs\nWDAGUtilityAcc.. False   A user account managed and used by the system for Windows Defender Application Guard"
+          },
+          {
+            "cmd": "Get-WinEvent -FilterHashtable @{LogName='System'; Level=2}",
+            "desc": "Structured, indexed event-log query — filters by log name, event ID, level, and time window server-side before returning results, which is dramatically faster than Get-EventLog on large logs. It's also the only cmdlet of the two that can read the newer .evtx-only logs (e.g. Microsoft-Windows-PowerShell/Operational) that Get-EventLog can't see at all.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-WinEvent -FilterHashtable @{LogName='System'; Level=2; StartTime=(Get-Date).AddDays(-1)} |\n    Select-Object TimeCreated, Id, Message -First 5\n\nTimeCreated           Id Message\n-----------           -- -------\n18/07/2026 08:12:03   41 The system has rebooted without cleanly shutting down first.\n18/07/2026 03:00:11    7 The BFE service terminated unexpectedly."
           }
         ],
         "Networking": [
@@ -30930,7 +30972,7 @@
           },
           {
             "cmd": "aws cloudwatch get-metric-statistics",
-            "desc": "Shows metric stats",
+            "desc": "Retrieves aggregated datapoints (Average/Sum/Min/Max/SampleCount) for a single CloudWatch metric over a time window and period — the CLI equivalent of a CloudWatch console graph, used to pull metric history into scripts or alerting logic without opening the console.",
             "type": "show",
             "flagged": false,
             "example": "{\n    \"Datapoints\": [\n        {\"Timestamp\":\"2026-06-12T09:00:00Z\",\"Average\":12.34,\"Unit\":\"Percent\"},\n        {\"Timestamp\":\"2026-06-12T09:05:00Z\",\"Average\":15.21,\"Unit\":\"Percent\"}\n    ],\n    \"Label\": \"CPUUtilization\"\n}"
@@ -40370,7 +40412,7 @@
           },
           {
             "cmd": "show tacacs",
-            "desc": "Shows TACACS configuration",
+            "desc": "Shows configured TACACS+ server hosts and per-server connection statistics — packets sent/received, active/idle connection counts, and last transaction status. Confirms the switch is actually reaching a TACACS+ server rather than silently falling back to the local user database.",
             "type": "show",
             "flagged": false,
             "example": "sw# show tacacs\nTacacs+ Server         : 10.10.10.60/49\n              Socket opens:        12345\n              Socket closes:       12340\n              Socket aborts:           0\n              Socket errors:           0\n              Socket Timeouts:         3\n              Failed Connect Attempts: 0\n              Total Packets Sent:  18452\n              Total Packets Recv:  18449"
@@ -43434,7 +43476,7 @@
           },
           {
             "cmd": "show ipv6 eigrp topology",
-            "desc": "EIGRPv6 topology table.",
+            "desc": "The EIGRP-for-IPv6 topology table — every learned IPv6 route with its feasible successor(s), reported distance, and feasibility condition. IPv6 counterpart to \"show ip eigrp topology\", used to confirm EIGRP actually has a loop-free backup path before a link fails.",
             "type": "show",
             "flagged": false,
             "example": "switch# show ipv6 eigrp topology\nIPv6-EIGRP Topology Table for AS(100)/ID(1.1.1.1) VRF default\nP 2001:db8::/64, 1 successors, FD is 256\n        via Connected, Eth1/1\nP 2001:db8:1::/64, 1 successors, FD is 2816\n        via FE80::2 (2816/256), Eth1/1"
@@ -44386,6 +44428,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show power-over-ethernet\nPoE is enabled on the following ports:\n\nPort     Enabled Status         Priority  Power(W)  Class\n-------- ------- -------------- --------- --------- -----\n1/1/1    yes     Delivering     low       8.5        4\n1/1/2    yes     Delivering     low       12.9       6\n1/1/3    yes     Searching      low       0.0        --\n1/1/4    no      Disabled       low       0.0        --\n\nSystem Power Budget: 370.0W    Power Used: 21.4W    Power Available: 348.6W"
+          },
+          {
+            "cmd": "show interface transceiver",
+            "desc": "Bulk transceiver-status view across every populated interface on the switch — vendor, part/serial number, and connector/transceiver type for each installed SFP/QSFP — instead of querying one port at a time with \"show interface <ID> transceiver\". Add \"detail\" for DOM (digital optical monitoring) readings or \"threshold-violations\" to list only ports currently out of spec.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface transceiver\n\nPort      Connector  Transceiver Type   Vendor Name   Serial Number   Part Number\n--------- ---------- ------------------ ------------- --------------- -----------\n1/1/1     LC         10GBase-SR         ARUBA         AR1234567       J9XXX-61301\n1/1/2     LC         10GBase-SR         ARUBA         AR1234568       J9XXX-61301\n1/1/3     --         Not present        --            --              --"
           }
         ],
         "VLANs": [
@@ -45430,6 +45479,13 @@
             "cmd": "reprovision ap-name <ap-name>",
             "desc": "Pushes the AP's current provisioning-profile values (RF, AAA, SSID, etc.) to a specific AP and reboots it to apply them — use after changing an AP-group's provisioning profile.",
             "example": "(host) [mynode] #reprovision ap-name AP-Floor3-12\nReprovisioning AP-Floor3-12 with current provisioning parameters...\nAP-Floor3-12 will reboot to apply new provisioning parameters."
+          },
+          {
+            "cmd": "show ap image version",
+            "desc": "Reports the primary and backup boot image versions for every AP joined to the controller, plus which one is currently active. The first thing to check before an AP image upgrade, and the way to confirm afterwards that every AP actually took the new image rather than silently falling back to its backup partition.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Aruba-MC) #show ap image version\n\nAP Name       Group      Primary Image   Backup Image    Active\n------------  ---------  --------------  --------------  -------\nAP-Floor1-01  default    8.10.0.5        8.9.0.3         Primary\nAP-Floor1-02  default    8.10.0.5        8.9.0.3         Primary\nAP-Floor2-04  default    8.9.0.3         8.9.0.3         Backup"
           }
         ],
         "WLAN & SSID": [
@@ -45535,7 +45591,7 @@
           },
           {
             "cmd": "show roaming",
-            "desc": "Roaming events history",
+            "desc": "History of client roaming events between APs — client MAC, source and destination AP/BSSID, and roam type (L2/L3, fast-roam/OKC/802.11r). Confirms whether a reported Wi-Fi drop was actually a roam (and how fast it completed) rather than a full disconnect/reassociation.",
             "type": "show",
             "flagged": false,
             "example": "Roaming events (last 60 min):\nTime                 MAC               From AP    To AP      SSID       Type\n2026-06-12 09:30:12  00:50:56:ab:cd:01  ap-floor2  ap-floor3  Corp-WiFi  L2\n2026-06-12 09:28:45  00:50:56:ab:cd:03  ap-floor1  ap-floor2  Corp-WiFi  L3"
@@ -46303,6 +46359,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "(instant-AP) # ap-leds ap-name ap-floor3 blink\nLEDs on ap-floor3 set to blink\n\n# Once located, restore normal status LEDs:\n(instant-AP) # ap-leds ap-name ap-floor3 normal\nLEDs on ap-floor3 set to normal"
+          },
+          {
+            "cmd": "show ids aps",
+            "desc": "Lists wireless devices the Instant AP's IDS engine has flagged as interfering, suspected-rogue, or valid neighboring APs — BSSID, SSID, channel, classification, and how recently each was seen. First command to run when chasing a rogue-AP alert on a standalone/Instant deployment.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ids aps\n\nWireless Intrusion Detection - Unknown/Interfering APs\nBSSID              SSID           Channel  Type  Classification  Last Seen\n00:11:22:aa:bb:cc  GuestWifi-old  6        AP    Interfering     2m:14s\n00:99:88:77:66:55  (hidden)       11       AP    Susp-Rogue      0m:42s"
           }
         ],
         "Provisioning & Updates": [
@@ -46448,6 +46511,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "router# show tech-support | redirect bootflash:tech.txt\nrouter# dir bootflash: | include tech\n   45  -rw-     12345678  Apr 21 14:30:15 2026  tech.txt\nrouter# copy bootflash:tech.txt scp://admin@10.99.99.50/tech-edge-01.txt"
+          },
+          {
+            "cmd": "show call-home profile all",
+            "desc": "Displays every configured Smart Call Home destination profile — transport method (email or HTTP/HTTPS), destination address/URL, and which alert groups and message formats each profile is subscribed to. Confirms Call Home telemetry is actually wired up to reach Cisco (or a local collector) before relying on it for proactive TAC case generation.",
+            "type": "show",
+            "flagged": false,
+            "example": "router# show call-home profile all\n\nProfile Name: CiscoTAC-1\n    Profile Status: ACTIVE\n    Preferred Message Format: xml\n    Message Size Limit: 3145728 Bytes\n    Transport Method: http\n    HTTP address(es): https://tools.cisco.com/its/service/oddce/services/DDCEService\n    Alert-group      Severity\n    -------------------------------\n    diagnostic       major\n    environment       major\n    inventory        normal"
           }
         ],
         "Interfaces": [
