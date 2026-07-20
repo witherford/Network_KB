@@ -3212,6 +3212,13 @@
             "type": "show",
             "flagged": false,
             "example": "> show gslb domain -summary\nDomain               GSLB VS       Active IPs   Method\n-------------------  -----------   ----------   -----------\nwww.example.com      gslb_vs_web   4            ROUNDROBIN\napi.example.com      gslb_vs_api   2            STATICPROXIMITY\nlegacy.example.com   gslb_vs_leg   0            ROUNDROBIN\n\nTotal GSLB Domains: 3  Domains with active IPs: 2"
+          },
+          {
+            "cmd": "show gslb service <name>",
+            "desc": "Shows the detailed run-state of a single GSLB service — bound monitor state, current/effective state, site name, and hit counters — narrower than the fleet-wide 'show gslb service' listing when chasing why one site isn't answering DNS or is stuck DOWN.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show gslb service DC-LON-svc1\n\tGSLB Service Name: DC-LON-svc1\n\tType: HTTP\tPublic IP: 203.0.113.10\tPublic Port: 80\n\tServer Name: 10.50.1.5\tServer Port: 80\n\tSite Name: DC_London (Local)\n\tState: UP\n\t1)\tMonitor Name: http-mon\t\tState: UP\tWeight: 1\nDone"
           }
         ],
         "AAA & Authentication": [
@@ -4691,6 +4698,13 @@
             "type": "show",
             "flagged": false,
             "example": "admin@PA-FW> set clock date 2026/07/18 time 09:30:00\n\nadmin@PA-FW> show clock\nFri Jul 18 09:30:03 BST 2026"
+          },
+          {
+            "cmd": "debug software restart process management-server",
+            "desc": "Restarts the PAN-OS management-plane process (mgmtsrvr) that serves the WebGUI, CLI, and API — use when the GUI hangs or commits appear stuck. Packet forwarding on the dataplane is unaffected, but every logged-in admin is disconnected. On PAN-OS releases before 7.1 the syntax was 'debug software restart management-server'.",
+            "type": "debug",
+            "flagged": true,
+            "example": "admin@fw> debug software restart process management-server\n\n# after ~2 minutes, confirm it's back:\nadmin@fw> show system software status | match mgmtsrvr\nmgmtsrvr        RUNNING   pid 1234, uptime 0:00:45"
           }
         ],
         "Interfaces": [
@@ -4759,7 +4773,7 @@
           },
           {
             "cmd": "show interface logical",
-            "desc": "Logical/sub-interface summary",
+            "desc": "Lists every logical interface — sub-interfaces, tunnel, loopback, VLAN — with operational state, IP address, security zone, and virtual system, separate from the physical-interface view. Use it to confirm a sub-interface tag or tunnel interface actually came up and landed in the zone you expect.",
             "type": "show",
             "flagged": false,
             "example": "name                state    ip                  zone        vsys\nethernet1/1         up       10.0.1.1/24         untrust     vsys1\nethernet1/1.10      up       10.0.10.1/24        users       vsys1\nethernet1/2         up       10.0.2.1/24         trust       vsys1\ntunnel.1            up       n/a                 vpn         vsys1"
@@ -7748,7 +7762,7 @@
           },
           {
             "cmd": "openssl x509 -in <cert> -issuer -noout",
-            "desc": "Shows certificate issuer",
+            "desc": "Prints only the Issuer distinguished name from an X.509 certificate, skipping the rest of the certificate body — quick way to confirm which CA signed a cert, or to script chain-of-trust checks by comparing this output against the next certificate's Subject.",
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -in server.crt -issuer -noout\nissuer=C=US, O=Let's Encrypt, CN=R3\n# Prints only the Issuer distinguished name of the certificate.\n# The issuer must match the subject of the next certificate up the chain."
@@ -10257,7 +10271,7 @@
           },
           {
             "cmd": "no multicast mcast-to-unicast",
-            "desc": "Disable multicast conversion.",
+            "desc": "Disables multicast-to-unicast conversion on the WLAN policy profile, so multicast traffic (mDNS, streaming, etc.) is sent to clients as native multicast over the air again instead of being replicated as per-client unicast frames — trades lower AP CPU/airtime overhead for potentially unreliable delivery to sleeping or distant clients.",
             "type": "config",
             "flagged": false,
             "example": "WLC-01(config-wireless-policy)# no multicast mcast-to-unicast"
@@ -15395,7 +15409,7 @@
           },
           {
             "cmd": "free -h",
-            "desc": "Shows memory usage",
+            "desc": "Shows total, used, free, shared, and buff/cache memory plus swap in human-readable units (G/M). The 'available' column is the number that matters for capacity planning — it accounts for reclaimable page cache, unlike the raw 'free' column which looks artificially low on a healthy system.",
             "type": "show",
             "flagged": false,
             "example": "$ free -h\n              total        used        free      shared  buff/cache   available\nMem:            31G        12G        14G       512M       4.8G        18G\nSwap:          2.0G          0B       2.0G"
@@ -15905,6 +15919,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ ss -tulnp\nNetid  State   Recv-Q  Send-Q   Local Address:Port    Peer Address:Port  Process\nudp    UNCONN  0       0            0.0.0.0:68            0.0.0.0:*      users:((\"dhclient\",pid=612,fd=6))\ntcp    LISTEN  0       128          0.0.0.0:22             0.0.0.0:*      users:((\"sshd\",pid=734,fd=3))\ntcp    LISTEN  0       511        127.0.0.1:3306            0.0.0.0:*      users:((\"mysqld\",pid=1102,fd=21))\ntcp    LISTEN  0       128             [::]:22                [::]:*      users:((\"sshd\",pid=734,fd=4))\n# Requires root (or CAP_NET_ADMIN) to see the Process column; without it\n# the users:(()) field is blank."
+          },
+          {
+            "cmd": "ss -i",
+            "desc": "Appends internal TCP state — congestion-control algorithm, cwnd, RTT/RTT-variance, MSS, and retransmit counts — to each socket in the ss listing; combine with a filter such as 'ss -ti state established' to scope it to established connections instead of dumping every socket.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ ss -ti state established\nState  Recv-Q  Send-Q  Local Address:Port   Peer Address:Port\nESTAB  0       0       10.0.0.5:52344       10.0.0.10:443\n\t cubic wscale:7,7 rto:204 rtt:3.2/1.1 mss:1448 pmtu:1500\n\t cwnd:10 bytes_sent:2841 bytes_acked:2841 bytes_received:18420\n\t pacing_rate 72.4Mbps delivery_rate 34.8Mbps minrtt:2.1"
           }
         ],
         "Diagnostics": [
@@ -20019,7 +20040,7 @@
           },
           {
             "cmd": "eth.dst == ff:ff:ff:ff:ff:ff",
-            "desc": "All Ethernet broadcasts",
+            "desc": "Filters to frames sent to the Ethernet broadcast address (ff:ff:ff:ff:ff:ff) — ARP requests, DHCP discovers, and NetBIOS name queries all ride on this — the fastest way to isolate broadcast traffic when hunting a broadcast storm or a chatty misconfigured host on a VLAN.",
             "type": "show",
             "flagged": false,
             "example": "# Captures all Ethernet-level broadcasts — ARP requests, some DHCP, NetBIOS.\nFrame 1:  00:11:22:aa:bb:cc → ff:ff:ff:ff:ff:ff  ARP Who has 10.0.0.1?\nFrame 2:  00:de:ad:be:ef:01 → ff:ff:ff:ff:ff:ff  DHCP Discover\nFrame 3:  00:50:79:66:68:09 → ff:ff:ff:ff:ff:ff  NetBIOS Name Service\n# High broadcast rate (>100/s on a VLAN) suggests a broadcast storm or misconfiguration."
@@ -22085,6 +22106,13 @@
             "type": "cli",
             "flagged": false,
             "example": "$ tshark -r capture.pcap -q -z conv,ip\n\n================================================================================\nIPv4 Conversations\nFilter:<No Filter>\n                                       |       <-      |       ->      |      Total     |    Duration    |\n10.0.0.5      <-> 10.0.0.10           |   18     19344 |   16      1351|   34     20695 |     30.3937    |\n10.0.0.10     <-> 8.8.8.8             |    4       883 |    3      3236|    7       4119|      1.7926    |\n================================================================================\n# -q suppresses per-packet output so only the summary table is printed.\n# Sorted by total frames by default; add \"conv,ip\" filters e.g.\n#   tshark -r file.pcap -q -z \"conv,ip,ip.addr==10.0.0.5\"\n# Use \"conv,tcp\" / \"conv,udp\" for per-connection instead of per-host stats."
+          },
+          {
+            "cmd": "capinfos -T -r in.pcap",
+            "desc": "Prints capinfos' capture-file statistics (packet count, duration, average rate, file hash, etc.) as a single tab-separated row instead of the default long-form report — built for feeding into scripts or spreadsheets rather than reading by eye.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ capinfos -T -r in.pcap\nFile name\tFile type\tFile encapsulation\tNumber of packets\tFile size\tData size\tCapture duration\tStart time\tEnd time\nin.pcap\tWireshark/tcpdump/... - pcap\tEthernet\t48213\t12582912 bytes\t11834200 bytes\t312.4457\t2026-07-20 08:00:00\t2026-07-20 08:05:12"
           }
         ]
       },
@@ -22098,7 +22126,7 @@
         "Interfaces": [
           {
             "cmd": "show interfaces description",
-            "desc": "Shows interface descriptions",
+            "desc": "One line per interface showing admin/line-protocol status next to the configured 'description' text — the fastest way to scan a whole chassis for down ports or confirm port-to-neighbor labeling matches the cable plant, without wading through the full 'show interfaces' output.",
             "type": "show",
             "flagged": false,
             "example": "Interface                      Status         Protocol Description\nGi1/0/1                        up             up       ACCESS-PORT\nGi1/0/2                        up             up       UPLINK-TO-DIST\nGi1/0/3                        admin down     down\nGi1/0/24                       up             up       TRUNK-TO-DIST2\nTe1/1/1                        up             up       40G UPLINK\nPo1                            up             up       MEC-TO-DIST"
@@ -26099,6 +26127,13 @@
             "type": "show",
             "flagged": false,
             "example": "IPSLAs Latest Operation Statistics\nIPSLA operation id: 1\n        Latest RTT: 4 milliseconds\nLatest operation start time: 10:01:22 UTC Jun 11 2026\nLatest operation return code: OK\nNumber of successes: 1440\nNumber of failures: 2\nOperation time to live: Forever\n\nIPSLA operation id: 2  (jitter probe to VoIP gateway)\n        Latest RTT: 8 milliseconds\n        SD Jitter: 2ms  DS Jitter: 3ms\n        Packet Loss (SD/DS): 0/0\nLatest operation return code: OK"
+          },
+          {
+            "cmd": "show ip sla configuration",
+            "desc": "Displays the full configuration — including every default parameter — for all configured IP SLA operations, or a single operation when a number is appended; use it to review setup (target, frequency, thresholds, life) alongside 'show ip sla statistics' for results.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show ip sla configuration 1\nIP SLAs Infrastructure Engine-III\nEntry number: 1\nOwner:\nTag:\nType of operation to perform: icmp-echo\nTarget address/Source address: 10.1.1.1/0.0.0.0\nType Of Service parameter: 0x0\nRequest size (ARR data portion): 28\nOperation timeout (milliseconds): 5000\nVerify data: No\nVrf Name:\nSchedule:\n   Operation frequency (seconds): 60\n   Next Scheduled Start Time: Start Time already passed\n   Life (seconds): Forever\n   Entry Ageout (seconds): never\n   Recurring (Starting Everyday): FALSE\n   Status of entry (SNMP RowStatus): Active\nThreshold (milliseconds): 5000"
           }
         ],
         "Management": [
@@ -28411,7 +28446,7 @@
           },
           {
             "cmd": "esxcli system syslog config get",
-            "desc": "Shows syslog configuration",
+            "desc": "Shows the host's syslog daemon configuration — remote log-forwarding target(s), local rotation size/count, log directory, and X.509 strictness for TLS syslog. Check this before troubleshooting missing centralized logs to confirm the host is actually configured to ship to the collector.",
             "type": "show",
             "flagged": false,
             "example": "   Default Rotation Size: 1024\n   Default Rotations: 8\n   Default Timeout: 180\n   Log Output: /scratch/log\n   Remote Host: udp://syslog.corp.example.com:514\n   Strict X509 Compliance: false"
@@ -28506,6 +28541,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ vim-cmd hostsvc/hostsummary\n\n(vim.host.Summary) {\n   host = 'vim.HostSystem:ha-host',\n   hardware = (vim.host.Summary.HardwareSummary) {\n      vendor = \"Dell Inc.\",\n      model = \"PowerEdge R650\",\n      cpuModel = \"Intel(R) Xeon(R) Gold 6338\",\n      numCpuPkgs = 2,\n      numCpuCores = 64,\n      memorySize = 274877906944,\n   },\n   runtime = (vim.host.Summary.RuntimeSummary) {\n      connectionState = \"connected\",\n      powerState = \"poweredOn\",\n      inMaintenanceMode = false,\n   },\n}\n\nWhat it means:\n- Single call surfaces hardware inventory + live runtime state without\n  needing vCenter or the vSphere Client.\n- \"inMaintenanceMode\" is the field to script against before triggering\n  reboots or patch installs via esxcli/PowerCLI.\n- Grep specific fields, e.g.\n  vim-cmd hostsvc/hostsummary | grep -A2 hardware"
+          },
+          {
+            "cmd": "esxcli system settings advanced list",
+            "desc": "Lists every ESXi advanced/kernel configuration option with its current value, default, and valid min/max range — the CLI equivalent of Advanced System Settings in the vSphere Client. Narrow to a single option with '-o /SectionName/OptionName', e.g. '-o /Net/TcpipHeapSize'.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esxi:~] esxcli system settings advanced list -o /Net/TcpipHeapSize\n   Path: /Net/TcpipHeapSize\n   Type: integer\n   Int Value: 32\n   Default Int Value: 32\n   Min Value: 0\n   Max Value: 1536\n   Description: Size of the TCP/IP heap, in megabytes"
           }
         ],
         "Networking": [
@@ -29970,7 +30012,7 @@
           },
           {
             "cmd": "Get-HotFix | Sort-Object InstalledOn -Descending | Select -First 20",
-            "desc": "Recently installed updates",
+            "desc": "Lists the 20 most recently installed Windows updates/hotfixes, newest first, pulled from the Win32_QuickFixEngineering CIM class — handy for correlating a regression or reboot against a recent patch, though it only reflects updates that register a KB entry, not every Windows Update component.",
             "type": "show",
             "flagged": false,
             "example": "Source        Description      HotFixID   InstalledBy          InstalledOn\n------        -----------      --------   -----------          -----------\nDESKTOP-...   Security Update  KB5055627  NT AUTHORITY\\SYSTEM  6/11/2026 12:00:00 AM\nDESKTOP-...   Update           KB5055523  NT AUTHORITY\\SYSTEM  5/28/2026 12:00:00 AM"
@@ -30333,6 +30375,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Get-NetAdapterAdvancedProperty -Name \"Ethernet\"\n\nName      DisplayName            DisplayValue    RegistryKeyword       RegistryValue\n----      -----------            ------------    ---------------       -------------\nEthernet  Jumbo Packet           Disabled        *JumboPacket           {1514}\nEthernet  Flow Control           Rx & Tx Enabled *FlowControl           {3}\nEthernet  Receive Side Scaling   Enabled         *RSS                   {1}\nEthernet  Interrupt Moderation   Enabled         *InterruptModeration   {1}\n\n# Change one with Set-NetAdapterAdvancedProperty, e.g. enabling jumbo frames:\nPS C:\\> Set-NetAdapterAdvancedProperty -Name \"Ethernet\" -DisplayName \"Jumbo Packet\" -DisplayValue \"9014 Bytes\""
+          },
+          {
+            "cmd": "Get-NetFirewallProfile",
+            "desc": "Shows the enabled state and default inbound/outbound actions of the Domain, Private, and Public Windows Firewall profiles — the quickest way to confirm which profile is currently active and whether it is silently blocking traffic, without opening wf.msc.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-NetFirewallProfile | Select Name,Enabled,DefaultInboundAction,DefaultOutboundAction\n\nName    Enabled DefaultInboundAction DefaultOutboundAction\n----    ------- -------------------- ---------------------\nDomain     True                Block                 Allow\nPrivate    True                Block                 Allow\nPublic     True                Block                 Allow"
           }
         ],
         "Processes": [
@@ -30867,6 +30916,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws ec2 describe-instance-types --instance-types t3.medium\n{\n    \"InstanceTypes\": [{\n        \"InstanceType\": \"t3.medium\",\n        \"VCpuInfo\": {\"DefaultVCpus\": 2},\n        \"MemoryInfo\": {\"SizeInMiB\": 4096},\n        \"NetworkInfo\": {\"NetworkPerformance\": \"Up to 5 Gigabit\"},\n        \"BurstablePerformanceSupported\": true\n    }]\n}"
+          },
+          {
+            "cmd": "aws ec2 describe-internet-gateways",
+            "desc": "Lists internet gateways in the account/region and which VPC each is attached to — confirm a VPC actually has (or has lost) internet egress before chasing route-table or security-group issues further downstream.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws ec2 describe-internet-gateways --query \"InternetGateways[].[InternetGatewayId,Attachments[0].VpcId,Attachments[0].State]\" --output table\n-----------------------------------------------------\n|              DescribeInternetGateways              |\n+-----------------------+---------------+------------+\n|  igw-0a1b2c3d4e5f6789  |  vpc-0abc1234 |  attached  |\n+-----------------------+---------------+------------+"
           }
         ],
         "S3": [
@@ -30879,7 +30935,7 @@
           },
           {
             "cmd": "aws s3 ls s3://<bucket>",
-            "desc": "Lists bucket contents",
+            "desc": "Lists the top-level objects and 'folders' (common prefixes, marked PRE) inside a bucket. Append a path after the bucket name to list a specific prefix, or add --recursive to walk the entire tree instead of just one level.",
             "type": "show",
             "flagged": false,
             "example": "                           PRE images/\n                           PRE logs/\n2026-05-15 10:22:11       4821 index.html\n2026-05-15 10:22:12     184321 styles.css\n2026-06-01 09:11:55   18432100 app-bundle.js"
@@ -43138,6 +43194,13 @@
             "cmd": "show vpc consistency-parameters { global | vpc <number> }",
             "desc": "Compares Type-1 (must-match) and Type-2 configuration parameters between vPC peers — the primary command for diagnosing why a vPC or vPC peer-link/keepalive won’t come up",
             "example": "switch# show vpc consistency-parameters global\nLegend:\n  Type 1 : vPC will be suspended in case of mismatch\n\nName                        Type  Local Value            Peer Value\n---------------              ----  ----------------       ----------------\nSTP Mode                     1     Rapid-PVST              Rapid-PVST\nSTP Disabled                 1     None                     None\nSTP MST Region Name          1     \"\"                       \"\"\nNativevlan                   1     1                        1\nEnable vPC Global filter     1     Disabled                 Disabled\nInterface-vlan admin up      2     1,10,20,30               1,10,20,30\n\nswitch# show vpc consistency-parameters vpc 10\n# Same table scoped to a single vPC's member port-channel — use when only one vPC is down/suspended.\n# Any Type 1 mismatch (e.g. differing STP mode or native VLAN) suspends the vPC on the secondary side."
+          },
+          {
+            "cmd": "show vpc peer-keepalive",
+            "desc": "Shows the vPC peer-keepalive link health — destination IP, VRF, interval/timeout, UDP port, and time since the last heartbeat — the fastest way to confirm the out-of-band link between vPC peers is up before trusting 'show vpc' role/consistency output; the peer-keepalive should never ride the vPC peer-link itself.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show vpc peer-keepalive\n\nvPC keep-alive status               : peer is alive\n--Peer is alive for                 : (78234) seconds, (852) msec\n--Send status                       : Success\n--Last send at                      : 2026.07.20 09:14:02 812 ms\n--Sent on interface                 : mgmt0\n--Receive status                    : Success\n--Last receive at                   : 2026.07.20 09:14:02 918 ms\n--Last update from peer             : (0) seconds, (312) msec\n\nvPC Keep-alive parameters\n--Destination                       : 10.99.99.2\n--Keepalive interval                : 1000 msec\n--Keepalive timeout                 : 5 seconds\n--Keepalive vrf                     : vpc-keepalive\n--Keepalive udp port                : 3200"
           }
         ],
         "Routing": [
@@ -43257,7 +43320,7 @@
           },
           {
             "cmd": "show ip ospf interface brief",
-            "desc": "Compact per-interface state.",
+            "desc": "One line per OSPF-enabled interface — process ID, area, IP/mask, cost, interface state (DR/BDR/P2P/LOOP), and full/total neighbor count — the fastest way to confirm every interface joined the right area and formed the expected number of adjacencies without paging through the full 'show ip ospf interface' output.",
             "type": "show",
             "flagged": false,
             "example": "Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C\nGi0/1        1     0               10.0.0.1/24        1     DR    2/2\nGi0/2        1     0               10.0.1.1/30        1     P2P   1/1\nLo0          1     0               1.1.1.1/32         1     LOOP  0/0"
@@ -44484,6 +44547,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show interface transceiver\n\nPort      Connector  Transceiver Type   Vendor Name   Serial Number   Part Number\n--------- ---------- ------------------ ------------- --------------- -----------\n1/1/1     LC         10GBase-SR         ARUBA         AR1234567       J9XXX-61301\n1/1/2     LC         10GBase-SR         ARUBA         AR1234568       J9XXX-61301\n1/1/3     --         Not present        --            --              --"
+          },
+          {
+            "cmd": "show lldp statistics",
+            "desc": "Per-port LLDP packet counters — frames transmitted, received, discarded, and unrecognised TLVs — for spotting a flapping neighbor or a device sending malformed LLDPDUs; append an interface name to scope the output to one port.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show lldp statistics\n\nLLDP Global statistics:\n Total Packets transmitted            : 118234\n Total Packets received               : 117980\n Total Packet received and discarded  : 0\n Total TLVs unrecognized              : 0\n\nPort                Tx      Rx    Rx Discarded  Rx Unrecognized\n------------------- ------- ------- ------------ ----------------\n1/1/1                 59120   58990            0                0\n1/1/49                59114   58990            0                0"
           }
         ],
         "VLANs": [
