@@ -311,10 +311,10 @@
           },
           {
             "cmd": "show ns xmlnamespace -full",
-            "desc": "Display the full configuration of 'show ns xmlnamespace' including all parameters, including defaults.",
+            "desc": "Full detail for each XML namespace mapping — prefix, URI, and every PI expression or WS-Security policy referencing it — beyond the prefix/URI pair shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Prefix: ns1  URI: \"http://citrix.com\""
+            "example": "Prefix: ns1  URI: \"http://citrix.com\"\nReferenced By: pol_xml_soap, rewrite_act_soap_hdr\nBound vServers: 2"
           },
           {
             "cmd": "show ns encryptionKey -full",
@@ -423,10 +423,10 @@
           },
           {
             "cmd": "show ns info -full",
-            "desc": "Display the full configuration of 'show ns info' including all parameters, including defaults.",
+            "desc": "Complete system identity block — NSIP, all mapped/SNIP addresses, HA mode, FIPS/cluster state, boot time, and licensing — beyond the build/uptime summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "CPU: 2%  MEM: 25%  Uptime: 45 days"
+            "example": "NSIP: 10.10.10.5  Mapped IP: 10.10.10.11\nHA Mode: STANDALONE  FIPS: NO  Time Zone: GMT+0:00\nSystem Up Time: 45 days 3 hours  License: Platinum"
           },
           {
             "cmd": "show ns unit -summary",
@@ -1113,17 +1113,17 @@
           },
           {
             "cmd": "show lb vserver -full",
-            "desc": "Display the full configuration of 'show lb vserver' including all parameters, including defaults.",
+            "desc": "Per-vserver detail — persistence type/timeout, load-balancing method, bound services/service groups, and backup vserver — beyond the one-line VIP/state summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Name: LB_VS_1  Persistence: SOURCEIP  Timeout: 2m  LBP: ROUNDROBIN"
+            "example": "Name: LB_VS_1  VIP: 10.1.1.10:443  Persistence: SOURCEIP  Timeout: 2m\nLBP: ROUNDROBIN  Bound Services: SVC_1, SVC_2  Backup VServer: none  State: UP"
           },
           {
             "cmd": "show service -full",
-            "desc": "Display the full configuration of 'show service' including all parameters, including defaults.",
+            "desc": "Per-service detail — bound monitor and its probe state, max client connections, surge-queue limits, and use-source-IP setting — beyond the one-line state/hit summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Name: SVC_1  IP: 1.1.1.1  MonState: UP  MaxConn: 5000"
+            "example": "Name: SVC_1  IP: 1.1.1.1:80  State: UP  MonState: UP (tcp-default)\nMaxConn: 5000  MaxReq: 0  UseSrcIP: NO  CKA: NO"
           },
           {
             "cmd": "show serviceGroup -full",
@@ -1402,10 +1402,10 @@
           },
           {
             "cmd": "show cs vserver -full",
-            "desc": "Display the full configuration of 'show cs vserver' including all parameters, including defaults.",
+            "desc": "Per-vserver detail — bound CS policies in priority order, default LB vserver fallback target, and precedence mode — beyond the VIP/state/policy-count summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Name: CS_1  Precedence: RULE  DefaultLB: LB_Def"
+            "example": "Name: CS_1  VIP: 203.0.113.10:443  Precedence: RULE\nDefault LB: LB_Def  Bound Policies: cs_pol_api(10), cs_pol_mobile(20)\nState: UP"
           },
           {
             "cmd": "show cs policy -hits",
@@ -1607,17 +1607,17 @@
           },
           {
             "cmd": "show ssl vserver -full",
-            "desc": "Display the full configuration of 'show ssl vserver' including all parameters, including defaults.",
+            "desc": "Full SSL parameter set for the vserver — negotiated cipher list, ECC curve, session-reuse/ticket settings, and HSTS — not just the enabled-cipher count.",
             "type": "show",
             "flagged": false,
-            "example": "Name: VS_SSL  Ciphers: 12  ECC: Enabled  HSTS: Enabled"
+            "example": "Name: VS_SSL  Ciphers: 12 (bound: DEFAULT)  ECC: Enabled (P_256, P_384)\nSessReuse: Enabled (300s)  HSTS: Enabled (max-age 15552000)  CertKey: MyCert"
           },
           {
             "cmd": "show ssl certKey -full",
-            "desc": "Display the full configuration of 'show ssl certKey' including all parameters, including defaults.",
+            "desc": "Full certificate detail — subject/issuer DN, serial number, signature algorithm, and every vserver/service the cert-key pair is bound to — beyond the validity/expiry summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Name: Cert_1  Expiry: 12/2026  Serial: 0AB12  Issuer: DigiCert"
+            "example": "Name: Cert_1  Subject: CN=www.example.com  Issuer: DigiCert\nSerial: 0AB12  SigAlgo: SHA256withRSA  Expiry: 12/2026 (162 days)  Bound To: VS_SSL, SVC_SSL_2"
           },
           {
             "cmd": "show ssl cipher -full",
@@ -1861,10 +1861,10 @@
           },
           {
             "cmd": "show ha node -full",
-            "desc": "Display the full configuration of 'show ha node' including all parameters, including defaults.",
+            "desc": "Full HA node detail — sync-failure reason (if any), heartbeat/dead interval, INC (independent network config) status, and RPC-node secure-channel state — beyond the primary/secondary summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Primary: 10.10.10.10  SyncState: SUCCESS  Incs: Enabled"
+            "example": "Node ID: 0  IP: 10.10.10.10  State: Primary  SyncState: SUCCESS\nHeartbeat: 200ms  DeadInterval: 3  INC: DISABLED  RPC Secure: YES"
           },
           {
             "cmd": "show cluster node -full",
@@ -2192,10 +2192,10 @@
           },
           {
             "cmd": "show route -full",
-            "desc": "Display the full configuration of 'show route' including all parameters, including defaults.",
+            "desc": "Full routing-table entry detail — protocol/owner (STATIC, OSPF, BGP), administrative distance, route flags, and last-updated timestamp — beyond the destination/gateway/state line normally printed.",
             "type": "show",
             "flagged": false,
-            "example": "10.10.10.0/24  Type: STATIC  Cost: 1  State: UP"
+            "example": "Network: 10.10.10.0/24  Gateway: 10.10.10.1  Owner: STATIC\nDistance: 1  Flags: UP,DIRECT  Last Updated: 3d 4h ago"
           },
           {
             "cmd": "show arp -full",
@@ -2924,10 +2924,10 @@
           },
           {
             "cmd": "show appfw profile -full",
-            "desc": "Display the full configuration of 'show appfw profile' including all parameters, including defaults.",
+            "desc": "Full Application Firewall profile — every enabled/disabled security check (SQL injection, cross-site scripting, start-URL, cookie/field consistency) and its individual action — beyond the type/learning-mode summary shown by the base command.",
             "type": "show",
             "flagged": false,
-            "example": "Name: Web_App_Pro  StartURL: Enabled  SQLInj: Enabled"
+            "example": "Name: Web_App_Pro  Type: HTML  StartURL: Enabled(Block)  SQLInjection: Enabled(Block,Log)\nCrossSiteScripting: Enabled(Block)  CookieConsistency: Enabled  FieldConsistency: Enabled  Learning: Enabled"
           },
           {
             "cmd": "show appfw policy -hits",
@@ -46293,6 +46293,20 @@
             "type": "show",
             "flagged": false,
             "example": "(instant-AP) # show ap system-profile\nName                          : default\nNTP Server                    : 10.0.0.1\nTimezone                      : UTC 0:0\nLED Display                   : Enabled\nConsole access                : Enabled\nPreprovisioning                : Disabled\nRoot password Enable/Disable  : Disabled"
+          },
+          {
+            "cmd": "show snmp-configuration",
+            "desc": "SNMP configuration on the Virtual Controller — community strings, trap destinations, and SNMPv3 users.",
+            "type": "show",
+            "flagged": false,
+            "example": "Community  Trap Destination   Version\npublic     10.1.1.50           v2c\nSNMPv3 User: monitor  AuthType: SHA  PrivType: AES"
+          },
+          {
+            "cmd": "show syslog-level",
+            "desc": "Configured Syslog severity level per logging facility (ap-debug, network, security, system, user, user-debug, wireless).",
+            "type": "show",
+            "flagged": false,
+            "example": "Facility      Level\nap-debug      Warnings\nnetwork       Warnings\nsecurity      Warnings\nsystem        Warnings\nwireless      Warnings"
           }
         ],
         "Network": [
@@ -46337,6 +46351,20 @@
             "type": "show",
             "flagged": false,
             "example": "(instant-AP) # traceroute 1.1.1.1\ntraceroute to 1.1.1.1, 30 hops max, 38 byte packets\n 1  10.0.5.1     0.6 ms   0.5 ms   0.5 ms\n 2  192.168.1.1  1.2 ms   1.1 ms   1.2 ms\n 3  10.10.10.1   3.4 ms   3.3 ms   3.5 ms\n 4  1.1.1.1      8.2 ms   8.0 ms   8.1 ms\n# Latency spike between hops 2 and 3 — WAN link boundary"
+          },
+          {
+            "cmd": "show wifi-uplink status",
+            "desc": "State and health of the Wi-Fi uplink (station-mode backup/primary WAN used by branch APs) — SSID, signal, and connection uptime.",
+            "type": "show",
+            "flagged": false,
+            "example": "State: Up  SSID: Corp-Uplink  BSSID: aa:bb:cc:dd:ee:ff\nRSSI: -52 dBm  Channel: 44  Uptime: 4h 12m"
+          },
+          {
+            "cmd": "show uplink status",
+            "desc": "Uplink Manager status across all configured WAN uplinks (Ethernet, Cellular, Wi-Fi-STA) — state, failover reason, and priority.",
+            "type": "show",
+            "flagged": false,
+            "example": "Type      State  Reason         Priority  Interface\nEthernet  Up     -              1         eth0\nCellular  Down   Not-Connected  2         usb0\nWifi-sta  Up     -              3         wifi0"
           }
         ],
         "Wireless / SSID": [
@@ -46388,6 +46416,27 @@
             "type": "show",
             "flagged": false,
             "example": "(instant-AP) # show ap bss-table\n\nBSS                Ess          Ph  Ch  EIRP  Cl\n---                ---          --  --  ----  --\n00:1a:1e:ab:cd:ef  Corporate    AC  36  18    14\n00:1a:1e:ab:cd:f0  Corporate    AN  6   15    9\n00:1a:1e:ab:cd:f1  Guest        AC  36  18    3\n\nNum BSS:3\n\nWhat it means:\n- One row per radio/band the SSID is broadcast on — a single \"Ess\"\n  (SSID) usually appears twice (2.4GHz + 5GHz) unless band-steering or\n  band-only config restricts it.\n- \"Cl\" is live associated client count per BSSID — use it to spot an\n  overloaded radio before clients start reporting slow Wi-Fi."
+          },
+          {
+            "cmd": "show wlan ssid-profile",
+            "desc": "All configured WLAN SSID profiles with status and reference counts, or full config detail when a profile name is given.",
+            "type": "show",
+            "flagged": false,
+            "example": "Name       Status   References\nCorp-Net   Enabled  1\nGuest-Net  Enabled  1"
+          },
+          {
+            "cmd": "show ap arm rf-summary <ap-name>",
+            "desc": "Per-radio RF/channel summary from ARM — interference index, current channel/power, covered and free channels, assignment mode.",
+            "type": "show",
+            "flagged": false,
+            "example": "Channel: 36  Power: 18dBm  Interference Index: 12\nCovered Channels: 36,40,44,48  Free Channels: 149,153\nARM Assignment: 36/18  Last Change: 2h ago"
+          },
+          {
+            "cmd": "show ap allowed-channels <country-code>",
+            "desc": "Channels permitted by the AP's regulatory domain for a given country code, broken out by PHY type and indoor/outdoor mode.",
+            "type": "show",
+            "flagged": false,
+            "example": "Country Code: US\n802.11g (Indoor): 1,2,3,4,5,6,7,8,9,10,11\n802.11a (Indoor): 36,40,44,48,149,153,157,161,165"
           }
         ],
         "Clients": [
@@ -46432,6 +46481,13 @@
             "type": "show",
             "flagged": false,
             "example": "bss 00:1a:1e:ab:cd:e0 \"Corp-WiFi\" freq 5180\n  sta 00:50:56:ab:cd:01  age 21:14  signal -58 dBm  last-rx 866 Mbps  last-tx 866 Mbps  rssi-min -65 rssi-max -52\n  sta 00:50:56:ab:cd:02  age  8:33  signal -62 dBm  last-rx 400 Mbps  last-tx 400 Mbps  rssi-min -68 rssi-max -58\nbss 00:1a:1e:ab:cd:e1 \"Guest\" freq 5180\n  sta aa:bb:cc:dd:ee:ff   age  4:22  signal -71 dBm  last-rx 144 Mbps  last-tx 144 Mbps"
+          },
+          {
+            "cmd": "show ap client-match-history",
+            "desc": "History of Client Match band-steering / sticky-client roam actions performed for clients associated to the IAP.",
+            "type": "show",
+            "flagged": false,
+            "example": "Client MAC         From AP    To AP      Reason    Time\naa:bb:cc:11:22:33  AP-Floor1  AP-Floor2  Low RSSI  09:14:02"
           }
         ],
         "Cluster (Instant)": [
@@ -46571,6 +46627,20 @@
             "type": "show",
             "flagged": false,
             "example": "(instant-AP) # show ids aps\n\nWireless Intrusion Detection - Unknown/Interfering APs\nBSSID              SSID           Channel  Type  Classification  Last Seen\n00:11:22:aa:bb:cc  GuestWifi-old  6        AP    Interfering     2m:14s\n00:99:88:77:66:55  (hidden)       11       AP    Susp-Rogue      0m:42s"
+          },
+          {
+            "cmd": "show ap debug crash-info",
+            "desc": "Stored crash log for an Instant AP that crashed — reboot cause and crashed process; cleared from flash after the next reboot.",
+            "type": "debug",
+            "flagged": false,
+            "example": "Crash Time  : Mon May 12 03:14:07 2026\nReboot Cause: Kernel panic - not syncing\nProcess     : hostapd"
+          },
+          {
+            "cmd": "show ap debug radius-statistics",
+            "desc": "RADIUS request/response/retry counters per authentication server configured on the IAP — useful for auth-latency troubleshooting.",
+            "type": "debug",
+            "flagged": false,
+            "example": "Server: 10.1.1.5:1812\nAccess-Request: 1204  Access-Accept: 1180  Access-Reject: 18  Timeouts: 6\nRound-trip Avg: 42ms"
           }
         ],
         "Provisioning & Updates": [
