@@ -7948,6 +7948,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl x509 -in server.crt -noout -enddate\nnotAfter=Apr  1 00:00:00 2026 GMT\n\n# Days-remaining one-liner:\n$ openssl x509 -in server.crt -noout -checkend 604800 && echo \"valid for 7+ more days\" || echo \"expires within 7 days\""
+          },
+          {
+            "cmd": "openssl asn1parse -in cert.pem",
+            "desc": "Walks a PEM or DER file's raw ASN.1/DER structure tag-by-tag — offset, header length, nesting depth, tag type, and value — instead of the human-readable summary 'openssl x509 -text' produces. Reach for this when a certificate or key fails to parse and you need to see the actual byte-level structure (or a specific OID/extension that -text doesn't decode), or when comparing two encodings of 'the same' object that are behaving differently. Add '-strparse <offset>' to descend into and re-parse a nested OCTET STRING found at a given offset, such as a certificate extension's raw payload.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl asn1parse -in cert.pem\n    0:d=0  hl=4 l= 973 cons: SEQUENCE\n    4:d=1  hl=4 l= 693 cons: SEQUENCE\n    8:d=2  hl=2 l=   3 cons: cont [ 0 ]\n   10:d=3  hl=2 l=   1 prim: INTEGER           :02\n   13:d=2  hl=2 l=  16 prim: INTEGER           :3F2A1B...\n   31:d=2  hl=2 l=  13 cons: SEQUENCE\n   33:d=3  hl=2 l=   9 prim: OBJECT            :sha256WithRSAEncryption\n  ...\n  521:d=2  hl=4 l= 289 cons: SEQUENCE      # extensions block\n\n$ openssl asn1parse -in cert.pem -strparse 521\n# Re-parses just the extensions SEQUENCE found at offset 521 as its\n# own top-level ASN.1 object — useful for decoding a raw extension\n# OCTET STRING that -text prints only as a hex blob."
           }
         ],
         "Verification & Matching": [
@@ -12145,7 +12152,7 @@
           },
           {
             "cmd": "show wireless security timers",
-            "desc": "Security-related timers.",
+            "desc": "Reports the controller-wide security protocol timers that govern client join speed and session lifetime — EAP identity-request timeout, EAP retry count, WPA/WPA2 4-way-handshake timeout, and PMKID cache lifetime. A client that fails to associate specifically on a slow or lossy RF link (rather than failing outright) is often timing out against one of these values before the handshake completes — raising the WPA handshake timeout is the usual first fix before touching AP placement or channel config.",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless security timers\nEAP Identity Timeout: 30 sec\nEAP Retry Count: 3\nWPA Handshake Timeout: 1 sec\nPMKID Cache Timeout: 43200 sec"
@@ -12614,7 +12621,7 @@
           },
           {
             "cmd": "show wireless stats mobility",
-            "desc": "Mobility-related stats.",
+            "desc": "Summarizes controller-wide client mobility counters — how many clients are local versus anchored on a foreign controller in the mobility group, and how many roam events occurred in the tracked window — the fast way to confirm inter-controller roaming (L2/L3 mobility) is actually functioning across a mobility group before drilling into a single client's roam history. A high foreign/anchored count relative to local clients on a controller that should mostly serve local traffic can indicate a mobility-group misconfiguration sending clients to the wrong anchor.",
             "type": "show",
             "flagged": false,
             "example": "WLC-01# show wireless stats mobility\nLocal Clients: 145\nForeign Clients: 23\nAnchored Clients: 12\nRoam Events (24h): 234"
@@ -15940,6 +15947,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ ss -ti state established\nState  Recv-Q  Send-Q  Local Address:Port   Peer Address:Port\nESTAB  0       0       10.0.0.5:52344       10.0.0.10:443\n\t cubic wscale:7,7 rto:204 rtt:3.2/1.1 mss:1448 pmtu:1500\n\t cwnd:10 bytes_sent:2841 bytes_acked:2841 bytes_received:18420\n\t pacing_rate 72.4Mbps delivery_rate 34.8Mbps minrtt:2.1"
+          },
+          {
+            "cmd": "tc -s qdisc show dev eth0",
+            "desc": "Lists every queueing discipline (qdisc) attached to an interface — pfifo_fast, htb, tbf, netem, fq_codel, etc. — along with its byte/packet counters and, critically, its drop count; the '-s' (statistics) flag is what turns 'tc qdisc show' from a static config listing into a live view of whether that qdisc is actually shaping/dropping traffic. The first line for any interface without explicit QoS config is the kernel's default 'pfifo_fast' or 'noqueue'.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ tc -s qdisc show dev eth0\nqdisc htb 1: root refcnt 2 r2q 10 default 30 direct_packets_stat 0\n Sent 8452113022 bytes 6203841 pkt (dropped 1822, overlimits 402931 requeues 0)\n backlog 0b 0p requeues 0\nqdisc netem 10: parent 1:10 limit 1000 delay 20.0ms 5.0ms\n Sent 421338211 bytes 310221 pkt (dropped 0, overlimits 0 requeues 0)\n backlog 0b 0p requeues 0\n\n# 'dropped 1822' on the htb qdisc means traffic is exceeding the\n# configured class rate/ceiling and being tail-dropped — raise the\n# class rate or investigate why demand outstrips the shaped ceiling.\n# Add '-g' for a tree view of parent/child class relationships."
           }
         ],
         "Diagnostics": [
@@ -21096,7 +21110,7 @@
           },
           {
             "cmd": "wlan.fc.type_subtype == 0x0a",
-            "desc": "Disassociation",
+            "desc": "Matches 802.11 management frames with subtype 10 — Disassociation — sent by either the client or the AP to end an association while keeping the station's 802.11 authentication state intact, so it can re-associate without re-authenticating. Contrast with Deauthentication (subtype 12, 0x0c), which tears down authentication as well; a capture full of disassociations but no deauths points at a roaming/coverage issue rather than a security event or deliberate kick.",
             "type": "show",
             "flagged": false,
             "example": "# Matches 802.11 Disassociation frames (subtype 10).\n# Frame 20: Disassociation  Reason: 8 (STA leaving the BSS)\n# Disassoc preserves authentication state; Deauth (0x0c) removes both."
@@ -25785,7 +25799,7 @@
           },
           {
             "cmd": "aaa accounting commands 15 default start-stop group tacacs+",
-            "desc": "Command accounting",
+            "desc": "Sends every privilege-level-15 (privileged EXEC) command a user runs to the TACACS+ server in real time, tagged with the start of the command and its completion status — the audit trail regulatory frameworks like SOX and PCI-DSS require for 'who changed what, when' on network devices. Change '15' to '1' to also log lower-privilege show/user-level commands, or add a second 'aaa accounting commands 1 default start-stop group tacacs+' line to cover both levels; without command accounting, TACACS+ still authenticates and authorizes logins but keeps no record of what was actually typed.",
             "type": "config",
             "flagged": false,
             "example": "R1(config)# aaa accounting commands 15 default start-stop group tacacs+\n\n# Each priv-15 command logged:\n%AAA-6-CMDACCT: User=admin Cmd=\"show running-config\" Status=stop\n\nWhat it means:\n- \"start-stop\" : log both command start and completion.\n- Priv-15 : log every privileged-mode command — full audit trail.\n- Required by SOX / PCI-DSS for change accountability.\n- TACACS+ accounting records sent to server in real-time."
@@ -27414,14 +27428,14 @@
           },
           {
             "cmd": "show class-map",
-            "desc": "Configured class-maps",
+            "desc": "Lists every configured class-map — the traffic-classification building block referenced by policy-maps — with its match type (match-any/match-all) and match criteria (DSCP, CoS, access-group, protocol, etc.). A class-map on its own does nothing; it only takes effect once referenced inside a policy-map with an action (set/police/bandwidth/priority) and that policy-map is attached to an interface via 'service-policy'. Use this to confirm a class actually matches the traffic you expect before troubleshooting why its policy-map action isn't applying.",
             "type": "show",
             "flagged": false,
             "example": "R1# show class-map\n\n Class Map match-any VOICE (id 1)\n   Match  dscp ef (46)\n   Match  cos  5\n\n Class Map match-any DATA (id 2)\n   Match  any\n\n Class Map match-all CRITICAL_DATA (id 3)\n   Match access-group 100\n   Match  dscp af31\n\nWhat it means:\n- All defined class-maps.\n- \"match-any\" : OR logic — one match satisfies.\n- \"match-all\" : AND logic — all matches must succeed.\n- Each class-map can have multiple match criteria; combine for\n  granular traffic identification."
           },
           {
             "cmd": "show policy-map",
-            "desc": "Configured policy-maps",
+            "desc": "Lists every configured policy-map — the set of class-map-to-action bindings (mark, police, queue, prioritize) that implements QoS — along with each class's configured action, but without live counters; use 'show policy-map interface <intf>' instead to see per-class matched packet/byte counts and drops on an interface a policy is actually attached to. A policy-map defined here has no effect anywhere until attached with 'service-policy {input|output}' on an interface, sub-interface, or VLAN.",
             "type": "show",
             "flagged": false,
             "example": "R1# show policy-map\n\n  Policy Map MARK_TRAFFIC\n    Class VOICE\n     set dscp ef\n    Class DATA\n     bandwidth percent 30\n    Class class-default\n     fair-queue\n\n  Policy Map LIMIT_GUEST\n    Class class-default\n     police cir 10000000\n\nWhat it means:\n- All defined policy-maps with their class actions.\n- Actions include set (mark), police (rate-limit), bandwidth\n  (CBWFQ), priority (LLQ).\n- Each policy-map applies via \"service-policy {input|output}\"\n  on an interface or VLAN."
@@ -28583,6 +28597,13 @@
             "type": "show",
             "flagged": false,
             "example": "[root@esxi:~] esxcli system settings advanced list -o /Net/TcpipHeapSize\n   Path: /Net/TcpipHeapSize\n   Type: integer\n   Int Value: 32\n   Default Int Value: 32\n   Min Value: 0\n   Max Value: 1536\n   Description: Size of the TCP/IP heap, in megabytes"
+          },
+          {
+            "cmd": "esxcli system settings kernel list",
+            "desc": "Lists every VMkernel boot option compiled into the running boot image — its current value, default, and whether it's runtime-configurable — the low-level counterpart to 'esxcli system settings advanced list', which only covers VMkernel *runtime* tunables. Boot settings here (e.g. iovDisableIR, noACPI, debugLogToSerial) require 'esxcli system settings kernel set' plus a reboot to take effect, unlike advanced settings which usually apply immediately.",
+            "type": "show",
+            "flagged": false,
+            "example": "[root@esx01:~] esxcli system settings kernel list\nName              Type    Configured   Runtime  Default  Description\n----------------  ------  -----------  -------  -------  -----------\niovDisableIR      Bool    FALSE        FALSE    FALSE    Disable IOMMU interrupt remapping\nnoACPI            Bool    FALSE        FALSE    FALSE    Disable ACPI\nlogPort           String  0x3f8        0x3f8    0x3f8    Serial log port\ndebugLogToSerial  Bool    FALSE        FALSE    FALSE    Send debug log to serial port\n\n# Change one with:\n[root@esx01:~] esxcli system settings kernel set -s debugLogToSerial -v TRUE\n# Then reboot — kernel settings, unlike advanced settings, don't\n# take effect until the next boot."
           }
         ],
         "Networking": [
@@ -29259,6 +29280,13 @@
             "type": "show",
             "flagged": false,
             "example": "asa# show interface GigabitEthernet0/0 detail\nInterface GigabitEthernet0/0 \"outside\", is up, line protocol is up\n  Hardware is i82576, BW 1000 Mbps, DLY 10 usec\n        Auto-Duplex(Full-duplex), Auto-Speed(1000 Mbps)\n        Input flow control is unsupported, output flow control is off\n        MAC address aabb.ccdd.eeff, MTU 1500\n        IP address 198.51.100.1, subnet mask 255.255.255.0\n  1234567 packets input, 987654321 bytes\n  Received 12 broadcasts, 3 runts, 0 giants\n  0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort\n  Input queue (curr/max packets): hardware (0/0) software (0/0)\n  Output queue (curr/max packets): hardware (0/15) software (0/0)\n  ---- Detail ----\n  Tx output queue overruns: 0\n  RX No buffer errors: 0\n  Block input errors: 0"
+          },
+          {
+            "cmd": "show cluster history",
+            "desc": "Prints a timestamped log of every clustering state transition — DISABLED to ELECTION to ONCALL, master/slave role changes, sync phases — with a reason string for each one, so a cluster member that unexpectedly left or rejoined can be diagnosed after the fact instead of only from live 'show cluster info'. Narrow it with 'brief', 'latest <n>', or a 'time' window when the history is long.",
+            "type": "show",
+            "flagged": false,
+            "example": "ciscoasa# show cluster history\n==========================================================================\nFrom State           To State             Reason\n==========================================================================\n09:14:02 UTC Jul 20 2026\nDISABLED              ELECTION              Received cluster control message\n09:14:03 UTC Jul 20 2026\nELECTION               SLAVE_COLD           Set to slave for merge\n09:14:07 UTC Jul 20 2026\nSLAVE_COLD             SLAVE_APP_SYNC        Configuration replication\n09:14:19 UTC Jul 20 2026\nSLAVE_APP_SYNC          SLAVE_CONFIG          App sync done\n09:14:20 UTC Jul 20 2026\nSLAVE_CONFIG           ONCALL                Unit is a slave\n\nciscoasa# show cluster history latest 5\n# Shows only the 5 most recent transitions — useful right after a\n# flapping-member alert instead of scrolling a long history buffer."
           }
         ],
         "Interfaces": [
@@ -30438,6 +30466,13 @@
             "type": "show",
             "flagged": false,
             "example": "PS C:\\> Test-NetConnection -ComputerName example.com -TraceRoute\n\nComputerName           : example.com\nRemoteAddress           : 93.184.216.34\nPingSucceeded           : True\nPingReplyDetails (RTT)  : 14 ms\nTraceRoute              : {10.0.0.1, 203.0.113.1, 198.51.100.1, 93.184.216.34}"
+          },
+          {
+            "cmd": "Get-SmbConnection",
+            "desc": "Lists active outbound SMB sessions from this machine as an SMB *client* — server name, share, SMB dialect negotiated, and whether the session is signed/encrypted — the client-side counterpart to 'Get-SmbSession', which instead shows inbound connections to shares this machine is hosting. Useful for confirming a client actually negotiated SMB3 (not a downgraded SMB1/2 dialect) against a hardened file server, or for spotting a stale mapped-drive connection to a decommissioned server.",
+            "type": "show",
+            "flagged": false,
+            "example": "PS C:\\> Get-SmbConnection\n\nServerName ShareName  UserName        Credential      Dialect NumOpens\n---------- ---------  --------        ----------      ------- --------\nfs01       Data       CONTOSO\\jdoe    CONTOSO\\jdoe    3.1.1   4\nfs01       IPC$       CONTOSO\\jdoe    CONTOSO\\jdoe    3.1.1   1\nold-fs02   Archive    CONTOSO\\jdoe    CONTOSO\\jdoe    2.0.2   1\n\n# Dialect 2.0.2 to old-fs02 confirms that server hasn't been upgraded\n# past SMB2 — a signal to check whether SMB1 is still enabled there too\n# ('Get-SmbServerConfiguration -CimSession old-fs02').\nPS C:\\> Get-SmbConnection -ServerName fs01 | Format-List *"
           }
         ],
         "Processes": [
@@ -30457,7 +30492,7 @@
           },
           {
             "cmd": "Get-Process",
-            "desc": "Shows processes",
+            "desc": "Lists every running process with PID, handle/thread counts, working-set and private memory, and cumulative CPU time — PowerShell's equivalent of Task Manager's Details tab, but scriptable and pipeable. Filter with -Name to target one process, or pipe to Sort-Object CPU -Descending to find what's actually consuming the CPU; add -IncludeUserName (requires an elevated session) to see which account owns each process on a shared or multi-user host.",
             "type": "show",
             "flagged": false,
             "example": "Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName\n-------  ------    -----      -----     ------     --  -- -----------\n    841      48   312456     298765    423.12   4421   1  MsMpEng\n    512      28    88432      94210    210.08   2340   1  powershell\n    420      22    62144      71234     98.71   1840   1  svchost"
@@ -30592,7 +30627,7 @@
           },
           {
             "cmd": "Get-Partition",
-            "desc": "Shows partitions",
+            "desc": "Lists every partition across all disks with disk number, partition number, drive letter (blank if unmounted), byte offset, size, and partition type (Basic, Reserved, Recovery, EFI System, etc.) — the modern Storage-module replacement for parsing 'diskpart list partition' output. Pipe a specific partition to Get-Volume or Resize-Partition to act on it, since Get-Partition itself is read-only.",
             "type": "show",
             "flagged": false,
             "example": "DiskNumber  PartitionNumber  DriveLetter  Offset        Size         Type\n----------  ---------------  -----------  ------        ----         ----\n0           1                             524288        128 MB       Reserved\n0           2                C            135266304     476 GB       Basic\n0           3                             512307126272  780 MB       Recovery"
@@ -31662,6 +31697,13 @@
             "type": "action",
             "flagged": false,
             "example": "$ aws ecs update-service --cluster prod-cluster --service web-svc --force-new-deployment\n\n$ aws ecs describe-services --cluster prod-cluster --services web-svc \\\n  --query \"services[0].deployments[].[status,rolloutState,runningCount,desiredCount]\" --output table\n---------------------------------------------\n|  PRIMARY  |  IN_PROGRESS  |  2  |  4       |\n\n# Official docs: https://docs.aws.amazon.com/cli/latest/reference/ecs/update-service.html"
+          },
+          {
+            "cmd": "aws ecs execute-command --cluster <cluster> --task <task-id> --container <container> --interactive --command \"/bin/sh\"",
+            "desc": "Opens an interactive shell (or runs a one-shot command) inside a running Fargate or EC2-backed ECS task over SSM, without SSH, a bastion host, or an exposed port — the ECS equivalent of 'kubectl exec'. Requires 'enableExecuteCommand' set on the service/task definition, the task IAM role to include the SSM-managed-instance permissions, and the SSM Session Manager plugin installed locally; none of that can be turned on retroactively on an already-running task.",
+            "type": "action",
+            "flagged": true,
+            "example": "$ aws ecs execute-command \\\n    --cluster prod-cluster \\\n    --task 4f9c2e1a2b3c4d5e6f7a8b9c0d1e2f3a \\\n    --container web \\\n    --interactive \\\n    --command \"/bin/sh\"\n\nThe Session Manager plugin was installed successfully.\n\nStarting session with SessionId: ecs-execute-command-0a1b2c3d4e5f6a7b8\n# /bin/sh\n# whoami\nroot\n# exit\n\nExiting session with sessionId: ecs-execute-command-0a1b2c3d4e5f6a7b8.\n# If it instead errors 'The execute command failed... ExecuteCommandAgent\n# is not running', enableExecuteCommand is off — redeploy the service\n# with --enable-execute-command."
           }
         ],
         "ECR": [
@@ -33301,7 +33343,7 @@
           },
           {
             "cmd": "xe vm-reboot uuid=<uuid>",
-            "desc": "Reboots VM",
+            "desc": "Performs a clean guest-OS reboot of one SDX management-plane or instance VM via the XenServer/Citrix Hypervisor host CLI — sends an ACPI shutdown/restart signal through XenAPI rather than power-cycling the VM, so the guest gets a chance to flush disk and shut down services cleanly. If the guest OS is unresponsive and won't honor the ACPI signal, 'xe vm-reboot uuid=<uuid> --force' forces a hard reset instead; use vm-list first to resolve a VM's name-label to the uuid this command needs.",
             "type": "show",
             "flagged": false,
             "example": "$ xe vm-reboot uuid=11111111-2222-3333-4444-555555555555\n# gracefully reboots the VM"
@@ -33357,7 +33399,7 @@
           },
           {
             "cmd": "xe network-list",
-            "desc": "Lists networks",
+            "desc": "Lists every virtual network defined on the XenServer/Citrix Hypervisor host underlying the SDX — uuid, name-label, and the physical bridge (xenbrN) it maps to — the mapping layer that determines which physical NIC/VLAN a NetScaler instance's virtual interface actually egresses through. Cross-reference the bridge name against 'xe pif-list' to see which physical NIC backs it, or 'xe vif-list' to see which instance VMs are attached to a given network.",
             "type": "show",
             "flagged": false,
             "example": "$ xe network-list\nuuid ( RO)          : 11112222-3333-4444-5555-666677778888\n  name-label ( RW)   : Management\n  bridge ( RO)       : xenbr0\nuuid ( RO)          : 22223333-4444-5555-6666-777788889999\n  name-label ( RW)   : Data\n  bridge ( RO)       : xenbr1"
@@ -35834,6 +35876,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show platform software fed switch active punt cause summary\n\nCause                          Rx Pkts        Rx Rate (pps)\n------------------------------ -------------- -------------\nARP_REQ_OR_RES                 1,842,033      412\nDHCP_SNOOPING                    284,912       58\nL2_CONTROL_PKT                    98,412       12\nCOPP_EXCEEDED                     12,048        2\n# A high Rx Rate on one cause is the fastest way to spot a control-plane\n# storm; cross-reference with 'show platform software fed switch active punt cpuq rates'."
+          },
+          {
+            "cmd": "show platform software fed switch active matm macTable vlan <vlan> mac <mac-address>",
+            "desc": "Queries the FED's MAC Address Table Manager (MATM) — the hardware-programmed L2 table the ASIC actually forwards against — for one VLAN/MAC pair directly, bypassing the IOS-level 'show mac address-table' view. Use it when the software MAC table and the observed forwarding behaviour disagree (traffic reaching the wrong port, a MAC that won't age out); a mismatch between this and 'show mac address-table' points at a software-to-hardware programming sync bug rather than a topology or STP problem.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show platform software fed switch active matm macTable vlan 100 mac 9c54.1631.8bd1\n\nMAC Address Table\n------------------------------------------\nVlan  Mac Address     Type      Sequence#  Interface\n----  --------------  --------  ---------  ---------\n100   9c54.1631.8bd1  DYNAMIC   12882      Gi1/0/12\n\n# Compare against:\nSwitch# show mac address-table address 9c54.1631.8bd1\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n 100    9c54.1631.8bd1    DYNAMIC     Gi1/0/12\n# If these disagree, the ASIC and IOS software MAC tables are out of\n# sync — 'clear mac address-table dynamic' or a FED reset is usually\n# needed, not a spanning-tree or cabling fix."
           }
         ],
         "Hardware": [
@@ -43159,6 +43208,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show interface counters detailed\n\nEthernet1/1\n\nRX\n  591357 unicast packets  1245 multicast packets  87 broadcast packets\n  612993582 bytes\nTX\n  588210 unicast packets  0 multicast packets  0 broadcast packets\n  598104221 bytes\n\n# Interfaces with every counter at zero are omitted from the output —\n# add \"all\" (show interface counters detailed all) to include them."
+          },
+          {
+            "cmd": "show interface counters detailed all",
+            "desc": "The unfiltered counterpart to plain 'show interface counters detailed' — that command silently omits any interface whose counters are still all-zero, which hides idle, admin-down, or newly-provisioned ports from the listing entirely; adding 'all' forces every interface onto the list regardless of traffic, which is what you actually want when auditing a full chassis port-by-port or confirming a specific idle port truly has zero traffic rather than just being filtered out of view.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface counters detailed all\n\nEthernet1/11\n\nRX\n  982043831 unicast packets  40213 multicast packets  892 broadcast packets\n  1200483821022 bytes\n  312 input errors  0 CRC  0 frame  0 overrun  0 ignored\n\nTX\n  871223019 unicast packets  1021 multicast packets  4 broadcast packets\n  998211038291 bytes\n  0 output errors  0 collisions\n\nEthernet1/12\n\nRX\n  0 unicast packets  0 multicast packets  0 broadcast packets\n  0 bytes\nTX\n  0 unicast packets  0 multicast packets  0 broadcast packets\n  0 bytes\n\n# Ethernet1/12 is fully idle and would be missing entirely from the\n# output of plain 'show interface counters detailed' — 'all' is the\n# only way to confirm that's expected versus a hidden problem."
           }
         ],
         "VLANs / VPC": [
@@ -44466,10 +44522,10 @@
           },
           {
             "cmd": "show capacities-status",
-            "desc": "Current usage of those tables",
+            "desc": "Compares every configured scale value (MAC entries, ARP/ND entries, routes, ACEs, VLANs, etc.) against the switch model's hardware maximum in one table — unlike 'show capacities', which only reports the configured value, this adds the ceiling so you can spot a table that's approaching its hardware limit before it silently starts dropping new entries. Add a resource filter (e.g. 'l3') to narrow the output to one subsystem.",
             "type": "show",
             "flagged": false,
-            "example": "Resource               Usage%  Status\nRoutes (IPv4)          0%      OK\nMAC addresses          1%      OK\nVLANs                  0%      OK\nACL entries            1%      OK"
+            "example": "switch# show capacities-status\nResource                          Current   Maximum\n---------------------------------------------------\nMAC Address Table Entries            4821    32768\nIPv4 Route Entries                    312     16384\nIPv4 Host/ARP Entries                1204     8192\nIPv6 Neighbor Entries                  86     4096\nVLANs                                  42      4094\nIngress ACL Entries (ACEs)            980      4096\n\nswitch# show capacities-status l3\nResource                          Current   Maximum\n---------------------------------------------------\nIPv4 Route Entries                    312     16384\nIPv4 Host/ARP Entries                1204     8192\nIPv6 Route Entries                     14     16384\nIPv6 Neighbor Entries                  86     4096\n# Current climbing toward Maximum on any row is the early warning —\n# plan a hardware refresh or scale-down before it hits 100%."
           },
           {
             "cmd": "show feature",
@@ -44626,6 +44682,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show lldp statistics\n\nLLDP Global statistics:\n Total Packets transmitted            : 118234\n Total Packets received               : 117980\n Total Packet received and discarded  : 0\n Total TLVs unrecognized              : 0\n\nPort                Tx      Rx    Rx Discarded  Rx Unrecognized\n------------------- ------- ------- ------------ ----------------\n1/1/1                 59120   58990            0                0\n1/1/49                59114   58990            0                0"
+          },
+          {
+            "cmd": "show interface 1/1/1 transceiver threshold-violations",
+            "desc": "Filters the transceiver's DDM (Digital Diagnostic Monitoring) readings down to only the values currently outside the vendor's high/low alarm or warning thresholds — Tx/Rx power, bias current, voltage, temperature — instead of dumping every DDM field like plain 'transceiver detail' does. An empty result means the optic itself is healthy, which narrows a link problem toward the fibre, patch panel, or the far end.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show interface 1/1/1 transceiver threshold-violations\nInterface 1/1/1:\n  Rx Power        : -18.42 dBm  (below low-alarm threshold -13.00 dBm)  ALARM\n  Temperature     :  71.3 C     (above high-warning threshold 70.0 C)   WARNING\n# All other DDM parameters (Tx power, bias current, voltage) are within range.\n# A low Rx power alarm with normal Tx power on the local end points at\n# fibre attenuation, a dirty/damaged connector, or excess patch loss —\n# not a bad transceiver."
           }
         ],
         "VLANs": [
@@ -47381,6 +47444,13 @@
             "type": "show",
             "flagged": false,
             "example": "router# show platform hardware qfp active statistics drop\n\n  Global Drop Stats                              Packets           Octets\n  -----------------------------------------------------------------------\n  Ipv4NoRoute                                          42             2688\n  Ipv4Acl                                            1245           789012\n  UnconfiguredIpv4Fia                                    3              192\n  QfpNaturalDrops                                      512            32768\n\n# Reset counters before reproducing an issue so the next check shows a clean delta:\nrouter# clear platform hardware qfp active statistics drop"
+          },
+          {
+            "cmd": "show platform hardware qfp active infrastructure punt statistics type per-cause",
+            "desc": "Breaks down every packet the QFP ASIC punted from the hardware fast path up to the route processor's software path, grouped by punt cause (ARP, TTL expiry, RP-destined control traffic, NAT miss, IPv4/IPv6 options, etc.) with received and dropped counts per cause — the standard first step when 'show platform hardware qfp active statistics drop' shows high punt-path drops, since it identifies *which* traffic class is overwhelming the RP's punt policer instead of just confirming that drops are happening.",
+            "type": "show",
+            "flagged": false,
+            "example": "Router# show platform hardware qfp active infrastructure punt statistics type per-cause\n\nGlobal Per Cause Statistics:\n Cause Id  Cause Name                        Rcvd Pkts    Dropped Pkts\n --------  --------------------------------  -----------  -------------\n     8     ARP request or response                  4213              0\n    27     IPv4 TTL/hop-limit expired               1908              0\n    72     For-us data                            982041              0\n   129     NAT ALG                                   3312           1174\n\n# A nonzero Dropped column on one cause means that cause's punt-policer\n# rate is being exceeded — check/raise it with\n# 'show platform hardware qfp active infrastructure punt policer' /\n# 'platform punt-policer cause <n> rate <pps>' before assuming a\n# hardware fault."
           }
         ],
         "Config Management": [
