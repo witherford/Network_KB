@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-18T18:43:24.973Z",
+  "updatedAt": "2026-07-24T18:41:16.000Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -20359,7 +20359,7 @@
           },
           {
             "cmd": "http.response.code == 301 or http.response.code == 302",
-            "desc": "HTTP redirects",
+            "desc": "Matches HTTP 301/302 redirect responses — trace where a client was sent next when chasing a redirect loop or an unexpected destination after a login or load-balancer hop.",
             "type": "show",
             "flagged": false,
             "example": "# Matches HTTP 301 (Moved Permanently) and 302 (Found/Temporary) redirects.\n# Frame 6:  10.0.0.10 → 10.0.0.5  HTTP/1.1 301 Moved Permanently\n#            Location: https://example.com/\n# Useful for tracing redirect chains or detecting redirect loops."
@@ -20675,7 +20675,7 @@
         "Display Filters — ARP / ICMP": [
           {
             "cmd": "arp",
-            "desc": "All ARP frames",
+            "desc": "Matches every ARP request and reply in the capture — the starting filter for chasing duplicate-IP conflicts, gateway MAC flapping, or an unusually high broadcast rate on a VLAN.",
             "type": "show",
             "flagged": false,
             "example": "# Matches all ARP frames (Requests and Replies).\n# Frame 1:  ARP  Who has 10.0.0.1? Tell 10.0.0.5\n# Frame 2:  ARP  10.0.0.1 is at 00:50:56:aa:bb:cc\n# High ARP rate on a VLAN can indicate an ARP storm or active scanning tool."
@@ -20917,7 +20917,7 @@
           },
           {
             "cmd": "smb",
-            "desc": "SMBv1 traffic",
+            "desc": "Matches legacy SMBv1 frames — useful for confirming whether a host still negotiates the deprecated, EternalBlue-vulnerable dialect before you disable it, since modern Windows shares should show up under smb2 instead.",
             "type": "show",
             "flagged": false,
             "example": "# Matches SMBv1 frames (TCP 445 or 139).\n# Frame 1:  SMB  Negotiate Protocol Request\n# Frame 2:  SMB  Negotiate Protocol Response\n# SMBv1 is deprecated and exploitable (EternalBlue/MS17-010).\n# Use smb2 filter for modern Windows file sharing."
@@ -20975,7 +20975,7 @@
           },
           {
             "cmd": "eigrp",
-            "desc": "EIGRP traffic",
+            "desc": "Matches all EIGRP packets (Hello, Update, Query, Reply, ACK) — filter here first when a Cisco EIGRP neighbor relationship won't come up or keeps flapping, then narrow by eigrp.opcode to isolate one message type.",
             "type": "show",
             "flagged": false,
             "example": "# Matches EIGRP frames (IP protocol 88, multicast 224.0.0.10).\n# Frame 1:  10.0.0.1 → 224.0.0.10  EIGRP Hello  (AS 100)\n# Frame 3:  10.0.0.1 → 10.0.0.2    EIGRP Update (routes advertised)\n# EIGRP is Cisco proprietary — only seen in Cisco IOS/IOS-XE environments."
@@ -21068,7 +21068,7 @@
           },
           {
             "cmd": "wlan.fc.type_subtype == 0x08",
-            "desc": "Beacon frames",
+            "desc": "Matches 802.11 Beacon frames only — isolate the ~10/sec advertisements each AP sends to inspect SSID, channel, and security capabilities, or to spot a rogue AP broadcasting an unexpected BSSID for a known SSID.",
             "type": "show",
             "flagged": false,
             "example": "# Matches 802.11 Beacon frames (subtype 8) — APs advertise ~10 per second.\n# Frame 1:  Beacon  SSID: CorpWiFi  BSSID: 00:11:22:33:44:55  Channel: 6\n#   RSN: WPA2-CCMP  Supported rates: 6,9,12,18,24,36,48,54 Mbps\n# Multiple BSSIDs sharing the same SSID = same ESS (roaming network)."
@@ -33038,7 +33038,7 @@
           },
           {
             "cmd": "restart vm <name>",
-            "desc": "Restarts a VM",
+            "desc": "Gracefully restarts a NetScaler VPX instance running on the SDX — sends a shutdown signal to the guest OS first, then powers the VM back on, so an in-flight config save has a chance to complete before the reboot.",
             "type": "show",
             "flagged": false,
             "example": "> restart vm VPX-1\nRestarting VM VPX-1 (graceful)...\nVM VPX-1 is now Running."
@@ -33052,7 +33052,7 @@
           },
           {
             "cmd": "delete vm <name>",
-            "desc": "Deletes a VM",
+            "desc": "Permanently removes a VPX instance and its virtual disk from the SDX hypervisor — irreversible, so confirm the instance is fully decommissioned (and its config backed up) before running this rather than just stopping it.",
             "type": "show",
             "flagged": false,
             "example": "> delete vm VPX-4\nWARNING: Permanently deletes VPX-4 and all data.\nConfirm? (yes/no): yes\nVM VPX-4 deleted."
@@ -33962,7 +33962,7 @@
           },
           {
             "cmd": "show alerts",
-            "desc": "Shows alerts",
+            "desc": "Lists active platform-level alerts across the SDX chassis (thermal, resource thresholds, HA and network events) with severity and source — the first stop for a daily health check before drilling into per-VM logs.",
             "type": "show",
             "flagged": false,
             "example": "> show alerts\n\nAlert ID  Time                  Severity  Source    Message\n--------  --------------------  --------  --------  -------\n    1021  2024-06-01 14:32:05   CRITICAL  VPX01     CPU threshold exceeded (98%)\n    1019  2024-06-01 12:45:00   WARNING   System    Fan speed below threshold\n    1015  2024-06-01 09:00:00   INFO      Network   LACP bond failover detected\n\nTotal alerts: 3\n\nDone"
@@ -34132,7 +34132,7 @@
           },
           {
             "cmd": "show ha logs",
-            "desc": "Shows HA logs",
+            "desc": "Chronological log of HA state transitions — heartbeat loss/recovery, sync completions, and failovers between the SDX HA pair — use it to correlate an unexpected failover with the missed-heartbeat or sync event that triggered it.",
             "type": "show",
             "flagged": false,
             "example": "2026-06-25 14:28:03  [INFO]  HA heartbeat received from node 2 (192.168.10.12)\n2026-06-25 14:21:47  [INFO]  Configuration sync completed successfully\n2026-06-25 11:04:18  [WARN]  HA heartbeat missed from node 2 — retry 1/3\n2026-06-25 11:04:20  [INFO]  HA heartbeat restored from node 2\n2026-06-25 08:00:01  [INFO]  HA subsystem initialised; node 1 elected PRIMARY"
@@ -46428,6 +46428,13 @@
             "type": "show",
             "flagged": false,
             "example": "Type      State  Reason         Priority  Interface\nEthernet  Up     -              1         eth0\nCellular  Down   Not-Connected  2         usb0\nWifi-sta  Up     -              3         wifi0"
+          },
+          {
+            "cmd": "show ap wired-port-profile",
+            "desc": "Lists every wired-port profile defined on the Instant AP (trusted/untrusted, access-VLAN, port type) along with how many physical ports reference each one — use before editing a profile to confirm it isn't shared across ports you don't intend to change.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap wired-port-profile\n\nName              References  Profile Status\n----              ----------  --------------\ncompany            2          predefined\nguest-wired        1          predefined\nap-uplink          1          predefined\n\nTotal Profiles: 3"
           }
         ],
         "Wireless / SSID": [
@@ -46500,6 +46507,20 @@
             "type": "show",
             "flagged": false,
             "example": "Country Code: US\n802.11g (Indoor): 1,2,3,4,5,6,7,8,9,10,11\n802.11a (Indoor): 36,40,44,48,149,153,157,161,165"
+          },
+          {
+            "cmd": "show ap dot11k-nbrs",
+            "desc": "Lists the 802.11k neighbor report the AP distributes to associated clients — each entry's BSSID, channel, and operating class — so 11k-capable clients can build a candidate list for fast/assisted roaming instead of scanning every channel blind.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap dot11k-nbrs\n\nSSID: Corporate\nBSSID              Channel  Op Class  PHY Type\n00:1a:1e:ab:cd:e0  36       128       11ax\n00:1a:1e:ab:cd:f0  6        81        11ax\n00:1a:1e:ab:cd:f1  149      128       11ax\n\nTotal Neighbors: 3"
+          },
+          {
+            "cmd": "show ap arm neighbors",
+            "desc": "ARM's over-the-air neighbor list for this AP — BSSID, ESSID, channel, SNR, transmit power, estimated path loss, and a flag showing how each neighbor was discovered (active/passive/indirect). Use it to confirm ARM is actually seeing the AP you expect before chasing a co-channel or coverage-hole complaint.",
+            "type": "show",
+            "flagged": false,
+            "example": "(instant-AP) # show ap arm neighbors\n\nBSSID              ESSID       Ch   SNR  Pwr  Path-Loss  Flags\n00:1a:1e:ab:cd:e1  Corporate   36   32   18   68 dB      A\n00:1a:1e:ab:cd:f3  Corporate   40   18   18   82 dB      P\naa:bb:cc:11:22:33  (foreign)   6    24   -    n/a        I\n\nFlags: A=Active, P=Passive, I=Indirect"
           }
         ],
         "Clients": [
@@ -46551,6 +46572,13 @@
             "type": "show",
             "flagged": false,
             "example": "Client MAC         From AP    To AP      Reason    Time\naa:bb:cc:11:22:33  AP-Floor1  AP-Floor2  Low RSSI  09:14:02"
+          },
+          {
+            "cmd": "show ap debug client-info <mac>",
+            "desc": "Dumps a single client's state straight from the WLAN driver — association/key state, peer statistics, and frame counters not visible via `show clients` — for TAC-level troubleshooting when a client is misbehaving at the radio layer.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug client-info 2c:db:07:e1:25:e9\n\nClient MAC       : 2c:db:07:e1:25:e9\nAssoc State      : ASSOCIATED\nKey State        : PTK-INSTALLED\nPHY Mode         : 11ax\nTx Frames        : 184213   Tx Retries : 421\nRx Frames        : 172044   Rx Drops   : 12\nLast EAPOL       : 4-way handshake complete (2026-06-12 08:41:02)"
           }
         ],
         "Cluster (Instant)": [
@@ -46658,7 +46686,7 @@
           },
           {
             "cmd": "show ap airmatch debug",
-            "desc": "AirMatch debug",
+            "desc": "Internal AirMatch state on this AP — whether the RF-optimization engine is enabled, the last recommendation event, and any pending changes not yet applied — use when `show airmatch report` looks stale to confirm AirMatch is actually running.",
             "type": "troubleshooting",
             "flagged": false,
             "example": "AirMatch state: enabled\nLast event: 2026-06-12 02:00:07 - Optimization applied\nPending changes: none\nEvent count: 14"
@@ -46704,6 +46732,48 @@
             "type": "debug",
             "flagged": false,
             "example": "Server: 10.1.1.5:1812\nAccess-Request: 1204  Access-Accept: 1180  Access-Reject: 18  Timeouts: 6\nRound-trip Avg: 42ms"
+          },
+          {
+            "cmd": "show ap debug system-status",
+            "desc": "TAC-level dump of the Instant AP's internal system state — process list, uptime, memory/flash usage, and mount status in one shot. Broader than `show ap-env`; typically the first command support asks for before requesting deeper debug output.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug system-status\n\nUptime          : 3 days 04:22:11\nMemory Free     : 412 MB / 1024 MB\nFlash Free      : 612 MB / 1024 MB\nProcesses       : sapd(run) stm(run) cli-cmd(run) syslogd(run)\nMount Status    : /  rw   /overlay  rw\nLoad Average    : 0.14 0.09 0.05"
+          },
+          {
+            "cmd": "show ap debug cloud-server",
+            "desc": "Shows whether the Instant AP is managed locally or by a cloud server (Aruba Central) and, if cloud-managed, the server URL and connection state — the first place to look when an AP won't check in to Central.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug cloud-server\n\nManagement Mode   : Cloud (Aruba Central)\nCentral Server URL: devicegw.central.arubanetworks.com\nConnection State  : CONNECTED\nLast Heartbeat    : 2026-06-12 08:44:10 (12s ago)"
+          },
+          {
+            "cmd": "show ap debug dhcp-packets",
+            "desc": "Traces how the AP's IP stack processed each DHCP packet (forwarded, dropped, and why) — only populated when a DHCP option is configured under a set-vlan or set-role access rule; use it to diagnose clients stuck in a captive-portal or role-based VLAN that never gets an address.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug dhcp-packets\n\nTime      Client MAC         Packet    Action    Reason\n08:41:01  2c:db:07:e1:25:e9  DISCOVER  Forward   set-vlan matched (VLAN 50)\n08:41:01  2c:db:07:e1:25:e9  OFFER     Forward   -\n08:41:02  2c:db:07:e1:25:e9  REQUEST   Forward   -\n08:41:02  2c:db:07:e1:25:e9  ACK       Forward   -"
+          },
+          {
+            "cmd": "show ap debug am-config",
+            "desc": "Dumps the local AirMatch configuration the AP received for RF planning — enabled state, computation interval, and the channel/power bounds AirMatch is allowed to use — for debugging why an AirMatch-recommended channel or power plan doesn't match expectations.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug am-config\n\nAirMatch Enabled   : yes\nCompute Interval   : 24h\nAllowed Channels 5G: 36,40,44,48,149,153,157,161\nMin Power / Max Power (5G): 6 dBm / 20 dBm\nBoost Detection    : enabled"
+          },
+          {
+            "cmd": "show radius status",
+            "desc": "Status of the TLS tunnel between the Instant AP and a RadSec proxy — check this whenever RADIUS is configured over TLS (RadSec) and authentications are timing out but the underlying network path is fine.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show radius status\n\nRadSec Proxy      : radsec.corp.example.com:2083\nTLS Tunnel State  : Established\nCert Verified     : yes\nLast Handshake    : 2026-06-12 06:00:04\nReconnect Count   : 0"
+          },
+          {
+            "cmd": "show ap debug persistent-clients",
+            "desc": "Lists clients the AP is tracking as persistently connected — clients marked so their role/VLAN assignment survives a brief disassociation instead of being re-derived from scratch on every reconnect.",
+            "type": "debug",
+            "flagged": false,
+            "example": "(instant-AP) # show ap debug persistent-clients\n\nClient MAC         Role       VLAN  Last Seen\n2c:db:07:e1:25:e9  employee   10    00:00:04 ago\naa:bb:cc:11:22:33  voip-phone 100   00:01:12 ago"
           }
         ],
         "Provisioning & Updates": [
