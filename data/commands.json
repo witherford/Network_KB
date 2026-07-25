@@ -8881,6 +8881,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ openssl dgst -sha256 -binary /etc/hostname | openssl base64\nn4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=\n# Produces the SHA-256 digest as Base64 — useful for HTTP \"Digest\" headers\n# and for comparing with base64-encoded hashes from APIs or configuration files."
+          },
+          {
+            "cmd": "openssl passwd -6 -salt <salt> <password>",
+            "desc": "Computes a SHA-512-based crypt() password hash (the $6$ format used in /etc/shadow and many device local-user configs), letting you pre-generate a hash to paste into a config file instead of letting the target system hash a plaintext password itself. The -salt option fixes the salt so the hash is reproducible for testing.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ openssl passwd -6 -salt 8f3ArQ2z 'MyS3cretPass!'\n$6$8f3ArQ2z$H8k2FZ1n5r9QxWJmC0v6b1lU4x2pDq7tYVn3sAe.rL8kZoT1cWnbP9fJhE6mVqS0aXd7yR3wKc2sN1oG4iHj1"
           }
         ],
         "Symmetric Encryption & Encoding": [
@@ -10471,6 +10478,13 @@
             "cmd": "show run wlan",
             "desc": "Displays the running configuration for all configured WLAN profiles (SSID, security, QoS, broadcast settings) in one block — quicker than paging through the full running-config",
             "example": "WLC-01# show run wlan\nwlan CORPORATE-WIFI 1 CORPORATE-WIFI\n ccx aironet-iesupport\n security wpa akm dot1x\n security wpa wpa2 ciphers aes\n security dot1x authentication-list DOT1X-LIST\n no shutdown\nwlan GUEST-WIFI 2 GUEST-WIFI\n no security wpa\n no security wpa akm dot1x\n no security wpa wpa2 ciphers aes\n no shutdown\n# Scoped equivalent of \"show running-config\" for just the wlan stanzas.\n# Pair with \"show wlan summary\" for operational (admin/oper) state rather than config intent."
+          },
+          {
+            "cmd": "show wireless multicast",
+            "desc": "Shows the controller-wide multicast delivery status — whether wireless multicast is enabled, the CAPWAP AP multicast mode (multicast vs. unicast), and the configured IPv4/IPv6 CAPWAP multicast group addresses — the first thing to check before troubleshooting IPTV, paging, or AirPlay-type traffic over the WLAN.",
+            "type": "show",
+            "flagged": false,
+            "example": "9800-WLC#show wireless multicast\nMulticast                                : Enabled\nAP Capwap Multicast                      : Multicast\nAP Capwap IPv4 Multicast group Address   : 239.1.1.1\nAP Capwap IPv6 Multicast group Address   : ff05::1\nWireless Broadcast                       : Disabled"
           }
         ],
         "Tags & Profiles": [
@@ -11232,6 +11246,13 @@
             "desc": "Trigger HA failover from active to standby. Used to test that clients survive failover with no service impact.",
             "type": "troubleshooting",
             "example": "WLC-01# redundancy force-switchover\nThis will reload the active unit and force a switchover. Are you sure? [no]: yes\n# After failover (~5-10 sec), former standby is now active:\nWLC-01# show redundancy | include state\n               Current Software state = ACTIVE"
+          },
+          {
+            "cmd": "show ap crash-file",
+            "desc": "Lists crash and radio-core-dump files deposited by lightweight APs across the whole controller, summarized by AP name and radio slot — the first command to run when investigating repeated AP reboots, before pulling the actual crash file for deeper analysis.",
+            "type": "show",
+            "flagged": false,
+            "example": "9800-WLC#show ap crash-file\nTotal number of APs                     : 42\nNumber of APs with Crash Files          : 1\n\nAP Name        Ethernet MAC        Radio Slot ID  Crash File\n-------------- ------------------- -------------  ----------------------------------------\nAP-LON-14      a036.9f12.4480      1              AP-LON-14_2026-07-18-03-11-42-radio1.log"
           }
         ],
         "Config Management": [
@@ -32098,6 +32119,20 @@
             "type": "show",
             "flagged": false,
             "example": "> show system snmp\n\nSNMP Agent: Enabled\nCommunity Strings:\n  public***  (read-only)\nTrap Destinations:\n  10.0.1.60:162  (v2c)\n  10.0.1.61:162  (v2c)\nSystem Contact:  netops@corp.local\nSystem Location: DC1-Rack14\n\n# Verify a trap destination is reachable before relying on it for alerts:\n> exec ping 10.0.1.60"
+          },
+          {
+            "cmd": "show networkconfig",
+            "desc": "Displays the SDX Management Service's own network configuration (IP address, netmask, gateway, interface) — distinct from any hosted VPX instance's networking — used to confirm the appliance's own management reachability before troubleshooting a specific instance.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show networkconfig\n IP Address           10.10.4.15\n Netmask              255.255.255.0\n Gateway               10.10.4.1\n Interface             0/1\n Config Type           STATIC\n Done"
+          },
+          {
+            "cmd": "add ntp server <serverIP> [-minpoll <n>] [-maxpoll <n>]",
+            "desc": "Registers an NTP time source for the SDX Management Service so its clock stays synchronized — a prerequisite for correct HA heartbeat timing, certificate validity checks, and cross-appliance log correlation. Typically followed by `enable ntp sync`.",
+            "type": "config",
+            "flagged": false,
+            "example": "> add ntp server 10.10.1.10 -minpoll 6 -maxpoll 10\n Done\n> enable ntp sync\n Done\n> show ntp server\n 10.10.1.10   minpoll 6  maxpoll 10"
           }
         ],
         "Chassis": [
@@ -36741,6 +36776,13 @@
             "type": "show",
             "flagged": false,
             "example": "Switch# show platform pm port-data GigabitEthernet1/0/1\nIF_ID     : 0x000f\nIF Name   : GigabitEthernet1/0/1\nPort Type : GB_PHY_COPPER\nPort State: PORT_FSM_S_CONNECTED\nSpeed     : 1G\nDuplex    : Full\nAdmin     : UP\nLinestate : UP"
+          },
+          {
+            "cmd": "show ip interface brief",
+            "desc": "Displays a condensed one-line-per-interface summary of IP address, line/protocol status, and configuration method for every interface on the switch — the go-to first check for which interfaces or SVIs are up/down instead of scrolling through full `show interfaces` output.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# show ip interface brief\nInterface              IP-Address      OK? Method Status                Protocol\nVlan1                  unassigned      YES NVRAM  administratively down  down\nVlan10                 10.10.10.1      YES NVRAM  up                    up\nGigabitEthernet1/0/1   unassigned      YES unset  up                    up\nGigabitEthernet1/0/48  unassigned      YES unset  up                    up"
           }
         ],
         "VLAN": [
@@ -41640,6 +41682,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "Type escape sequence to abort.\nSending 5, 100-byte ICMP Echos to 192.168.1.254, timeout is 2 seconds:\n!!!!!\nSuccess rate is 100 percent (5/5)"
+          },
+          {
+            "cmd": "traceroute 8.8.8.8",
+            "desc": "Sends UDP probes with incrementing TTL to map the hop-by-hop Layer 3 path to a destination, helping isolate where a routing loop, blackhole, or high-latency hop occurs on the path out of the switch.",
+            "type": "show",
+            "flagged": false,
+            "example": "Switch# traceroute 8.8.8.8\n\nType escape sequence to abort.\nTracing the route to 8.8.8.8\n  1 10.10.10.1 1 msec 0 msec 1 msec\n  2 203.0.113.1 2 msec 1 msec 2 msec\n  3 8.8.8.8 9 msec 8 msec 9 msec"
           }
         ]
       },
@@ -43329,6 +43378,13 @@
             "type": "show",
             "flagged": false,
             "example": "switch# show vpc peer-keepalive\n\nvPC keep-alive status               : peer is alive\n--Peer is alive for                 : (78234) seconds, (852) msec\n--Send status                       : Success\n--Last send at                      : 2026.07.20 09:14:02 812 ms\n--Sent on interface                 : mgmt0\n--Receive status                    : Success\n--Last receive at                   : 2026.07.20 09:14:02 918 ms\n--Last update from peer             : (0) seconds, (312) msec\n\nvPC Keep-alive parameters\n--Destination                       : 10.99.99.2\n--Keepalive interval                : 1000 msec\n--Keepalive timeout                 : 5 seconds\n--Keepalive vrf                     : vpc-keepalive\n--Keepalive udp port                : 3200"
+          },
+          {
+            "cmd": "feature interface-vlan",
+            "desc": "Enables the ability to create VLAN interfaces (SVIs) on the Nexus switch — this feature must be turned on before any `interface vlan <id>` can be configured for inter-VLAN routing or an anycast gateway. It takes no arguments and needs no license.",
+            "type": "config",
+            "flagged": false,
+            "example": "switch# configure terminal\nswitch(config)# feature interface-vlan\nswitch(config)# interface vlan 100\nswitch(config-if)# description Server-VLAN-SVI\nswitch(config-if)# ip address 10.100.0.1/24\nswitch(config-if)# no shutdown"
           }
         ],
         "Routing": [
@@ -45877,6 +45933,13 @@
             "type": "show",
             "flagged": false,
             "example": "(Aruba-MC) #show airgroup status\nAirGroup Status\n---------------\nFeature           Status\n-------           ------\nAirGroup           Enabled\nGuest Service       Disabled\nMDNS                Enabled\nDLNA                Enabled\n\nCached Services: 184\nRegistered Devices: 92"
+          },
+          {
+            "cmd": "show ap bss-table",
+            "desc": "Shows the Basic Service Set table for every AP on the controller — BSSID, ESSID, channel/EIRP, AP name, and connected client count per radio — a fast controller-wide sanity check of which SSIDs are broadcasting on which channels and APs.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Aruba-MC1) #show ap bss-table\n\nBSS                 ESSID        Ch/EIRP/MaxEIRP  AP Name         Type  #Clients\n------------------  -----        ---------------  --------------  ----  --------\nac:a3:1e:5b:22:10    CORP-WIFI    36E/18/24        AP-FLOOR2-03    ap    7"
           }
         ],
         "RF / ARM / AirMatch": [
@@ -46037,6 +46100,13 @@
             "type": "show",
             "flagged": false,
             "example": "AP ap-floor1 LMS info:\n  Active LMS     : 10.0.0.201 (aruba-mc01)\n  Standby LMS    : 10.0.0.202 (aruba-mc02)\n  LMS Preemption : enabled"
+          },
+          {
+            "cmd": "show vrrp",
+            "desc": "Displays the state (Master/Backup), priority, preemption setting, and IP/VLAN binding of every VRRP instance on the controller — VRRP is ArubaOS 8's mechanism for active/standby controller redundancy, and this is the first command run when validating or troubleshooting a controller failover.",
+            "type": "show",
+            "flagged": false,
+            "example": "(Aruba-MC1) #show vrrp\n\nVirtual Router 10:\n  Admin State     : Enable\n  VR State        : Master\n  Priority        : 200\n  Advertisement   : 1 sec\n  Preempt         : Enable\n  Auth Type       : None\n  IP Address      : 10.1.1.1\n  VLAN            : 1"
           }
         ],
         "Mesh": [
