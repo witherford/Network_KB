@@ -6197,10 +6197,10 @@
           },
           {
             "cmd": "commit description \"<msg>\"",
-            "desc": "Commit with audit-log description",
+            "desc": "Commits the candidate configuration to the running config while attaching a free-text description to the commit job, so `show jobs id <id>` and the Config Audit log record why the change was made instead of just what changed — useful for change-control traceability.",
             "type": "config",
             "flagged": false,
-            "example": "Commit job enqueued (description: \"Add Allow-Web for new subnet\"). Job ID 147."
+            "example": "> commit description \"Add Allow-Web for new subnet\"\nCommit job enqueued with jobid 147\n\n> show jobs id 147\nEnqueued   Dequeued  Run Time  Type    Status  Result  Completed   Description\n10:15:02   10:15:03  0:00:38   Commit  FIN     OK      10:15:41    Add Allow-Web for new subnet"
           },
           {
             "cmd": "commit partial admin <user>",
@@ -6607,10 +6607,10 @@
           },
           {
             "cmd": "request system software install version <ver>",
-            "desc": "Install on Panorama itself",
+            "desc": "Installs a PAN-OS image on Panorama itself (not a managed firewall) and queues a reboot to complete the upgrade; the version must already be staged locally via `request system software download` first, or this fails with 'image not found'.",
             "type": "config",
             "flagged": true,
-            "example": "Software install job enqueued. Job ID 442. Version: 11.1.5. Device will need reboot."
+            "example": "> request system software install version 11.1.5\nExecuting this command will install PAN-OS on Panorama and reboot it once complete.\nDo you want to continue? (y or n) y\nSoftware install job enqueued with jobid 442\n\n> show jobs id 442\nStatus: FIN  Result: OK\nPanorama is rebooting to complete the installation."
           },
           {
             "cmd": "show config pushed-shared-policy",
@@ -10264,10 +10264,10 @@
           },
           {
             "cmd": "no avc-profile <PROFILE>",
-            "desc": "Remove AVC profile binding.",
+            "desc": "Removes the AVC flow-monitor bindings from the wireless policy profile, disabling per-application visibility/enforcement without touching the rest of the profile — unbind both directions explicitly since input and output flow monitors were configured as two separate statements.",
             "type": "config",
             "flagged": false,
-            "example": "WLC-01(config-wireless-policy)# no ip flow monitor AVC-MON input"
+            "example": "WLC-01(config-wireless-policy)# no ip flow monitor AVC-MON input\nWLC-01(config-wireless-policy)# no ip flow monitor AVC-MON output\nWLC-01# show wireless avc summary\nAVC Enabled: No"
           },
           {
             "cmd": "netflow monitor <MONITOR>",
@@ -24423,10 +24423,10 @@
           },
           {
             "cmd": "neighbor 1.2.3.4 prefix-list PEER-IN in",
-            "desc": "Inbound prefix-list filter.",
+            "desc": "Applies prefix-list PEER-IN as an inbound route filter on this BGP neighbor, so only prefixes matching a permit entry are accepted into the BGP table — routes denied by the list are silently dropped rather than just tagged, unlike a route-map with set clauses.",
             "type": "config",
             "flagged": false,
-            "example": "(config-router)# neighbor 10.0.0.2 prefix-list ONLY-MY-NETS out"
+            "example": "Router(config)# ip prefix-list PEER-IN seq 10 permit 203.0.113.0/24\nRouter(config)# router bgp 65001\nRouter(config-router)# neighbor 10.0.0.2 prefix-list PEER-IN in\nRouter(config-router)# end\nRouter# show ip bgp neighbors 10.0.0.2 | include prefix list\n  Incoming update prefix filter list is PEER-IN"
           },
           {
             "cmd": "neighbor 1.2.3.4 filter-list 100 in",
@@ -28502,10 +28502,10 @@
           },
           {
             "cmd": "esxcli system syslog reload",
-            "desc": "Reloads syslog configuration",
+            "desc": "Reloads the ESXi syslog daemon (vmsyslogd) configuration without restarting the host, applying any changes just made with `esxcli system syslog config set` (remote loghost, rotation size/count) — run this immediately after a config set or the new settings won't take effect.",
             "type": "show",
             "flagged": false,
-            "example": "(No output; syslog daemon picks up new configuration)"
+            "example": "[root@esxi01:~] esxcli system syslog config set --loghost='udp://10.10.10.5:514'\n[root@esxi01:~] esxcli system syslog reload\n[root@esxi01:~] esxcli system syslog config get\n   Local Log Output: /scratch/log\n   Remote Host: udp://10.10.10.5:514"
           },
           {
             "cmd": "esxcli system time get",
@@ -28807,10 +28807,10 @@
           },
           {
             "cmd": "esxcli storage nfs add -H <host> -s <share> -v <name>",
-            "desc": "Adds NFS datastore",
+            "desc": "Mounts an NFSv3 export as a datastore on this host — `-H` is the NFS server IP/hostname, `-s` the exported share path on that server, and `-v` the friendly datastore name that shows up in vCenter/DCUI; run on every host that needs to see the datastore since the mount is per-host, not cluster-wide.",
             "type": "show",
             "flagged": false,
-            "example": "(No output on success; new NFS datastore mounted)"
+            "example": "[root@esxi01:~] esxcli storage nfs add -H 10.10.10.20 -s /export/nfs01 -v NFS01-Datastore\n[root@esxi01:~] esxcli storage nfs list\nVolume Name      Host         Share          Accessible  Mounted  Read-Only\nNFS01-Datastore  10.10.10.20  /export/nfs01  true        true     false"
           },
           {
             "cmd": "esxcli storage nfs remove -v <name>",
@@ -30562,10 +30562,10 @@
           },
           {
             "cmd": "Stop-Process -Id <pid> -Force",
-            "desc": "PowerShell-native task kill",
+            "desc": "Terminates the process with the given PID immediately and suppresses the confirmation prompt Stop-Process normally shows for a running process — the PowerShell-native equivalent of `taskkill /PID <pid> /F`, with no graceful shutdown of the process's own cleanup logic.",
             "type": "troubleshooting",
             "flagged": false,
-            "example": "(No output on success — process with specified PID terminated)"
+            "example": "PS C:\\> Get-Process notepad\n\nHandles  NPM(K)  PM(K)   WS(K)  CPU(s)   Id  ProcessName\n-------  ------  -----  ------  ------   --  -----------\n    210      12   9840   21344    0.11 5824  notepad\n\nPS C:\\> Stop-Process -Id 5824 -Force\nPS C:\\> Get-Process notepad\nGet-Process : Cannot find a process with the name \"notepad\"."
           },
           {
             "cmd": "Get-Service | Where-Object Status -eq Running | Sort-Object DisplayName",
@@ -42579,10 +42579,10 @@
           },
           {
             "cmd": "zfs snapshot <POOL>/<DS>@<NAME>",
-            "desc": "Create a ZFS snapshot",
+            "desc": "Creates an instant, read-only, point-in-time snapshot of a ZFS dataset or zvol using copy-on-write semantics — it consumes no extra space until the live dataset diverges from it, and is the primitive that `zfs send`/`pve-zsync` replication and `qmrestore`-style rollbacks build on.",
             "type": "config",
             "flagged": false,
-            "example": "(Snapshot rpool/data/vm-100-disk-0@pre-update created instantly; consumes no initial space)"
+            "example": "root@pve01:~# zfs snapshot rpool/data/vm-100-disk-0@pre-update\nroot@pve01:~# zfs list -t snapshot\nNAME                                  USED  AVAIL  REFER  MOUNTPOINT\nrpool/data/vm-100-disk-0@pre-update      0B      -  12.4G  -"
           },
           {
             "cmd": "zfs send -R <POOL>/<DS>@<SNAP> | ssh dr-host 'zfs recv -F dr-pool/<DS>'",
@@ -42630,10 +42630,10 @@
           },
           {
             "cmd": "pveum user add ops@pve --groups admins --comment \"Ops team\"",
-            "desc": "Create a PVE-realm user",
+            "desc": "Creates a new user in the local `pve` realm (as opposed to an externally-authenticated realm like Active Directory or LDAP), adds it to the `admins` group in the same step, and records a comment for auditing — the account has no password until `pveum passwd` sets one, so it cannot log in yet.",
             "type": "config",
             "flagged": false,
-            "example": "(User ops@pve created in realm pve; set password with pveum passwd)"
+            "example": "root@pve01:~# pveum user add ops@pve --groups admins --comment \"Ops team\"\nroot@pve01:~# pveum passwd ops@pve\nEnter new password: ********\nRetype new password: ********\nroot@pve01:~# pveum user list\n┌─────────┬────────┬────────┬────────┬───────────┐\n│ userid  │ enable │ expire │ groups │ comment   │\n├─────────┼────────┼────────┼────────┼───────────┤\n│ ops@pve │      1 │      0 │ admins │ Ops team  │\n└─────────┴────────┴────────┴────────┴───────────┘"
           },
           {
             "cmd": "pveum passwd <USER>@<REALM>",
@@ -45996,10 +45996,10 @@
           },
           {
             "cmd": "aaa authentication-server radius <name>\n host 10.10.10.50\n key <key>",
-            "desc": "Define a RADIUS server",
+            "desc": "Defines a named RADIUS server object with its host IP and shared secret; on its own this object authenticates nothing — it must still be added to an AAA server-group, which is what actually gets referenced by an authentication profile (802.1X, captive portal, VPN, etc.).",
             "type": "config",
             "flagged": false,
-            "example": "(RADIUS server configured; verify with \"show aaa server\")"
+            "example": "(host) (config) #aaa authentication-server radius RAD-CORP\n(host) (Radius Server \"RAD-CORP\") #host 10.10.10.50\n(host) (Radius Server \"RAD-CORP\") #key MyS3cr3tKey\n(host) (Radius Server \"RAD-CORP\") #exit\n(host) (config) #show aaa authentication-server radius RAD-CORP\nServer Name    IP Address    Auth Port  Status\nRAD-CORP       10.10.10.50   1812       Up"
           }
         ],
         "Cluster (8.x AOS)": [
