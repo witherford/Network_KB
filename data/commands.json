@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-24T18:41:16.000Z",
+  "updatedAt": "2026-07-27T18:41:18.028Z",
   "platforms": {
     "netscaler": {
       "label": "Citrix NetScaler",
@@ -5033,6 +5033,13 @@
             "type": "show",
             "flagged": false,
             "example": "admin@PA-VM> show routing route type bgp\nFlags: A:Active, ?:Incomplete\nDEST              NEXTHOP         METRIC FLAGS AGE  INTERFACE\n10.20.0.0/16      192.168.1.254   100    A     3d   ethernet1/1\n172.16.0.0/12     192.168.1.254   200    A     3d   ethernet1/1\n0.0.0.0/0         192.168.1.254   0      A     3d   ethernet1/1"
+          },
+          {
+            "cmd": "show routing path-monitor",
+            "desc": "Shows the live path-monitor state for static routes that have a monitored destination configured: which monitored IP(s) each route is tracking, the ping interval/count thresholds, and whether the route is currently marked up or down as a result. Add 'virtual-router <vr-name>' to scope to one VR.",
+            "type": "show",
+            "flagged": false,
+            "example": "> show routing path-monitor virtual-router default\nflags: A:active, S:static, E:ecmp\n\nVIRTUAL ROUTER: default (id 1)\ndestination          nexthop         flags  interface   pathmonitor  monitored-ip     interval/count  state\n0.0.0.0/0            10.0.1.254      A S    ethernet1/1  enabled      8.8.8.8          3/3             up\n0.0.0.0/0            10.0.2.254      S      ethernet1/2  enabled      1.1.1.1          3/3             down"
           }
         ],
         "Security Policies": [
@@ -8558,6 +8565,13 @@
             "type": "troubleshooting",
             "flagged": false,
             "example": "$ openssl s_time -connect example.com:443 -reuse -time 30\nCollecting connection statistics for 30 seconds\n2048 connections in 30.00s; 68.27 connections/user sec\n# Tests session resumption throughput — resumed connections should be much faster.\n# Compare with -new to measure the session resumption speedup ratio."
+          },
+          {
+            "cmd": "openssl s_server -accept 4433 -cert cert.crt -key private.key -naccept 1",
+            "desc": "Runs the built-in test TLS server for exactly one client connection and then exits automatically, instead of the default of serving forever — handy in scripts and CI where the server would otherwise need to be killed manually after the test client connects.",
+            "type": "config",
+            "flagged": false,
+            "example": "$ openssl s_server -accept 4433 -cert server.crt -key server.key -naccept 1 &\n$ openssl s_client -connect localhost:4433 -brief\n...\nConnection accepted, processing 1 request(s)\n$ jobs\n[1]  + done       openssl s_server -accept 4433 -cert server.crt -key server.key -naccept 1"
           }
         ],
         "Cipher & Protocol Listing": [
@@ -11125,6 +11139,13 @@
             "type": "show",
             "flagged": false,
             "example": "(Cisco Controller) >show mesh backhaul AP-Mesh-01\n\n Radio Type ................................ RADIO_TYPE_80211a\n Radio Role ................................ DOWNLINK ACCESS\n Radio Subband .............................. All\n Administrative State ....................... ADMIN_ENABLED\n Operation State ............................ UP\n Current Tx Power Level ..................... 1"
+          },
+          {
+            "cmd": "show ap mesh cac bwused voice <ap-name>",
+            "desc": "Shows Call Admission Control bandwidth accounting for voice traffic across a mesh AP's backhaul and its full mesh tree — bandwidth already reserved for voice calls versus what remains, used to see why new voice calls over a mesh link are being rejected.",
+            "type": "show",
+            "flagged": false,
+            "example": "WLC# show ap mesh cac bwused voice AP-ROOF-01\nVoice bandwidth used on backhaul: 384 kbps\nVoice bandwidth used on mesh tree: 1152 kbps\nMax voice bandwidth (backhaul): 6000 kbps (75% of 8 Mbps link)"
           }
         ],
         "Diagnostics": [
@@ -20408,7 +20429,7 @@
           },
           {
             "cmd": "http2",
-            "desc": "HTTP/2 frames",
+            "desc": "Matches every frame carrying the HTTP/2 binary framing layer, whether over cleartext (h2c) or TLS (h2). Use it to isolate HTTP/2 traffic before drilling into individual frame types like http2.type == 1 (HEADERS) or http2.type == 0 (DATA).",
             "type": "show",
             "flagged": false,
             "example": "# Matches all HTTP/2 frames (binary framing layer over TLS or cleartext).\n# Requires decryption if running over TLS — set SSLKEYLOGFILE first.\n# Frame 5:  10.0.0.5 → 10.0.0.10  HTTP2 SETTINGS frame\n# Frame 6:  10.0.0.10 → 10.0.0.5  HTTP2 SETTINGS ACK\n# Frame 7:  10.0.0.5 → 10.0.0.10  HTTP2 HEADERS (GET /api/v1/data)\n# HTTP/2 multiplexes multiple streams over one TCP connection."
@@ -20959,7 +20980,7 @@
           },
           {
             "cmd": "smb2.cmd == 6",
-            "desc": "SMB2 CLOSE",
+            "desc": "Matches SMB2 CLOSE commands, which release a previously opened file or directory handle. Pair it with smb2.cmd == 5 (CREATE) to correlate open/close pairs and spot handle leaks, or watch CLOSE volume without matching READ/WRITE activity as a sign of directory enumeration.",
             "type": "show",
             "flagged": false,
             "example": "# Matches SMB2 CLOSE requests — releasing an open file handle.\n# Frame 25: 10.0.0.5 → 10.0.0.10  SMB2 Close Request  FileId: 0x0001...\n# Useful for tracking file lifecycle: CREATE (5) → READ/WRITE → CLOSE (6).\n# High CLOSE rate without corresponding READs may indicate directory enumeration."
@@ -21010,14 +21031,14 @@
           },
           {
             "cmd": "bgp.type == 1",
-            "desc": "BGP OPEN",
+            "desc": "Matches BGP OPEN messages (message type 1), the first message exchanged when two BGP speakers establish a peering session. The OPEN carries the sender's AS number, hold time, BGP identifier, and negotiated capabilities (4-byte ASN, multiprotocol AFI/SAFI, route-refresh), making it the frame to check first when a BGP session won't come up.",
             "type": "show",
             "flagged": false,
             "example": "# Matches BGP OPEN messages (type 1) — session establishment.\n# Frame 1:  BGP OPEN  My AS: 65001  Hold Time: 90  BGP ID: 10.0.0.1\n#   Capabilities: 4-byte AS, route-refresh, multiprotocol (IPv4 unicast)"
           },
           {
             "cmd": "bgp.type == 2",
-            "desc": "BGP UPDATE",
+            "desc": "Matches BGP UPDATE messages (message type 2), which carry route advertisements and withdrawals once a session is established. A single UPDATE can announce one path attribute set for multiple NLRI prefixes, or withdraw multiple prefixes at once — filter on bgp.update.withdrawn_routes or bgp.update.nlri to narrow further.",
             "type": "show",
             "flagged": false,
             "example": "# Matches BGP UPDATE messages (type 2) — route advertisements and withdrawals.\n# Frame 5:  BGP UPDATE  Withdrawn: 192.168.0.0/24  NLRI: 10.10.0.0/16\n# Each UPDATE can carry multiple prefixes added or withdrawn simultaneously."
@@ -21096,7 +21117,7 @@
           },
           {
             "cmd": "wlan.fc.type_subtype == 0x04",
-            "desc": "Probe requests",
+            "desc": "Matches 802.11 Probe Request frames, sent by clients actively scanning for networks. Directed probes (a specific SSID rather than a wildcard) expose the client's Preferred Network List (PNL) and can be used to fingerprint or track a device across capture locations.",
             "type": "show",
             "flagged": false,
             "example": "# Matches 802.11 Probe Request frames (subtype 4).\n# Clients send probe requests to find specific SSIDs or discover all APs.\n# Frame 5:  Probe Request  SA: aa:bb:cc:dd:ee:ff  SSID: * (wildcard)\n# The client's Preferred Network List (PNL) is exposed by directed probes."
@@ -21145,7 +21166,7 @@
           },
           {
             "cmd": "wlan.fc.type == 2",
-            "desc": "Data frames",
+            "desc": "Matches all 802.11 Data-type frames (frame control Type field = 2), as opposed to Type 0 (Management: beacons, probes, auth, assoc) or Type 1 (Control: RTS/CTS, ACK). Use it to strip out management/control overhead and focus purely on client payload traffic when a capture is dominated by beacon noise.",
             "type": "show",
             "flagged": false,
             "example": "# Matches 802.11 Data frames (FC Type=2).\n# Type 0 = Management, Type 1 = Control, Type 2 = Data.\n# Frame 10: STA(aa:bb:cc:dd:ee:ff) → AP(00:11:22:33:44:55)  Data  Seq=1024\n# Filter data frames only to focus on actual payload traffic\n# rather than management overhead (Beacons, Probes, Auth, Assoc)."
@@ -28916,6 +28937,13 @@
             "type": "show",
             "flagged": false,
             "example": "~ # vim-cmd hostsvc/datastore/listsummary\n(vim.host.DatastoreSystem.DatastoreResult) [\n   (vim.Datastore.Summary) {\n      name = \"datastore1\",\n      url = \"/vmfs/volumes/5f2a1b3c-.../\",\n      capacity = 858993459200,\n      freeSpace = 214748364800,\n      type = \"VMFS\"\n   }\n]"
+          },
+          {
+            "cmd": "esxcli storage core claiming reclaim -d <device>",
+            "desc": "Troubleshooting command that unclaims all paths to a naa. device and re-runs the loaded PSA claim rules against them, forcing the device to be reclaimed by the correct multipathing plugin (NMP/HPP/third-party MPP) without a reboot. Fails harmlessly if I/O is active on the device.",
+            "type": "troubleshooting",
+            "flagged": true,
+            "example": "[root@esxi:~] esxcli storage core claiming reclaim -d naa.6000c2971b5a4f3a9b8e2d1c4f5a6b7c\n[root@esxi:~] esxcli storage core device list -d naa.6000c2971b5a4f3a9b8e2d1c4f5a6b7c\nnaa.6000c2971b5a4f3a9b8e2d1c4f5a6b7c\n   Display Name: Local disk (naa.6000c2971b5a4f3a9b8e2d1c4f5a6b7c)\n   Multipath Plugin: NMP\n   Devfs Path: /vmfs/devices/disks/naa.6000c2971b5a4f3a9b8e2d1c4f5a6b7c"
           }
         ],
         "VM Management": [
@@ -31500,6 +31528,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ cat change.json\n{\n  \"Changes\": [{\n    \"Action\": \"UPSERT\",\n    \"ResourceRecordSet\": {\n      \"Name\": \"app.example.com\",\n      \"Type\": \"A\",\n      \"TTL\": 300,\n      \"ResourceRecords\": [{\"Value\": \"10.0.0.25\"}]\n    }\n  }]\n}\n\n$ aws route53 change-resource-record-sets --hosted-zone-id Z1R8UBAEXAMPLE --change-batch file://change.json\n{\n    \"ChangeInfo\": {\n        \"Id\": \"/change/C2XXXXXXXXXXXX\",\n        \"Status\": \"PENDING\",\n        \"SubmittedAt\": \"2026-07-04T10:00:00.000Z\"\n    }\n}"
+          },
+          {
+            "cmd": "aws route53 get-hosted-zone --id <zone-id>",
+            "desc": "Returns a hosted zone's configuration (private vs. public, comment, record-set count) along with its DelegationSet — the four authoritative NS records that must match what is configured at the domain registrar. The most common use is confirming delegation is correct when a domain resolves inconsistently.",
+            "type": "show",
+            "flagged": false,
+            "example": "$ aws route53 get-hosted-zone --id Z1D633PJN98FT9\n{\n    \"HostedZone\": {\n        \"Id\": \"/hostedzone/Z1D633PJN98FT9\",\n        \"Name\": \"example.com.\",\n        \"ResourceRecordSetCount\": 12\n    },\n    \"DelegationSet\": {\n        \"NameServers\": [\n            \"ns-123.awsdns-45.com\",\n            \"ns-678.awsdns-90.net\",\n            \"ns-234.awsdns-56.org\",\n            \"ns-789.awsdns-01.co.uk\"\n        ]\n    }\n}"
           }
         ],
         "SNS": [
@@ -31624,6 +31659,13 @@
             "type": "show",
             "flagged": false,
             "example": "$ aws cloudfront list-distributions --query \"DistributionList.Items[].[Id,DomainName,Status,Enabled]\" --output table\n----------------------------------------------------------------------\n|  EDFDVBD6EXAMPLE | d111111abcdef8.cloudfront.net | Deployed | True |\n|  E2QWRUHAPOMQZL  | d222222xyz1234.cloudfront.net | Deployed | True |"
+          },
+          {
+            "cmd": "aws cloudfront create-invalidation --distribution-id <id> --paths \"/*\"",
+            "desc": "Forces CloudFront to purge cached objects at edge locations matching the given path patterns, so the next request re-fetches from the origin instead of serving stale cached content. Each account gets 1,000 free invalidation paths per month; \"/*\" invalidates everything and counts as one path.",
+            "type": "action",
+            "flagged": true,
+            "example": "$ aws cloudfront create-invalidation --distribution-id EDFDVBD6EXAMPLE --paths \"/*\"\n{\n    \"Invalidation\": {\n        \"Id\": \"I2J3EXAMPLE\",\n        \"Status\": \"InProgress\",\n        \"CreateTime\": \"2026-07-27T10:00:00.000Z\",\n        \"InvalidationBatch\": {\n            \"Paths\": { \"Quantity\": 1, \"Items\": [ \"/*\" ] },\n            \"CallerReference\": \"cli-1753610000\"\n        }\n    }\n}"
           }
         ],
         "KMS": [
@@ -31647,6 +31689,13 @@
             "type": "config",
             "flagged": false,
             "example": "$ aws kms create-key --description \"app-secrets-encryption-key\"\n{\n    \"KeyMetadata\": {\n        \"KeyId\": \"1234abcd-12ab-34cd-56ef-1234567890ab\",\n        \"Arn\": \"arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab\",\n        \"Enabled\": true,\n        \"KeyUsage\": \"ENCRYPT_DECRYPT\",\n        \"KeyState\": \"Enabled\"\n    }\n}\n\n# Give it a friendly name so scripts don't hard-code the KeyId:\n$ aws kms create-alias --alias-name alias/app-secrets --target-key-id 1234abcd-12ab-34cd-56ef-1234567890ab"
+          },
+          {
+            "cmd": "aws kms enable-key-rotation --key-id <key-id>",
+            "desc": "Turns on automatic annual rotation of the cryptographic material for a customer-managed KMS key. AWS keeps prior key material available so data encrypted under an older rotation is still decryptable; only symmetric encryption keys support automatic rotation.",
+            "type": "config",
+            "flagged": false,
+            "example": "$ aws kms enable-key-rotation --key-id 12345678-1234-1234-1234-123456789012\n$ aws kms get-key-rotation-status --key-id 12345678-1234-1234-1234-123456789012\n{\n    \"KeyRotationEnabled\": true,\n    \"KeyId\": \"12345678-1234-1234-1234-123456789012\",\n    \"RotationPeriodInDays\": 365\n}"
           }
         ],
         "Secrets Manager": [
@@ -33080,7 +33129,7 @@
           },
           {
             "cmd": "reset vm <name>",
-            "desc": "Resets a VM",
+            "desc": "Performs a hard reset (power-cycle) of the named VPX instance, equivalent to pulling power and restoring it — no graceful OS shutdown occurs. Use only when a VPX is hung and unresponsive to a normal reboot, since in-flight config changes and session state are lost.",
             "type": "show",
             "flagged": false,
             "example": "> reset vm VPX-1\nForce-resetting VM VPX-1 (hard reset)...\nVM VPX-1 is now Running."
@@ -33364,7 +33413,7 @@
           },
           {
             "cmd": "xe vm-start uuid=<uuid>",
-            "desc": "Starts a VM",
+            "desc": "Powers on a stopped VM (identified by its Xen UUID, obtainable from `xe vm-list`) via the XenServer host's `xe` CLI rather than the SDX management GUI. Add `on=<host-uuid>` to control which pool member the VM boots on in a resource-pool deployment.",
             "type": "show",
             "flagged": false,
             "example": "$ xe vm-start uuid=11111111-2222-3333-4444-555555555555\n# starts the specified VM"
@@ -33513,7 +33562,7 @@
           },
           {
             "cmd": "xl vcpu-list",
-            "desc": "Lists vCPUs",
+            "desc": "Lists every domain's virtual CPUs, showing which physical CPU each vCPU is currently scheduled on, its run state (r=running, b=blocked, p=paused), accumulated CPU time, and configured CPU affinity mask. Use it to confirm vCPU pinning took effect or to spot a VPX starved for CPU on a busy SDX appliance.",
             "type": "show",
             "flagged": false,
             "example": "$ xl vcpu-list\nName               ID   VCPU  CPU  State  Time(s) CPU Affinity\nDomain-0            0      0    0   -b-     234.5  0-15\nDomain-0            0      1    1   -b-     198.2  0-15\nVPX-1               1      0    2   -b-     123.4  2-3"
@@ -33678,7 +33727,7 @@
           },
           {
             "cmd": "show storage disks",
-            "desc": "Lists disks",
+            "desc": "Lists each physical disk in the SDX appliance's storage subsystem with its size, operational state, and SMART health status. Run it after a disk-health alert to identify which physical slot is degraded before scheduling a hot-swap.",
             "type": "show",
             "flagged": false,
             "example": "> show storage disks\nDisk  Size   State   Health\n----  -----  ------  ------\nsda   500GB  Active  Good\nsdb   500GB  Active  Good"
@@ -41855,6 +41904,13 @@
             "type": "show",
             "flagged": false,
             "example": "root@pve1:~# corosync-quorumtool -s\nQuorum information\n-------------------\nDate:             Tue Jul 14 09:12:03 2026\nQuorum provider:  corosync_votequorum\nNodes:             3\nNode ID:           1\nQuorate:           Yes\n\nVotequorum information\n----------------------\nExpected votes:   3\nHighest expected: 3\nTotal votes:      3\nQuorum:           2\nFlag:             Quorate\n\n# \"Quorate: No\" means this node has lost quorum and will fence/pause\n# HA-managed VMs — check network reachability to the other cluster members."
+          },
+          {
+            "cmd": "corosync-cfgtool -s",
+            "desc": "Queries corosync directly (bypassing pvecm) to show the status of every configured ring/link on the local node — each link's ID, source/destination IP, and whether it is connected. First command to run when pvecm status shows nodes offline but the network looks fine, since it isolates whether the corosync link itself is up.",
+            "type": "show",
+            "flagged": false,
+            "example": "root@pve1:~# corosync-cfgtool -s\nPrinting link status.\nLocal node ID 1\nLINK ID 0\n\taddr\t= 10.10.10.1\n\tstatus:\n\t\tnodeid  1:\tlocalhost\n\t\tnodeid  2:\tconnected\n\t\tnodeid  3:\tconnected"
           }
         ],
         "Virtual Machines (qm)": [
@@ -44460,6 +44516,13 @@
             "type": "config",
             "flagged": true,
             "example": "switch# reload\nThis command will reboot the system. (y/n)?  [n] y\n2026 Apr 21 14:45:00 switch01 %SYSMGR-2-SYSTEM_RELOAD: System will be reloaded due to user request"
+          },
+          {
+            "cmd": "checkpoint <name>",
+            "desc": "Saves a named snapshot (checkpoint) of the current running-config to NVRAM without touching startup-config. Use it before a risky change so 'rollback running-config checkpoint <name>' can restore this exact point — up to 10 checkpoints can be kept at once.",
+            "type": "config",
+            "flagged": false,
+            "example": "switch# checkpoint pre-bgp-change\n...Nexus 9000 Rollback Manager...\nCheckpoint pre-bgp-change created successfully\n\nswitch# show checkpoint summary\nUser         Name                  Creation Time\n-----------  --------------------  -------------------------\nadmin        pre-bgp-change        Mon Jul 27 10:14:02 2026"
           }
         ]
       }
@@ -45033,6 +45096,13 @@
             "type": "show",
             "flagged": false,
             "example": "VRF: default\n  Route Distinguisher: none\n  Interfaces: 1/1/1, 1/1/2, loopback0\n  Routes: 24 unicast\n\nVRF: MGMT\n  Route Distinguisher: none\n  Interfaces: mgmt\n  Routes: 2 unicast\n\nVRF: Customer-A\n  Route Distinguisher: 65001:100\n  Import RT: 65001:100\n  Export RT: 65001:100\n  Interfaces: 1/1/3, 1/1/4\n  Routes: 18 unicast"
+          },
+          {
+            "cmd": "show ip route vrf <name>",
+            "desc": "Displays the IPv4 routing table for a specific VRF instance — connected, static, and dynamically learned routes scoped to that VRF only. Add the optional vsx-peer keyword to pull the same table from the VSX peer switch for comparison.",
+            "type": "show",
+            "flagged": false,
+            "example": "switch# show ip route vrf RED\nDisplaying ipv4 routes selected for forwarding 'RED' VRF\n'*' denotes the best route among multiple\n\nDestination        Gateway                       Distance/Metric  Age    Port\n------------------ ----------------------------- ---------------- ------ -----\n10.10.0.0/24        10.10.0.1                      0/0              5d3h  vlan10\n0.0.0.0/0            10.10.0.254                    1/0              2h10m vlan10"
           }
         ],
         "VSX / VSF": [
