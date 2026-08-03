@@ -5,5 +5,5 @@
 // (which fetches data/version.json with cache-busting) returns the same
 // number once the deploy lands.
 
-export const APP_VERSION = '1.9.48';
-export const APP_BUILD   = '2026-08-02';
+export const APP_VERSION = '1.9.49';
+export const APP_BUILD   = '2026-08-03';
