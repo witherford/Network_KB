@@ -18,6 +18,7 @@ const SUBS = {
   // Cabling
   cabling:      { label: 'Ethernet wiring (CAT5/6)', group: 'Cabling',         load: () => import('../toolkit/cabling-ethernet.js') },
   fibre:        { label: 'Fibre & connectors',  group: 'Cabling',              load: () => import('../toolkit/cabling-fibre.js') },
+  power:        { label: 'Power cables & PDU',  group: 'Cabling',              load: () => import('../toolkit/power-cables.js') },
 
   // Password & Hash tools
   password:     { label: 'Password gen',        group: 'Password & Hash tools', load: () => import('../toolkit/password.js') },

@@ -246,6 +246,7 @@ function renderStatsBar() {
   const pKeys = Object.keys(platforms);
   let total = 0;
   for (const k of pKeys) for (const sec of Object.values(platforms[k].sections || {})) total += sec.length;
+  publishStats(total, pKeys.length);
   // Cached global flag count (refreshed via fetchGlobalFlagCount()).
   const gf = (typeof globalFlagCountCache === 'number') ? globalFlagCountCache : null;
   bar.innerHTML =
@@ -254,6 +255,16 @@ function renderStatsBar() {
     `<span><strong>${getPrefs().favourites.length}</strong> favourites</span>` +
     `<span><strong>${getPrefs().recent.length}</strong> recent</span>` +
     `<span title="Total flag reports raised across every visitor (synced)"><strong>${gf == null ? '—' : gf.toLocaleString()}</strong> globally flagged</span>`;
+}
+
+// Publish the live catalogue totals so non-module scripts can quote real
+// numbers instead of a hard-coded figure (witherrss-enhance.js types
+// "Search N commands across M platforms" into the search placeholder).
+// Snapshot on window for late listeners; event for anything already waiting.
+function publishStats(commands, platforms) {
+  const detail = { commands, platforms };
+  window.__nkbStats = detail;
+  document.dispatchEvent(new CustomEvent('nkb:stats', { detail }));
 }
 
 // Merge the deployed quarantine.json's flags into the user's local prefs so

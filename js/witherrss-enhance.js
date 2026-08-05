@@ -2,8 +2,9 @@
    Witherrss — UI enhancements (plain script, no build step)
    1. Injects the two-line "Witherrss" wordmark into the header.
    2. Types a cycling preview into the Commands search placeholder
-      ("Search 6,642 commands across 19 platforms" -> "Commands added daily"),
-      cancelled the moment the user focuses the field.
+      ("Search N commands across M platforms" -> "Commands added daily"),
+      cancelled the moment the user focuses the field. N and M come live from
+      the catalogue (published by js/pages/commands.js), never hard-coded.
    3. Types an example into the Subnet calc (#snCidr) and Regex builder
       (#reDesc) fields; cancelled when the user clicks/focuses in.
    Load with:  <script src="js/witherrss-enhance.js" defer></script>
@@ -11,11 +12,31 @@
 (function () {
   'use strict';
 
+  // Phrase 1 quotes the live catalogue size. The commands page publishes the
+  // real totals (window.__nkbStats / the 'nkb:stats' event) as it renders its
+  // stats bar, so the two can never drift apart. Until that lands — or if the
+  // data fetch fails — the count-free wording below is used.
   var SEARCH_PHRASES = [
-    'Search 6,642 commands across 19 platforms',
+    'Search the whole command library',
     'Commands added daily'
   ];
   var seen = new WeakSet();
+
+  /* ---- Live command/platform totals, published by js/pages/commands.js ---- */
+  function applyStats(s) {
+    if (!s || !s.commands) return;
+    SEARCH_PHRASES = [
+      'Search ' + s.commands.toLocaleString() + ' commands across ' +
+        s.platforms + ' platform' + (s.platforms === 1 ? '' : 's'),
+      'Commands added daily'
+    ];
+  }
+
+  function watchStats() {
+    applyStats(window.__nkbStats);
+    // Keep listening: the totals change when an admin edits the catalogue.
+    document.addEventListener('nkb:stats', function (e) { applyStats(e.detail); });
+  }
 
   /* ---- Two-line wordmark ---- */
   function ensureWordmark() {
@@ -37,6 +58,9 @@
   function cyclePlaceholder(el) {
     var pi = 0, ci = 0, deleting = false, cancelled = false, timer = null;
     var rest = 'Search commands\u2026';
+    // Set at the start of each phrase so a totals update mid-word can't swap
+    // the string out from under the typing animation.
+    var full;
     function stop() {
       cancelled = true;
       clearTimeout(timer);
@@ -46,7 +70,7 @@
     el.addEventListener('mousedown', stop, { once: true });
     function tick() {
       if (cancelled || !el.isConnected) return;
-      var full = SEARCH_PHRASES[pi];
+      if (!deleting && ci === 0) full = SEARCH_PHRASES[pi % SEARCH_PHRASES.length];
       if (!deleting) {
         ci++;
         el.setAttribute('placeholder', full.slice(0, ci));
@@ -125,6 +149,7 @@
 
   function boot() {
     ensureDefaultDark();
+    watchStats();
     scan();
     var root = document.getElementById('pageRoot') || document.body;
     new MutationObserver(scan).observe(root, { childList: true, subtree: true });
