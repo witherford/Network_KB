@@ -14,6 +14,7 @@ const SUBS = {
   // Cheat sheets & references
   cheatsheets:  { label: 'Cheat sheets',        group: 'Cheat sheets',         load: () => import('../toolkit/cheatsheets.js') },
   dscp:         { label: 'DSCP / ToS',          group: 'Cheat sheets',         load: () => import('../toolkit/dscp.js') },
+  iosimages:    { label: 'Cisco image names',   group: 'Cheat sheets',         load: () => import('../toolkit/ios-images.js') },
 
   // Cabling
   cabling:      { label: 'Ethernet wiring (CAT5/6)', group: 'Cabling',         load: () => import('../toolkit/cabling-ethernet.js') },
